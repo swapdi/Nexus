@@ -65,16 +65,6 @@ export const accountRouter = router({
       account
     };
   }),
-  getAccountByJoinPassword: publicProcedure
-    .input(z.object({ join_password: z.string() }))
-    .query(async ({ input }) => {
-      const account = await AccountService.getAccountByJoinPassword(
-        input.join_password
-      );
-      return {
-        account
-      };
-    }),
   acceptPendingMembership: adminProcedure
     .input(z.object({ membership_id: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -136,14 +126,6 @@ export const accountRouter = router({
   claimOwnershipOfAccount: adminProcedure.mutation(async ({ ctx }) => {
     const memberships = await AccountService.claimOwnershipOfAccount(
       ctx.dbUser!.id,
-      ctx.activeAccountId!
-    );
-    return {
-      memberships
-    };
-  }),
-  getAccountMembers: adminProcedure.query(async ({ ctx }) => {
-    const memberships = await AccountService.getAccountMembers(
       ctx.activeAccountId!
     );
     return {
