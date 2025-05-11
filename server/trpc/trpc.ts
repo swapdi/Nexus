@@ -9,7 +9,6 @@
  */
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
-// import { ACCOUNT_ACCESS } from '~~/prisma/account-access-enum'; // Removed
 import superjson from 'superjson';
 import { AccountLimitError } from '~~/lib/services/errors'; // This might be irrelevant now if plans/limits are removed
 
@@ -52,19 +51,6 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   });
 });
 
-// Renamed and simplified from isMemberWithAccessesForActiveAccountId
-const hasAccountAccess = t.middleware(({ next, ctx }) => {
-  if (!ctx.dbUser?.account) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'User does not have an associated account.'
-    });
-  }
-  // No specific access levels like OWNER, ADMIN anymore in the context of memberships
-  // The user associated with the account is implicitly the owner/admin.
-  return next({ ctx });
-});
-
 export const isAccountWithFeature = (feature: string) =>
   t.middleware(({ next, ctx }) => {
     if (!ctx.dbUser?.account) {
@@ -89,19 +75,6 @@ export const isAccountWithFeature = (feature: string) =>
  **/
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);
-
-// memberProcedure now simply checks if the user has an account.
-export const memberProcedure = protectedProcedure.use(hasAccountAccess);
-
-// readWriteProcedure, adminProcedure, and ownerProcedure become aliases of memberProcedure
-// as the 1-to-1 relationship implies full control by the associated user.
-// If finer-grained control within an account is needed in the future (e.g., for features),
-// this would need a different approach, perhaps by checking specific fields on the Account model.
-export const readWriteProcedure = memberProcedure;
-export const adminProcedure = memberProcedure;
-export const ownerProcedure = memberProcedure;
-
-export const accountHasSpecialFeature = isAccountWithFeature('SPECIAL_FEATURE');
 
 export const router = t.router;
 export const middleware = t.middleware;
