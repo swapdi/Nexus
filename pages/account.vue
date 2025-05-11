@@ -1,226 +1,303 @@
 <script setup lang="ts">
-  import { storeToRefs } from 'pinia';
-  import { ACCOUNT_ACCESS } from '~~/prisma/account-access-enum';
+  import { ref, onMounted, computed, watch } from 'vue';
+  import { useAccountStore } from '~/stores/account.store';
+  import { useNotifyStore, NotificationType } from '~/stores/notify.store'; // Import NotificationType
 
   const accountStore = useAccountStore();
-  const { activeMembership, activeAccountMembers } = storeToRefs(accountStore);
+  const notifyStore = useNotifyStore();
 
-  const config = useRuntimeConfig();
-  const newAccountName = ref('');
+  const editableAccountName = ref('');
+  const isLoadingNameChange = ref(false);
+  const isLoadingPage = ref(true); // Added for initial loading state
 
-  onMounted(async () => {
-    await accountStore.init();
-    await accountStore.getActiveAccountMembers();
+  // Computed properties for safe access and reactivity
+  const account = computed(() => accountStore.activeAccount);
+  const user = computed(() => accountStore.dbUser);
+
+  const userEmail = computed(() => user.value?.email);
+  const userDisplayName = computed(() => user.value?.display_name);
+  const accountName = computed(() => account.value?.name);
+  const accountFeatures = computed(() => account.value?.features || []);
+  const currentPeriodEnds = computed(() => {
+    if (account.value?.current_period_ends) {
+      return new Date(account.value.current_period_ends).toLocaleDateString();
+    }
+    return 'N/A';
   });
 
-  function formatDate(date: Date | undefined) {
-    if (!date) {
-      return '';
+  onMounted(async () => {
+    isLoadingPage.value = true;
+    try {
+      // Ensure init runs if store is not populated or if essential data is missing
+      if (
+        !accountStore.activeAccount ||
+        !accountStore.dbUser ||
+        !accountStore.activeAccount.name
+      ) {
+        await accountStore.init();
+      }
+      // Populate editableAccountName after init or if account data is already available
+      if (account.value?.name) {
+        editableAccountName.value = account.value.name;
+      }
+    } catch (error) {
+      console.error('Error initializing account page:', error);
+      notifyStore.notify(
+        'Could not load account details. Please try again.',
+        NotificationType.Error
+      );
+    } finally {
+      isLoadingPage.value = false;
     }
-    return new Intl.DateTimeFormat('default', { dateStyle: 'long' }).format(
-      date
-    );
-  }
+  });
 
-  function joinURL() {
-    return `${config.public.siteRootUrl}/join/${activeMembership.value?.account.join_password}`;
+  // Watch for changes in the store's account name and update the local ref
+  watch(
+    () => account.value?.name,
+    newName => {
+      if (newName && editableAccountName.value !== newName) {
+        editableAccountName.value = newName;
+      }
+    }
+  );
+
+  async function handleChangeAccountName() {
+    if (!editableAccountName.value.trim()) {
+      notifyStore.notify(
+        'Account name cannot be empty.',
+        NotificationType.Error
+      );
+      return;
+    }
+    if (!account.value) {
+      notifyStore.notify('Account data not available.', NotificationType.Error);
+      return;
+    }
+    if (editableAccountName.value.trim() === account.value.name) {
+      notifyStore.notify(
+        'Account name is already set to this value.',
+        NotificationType.Info
+      );
+      return;
+    }
+
+    isLoadingNameChange.value = true;
+    try {
+      await accountStore.changeAccountName(editableAccountName.value.trim());
+      notifyStore.notify(
+        'Account name updated successfully!',
+        NotificationType.Success
+      );
+    } catch (error: any) {
+      console.error('Failed to change account name:', error);
+      notifyStore.notify(
+        error.message || 'Failed to update account name.',
+        NotificationType.Error
+      );
+    } finally {
+      isLoadingNameChange.value = false;
+    }
   }
 </script>
+
 <template>
-  <div class="container mx-auto p-6">
-    <div class="text-center mb-12">
-      <h2
-        class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-4">
-        Account Information
-      </h2>
+  <div class="container mx-auto p-4 md:p-8">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200">
+      Account Settings
+    </h1>
+
+    <div v-if="isLoadingPage" class="text-center py-10">
+      <svg
+        class="animate-spin h-8 w-8 text-indigo-600 mx-auto"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">
+        Loading account details...
+      </p>
     </div>
 
-    <div class="flex flex-col gap-4">
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Account Name:</span>
-        <span>{{ activeMembership?.account.name }}</span>
-        <template
-          v-if="
-            activeMembership &&
-            (activeMembership.access === ACCOUNT_ACCESS.OWNER ||
-              activeMembership.access === ACCOUNT_ACCESS.ADMIN)
-          ">
-          <input
-            v-model="newAccountName"
-            type="text"
-            class="p-2 border border-gray-400 rounded w-1/3"
-            placeholder="Enter new name" />
-          <button
-            @click.prevent="accountStore.changeAccountName(newAccountName)"
-            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-            Change Name
-          </button>
-        </template>
-      </div>
+    <div
+      v-else-if="!isLoadingPage && !account && !user"
+      class="text-center py-10 bg-red-50 dark:bg-red-900 p-4 rounded-lg shadow">
+      <p class="text-red-700 dark:text-red-300 font-semibold">
+        Could not load account details.
+      </p>
+      <p class="text-red-600 dark:text-red-400 text-sm">
+        Please try again later or contact support.
+      </p>
+    </div>
 
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Current Period Ends:</span>
-        <span>{{
-          formatDate(activeMembership?.account.current_period_ends)
-        }}</span>
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Permitted Features:</span>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="feature in activeMembership?.account.features"
-            class="bg-gray-200 text-gray-700 font-semibold py-1 px-2 rounded-full">
-            {{ feature }}
-          </span>
+    <div v-else class="space-y-8">
+      <!-- User Information Card -->
+      <div
+        class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+        <div class="p-6">
+          <h2
+            class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
+            User Profile
+          </h2>
+          <div class="space-y-3 mt-4">
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+                >Email Address</label
+              >
+              <p class="mt-1 text-lg text-gray-900 dark:text-gray-100">
+                {{ userEmail || 'N/A' }}
+              </p>
+            </div>
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+                >Display Name</label
+              >
+              <p class="mt-1 text-lg text-gray-900 dark:text-gray-100">
+                {{ userDisplayName || 'N/A' }}
+              </p>
+              <!-- Future: Add edit functionality for display name if required -->
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Maximum Notes:</span>
-        <span>{{ activeMembership?.account.max_notes }}</span>
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">AI Gens for this Month/Max:</span>
-        <span>
-          {{ activeMembership?.account.ai_gen_count }} /
-          {{ activeMembership?.account.ai_gen_max_pm }}
-        </span>
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Maximum Members:</span>
-        <span>{{ activeMembership?.account.max_members }}</span>
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Access Level:</span>
-        <span
-          class="bg-green-500 text-white font-semibold py-1 px-2 rounded-full">
-          {{ activeMembership?.access }}
-        </span>
-        <button
-          @click.prevent="accountStore.claimOwnershipOfAccount()"
-          v-if="
-            activeMembership && activeMembership.access === ACCOUNT_ACCESS.ADMIN
-          "
-          class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue">
-          Claim Ownership
-        </button>
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Plan:</span>
-        <span>{{ activeMembership?.account.plan_name }}</span>
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <span class="font-bold w-32">Join Link:</span>
-        <div class="flex gap-2 items-center">
-          <input
-            disabled
-            type="text"
-            class="p-2 border border-gray-400 rounded w-full"
-            :value="joinURL()" />
-          <button
-            @click.prevent="accountStore.rotateJoinPassword()"
-            v-if="
-              activeMembership &&
-              (activeMembership.access === ACCOUNT_ACCESS.OWNER ||
-                activeMembership.access === ACCOUNT_ACCESS.ADMIN)
-            "
-            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-            ReGen
-          </button>
+      <!-- Account Details Card -->
+      <div
+        class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+        <div class="p-6">
+          <h2
+            class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
+            Account Details
+          </h2>
+          <div class="space-y-4 mt-4">
+            <div>
+              <label
+                for="accountNameInput"
+                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+                >Account Name</label
+              >
+              <div class="mt-1 flex rounded-md shadow-sm">
+                <input
+                  id="accountNameInput"
+                  v-model="editableAccountName"
+                  type="text"
+                  class="flex-1 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500 p-3"
+                  placeholder="Your Account Name"
+                  :disabled="isLoadingNameChange" />
+                <button
+                  @click="handleChangeAccountName"
+                  :disabled="
+                    isLoadingNameChange ||
+                    editableAccountName === (account?.name || '') ||
+                    !editableAccountName.trim()
+                  "
+                  class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition ease-in-out duration-150">
+                  <svg
+                    v-if="isLoadingNameChange"
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span v-if="isLoadingNameChange">Saving...</span>
+                  <span v-else>Save Name</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="flex flex-col gap-4">
-        <h2 class="text-lg font-bold">Members</h2>
-        <div class="flex flex-col gap-2">
-          <div
-            v-for="accountMember in activeAccountMembers"
-            class="flex gap-4 items-center">
-            <span>{{ accountMember.user.display_name }}</span>
-            <span
-              class="bg-green-500 text-white font-semibold py-1 px-2 rounded-full">
-              {{ accountMember.access }}
-            </span>
-            <span class="text-gray-500">({{ accountMember.user.email }})</span>
-            <button
-              @click.prevent="
-                accountStore.acceptPendingMembership(accountMember.id)
-              "
-              v-if="
-                accountMember.pending &&
-                activeMembership &&
-                (activeMembership.access === ACCOUNT_ACCESS.OWNER ||
-                  activeMembership.access === ACCOUNT_ACCESS.ADMIN)
-              "
-              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue">
-              Accept Pending Membership
-            </button>
-            <button
-              @click.prevent="
-                accountStore.rejectPendingMembership(accountMember.id)
-              "
-              v-if="
-                accountMember.pending &&
-                activeMembership &&
-                (activeMembership.access === ACCOUNT_ACCESS.OWNER ||
-                  activeMembership.access === ACCOUNT_ACCESS.ADMIN)
-              "
-              class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue">
-              Reject Pending Membership
-            </button>
-            <button
-              @click.prevent="
-                accountStore.changeUserAccessWithinAccount(
-                  accountMember.user.id,
-                  ACCOUNT_ACCESS.READ_WRITE
-                )
-              "
-              v-if="
-                activeMembership &&
-                (activeMembership.access === ACCOUNT_ACCESS.OWNER ||
-                  activeMembership.access === ACCOUNT_ACCESS.ADMIN) &&
-                accountMember.access === ACCOUNT_ACCESS.READ_ONLY &&
-                !accountMember.pending
-              "
-              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue">
-              Promote to Read/Write
-            </button>
-            <button
-              @click.prevent="
-                accountStore.changeUserAccessWithinAccount(
-                  accountMember.user.id,
-                  ACCOUNT_ACCESS.ADMIN
-                )
-              "
-              v-if="
-                activeMembership &&
-                activeMembership.access === ACCOUNT_ACCESS.OWNER &&
-                accountMember.access === ACCOUNT_ACCESS.READ_WRITE &&
-                !accountMember.pending
-              "
-              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue">
-              Promote to Admin
-            </button>
-            <button
-              @click.prevent="accountStore.deleteMembership(accountMember.id)"
-              v-if="
-                activeMembership &&
-                activeMembership.access === ACCOUNT_ACCESS.OWNER &&
-                accountMember.access !== ACCOUNT_ACCESS.OWNER &&
-                !accountMember.pending
-              "
-              class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue">
-              Remove
-            </button>
+      <!-- Subscription & Features Card -->
+      <div
+        class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+        <div class="p-6">
+          <h2
+            class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
+            Subscription & Features
+          </h2>
+          <div class="space-y-3 mt-4">
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+                >Current Billing Period Ends</label
+              >
+              <p class="mt-1 text-lg text-gray-900 dark:text-gray-100">
+                {{ currentPeriodEnds }}
+              </p>
+            </div>
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+                >Active Features</label
+              >
+              <div
+                v-if="accountFeatures.length > 0"
+                class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="feature in accountFeatures"
+                  :key="feature"
+                  class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full dark:bg-green-700 dark:text-green-200">
+                  {{ feature }}
+                </span>
+              </div>
+              <p v-else class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                No special features currently active.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone Card -->
+      <div
+        class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+        <div class="p-6">
+          <h2
+            class="text-2xl font-semibold mb-4 text-red-600 dark:text-red-500 border-b pb-2 dark:border-gray-700">
+            Danger Zone
+          </h2>
+          <div class="space-y-3 mt-4">
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                Manage sensitive account operations with caution.
+              </p>
+              <NuxtLink
+                to="/deletemyaccount"
+                class="inline-flex items-center px-4 py-2 border border-red-500 text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:text-red-300 dark:border-red-600 dark:bg-red-700 dark:hover:bg-red-600 transition ease-in-out duration-150">
+                Delete My Account
+              </NuxtLink>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+  /* Page-specific styles can be added here if Tailwind utilities are not sufficient */
+</style>

@@ -1,135 +1,64 @@
 import { TRPCError } from '@trpc/server';
-import { setCookie } from 'h3';
+// import { setCookie } from 'h3'; // No longer needed if changeActiveAccount is removed
 import {
   router,
   adminProcedure,
   publicProcedure,
   protectedProcedure,
-  ownerProcedure
+  ownerProcedure // ownerProcedure might also need re-evaluation or become similar to adminProcedure
 } from '../trpc';
-import { ACCOUNT_ACCESS } from '~~/prisma/account-access-enum';
+// import { ACCOUNT_ACCESS } from '~~/prisma/account-access-enum'; // Removed
 import { z } from 'zod';
 import { AccountService } from '~~/lib/services/account.service';
-import type { MembershipWithAccount } from '~~/lib/services/service.types';
+// import type { MembershipWithAccount } from '~~/lib/services/service.types'; // Removed
 
 /*
-  Note on proliferation of Bang syntax... adminProcedure throws if either the ctx.dbUser or the ctx.activeAccountId is not available but the compiler can't figure that out so bang quiesces the null warning
+  Note: The authorization model has shifted to a 1-to-1 User-Account relationship.
+  Procedures like adminProcedure and ownerProcedure will need to be updated in trpc.ts
+  to reflect this, likely by checking ctx.dbUser.account directly instead of memberships.
+  The Bang (!) operator on ctx.dbUser.account!.id assumes these procedures ensure its existence.
 */
 export const accountRouter = router({
   getDBUser: publicProcedure.query(({ ctx }) => {
+    // ctx.dbUser structure has changed due to schema update (user.account instead of user.memberships)
     return {
       dbUser: ctx.dbUser
     };
   }),
   getActiveAccountId: publicProcedure.query(({ ctx }) => {
+    // With a 1-to-1 User-Account model, the active account ID is simply the user's account ID.
+    // The concept of ctx.activeAccountId (populated by middleware) also needs review.
     return {
-      activeAccountId: ctx.activeAccountId
+      activeAccountId: ctx.dbUser?.account?.id ?? null
     };
   }),
-  changeActiveAccount: protectedProcedure
-    .input(z.object({ account_id: z.number() }))
-    .mutation(async ({ ctx, input }) => {
-      const activeMembership = ctx.dbUser?.memberships.find(
-        membership => membership.account_id == input.account_id
-      );
-      if (activeMembership?.pending) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `membership ${activeMembership?.id} is not active so cannot be switched to`
-        });
-      }
-      ctx.activeAccountId = input.account_id;
-      setCookie(
-        ctx.event,
-        'preferred-active-account-id',
-        input.account_id.toString(),
-        { expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10) }
-      );
-    }),
-  changeAccountName: adminProcedure
+  // changeActiveAccount procedure removed as users now have a single, direct account.
+  // The cookie 'preferred-active-account-id' is no longer relevant.
+
+  changeAccountName: adminProcedure // adminProcedure needs update in trpc.ts
     .input(z.object({ new_name: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // adminProcedure should ensure ctx.dbUser.account exists.
+      if (!ctx.dbUser?.account) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'User has no account.'
+        });
+      }
       const account = await AccountService.changeAccountName(
-        ctx.activeAccountId!,
+        ctx.dbUser.account.id,
         input.new_name
       );
       return {
         account
       };
-    }),
-  rotateJoinPassword: adminProcedure.mutation(async ({ ctx }) => {
-    const account = await AccountService.rotateJoinPassword(
-      ctx.activeAccountId!
-    );
-    return {
-      account
-    };
-  }),
-  acceptPendingMembership: adminProcedure
-    .input(z.object({ membership_id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const membership: MembershipWithAccount =
-        await AccountService.acceptPendingMembership(
-          ctx.activeAccountId!,
-          input.membership_id
-        );
-      return {
-        membership
-      };
-    }),
-  rejectPendingMembership: adminProcedure
-    .input(z.object({ membership_id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const membership: MembershipWithAccount =
-        await AccountService.deleteMembership(
-          ctx.activeAccountId!,
-          input.membership_id
-        );
-      return {
-        membership
-      };
-    }),
-  deleteMembership: ownerProcedure
-    .input(z.object({ membership_id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const membership: MembershipWithAccount =
-        await AccountService.deleteMembership(
-          ctx.activeAccountId!,
-          input.membership_id
-        );
-      return {
-        membership
-      };
-    }),
-  changeUserAccessWithinAccount: adminProcedure
-    .input(
-      z.object({
-        user_id: z.number(),
-        access: z.enum([
-          ACCOUNT_ACCESS.ADMIN,
-          ACCOUNT_ACCESS.OWNER,
-          ACCOUNT_ACCESS.READ_ONLY,
-          ACCOUNT_ACCESS.READ_WRITE
-        ])
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const membership = await AccountService.changeUserAccessWithinAccount(
-        input.user_id,
-        ctx.activeAccountId!,
-        input.access
-      );
-      return {
-        membership
-      };
-    }),
-  claimOwnershipOfAccount: adminProcedure.mutation(async ({ ctx }) => {
-    const memberships = await AccountService.claimOwnershipOfAccount(
-      ctx.dbUser!.id,
-      ctx.activeAccountId!
-    );
-    return {
-      memberships
-    };
-  })
+    })
+  // rotateJoinPassword procedure removed as the field is not on the Account model
+  // and the corresponding service function was removed.
+
+  // Removed acceptPendingMembership procedure
+  // Removed rejectPendingMembership procedure
+  // Removed deleteMembership procedure
+  // Removed changeUserAccessWithinAccount procedure
+  // Removed claimOwnershipOfAccount procedure
 });

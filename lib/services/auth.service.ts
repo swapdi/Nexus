@@ -1,10 +1,5 @@
-import { ACCOUNT_ACCESS } from '~~/prisma/account-access-enum';
 import prisma_client from '~~/prisma/prisma.client';
 import { fullDBUser, type FullDBUser } from './service.types';
-import { UtilService } from './util.service';
-import generator from 'generate-password-ts';
-
-const config = useRuntimeConfig();
 
 export namespace AuthService {
   export async function getFullUserBySupabaseId(
@@ -30,36 +25,11 @@ export namespace AuthService {
     display_name: string,
     email: string
   ): Promise<FullDBUser | null> {
-    const trialPlan = await prisma_client.plan.findFirstOrThrow({
-      where: { id: 1 }
-    });
-    const join_password: string = generator.generate({
-      length: 10,
-      numbers: true
-    });
     return prisma_client.user.create({
       data: {
         supabase_uid: supabase_uid,
         display_name: display_name,
-        email: email,
-        memberships: {
-          create: {
-            account: {
-              create: {
-                name: display_name,
-                current_period_ends: UtilService.addMonths(
-                  new Date(),
-                  config.initialPlanActiveMonths
-                ),
-                plan_id: trialPlan.id,
-                features: trialPlan.features,
-                plan_name: trialPlan.name,
-                join_password: join_password
-              }
-            },
-            access: ACCOUNT_ACCESS.OWNER
-          }
-        }
+        email: email
       },
       ...fullDBUser
     });

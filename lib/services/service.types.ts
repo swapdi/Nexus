@@ -1,39 +1,17 @@
 import { Prisma } from '@prisma/client';
 
-export const membershipWithAccount = Prisma.validator<Prisma.MembershipArgs>()({
-  include: { account: true }
-});
-export type MembershipWithAccount = Prisma.MembershipGetPayload<
-  typeof membershipWithAccount
->;
+// Membership-bezogene Typen sind nicht mehr notwendig und werden entfernt.
 
-export const membershipWithUser = Prisma.validator<Prisma.MembershipArgs>()({
-  include: { user: true }
-});
-export type MembershipWithUser = Prisma.MembershipGetPayload<
-  typeof membershipWithUser
->;
-
-export const fullDBUser = Prisma.validator<Prisma.UserArgs>()({
+export const fullDBUser = Prisma.validator<Prisma.UserDefaultArgs>()({
   include: {
-    memberships: {
-      include: {
-        account: true
-      }
-    }
+    account: true // Entspricht dem Feld 'account' im User-Modell
   }
 });
-export type FullDBUser = Prisma.UserGetPayload<typeof fullDBUser>; //TODO - I wonder if this could be replaced by just user level info
+export type FullDBUser = Prisma.UserGetPayload<typeof fullDBUser>;
 
-export const accountWithMembers = Prisma.validator<Prisma.AccountArgs>()({
+export const accountWithUser = Prisma.validator<Prisma.AccountDefaultArgs>()({
   include: {
-    members: {
-      include: {
-        user: true
-      }
-    }
+    user: true // Entspricht dem Feld 'user' im Account-Modell
   }
 });
-export type AccountWithMembers = Prisma.AccountGetPayload<
-  typeof accountWithMembers
->; //TODO - I wonder if this could just be a list of full memberships
+export type AccountWithUser = Prisma.AccountGetPayload<typeof accountWithUser>;

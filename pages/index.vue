@@ -1,238 +1,198 @@
-<script setup lang="ts">
+<template>
+  <div class="pb-16">
+    <!-- Hero-Bereich mit RGB-Effekten -->
+    <section class="py-16 relative overflow-hidden">
+      <!-- RGB-Hintergrund-Animation -->
+      <div
+        class="absolute inset-0 bg-grid-white/10 bg-[size:30px_30px] opacity-20" />
+      <div
+        class="absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-purple-500/20 to-transparent animate-pulse-slow" />
+      <div
+        class="absolute top-0 right-0 h-full w-1/4 bg-gradient-to-l from-blue-500/20 to-transparent animate-pulse-slow" />
+
+      <div class="container mx-auto px-4 py-12 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1
+            class="text-5xl md:text-7xl font-extrabold mb-6 animate-text bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 bg-clip-text text-transparent">
+            GameVault
+          </h1>
+          <p class="text-xl md:text-2xl text-gray-300 mb-8">
+            Deine ultimative Spieleverwaltung für alle Plattformen
+          </p>
+          <p class="text-lg text-gray-400 mb-12">
+            Steam, Epic Games, GOG und mehr - Alles an einem Ort
+          </p>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <button
+              class="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-md text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(124,58,237,0.5)]">
+              Kostenlos starten
+            </button>
+            <button
+              class="px-8 py-3 bg-gray-800 hover:bg-gray-700 rounded-md text-lg font-medium transition-all duration-300">
+              Mehr erfahren
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features-Bereich -->
+    <section class="py-24 bg-gray-800/50 relative">
+      <!-- RGB-Border-Effekt -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500" />
+
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
+          Features
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="p-6 bg-gray-800/70 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(124,58,237,0.2)]">
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
+              <span class="text-xl">🎮</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Alle Spiele an einem Ort</h3>
+            <p class="text-gray-400">
+              Importiere und verwalte deine Spielebibliotheken von Steam, Epic
+              Games, GOG und weiteren Plattformen in einer übersichtlichen
+              Oberfläche.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="p-6 bg-gray-800/70 rounded-lg border border-gray-700 hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mb-4">
+              <span class="text-xl">💰</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Die besten Deals</h3>
+            <p class="text-gray-400">
+              Verpasse nie wieder Angebote oder kostenlose Spiele. GameVault
+              informiert dich über alle aktuellen Deals auf allen Plattformen.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="p-6 bg-gray-800/70 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-4">
+              <span class="text-xl">🔄</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">
+              Automatische Synchronisation
+            </h3>
+            <p class="text-gray-400">
+              Verbinde deine Gaming-Accounts und lasse deine Bibliothek
+              automatisch aktualisieren, wenn du neue Spiele kaufst.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plattformen-Bereich -->
+    <section class="py-24 relative">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
+          Unterstützte Plattformen
+        </h2>
+
+        <div
+          class="flex flex-wrap justify-center gap-8 items-center max-w-4xl mx-auto">
+          <div
+            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
+            <span class="text-2xl">Steam</span>
+          </div>
+          <div
+            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
+            <span class="text-2xl">Epic</span>
+          </div>
+          <div
+            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
+            <span class="text-2xl">GOG</span>
+          </div>
+          <div
+            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
+            <span class="text-2xl">Origin</span>
+          </div>
+          <div
+            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
+            <span class="text-2xl">Uplay</span>
+          </div>
+          <div
+            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
+            <span class="text-2xl">+</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA-Bereich -->
+    <section
+      class="py-16 bg-gradient-to-br from-violet-950/50 to-gray-900/50 relative">
+      <!-- RGB-Effekt an den Rändern -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500" />
+      <div
+        class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500" />
+
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-6">
+          Bereit, deine Spieleverwaltung zu revolutionieren?
+        </h2>
+        <p class="text-xl text-gray-300 mb-8">
+          Registriere dich jetzt kostenlos und starte mit GameVault
+        </p>
+        <button
+          class="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-md text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(124,58,237,0.5)]">
+          Jetzt kostenlos anmelden
+        </button>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
   const user = useSupabaseUser();
   watchEffect(() => {
     if (user.value) {
       navigateTo('/dashboard', { replace: true });
     }
   });
+  definePageMeta({
+    title: 'GameVault - Deine All-in-One Spieleverwaltung'
+  });
 </script>
-<template>
-  <div class="container mx-auto m-5">
-    <!-- Hero section -->
-    <section class="bg-gray-100 py-20">
-      <div class="container mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
-          <div class="m-5">
-            <h1 class="text-5xl font-bold mb-4">Build Your Next SaaS Faster</h1>
-            <p class="text-gray-700 text-lg mb-8">
-              With SupaNuxt SaaS, you can easily get started building your next
-              web application. Our pre-configured tech stack and industry
-              leading features make it easy to get up and running in no time.
-              Look! this guy is working so fast, his hands are just a blur.. you
-              could be this fast.
-            </p>
-            <NuxtLink
-              to="/signup"
-              class="inline-block py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >Get Started</NuxtLink
-            >
-          </div>
-          <div>
-            <img
-              src="~/assets/images/supanuxt_logo_200.png"
-              alt="SupaNuxt SaaS Logo" />
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section class="py-12">
-      <div class="container px-4 mx-auto">
-        <div
-          class="flex flex-col md:flex-row items-center justify-center md:justify-between mb-8">
-          <h2 class="text-3xl font-bold mb-4 md:mb-0">Tech Stack</h2>
-        </div>
-        <div class="flex flex-col md:flex-row items-center mb-16">
-          <div class="md:w-full">
-            <ul class="grid grid-cols-3 gap-10 list-none">
-              <li>
-                <Icon name="skill-icons:nuxtjs-dark" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Nuxt 3</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  The Progressive Vue.js Framework
-                </p>
-              </li>
-              <li>
-                <Icon name="skill-icons:supabase-dark" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Supabase</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  Auth including OAuth + Postgresql instance
-                </p>
-              </li>
-              <li>
-                <Icon
-                  name="skill-icons:postgresql-dark"
-                  class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">PostgreSQL</h3>
-                <p class="mt-2 text-base text-gray-500">Relational Database</p>
-              </li>
-              <li>
-                <Icon name="logos:prisma" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Prisma</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  Schema management + Strongly typed client
-                </p>
-              </li>
-              <li>
-                <Icon name="simple-icons:trpc" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">TRPC</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  Server/Client communication with Strong types, SSR compatible
-                </p>
-              </li>
-              <li>
-                <Icon name="skill-icons:vuejs-dark" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Pinia</h3>
-                <p class="mt-2 text-base text-gray-500">State Store</p>
-              </li>
-              <li>
-                <Icon name="logos:stripe" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Stripe</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  Payments including Webhook integration
-                </p>
-              </li>
-              <li>
-                <Icon
-                  name="skill-icons:tailwindcss-dark"
-                  class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Tailwind</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  A utility-first CSS framework
-                </p>
-              </li>
-              <li>
-                <Icon name="skill-icons:vuejs-dark" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">Vue.js</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  The Progressive JavaScript Framework
-                </p>
-              </li>
-              <li>
-                <Icon name="logos:openai-icon" class="h-12 w-12 mb-2" />
-                <h3 class="text-xl font-medium text-gray-900">OpenAI</h3>
-                <p class="mt-2 text-base text-gray-500">
-                  AI Completions including Note generation from prompt
-                </p>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div
-          class="flex flex-col md:flex-row items-center justify-center md:justify-between mb-8">
-          <h2 class="text-3xl font-bold mb-4 md:mb-0">Features</h2>
-        </div>
-        <!-- User Management (text left) -->
-        <div class="flex flex-col md:flex-row-reverse items-center mb-16">
-          <div class="md:w-1/2 md:ml-8 mb-8 md:mb-0">
-            <img
-              src="~/assets/images/landing_user_management.jpeg"
-              alt="User Management"
-              class="w-full rounded-lg shadow-lg mb-4 md:mb-0 md:ml-4" />
-          </div>
-          <div class="md:w-1/2">
-            <h3 class="text-xl font-bold mb-4">User Management</h3>
-            <p class="mb-4">
-              SupaNuxt SaaS includes robust user management features, including
-              authentication with social login (oauth) or email/password,
-              management of user roles and permissions, and multi-user/team
-              accounts that permit multiple users to share plan features
-              including a team administration facility and user roles within
-              team. This is a great feature for businesses or community groups
-              who want to share the cost of the plan.
-            </p>
-          </div>
-        </div>
-        <!-- DB Schema (text right)-->
-        <div class="flex flex-col md:flex-row items-center mb-16">
-          <div class="md:w-1/2 md:mr-8 mb-8 md:mb-0">
-            <img
-              src="~/assets/images/landing_db_schema_management.jpeg"
-              alt="DB Schema Management"
-              class="w-full rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4" />
-          </div>
-          <div class="md:w-1/2">
-            <h3 class="text-xl font-bold mb-4">DB Schema Management</h3>
-            <p class="mb-4">
-              We use Prisma for schema management to make sure you can easily
-              manage and keep track of your database schema. We also utilise
-              Prisma based strong types which, with some help from TRPC,
-              penetrate the entire stack all the way to the web front end. This
-              ensures that you can move fast with your feature development,
-              alter schema and have those type changes instantly available and
-              validated everywhere.
-            </p>
-          </div>
-        </div>
-        <!-- Config (text left) -->
-        <div class="flex flex-col md:flex-row-reverse items-center mb-16">
-          <div class="md:w-1/2 md:ml-8 mb-8 md:mb-0">
-            <img
-              src="~/assets/images/landing_config_environment.jpeg"
-              alt="Config and Environment"
-              class="w-full rounded-lg shadow-lg mb-4 md:mb-0 md:ml-4" />
-          </div>
-          <div class="md:w-1/2">
-            <h3 class="text-xl font-bold mb-4">Config and Environment</h3>
-            <p class="mb-4">
-              SupaNuxt SaaS includes an approach to config and environment
-              management that enables customisation and management of api keys.
-            </p>
-          </div>
-        </div>
-        <!-- State Management (text right)-->
-        <div class="flex flex-col md:flex-row items-center mb-16">
-          <div class="md:w-1/2 md:mr-8 mb-8 md:mb-0">
-            <img
-              src="~/assets/images/landing_state_management.jpeg"
-              alt="State Management"
-              class="w-full rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4" />
-          </div>
-          <div class="md:w-1/2">
-            <h3 class="text-xl font-bold mb-4">State Management</h3>
-            <p class="mb-4">
-              SupaNuxt SaaS includes multi modal state management that supports
-              both Single Page Application (SPA) pages such as dashboards and
-              Server Side Rendered (SSR) style pages for public content that are
-              crawlable by Search engines like google and facilitate excellent
-              Search Engine Optimisation (SEO).
-            </p>
-          </div>
-        </div>
-        <!-- Stripe (text left) -->
-        <div class="flex flex-col md:flex-row-reverse items-center mb-16">
-          <div class="md:w-1/2 md:ml-8 mb-8 md:mb-0">
-            <img
-              src="~/assets/images/landing_stripe_integration.jpeg"
-              alt="Stripe Integration"
-              class="w-full rounded-lg shadow-lg mb-4 md:mb-0 md:ml-4" />
-          </div>
-          <div class="md:w-1/2">
-            <h3 class="text-xl font-bold mb-4">Stripe Integration</h3>
-            <p class="mb-4">
-              SupaNuxt SaaS includes Stripe integration for subscription
-              payments including Subscription based support for multi pricing
-              and multiple plans.
-            </p>
-          </div>
-        </div>
-        <!-- Tailwind (text right)-->
-        <div class="flex flex-col md:flex-row items-center mb-16">
-          <div class="md:w-1/2 md:mr-8 mb-8 md:mb-0">
-            <img
-              src="~/assets/images/landing_style_system.jpeg"
-              alt="Style System"
-              class="w-full rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4" />
-          </div>
-          <div class="md:w-1/2">
-            <h3 class="text-xl font-bold mb-4">Style System</h3>
-            <p class="mb-4">
-              SupaNuxt SaaS includes Tailwind integration for site styling
-              including a themable UI components with daisyUI
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-</template>
+<style>
+  .animate-text {
+    background-size: 200% auto;
+    animation: textShine 3s linear infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes textShine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+</style>
