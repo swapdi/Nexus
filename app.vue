@@ -17,9 +17,9 @@
     ogType: 'website',
     // fbAppId: '1111222233334444', // you will need this if you authenticate with fb
     description:
-      'With SupaNuxt SaaS, you can easily get started building your next web application. Our pre-configured tech stack and industry leading features make it easy to get up and running in no time.',
+      'GameVault ist deine zentrale Plattform zur Verwaltung all deiner PC-Spiele von Steam, Epic Games Store, GOG und mehr. Behalte den Überblick über deine gesamte Bibliothek, entdecke die besten Angebote und maximiere dein Spielerlebnis mit Gamification.',
     ogDescription:
-      'With SupaNuxt SaaS, you can easily get started building your next web application. Our pre-configured tech stack and industry leading features make it easy to get up and running in no time.',
+      'GameVault ist deine zentrale Plattform zur Verwaltung all deiner PC-Spiele von Steam, Epic Games Store, GOG und mehr. Behalte den Überblick über deine gesamte Bibliothek, entdecke die besten Angebote und maximiere dein Spielerlebnis mit Gamification.',
     twitterCard: 'summary_large_image'
   });
 </script>
