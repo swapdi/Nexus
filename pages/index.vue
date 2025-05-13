@@ -1,198 +1,462 @@
 <template>
-  <div class="pb-16">
-    <!-- Hero-Bereich mit RGB-Effekten -->
-    <section class="py-16 relative overflow-hidden">
+  <div class="pb-16 bg-gray-900 text-white">
+    <!-- Hero-Bereich mit RGB-Effekten und NexusFont -->
+    <section
+      class="py-20 relative overflow-hidden min-h-screen flex items-center justify-center">
       <!-- RGB-Hintergrund-Animation -->
       <div
-        class="absolute inset-0 bg-grid-white/10 bg-[size:30px_30px] opacity-20" />
-      <div
-        class="absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-purple-500/20 to-transparent animate-pulse-slow" />
-      <div
-        class="absolute top-0 right-0 h-full w-1/4 bg-gradient-to-l from-blue-500/20 to-transparent animate-pulse-slow" />
+        class="absolute inset-0 bg-grid-white/5 bg-[size:40px_40px] opacity-10 animate-pulse-slow-far" />
+      <div class="absolute inset-0 z-0">
+        <div
+          class="absolute top-0 -left-[20%] h-full w-[150%] bg-gradient-to-r from-purple-600/30 via-transparent to-transparent animate-pulse-horizontal-slow opacity-50" />
+        <div
+          class="absolute top-0 -right-[20%] h-full w-[150%] bg-gradient-to-l from-blue-600/30 via-transparent to-transparent animate-pulse-horizontal-slow delay-2000 opacity-50" />
+        <div
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-1/2 w-full bg-gradient-to-t from-green-500/20 via-transparent to-transparent animate-pulse-vertical-slow opacity-30" />
+      </div>
 
-      <div class="container mx-auto px-4 py-12 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-          <h1
-            class="text-5xl md:text-7xl font-extrabold mb-6 animate-text bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 bg-clip-text text-transparent">
-            GameVault
-          </h1>
-          <p class="text-xl md:text-2xl text-gray-300 mb-8">
-            Deine ultimative Spieleverwaltung für alle Plattformen
-          </p>
-          <p class="text-lg text-gray-400 mb-12">
-            Steam, Epic Games, GOG und mehr - Alles an einem Ort
-          </p>
-          <div class="flex flex-wrap gap-4 justify-center">
-            <button
-              class="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-md text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(124,58,237,0.5)]">
-              Kostenlos starten
-            </button>
-            <button
-              class="px-8 py-3 bg-gray-800 hover:bg-gray-700 rounded-md text-lg font-medium transition-all duration-300">
-              Mehr erfahren
-            </button>
-          </div>
+      <div class="container mx-auto px-4 py-12 relative z-10 text-center">
+        <img
+          src="/favicon.ico"
+          alt="Nexus Logo"
+          class="mx-auto mb-8 h-38 w-40 animate-float" />
+        <img
+          src="/NexusFont.png"
+          alt="Nexus Branding"
+          class="mx-auto mb-10 h-auto max-w-lg md:max-w-2xl animate-text-pop-in"
+          style="filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.7))" />
+        <p
+          class="text-xl md:text-2xl text-gray-300 mb-8 animate-fade-in-up"
+          style="animation-delay: 0.5s">
+          Deine ultimative Spieleverwaltung für alle Plattformen
+        </p>
+        <p
+          class="text-lg text-gray-400 mb-12 animate-fade-in-up"
+          style="animation-delay: 0.8s">
+          Steam, Epic Games, GOG und mehr - Alles an einem Ort
+        </p>
+        <div
+          class="flex flex-wrap gap-6 justify-center animate-fade-in-up"
+          style="animation-delay: 1.1s">
+          <button
+            class="px-10 py-4 bg-gradient-to-r from-purple-600 via-blue-500 to-green-500 hover:from-purple-700 hover:via-blue-600 hover:to-green-600 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_25px_rgba(124,58,237,0.6),_0_0_25px_rgba(59,130,246,0.4),_0_0_25px_rgba(16,185,129,0.3)] focus:outline-none focus:ring-4 focus:ring-purple-500/50">
+            Kostenlos starten
+          </button>
+          <button
+            class="px-10 py-4 bg-gray-700/70 hover:bg-gray-600/90 border border-gray-600 rounded-lg text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(100,116,139,0.4)] focus:outline-none focus:ring-4 focus:ring-gray-500/50">
+            Mehr erfahren
+          </button>
         </div>
       </div>
     </section>
 
     <!-- Features-Bereich -->
-    <section class="py-24 bg-gray-800/50 relative">
-      <!-- RGB-Border-Effekt -->
+    <section class="py-24 bg-gray-800/60 relative backdrop-blur-sm">
       <div
-        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500" />
-
+        class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 animate-border-flow" />
       <div class="container mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
-          Features
+        <h2
+          class="text-4xl md:text-5xl font-bold text-center mb-20 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-green-400">
+          Entdecke die Power von Nexus
         </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           <!-- Feature 1 -->
           <div
-            class="p-6 bg-gray-800/70 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(124,58,237,0.2)]">
+            class="p-8 bg-gray-800/80 rounded-xl border border-gray-700/70 hover:border-purple-500/70 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] group">
             <div
-              class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
-              <span class="text-xl">🎮</span>
+              class="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-700 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+              🎮
             </div>
-            <h3 class="text-xl font-semibold mb-3">Alle Spiele an einem Ort</h3>
-            <p class="text-gray-400">
+            <h3 class="text-2xl font-semibold mb-4">
+              Alle Spiele an einem Ort
+            </h3>
+            <p class="text-gray-400 leading-relaxed">
               Importiere und verwalte deine Spielebibliotheken von Steam, Epic
-              Games, GOG und weiteren Plattformen in einer übersichtlichen
-              Oberfläche.
+              Games, GOG und weiteren Plattformen in einer übersichtlichen,
+              futuristischen Oberfläche.
             </p>
           </div>
-
           <!-- Feature 2 -->
           <div
-            class="p-6 bg-gray-800/70 rounded-lg border border-gray-700 hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+            class="p-8 bg-gray-800/80 rounded-xl border border-gray-700/70 hover:border-blue-500/70 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group">
             <div
-              class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mb-4">
-              <span class="text-xl">💰</span>
+              class="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-700 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+              💰
             </div>
-            <h3 class="text-xl font-semibold mb-3">Die besten Deals</h3>
-            <p class="text-gray-400">
-              Verpasse nie wieder Angebote oder kostenlose Spiele. GameVault
-              informiert dich über alle aktuellen Deals auf allen Plattformen.
+            <h3 class="text-2xl font-semibold mb-4">Die besten Deals</h3>
+            <p class="text-gray-400 leading-relaxed">
+              Verpasse nie wieder Angebote oder kostenlose Spiele. Nexus scannt
+              alle Plattformen und informiert dich über Top-Deals.
             </p>
           </div>
-
           <!-- Feature 3 -->
           <div
-            class="p-6 bg-gray-800/70 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            class="p-8 bg-gray-800/80 rounded-xl border border-gray-700/70 hover:border-green-500/70 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] group">
             <div
-              class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-4">
-              <span class="text-xl">🔄</span>
+              class="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+              🔄
             </div>
-            <h3 class="text-xl font-semibold mb-3">
+            <h3 class="text-2xl font-semibold mb-4">
               Automatische Synchronisation
             </h3>
-            <p class="text-gray-400">
+            <p class="text-gray-400 leading-relaxed">
               Verbinde deine Gaming-Accounts und lasse deine Bibliothek
-              automatisch aktualisieren, wenn du neue Spiele kaufst.
+              automatisch aktualisieren, wenn du neue Spiele kaufst oder
+              installierst.
             </p>
           </div>
         </div>
       </div>
+      <div
+        class="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 animate-border-flow-reverse" />
     </section>
 
     <!-- Plattformen-Bereich -->
     <section class="py-24 relative">
-      <div class="container mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
+      <div class="absolute inset-0 opacity-5 overflow-hidden">
+        <div
+          class="absolute -top-1/2 -left-1/4 w-full h-full bg-purple-500/30 rounded-full filter blur-[150px] animate-pulse-slow-far"></div>
+        <div
+          class="absolute -bottom-1/2 -right-1/4 w-full h-full bg-blue-500/30 rounded-full filter blur-[150px] animate-pulse-slow-far animation-delay-2000ms"></div>
+      </div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h2
+          class="text-4xl md:text-5xl font-bold text-center mb-20 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-green-400">
           Unterstützte Plattformen
         </h2>
-
         <div
-          class="flex flex-wrap justify-center gap-8 items-center max-w-4xl mx-auto">
+          class="flex flex-wrap justify-center gap-x-8 gap-y-10 items-center max-w-5xl mx-auto">
           <div
-            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
-            <span class="text-2xl">Steam</span>
+            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
+            Steam
           </div>
           <div
-            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
-            <span class="text-2xl">Epic</span>
+            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
+            Epic
           </div>
           <div
-            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
-            <span class="text-2xl">GOG</span>
+            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
+            GOG
           </div>
           <div
-            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
-            <span class="text-2xl">Origin</span>
+            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
+            Origin
           </div>
           <div
-            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
-            <span class="text-2xl">Uplay</span>
+            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
+            Uplay
           </div>
           <div
-            class="w-24 h-24 bg-gray-800 rounded-lg flex items-center justify-center transition-transform hover:scale-110">
-            <span class="text-2xl">+</span>
+            class="w-32 h-32 bg-gradient-to-br from-purple-600/50 to-blue-600/50 rounded-xl flex items-center justify-center text-4xl font-bold border border-purple-500/70 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_20px_rgba(124,58,237,0.4)]">
+            +
           </div>
         </div>
+        <p class="text-center text-gray-400 mt-12 text-lg">
+          ... und viele mehr in Kürze!
+        </p>
       </div>
     </section>
 
     <!-- CTA-Bereich -->
     <section
-      class="py-16 bg-gradient-to-br from-violet-950/50 to-gray-900/50 relative">
-      <!-- RGB-Effekt an den Rändern -->
+      class="py-24 bg-gradient-to-br from-purple-900/70 via-gray-900 to-blue-900/70 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-30">
+        <div
+          class="absolute top-0 left-0 w-1/2 h-full bg-gradient-radial from-purple-500/50 to-transparent filter blur-[100px] animate-pulse-slow-far"></div>
+        <div
+          class="absolute bottom-0 right-0 w-1/2 h-full bg-gradient-radial from-blue-500/50 to-transparent filter blur-[100px] animate-pulse-slow-far animation-delay-3000ms"></div>
+      </div>
       <div
-        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500" />
+        class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 animate-border-flow" />
       <div
-        class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500" />
-
-      <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-6">
-          Bereit, deine Spieleverwaltung zu revolutionieren?
+        class="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 animate-border-flow-reverse" />
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <h2 class="text-4xl md:text-5xl font-bold mb-8">
+          Bereit, deine Spieleverwaltung zu
+          <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-green-400"
+            >revolutionieren</span
+          >?
         </h2>
-        <p class="text-xl text-gray-300 mb-8">
-          Registriere dich jetzt kostenlos und starte mit GameVault
+        <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+          Registriere dich jetzt kostenlos und tauche ein in die Zukunft des
+          Gamings mit Nexus.
         </p>
         <button
-          class="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-md text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(124,58,237,0.5)]">
+          class="px-12 py-5 bg-gradient-to-r from-purple-600 via-blue-500 to-green-500 hover:from-purple-700 hover:via-blue-600 hover:to-green-600 rounded-lg text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(124,58,237,0.7),_0_0_30px_rgba(59,130,246,0.5),_0_0_30px_rgba(16,185,129,0.4)] focus:outline-none focus:ring-4 focus:ring-purple-500/60">
           Jetzt kostenlos anmelden
         </button>
       </div>
     </section>
   </div>
+  <footer
+    class="bg-gradient-to-t from-gray-950 to-gray-900 text-gray-400 pt-16 pb-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
+        <div class="md:col-span-1 lg:col-span-1">
+          <NuxtLink
+            to="/"
+            class="flex items-center space-x-3 rtl:space-x-reverse mb-4 group">
+            <img
+              src="/favicon.ico"
+              alt="Nexus Logo"
+              class="h-8 w-8 transition-transform duration-300 ease-in-out group-hover:animate-pulse" />
+            <span
+              class="self-center text-xl font-semibold whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-green-400 transition-opacity duration-300 group-hover:opacity-80">
+              Nexus
+            </span>
+          </NuxtLink>
+          <p class="text-sm">
+            Deine ultimative Spieleverwaltung für alle Plattformen. Entdecke,
+            verwalte und spare.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-gray-200 mb-4">Navigation</h3>
+          <ul class="space-y-2 text-sm">
+            <li>
+              <NuxtLink
+                to="/#features"
+                class="hover:text-white transition-colors"
+                >Features</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink to="/pricing" class="hover:text-white transition-colors"
+                >Pricing</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink to="/signin" class="hover:text-white transition-colors"
+                >Anmelden</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink to="/signup" class="hover:text-white transition-colors"
+                >Kostenlos starten</NuxtLink
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-gray-200 mb-4">Rechtliches</h3>
+          <ul class="space-y-2 text-sm">
+            <li>
+              <NuxtLink to="/terms" class="hover:text-white transition-colors"
+                >Nutzungsbedingungen</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink to="/privacy" class="hover:text-white transition-colors"
+                >Datenschutz</NuxtLink
+              >
+            </li>
+            <li>
+              <button
+                type="button"
+                data-cc="show-preferencesModal"
+                class="bg-transparent border-none p-0 hover:text-white transition-colors duration-200 cursor-pointer text-sm">
+                Cookie-Einstellungen
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-gray-200 mb-4">Folge uns</h3>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors"
+              ><Icon name="mdi:twitter" size="1.5em"
+            /></a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors"
+              ><Icon name="mdi:discord" size="1.5em"
+            /></a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors"
+              ><Icon name="mdi:github" size="1.5em"
+            /></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center border-t border-gray-700/60 pt-8 mt-8">
+        <p>
+          &copy; {{ new Date().getFullYear() }} Nexus. Alle Rechte vorbehalten.
+        </p>
+      </div>
+    </div>
+  </footer>
 </template>
 
 <script setup>
   const user = useSupabaseUser();
+
   watchEffect(() => {
     if (user.value) {
       navigateTo('/dashboard', { replace: true });
     }
   });
+
   definePageMeta({
-    title: 'GameVault - Deine All-in-One Spieleverwaltung'
+    title: 'Nexus - Deine All-in-One Spieleverwaltung der Zukunft'
   });
 </script>
 
 <style>
-  .animate-text {
-    background-size: 200% auto;
-    animation: textShine 3s linear infinite;
+  /* Globale Stile für die Seite */
+  body {
+    background-color: #0a0a0f;
+    color: #e0e0e0;
   }
 
-  .animate-pulse-slow {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .bg-grid-white\/5 {
+    background-image: linear-gradient(
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   }
 
-  @keyframes textShine {
-    to {
-      background-position: 200% center;
+  .animate-text-pop-in {
+    animation: textPopIn 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow-far {
+    animation: pulse-far 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-pulse-horizontal-slow {
+    animation: pulse-horizontal 6s ease-in-out infinite alternate;
+  }
+
+  .animate-pulse-vertical-slow {
+    animation: pulse-vertical 7s ease-in-out infinite alternate;
+  }
+
+  .animate-border-flow {
+    animation: borderFlow 5s linear infinite;
+  }
+  .animate-border-flow-reverse {
+    animation: borderFlowReverse 5s linear infinite;
+  }
+
+  .delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-2000ms {
+    animation-delay: 2s;
+  } /* Konsistenz */
+  .animation-delay-3000ms {
+    animation-delay: 3s;
+  }
+  button.bg-transparent {
+    line-height: inherit;
+  }
+  .group:hover .group-hover\:animate-pulse {
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes textPopIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.5) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
     }
   }
 
-  @keyframes pulse {
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
     0%,
     100% {
-      opacity: 0.2;
+      transform: translateY(0px);
     }
     50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  @keyframes pulse-far {
+    0%,
+    100% {
+      opacity: 0.1;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes pulse-horizontal {
+    0% {
+      transform: translateX(-10%);
+      opacity: 0;
+    }
+    10% {
+      /* Erscheinen an der Startposition */
+      transform: translateX(-10%);
       opacity: 0.4;
+    }
+    90% {
+      /* Bewegung zur Endposition, bleibt sichtbar */
+      transform: translateX(10%);
+      opacity: 0.4;
+    }
+    100% {
+      /* Verschwinden an der Endposition */
+      transform: translateX(10%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-vertical {
+    from {
+      transform: translateY(-15%);
+      opacity: 0.1;
+    }
+    to {
+      transform: translateY(15%);
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes borderFlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+  @keyframes borderFlowReverse {
+    0% {
+      background-position: 200% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
     }
   }
 </style>

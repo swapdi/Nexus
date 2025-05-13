@@ -25,25 +25,11 @@ export const useAccountStore = defineStore('account', () => {
     activeAccountId.value = null;
   };
 
-  const changeAccountName = async (new_name: string) => {
-    if (!activeAccount.value) {
-      return;
-    }
-    const { $client } = useNuxtApp();
-    const { account } = await $client.account.changeAccountName.mutate({
-      new_name
-    });
-    if (account && dbUser.value && dbUser.value.account) {
-      dbUser.value.account.name = account.name;
-    }
-  };
-
   return {
     dbUser,
     activeAccountId,
     activeAccount,
     init,
-    signout,
-    changeAccountName
+    signout
   };
 });
