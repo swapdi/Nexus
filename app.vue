@@ -1,19 +1,12 @@
-<template>
-  <div class="flex flex-col min-h-screen bg-base-100">
-    <AppHeader />
-    <div class="flex-grow">
-      <main>
-        <NuxtPage />
-      </main>
-    </div>
-    <AppFooter v-if="$route.path !== '/'" />
-  </div>
-</template>
 <script setup lang="ts">
   useSeoMeta({
-    title: 'Nexus',
-    ogTitle: 'Nexus',
-    ogUrl: 'https://nexus.netlify.app/',
+    titleTemplate: titleChunk => {
+      return titleChunk
+        ? `${titleChunk}`
+        : 'Nexus - Deine All-in-One Spieleverwaltung';
+    },
+    ogTitle: 'Nexus - Deine All-in-One Spieleverwaltung',
+    ogUrl: 'https://nexus.netlify.app/', // Ersetze dies mit deiner URL
     ogType: 'website',
     description:
       'Nexus ist deine zentrale Plattform zur Verwaltung all deiner PC-Spiele von Steam, Epic Games Store, GOG und mehr. Behalte den Überblick über deine gesamte Bibliothek, entdecke die besten Angebote und maximiere dein Spielerlebnis mit Gamification.',
@@ -22,3 +15,12 @@
     twitterCard: 'summary_large_image'
   });
 </script>
+
+<template>
+  <div>
+    <NuxtLayout>
+      <NuxtLoadingIndicator color="rgb(168 85 247 / 0.8)" :height="3" />
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
+</template>

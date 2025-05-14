@@ -9,7 +9,8 @@
     await accountStore.init();
   });
   definePageMeta({
-    title: 'Meine Spielebibliothek'
+    title: 'Meine Spielebibliothek',
+    layout: 'application'
   });
 
   // Mock-Daten für die Plattformen

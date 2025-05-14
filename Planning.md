@@ -57,7 +57,7 @@ Diese `Planning.md`, `Tasks.md`, Code-Kommentare, API-Dokumentation (falls relev
 
 ## Projektfortschritt
 
-- [ ] Projektinitialisierung (Nuxt 3 + Supabase + Tailwind Boilerplate)
+- [x] Projektinitialisierung (Nuxt 3 + Supabase + Tailwind Boilerplate)
 - [ ] Basis-Struktur (Layout, Navigation, Platzhalter-Seiten)
 - [ ] ... (Weitere abgeschlossene Meilensteine)
 

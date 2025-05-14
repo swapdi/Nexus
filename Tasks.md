@@ -18,8 +18,8 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 **Ziel:** Funktionaler Prototyp zur Validierung der Bibliothekszentralisierung, Basis-Angebotsübersicht und des UI.
 
 - **Datenbank-Setup & Schema:**
-  - [ ] Definiere das initiale Supabase DB-Schema für Benutzer (Erweiterung der Auth-Tabelle), Spiele, Benutzer-Spiele (Verknüpfung), Basis-Deals.
-  - [ ] Implementiere Prisma-Modelle basierend auf dem Supabase-Schema.
+  - [x] Definiere das initiale Supabase DB-Schema für Benutzer (Erweiterung der Auth-Tabelle), Spiele, Benutzer-Spiele (Verknüpfung), Basis-Deals. (14. Mai 2025)
+  - [x] Implementiere Prisma-Modelle basierend auf dem Supabase-Schema. (14. Mai 2025)
   - [ ] Richte die DB-Verbindung in Nuxt/Prisma ein.
 - **Benutzerauthentifizierung:**
   - [ ] Richte Supabase Auth ein (E-Mail/Passwort).
@@ -45,7 +45,7 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [ ] Richte IGDB API-Zugang ein.
   - [ ] Implementiere Backend/Nuxt Server Logik zum Abruf von Spieldetails (Cover, Genres, Beschreibung) von IGDB basierend auf Steam-Spieltitel/AppID.
   - [ ] Speichere die IGDB-Daten zusammen mit den importierten Spielen in der DB.
-  - [ ] Erweitere das DB-Schema entsprechend.
+  - [x] Erweitere das DB-Schema entsprechend. (14. Mai 2025)
 - **Bibliotheksanzeige:**
   - [ ] Implementiere Backend/Nuxt Server API-Route zum Abrufen der Spielebibliothek des angemeldeten Benutzers aus der DB.
   - [ ] Implementiere Frontend UI auf `LibraryPage.vue` zur Anzeige der Spieleliste (mit Cover, Titel, Plattform).
@@ -64,9 +64,9 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 - **Bibliotheksimport (weitere Plattformen):**
   - [ ] Implementiere Import für Epic Games Store (Recherche API/Methoden).
   - [ ] Implementiere Import für GOG (Recherche API/Methoden).
-  - [ ] Erweitere DB-Schema für multiple Plattform-IDs pro Spiel.
+  - [x] Erweitere DB-Schema für multiple Plattform-IDs pro Spiel. (14. Mai 2025)
 - **Gamification Kern:**
-  - [ ] Erweitere DB-Schema für User-XP, Level, Achievements, Credits.
+  - [x] Erweitere DB-Schema für User-XP, Level, Achievements, Credits. (14. Mai 2025)
   - [ ] Implementiere Basis-Logik für XP-Vergabe bei Kernaktionen (Import, Metadaten-Vervollständigung).
   - [ ] Implementiere Level-Berechnung basierend auf XP.
   - [ ] Implementiere Basis-Achievements (z.B. "10 Spiele importiert", "Steam importiert").
@@ -92,7 +92,7 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [ ] Integriere Stripe Payment Gateway im Backend/Nuxt Server.
   - [ ] Implementiere UI und Backend-Logik zum Kauf von Credit-Paketen mit Echtgeld.
 - **Credits Einlösen (Fiktives Kaufmodell):**
-  - [ ] Erweitere DB-Schema für Credit-Transaktionen und ausgegebene Keys/Guthaben.
+  - [x] Erweitere DB-Schema für Credit-Transaktionen und ausgegebene Keys/Guthaben. (14. Mai 2025)
   - [ ] Implementiere Backend-Logik für den Austausch von Credits gegen store-spezifisches Guthaben/Keys (Modellierung der Kommunikation mit angenommenen Anbieter-APIs).
   - [ ] Implementiere UI, um den Umtausch vorzunehmen (Auswahl Plattform/Betrag).
   - [ ] Implementiere UI zur Anzeige und Verwaltung der erhaltenen Keys/Guthaben-Codes.

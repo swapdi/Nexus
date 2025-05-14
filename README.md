@@ -1,307 +1,140 @@
-![SupaNuxt SaaS](assets/images/supanuxt_logo_200.png)
+<img src="./assets/images/supanuxt_logo_200.png" alt="Nexus Logo" width="150"/>
 
-# SupaNuxt SaaS
+# Nexus
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/19d67f94-afdc-4b79-8490-600be26e85de/deploy-status)](https://app.netlify.com/sites/nuxt3-saas-boilerplate/deploys)
+## Vision
 
-## Demo Sites
+Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliotheken vereint, Angebote intelligent darstellt, Gamification integriert und ein innovatives Kaufmodell ermöglicht. Ziel ist es, die Verwaltung und das Erlebnis digitaler Spiele für PC-Gamer zu revolutionieren.
 
-Demo site [here](https://nuxt3-saas-boilerplate.netlify.app/)
+## Kernfunktionen (Geplant)
 
-Pottery Helper [here](https://potteryhelper.com/)
+- **Bibliotheks-Zentralisierung:** Import und Anzeige von Spielen von Hauptplattformen (Steam, Epic, GOG). Einheitliche Übersicht.
+- **Automatisierte Metadaten:** Anreicherung der importierten Spiele mit umfassenden Infos (Cover, Beschreibung, Genre) von externen Datenbanken (IGDB).
+- **Angebots-Aggregation:** Sammeln und Anzeigen aktueller Deals und kostenloser Spiele von verschiedenen Stores. Filtermöglichkeiten.
+- **Gamification-System:** Leveling, Achievements, In-App-Währung (Credits) basierend auf Nutzeraktionen und Bibliotheksdaten.
+- **Währungs- & Kaufmodell (Konzept für Uni-Projekt):**
+  - Credits verdienen (Gamification, Affiliate-Payback).
+  - Credits kaufen (In-App Purchase via Payment Gateway).
+  - Credits einlösen für store-spezifisches Guthaben/Keys (basierend auf angenommenen Partnerverträgen).
+- **Benutzerkonto-Management:** Registrierung, Login, Profilverwaltung (via Supabase Auth).
+- **User Interface:** Modernes, dunkles Design mit Fokus auf Usability und Gaming-Ästhetik (Vue.js + Tailwind CSS).
 
-## Community
+## Technische Architektur
 
-Discord [here](https://discord.gg/3hWPDTA4kD)
+- **Frontend:** Vue.js (SPA), gerendert/strukturiert von Nuxt 3.
+- **Full-Stack Framework:** Nuxt 3 (für Seiten-Routing, Server-Side Rendering/Logik, API-Routen).
+- **Backend-as-a-Service:** Supabase (PostgreSQL-Datenbank, Authentifizierung, Storage).
+- **Datenbank-Interaktion:** Prisma ORM (mit Supabase).
+- **Styling:** Tailwind CSS.
+- **API-Integrationen:**
+  - Supabase Client (Auth, DB-Zugriff).
+  - Externe APIs: Steam Web API, IGDB API, Anbieter-Schnittstellen (konzeptionell für Kaufmodell).
+- **Payment Gateway (Konzeptionell):** Stripe (für Credit-Käufe).
+- **(Zukünftige Option) Desktop:** Electron (Wrapper für die Web-App, für OS-Integration wie Spielstart).
 
-## Tech Stack
+## Projektstruktur (Überblick)
 
-- Nuxt 3
-- Supabase (auth including OAuth + Postgresql instance)
-- Prisma (schema management + Strongly typed client)
-- TRPC (server/client communication with Strong types, SSR compatible)
-- Pinia (state Store)
-- Stripe (payments including webhook integration)
-- Tailwind + daisyUI (styling and components)
-- OpenAI (text completions with AI)
+Das Projekt folgt einer typischen Nuxt 3 Struktur:
 
-## Features
+- `components/`: Wiederverwendbare Vue-Komponenten.
+- `pages/`: Verzeichnisbasierte Routen und Ansichten.
+- `server/`: API-Endpunkte und serverseitige Logik.
+- `prisma/`: Datenbank-Schema (`schema.prisma`) und Prisma-Client.
+- `stores/`: Pinia-Stores für das State Management.
+- `layouts/`: Layout-Vorlagen für Seiten.
+- `public/`: Öffentlich zugängliche statische Dateien (z.B. `favicon.ico`).
+- `assets/`: Statische Projekt-Assets (z.B. CSS, Bilder die vom Build-Prozess verarbeitet werden).
 
-### User Management
+## Setup für die Entwicklung
 
-- [x] Social Signon (e.g. google) via Supabase, Full list of available [providers](https://supabase.com/docs/guides/auth#providers)
-- [x] Email/Password Signon via Supabase
-- [x] Password recovery
-- [x] User roles and permissions (admin, regular user, etc. roles defined in the [Prisma Schema](/prisma/schema.prisma))
-- [x] User Email captured on initial login
-- [x] Initial plan and plan period controled via config to allow either a trial plan or a 'No Plan' for initial users
-- [x] Edit Account Name from Account Page
+### Voraussetzungen
 
-### Schema and DB Management
+- Node.js (aktuelle LTS-Version wird empfohlen)
+- pnpm (bevorzugter Paketmanager für dieses Projekt)
+  - Alternativ npm oder yarn, wobei pnpm für konsistente Abhängigkeitsinstallationen sorgt.
+- Ein Supabase-Konto und ein eingerichtetes Projekt.
+- (Optional für spätere Phasen) Ein Stripe-Konto für die Payment-Integration.
 
-- [x] Prisma based Schema Management
-- [x] Supabase integration for DB
-- [x] DB Seed Script to setup plan information including Plan and Stripe Product information
+### Installationsschritte
 
-### Config Management and Env integration
+1.  **Repository klonen:**
 
-- [x] [Config](/nuxt.config.ts) for Stripe Keys
-- [x] [Env](/.env_example) keys for Supabase and Stripe
-- [x] Config Switches for free trial - If you want a 'free trial period' set initialPlanName to an appropriate plan name in the DB and initialPlanActiveMonths to a positive value. If you don't want a free trial, set initialPlanName to an appropriate 'No Plan' plan in the DB and set the initialPlanActiveMonths to -1.
+    ```bash
+    git clone <URL_DES_GIT_REPOSITORIES> Nexus
+    cd Nexus
+    ```
 
-### Multi-Modal State Management
+2.  **Abhängigkeiten installieren:**
 
-- [x] SPA type pages (e.g. [Dashboard](/pages/dashboard.vue)) - postgresql(supabase) -> Prisma -> Service Layer for Business Logic -> TRPC -> Pinia -> UI
-- [x] SSR type pages (e.g. [Note](/pages/notes/[note_id].vue)) - postgresql(supabase) -> Prisma -> Service Layer for Business Logic -> TRPC -> UI
+    ```bash
+    pnpm install
+    ```
 
-### Multi User Accounts (Teams)
+3.  **Umgebungsvariablen einrichten:**
 
-- [x] Allow users to upgrade their accounts fron individual accounts to multi-user accounts (Teams).
-- [x] Allow users to switch between Teams and view/edit data from the selected Team.
-- [x] All features, billing and limits is controlled at the Account (Team) level (not the user level)
-- [x] Gen/Regen an invite link to allow users to join a team
-- [x] Team administrators and owners can accept pending invites
-- [x] Team administrators and owners can administer the permissions (roles) of other team members on the Accounts page
-- [x] Team owners can remove users from team
+    - Erstelle eine Datei namens `.env` im Stammverzeichnis des Projekts.
+    - Kopiere den Inhalt der Datei `.env.example` (falls vorhanden, ansonsten manuell die benötigten Variablen eintragen) in die `.env` Datei.
+    - Trage deine spezifischen Werte für die folgenden Variablen ein:
 
-### Plans and Pricing
+      ```env
+      # Supabase
+      SUPABASE_URL="DEINE_SUPABASE_PROJEKT_URL"
+      SUPABASE_KEY="DEIN_SUPABASE_ANON_KEY" # Öffentlich, sicher für den Client-Side Gebrauch
 
-- [x] Manage multiple Plans each with specific Feature flags and Plan limits
-- [x] Plan features copied to Accounts upon successfull subscription
-- [x] Loose coupling between Plan and Account Features to allow ad-hoc account tweaks without creating custom plans
-- [x] Pricing page appropriately reacts to users with/without account and current plan.
-- [x] User Access level available at the router layer as procedures allowing restriction of access based on user access
-- [x] Account features available at the router layer as utility procedures allowing restriction of access based on account features
+      # Prisma (Verbindung zur Supabase Datenbank)
+      DATABASE_URL="DEIN_POSTGRESQL_CONNECTION_STRING_VON_SUPABASE"
+      # Beispiel: postgresql://postgres:[DEIN_PASSWORT]@db.[DEINE_PROJEKT_ID].supabase.co:5432/postgres
 
-### Stripe (Payments) Integration
+      # Optional für Stripe (spätere Phasen)
+      # STRIPE_SECRET_KEY="DEIN_STRIPE_SECRET_KEY"
+      # STRIPE_ENDPOINT_SECRET="DEIN_STRIPE_WEBHOOK_SECRET"
+      ```
 
-- [x] Each plan is configured with Stripe Product ID so that multiple Stripe Prices can be created for each plan but subscriptions (via Webhook) will still activate the correct plan.
-- [x] Support basic (customer.subscription) flows for Subscription payments via Webhook
-- [ ] Support additional Stripe flows for things like failed payments, imminent subscription expiry (send email?) etc.....
+    - **Wichtig:** Den `DATABASE_URL` String findest du in deinem Supabase Projekt unter `Project Settings` > `Database` > `Connection string` (den URI-Typ verwenden). Stelle sicher, dass du `[YOUR-PASSWORD]` durch dein Datenbankpasswort ersetzt.
 
-### Support
+4.  **Datenbank-Schema synchronisieren:**
+    Nachdem die `DATABASE_URL` in der `.env` Datei konfiguriert ist, synchronisiere dein lokales Prisma-Schema mit der Supabase-Datenbank:
 
-- [ ] Help desk support (ticketing system, live chat, etc.)
-- [ ] Knowledge base with FAQs and tutorials
+    ```bash
+    pnpm prisma db push
+    ```
 
-### Look and Feel, Design System and Customisation
+    Dieser Befehl erstellt die Tabellen und Strukturen gemäß `prisma/schema.prisma` in deiner Datenbank.
 
-- [x] Default UI isn't too crap
-- [x] Integrated Design system including theming (Tailwind + daisyUI)
-- [x] Toasts for things like reset email sent
-- [x] Modals, just because people like modals
+5.  **Prisma Client generieren:**
+    Damit dein Code typsicheren Zugriff auf die Datenbank hat, generiere den Prisma Client:
 
-### GDPR
+    ```bash
+    pnpm prisma generate
+    ```
 
-- [x] Cookie Consent
+6.  **(Optional) Seed-Daten laden:**
+    Wenn ein Seed-Skript (`prisma/seed.ts`) vorhanden ist, um die Datenbank mit initialen Daten zu füllen:
+    ```bash
+    pnpm prisma db seed
+    ```
 
-### Demo Software (Notes)
+### Entwicklungs-Server starten
 
-- [x] Simple Text based Notes functionality
-- [x] Read only Notes Dashboard
-- [x] SSR Rendered (SEO Optimised) [Note](/pages/notes/[note_id].vue) Display
-- [x] Max Notes limit property on Plan
-- [x] Max Notes enforced
-- [x] Add, Delete notes on Dashboard
-- [x] AI Note generation with OpenAI
-- [x] Per Account, Per Month Useage Limits on AI Access
-
-### Testing
-
-- [x] Manual test scenario for auth and sub workflows passing
-- [x] Unit test framework (vitest)
-- [ ] Integration tests for auth and sub workflows
-
-## Special Mention
-
-This https://blog.checklyhq.com/building-a-multi-tenant-saas-data-model/ Article by https://twitter.com/tim_nolet was my inspiration for the user/account/subscription schema. Tim was also generous with his time and answered some of my stoopid questions on the https://www.reddit.com/r/SaaS/ Subreddit.
-
-## Architecture
-
-The focus is on separation of concerns and avoiding vendor lock in.
-
-### Diagram
-
-<img src="assets/images/technical_architecture.png">
-
-### Walkthrough
-
-[<img src="https://img.youtube.com/vi/AFfbGuJYRqI/hqdefault.jpg">](https://www.youtube.com/watch?v=AFfbGuJYRqI)
-
-### Tricky Decisions
-
-_Composition over options API_ - I have decided to use composition api and setup functions accross the board including components, pages and Pinia stores. I was resistant at first, especially with the stores as I was used to Vuex but have come to the conclusion that it is easier to go one approach all over. It's also the latest and greatest and folks don't like to use a starter that starts behind the cutting edge.
-
-_Prisma over Supabase API_ - I went with Prisma for direct DB access rather than use the Supabase client. This is Primarily to avoid lock-in with Supabase too much. Supabase is great but I thought burdening my users with a future situation where it's difficult to move off it wouldn't be very cool. Also, I really like how Prisma handles schema changes and updates to the client layer and types with just two bash commands, after using other approaches, I find this super smooth.
-
-_Trpc over REST_ - Primarily for full thickness types without duplication on the client. Also I think the remote procedure call paradigm works well. Note however that I still include a [REST endpoint example](/server/api/note.ts) for flexibility. My preference for mobile is Flutter and there is not a Trpc client for Flutter that i'm aware off so it was important for me to make sure REST works also.
-
-## Externals Setup
-
-Things you gotta do that aren't code (and are therefore not very interesting)
-
-### Env
-
-Copy the [.env_example](/.env_example) file to create [.env](/.env)
-Note) This file is for development convenience, is .gitignored by default and should _not_ be added to source control
-
-### Supabase
-
-This solution uses Supabase for Auth and to provide a DB. In addition to Magic Link and email/password login via Supabase, it also supports Google OAuth via Supabase.
-
-1. Go to [Supabase](https://supabase.com/) and 'Start your Project'
-2. Setup your org and project (Free tier is fine to start)
-3. Update the project's email template (Supabase -> Authentication -> Email Templates) Note that the default Supabase email templates are very generic and for some reason, this can lead to your emails being sent to spam folders. for e.g. to get my password reset emails to my inbox, I needed to change the subject to "Password Reset for ..." and the email body text.
-4. Choose an OAuth provider. I have chosen Google using these [Instructions](https://supabase.com/docs/guides/auth/social-login/auth-google) for the purposes of demonstration but they all should work.
-5. Go to Project Settings -> API and copy Project URL and Project API Key to SUPABASE_URL and SUPABASE_KEY settings respectively in your [.env](/.env) file
-6. Go to Project Settings -> Database -> Connection String -> URI and copy the uri value into the DATABASE_URL setting in your [.env](/.env) file, remembering to replace `[YOUR-PASSWORD]` with the password you provided when you setup the project.
-
-### Stripe
-
-This solution uses Stripe for Subscription payments.
-
-1. Go to [Stripe](https://stripe.com) and setup your business (Free Tier is fine to start)
-2. Create 2 products ('Team Plan' and 'Individual Plan') each with a single price and note the Product ID's and Price ID's
-3. Edit the [seed.ts](/prisma/seed.ts) file and replace the stripe_product_id values with the Product ID's from 2)
-
-```typescript
-    create: {
-      name: 'Team Plan',
-      .....
-      stripe_product_id: '[Your Product ID from Stripe]'
-    },
-```
-
-4. Edit the Pricing [pricing](/pages/pricing.vue) page and put your Price ID's from 2) into the appropriate hidden `price_id` form fields...
-
-```html
-<input type="hidden" name="price_id" value="[Your Price ID from Stripe]" />
-```
-
-5. go to the [API Keys](https://dashboard.stripe.com/test/apikeys) page find 'Secret Key' -> reveal test key. click to copy and then replace the STRIPE_SECRET_KEY value in your .env
-
-6. install the stripe cli used to forward webhooks (macos)
-
-```
-brew install stripe/stripe-cli/stripe
-```
-
-7. log the CLI into your stripe account.
-
-```
-stripe login -i
-```
-
-provide the api key found in step 5) above
-
-### Setup Database (Prisma)
-
-This solution uses Prisma to both manage changes and connect to the Postgresql database provided by Supabase. Your Supabase DB will be empty by default so you need to hydrate the schema and re-generate the local prisma client.
-
-```
-npx prisma db push
-npx prisma generate
-npm install @prisma/client --save-dev
-npx prisma db seed
-```
-
-...you should now have a a Plan table with 3 rows and a bunch of empty tables in your Supabase DB
-
-## Developement Setup
-
-### Dependencies
+Führe folgenden Befehl aus, um den Nuxt 3 Entwicklungs-Server zu starten:
 
 ```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install --shamefully-hoist
+pnpm dev
 ```
 
-### Webhook Forwarding
+Die Anwendung ist dann standardmäßig unter `http://localhost:3000` erreichbar.
 
-This makes sure that you can debug subscription workflows locally
+## Wichtige Dokumente im Projekt
 
-```bash
-stripe listen --forward-to localhost:3000/webhook
-```
+- **`PLANNING.md`**: Enthält detailliertere Informationen zur Vision, Zielgruppen, Monetarisierungskonzepten und dem geplanten Projektfortschritt.
+- **`Tasks.md`**: Eine detaillierte Auflistung der Entwicklungsaufgaben, aufgeteilt in Phasen, mit ihrem jeweiligen Status.
+- **`nuxt.config.ts`**: Die Hauptkonfigurationsdatei für das Nuxt 3 Framework, inklusive Module, Build-Einstellungen und Laufzeitkonfiguration.
+- **`prisma/schema.prisma`**: Die maßgebliche Datei für die Definition des Datenbankschemas und der Modelle.
 
-If you haven't already done so look at the stripe cli output for this text
+## Beitragende
 
-```
-Your webhook signing secret is whsec_xxxxxxxxxxxxx (^C to quit)
-```
+Informationen zu Beitragenden können hier ergänzt werden.
 
-take ths signing secret and update the STRIPE_ENDPOINT_SECRET value in .env
+## Lizenz
 
-### Start the Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
-```
-
-### Running the Tests
-
-There are a few unit tests, just for the stores because I needed to refactor. Feel free to extend the tests for your use cases, or not, it's your SaaS, not mine.
-
-```bash
-npm run test
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-
-### Going Live on Netlify
-
-Where you host your SAAS is 100% your problem however :-
-
-- A quick look at the vue.js discord indicates that netlify has the most mentions (2020) out of all the hosting providers beating out Firebase (1592), Vercel (973) and AWS (740)
-- I was able to get my app up and running with ridiculously little effort
-
-Steps (Assumes your repo is in github)
-
-1. Go to [Netlify](https://www.netlify.com/)
-2. Log in with your github account (it's easier) and create an account (Free Tier is fine for now)
-3. Add a New Site -> Import from Existing Proect
-4. Choose your repo (You might need to Configure the Netlify app on GitHub) - Netlify auto-detects a nuxt app pretty good and the defaults it chooses seem to be fine.
-5. Setup environment variables per the .env_example file (SUPABASE_URL, SUPABASE_KEY....etc)
-6. Optionally change site name (e.g. mycoolsaas) or apply a domain name
-
-7. Go to [Supabase](https://app.supabase.com/)
-8. Choose your project
-9. Go to URL Authentication -> URL Configuration -> Site URL
-10. enter your new netlify URL e.g. https://mycoolsaas.netlify.app/ and click 'save'
-11. Add the following additional redirect URLs for local development and deployment previews:
-
-- http://localhost:3000/\*\*
-- https://**--mycoolsaas.netlify.app/** (or https://mycustomdomain.com/**)
-
-12. If you haven't already done so, edit your Supabase Email templates as the generic ones tend to get blocked by GMail.
-
-### Netlify deployments and environment variables
-
-Netlify is a bit rubbish at updating environment variables so you may need to manually re-deploy your site in certain situations e.g.
-
-- If on initial load of the site you get a message along the lines of 'SUPABASE_URL is required'.. but you have set that environment variable correctly... try a manual deployment.
-- Changing the default domain e.g. setting to a custom domain - If you notice you are redirected to the wrong version of the site after signup to a stripe subscription, this means the URL env variable has not been reset by Netlify. a manual deployment may fix it.
-
-To manually redeploy to to your Netlify dashboard and navigate to Deploys -> Trigger Deploy -> Deploy site
+Dieses Projekt steht unter der [MIT Lizenz](LICENSE) (sofern nicht anders angegeben).

@@ -58,32 +58,34 @@
 <template>
   <div
     class="min-h-[80vh] flex items-center justify-center py-16 relative overflow-hidden">
-    <!-- Hintergrund-Effekte -->
     <div class="absolute inset-0 bg-grid-white/5 bg-[size:20px_20px]" />
     <div class="absolute inset-0 backdrop-blur-3xl" />
-
-    <!-- RGB-Lichter am Rand -->
     <div
       class="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl" />
     <div
       class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full filter blur-3xl" />
 
     <div
-      class="max-w-md w-full p-8 bg-gray-800/80 rounded-lg shadow-[0_0_25px_rgba(0,0,0,0.3)] backdrop-blur-sm relative z-10 border border-gray-700">
-      <!-- Glühenden Rand-Effekt -->
+      class="group max-w-md w-full p-8 bg-gray-800/80 rounded-lg shadow-[0_0_25px_rgba(0,0,0,0.3)] backdrop-blur-sm relative z-10 border border-gray-700">
       <div
-        class="absolute inset-0 rounded-lg border border-transparent bg-gradient-to-r from-purple-500/30 via-blue-500/30 to-green-500/30 opacity-0 hover:opacity-100 transition-opacity duration-300"
-        style="filter: blur(1px)" />
+        class="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10"
+        style="
+          box-shadow: 0 0 12px 3px rgba(168, 85, 247, 0.45),
+            0 0 12px 3px rgba(59, 130, 246, 0.35),
+            0 0 12px 3px rgba(16, 185, 129, 0.25);
+        "
+        aria-hidden="true" />
 
       <h2 class="text-3xl font-bold text-center mb-8">Anmelden</h2>
 
-      <form class="space-y-6">
+      <form class="space-y-6" @submit.prevent="handleStandardSignin">
         <div class="space-y-2">
           <label for="email" class="block text-sm font-medium text-gray-300"
             >E-Mail</label
           >
           <input
             id="email"
+            v-model="email"
             type="email"
             class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             placeholder="deine@email.de"
@@ -97,12 +99,15 @@
               class="block text-sm font-medium text-gray-300"
               >Passwort</label
             >
-            <a href="#" class="text-sm text-blue-400 hover:text-blue-300"
-              >Vergessen?</a
+            <NuxtLink
+              to="/forgot-password"
+              class="text-sm text-blue-400 hover:text-blue-300"
+              >Vergessen?</NuxtLink
             >
           </div>
           <input
             id="password"
+            v-model="password"
             type="password"
             class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             placeholder="••••••••"
@@ -120,15 +125,18 @@
         </div>
 
         <button
-          @click="handleStandardSignin"
           type="submit"
-          class="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium rounded-md transition-all duration-300 transform hover:shadow-[0_0_15px_rgba(124,58,237,0.5)]">
-          Anmelden
+          :disabled="loading"
+          class="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium rounded-md transition-all duration-300 transform hover:shadow-[0_0_15px_rgba(124,58,237,0.5)] disabled:opacity-50 disabled:cursor-not-allowed">
+          <span v-if="loading">Wird geladen...</span>
+          <span v-else>Anmelden</span>
         </button>
 
         <div class="text-center text-gray-400 text-sm">
           Noch kein Konto?
-          <a href="#" class="text-blue-400 hover:text-blue-300">Registrieren</a>
+          <NuxtLink to="/signup" class="text-blue-400 hover:text-blue-300"
+            >Registrieren</NuxtLink
+          >
         </div>
       </form>
 
@@ -144,12 +152,11 @@
           </div>
         </div>
 
-        <!-- OAuth Provider Buttons -->
         <div class="mt-6 space-y-3">
-          <!-- Google Login Button -->
           <button
             @click="handleGoogleSignin"
-            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors">
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
@@ -170,10 +177,10 @@
             </svg>
             <span>Mit Google anmelden</span>
           </button>
-
-          <!-- Microsoft Login Button -->
           <button
-            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors">
+            @click="handleOAuthSignin('microsoft')"
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
@@ -198,10 +205,10 @@
             </svg>
             <span>Mit Microsoft anmelden</span>
           </button>
-
-          <!-- Apple Login Button -->
           <button
-            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors">
+            @click="handleOAuthSignin('apple')"
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 384 512"
@@ -213,10 +220,10 @@
             </svg>
             <span>Mit Apple anmelden</span>
           </button>
-
-          <!-- GitHub Login Button -->
           <button
-            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors">
+            @click="handleOAuthSignin('github')"
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -229,7 +236,6 @@
             <span>Mit GitHub anmelden</span>
           </button>
         </div>
-
         <div class="mt-6 text-center">
           <p class="text-xs text-gray-400">
             Du kannst später deine Spielekonten (Steam, Epic, GOG) mit deinem
