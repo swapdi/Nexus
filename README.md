@@ -1,4 +1,4 @@
-<img src="./assets/images/supanuxt_logo_200.png" alt="Nexus Logo" width="150"/>
+<img src="./public/favicon.ico" alt="Nexus Logo" width="150"/>
 
 # Nexus
 
