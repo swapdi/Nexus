@@ -11,7 +11,6 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "prisma generate && nuxt prepare",
     "test": "vitest"
   },
   "devDependencies": {

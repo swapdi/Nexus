@@ -11,7 +11,6 @@ datasource db {
 model User {
   id               Int               @id @default(autoincrement())
   supabase_uid     String            @unique
-  email            String            @unique
   display_name     String?
   xp               Int               @default(0)
   level            Int               @default(1)

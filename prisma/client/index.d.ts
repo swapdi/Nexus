@@ -1825,7 +1825,6 @@ export namespace Prisma {
   export type UserMinAggregateOutputType = {
     id: number | null
     supabase_uid: string | null
-    email: string | null
     display_name: string | null
     xp: number | null
     level: number | null
@@ -1835,7 +1834,6 @@ export namespace Prisma {
   export type UserMaxAggregateOutputType = {
     id: number | null
     supabase_uid: string | null
-    email: string | null
     display_name: string | null
     xp: number | null
     level: number | null
@@ -1845,7 +1843,6 @@ export namespace Prisma {
   export type UserCountAggregateOutputType = {
     id: number
     supabase_uid: number
-    email: number
     display_name: number
     xp: number
     level: number
@@ -1871,7 +1868,6 @@ export namespace Prisma {
   export type UserMinAggregateInputType = {
     id?: true
     supabase_uid?: true
-    email?: true
     display_name?: true
     xp?: true
     level?: true
@@ -1881,7 +1877,6 @@ export namespace Prisma {
   export type UserMaxAggregateInputType = {
     id?: true
     supabase_uid?: true
-    email?: true
     display_name?: true
     xp?: true
     level?: true
@@ -1891,7 +1886,6 @@ export namespace Prisma {
   export type UserCountAggregateInputType = {
     id?: true
     supabase_uid?: true
-    email?: true
     display_name?: true
     xp?: true
     level?: true
@@ -1988,7 +1982,6 @@ export namespace Prisma {
   export type UserGroupByOutputType = {
     id: number
     supabase_uid: string
-    email: string
     display_name: string | null
     xp: number
     level: number
@@ -2017,7 +2010,6 @@ export namespace Prisma {
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     supabase_uid?: boolean
-    email?: boolean
     display_name?: boolean
     xp?: boolean
     level?: boolean
@@ -2031,7 +2023,6 @@ export namespace Prisma {
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     supabase_uid?: boolean
-    email?: boolean
     display_name?: boolean
     xp?: boolean
     level?: boolean
@@ -2041,7 +2032,6 @@ export namespace Prisma {
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     supabase_uid?: boolean
-    email?: boolean
     display_name?: boolean
     xp?: boolean
     level?: boolean
@@ -2051,14 +2041,13 @@ export namespace Prisma {
   export type UserSelectScalar = {
     id?: boolean
     supabase_uid?: boolean
-    email?: boolean
     display_name?: boolean
     xp?: boolean
     level?: boolean
     credits?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supabase_uid" | "email" | "display_name" | "xp" | "level" | "credits", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supabase_uid" | "display_name" | "xp" | "level" | "credits", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userAchievements?: boolean | User$userAchievementsArgs<ExtArgs>
     userGames?: boolean | User$userGamesArgs<ExtArgs>
@@ -2078,7 +2067,6 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       supabase_uid: string
-      email: string
       display_name: string | null
       xp: number
       level: number
@@ -2511,7 +2499,6 @@ export namespace Prisma {
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'Int'>
     readonly supabase_uid: FieldRef<"User", 'String'>
-    readonly email: FieldRef<"User", 'String'>
     readonly display_name: FieldRef<"User", 'String'>
     readonly xp: FieldRef<"User", 'Int'>
     readonly level: FieldRef<"User", 'Int'>
@@ -12267,7 +12254,6 @@ export namespace Prisma {
   export const UserScalarFieldEnum: {
     id: 'id',
     supabase_uid: 'supabase_uid',
-    email: 'email',
     display_name: 'display_name',
     xp: 'xp',
     level: 'level',
@@ -12485,7 +12471,6 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     id?: IntFilter<"User"> | number
     supabase_uid?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
     display_name?: StringNullableFilter<"User"> | string | null
     xp?: IntFilter<"User"> | number
     level?: IntFilter<"User"> | number
@@ -12498,7 +12483,6 @@ export namespace Prisma {
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
-    email?: SortOrder
     display_name?: SortOrderInput | SortOrder
     xp?: SortOrder
     level?: SortOrder
@@ -12511,7 +12495,6 @@ export namespace Prisma {
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     supabase_uid?: string
-    email?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
@@ -12522,12 +12505,11 @@ export namespace Prisma {
     userAchievements?: UserAchievementListRelationFilter
     userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
-  }, "id" | "supabase_uid" | "email">
+  }, "id" | "supabase_uid">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
-    email?: SortOrder
     display_name?: SortOrderInput | SortOrder
     xp?: SortOrder
     level?: SortOrder
@@ -12545,7 +12527,6 @@ export namespace Prisma {
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"User"> | number
     supabase_uid?: StringWithAggregatesFilter<"User"> | string
-    email?: StringWithAggregatesFilter<"User"> | string
     display_name?: StringNullableWithAggregatesFilter<"User"> | string | null
     xp?: IntWithAggregatesFilter<"User"> | number
     level?: IntWithAggregatesFilter<"User"> | number
@@ -13137,7 +13118,6 @@ export namespace Prisma {
 
   export type UserCreateInput = {
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -13150,7 +13130,6 @@ export namespace Prisma {
   export type UserUncheckedCreateInput = {
     id?: number
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -13162,7 +13141,6 @@ export namespace Prisma {
 
   export type UserUpdateInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -13175,7 +13153,6 @@ export namespace Prisma {
   export type UserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -13188,7 +13165,6 @@ export namespace Prisma {
   export type UserCreateManyInput = {
     id?: number
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -13197,7 +13173,6 @@ export namespace Prisma {
 
   export type UserUpdateManyMutationInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -13207,7 +13182,6 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -13868,7 +13842,6 @@ export namespace Prisma {
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
-    email?: SortOrder
     display_name?: SortOrder
     xp?: SortOrder
     level?: SortOrder
@@ -13885,7 +13858,6 @@ export namespace Prisma {
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
-    email?: SortOrder
     display_name?: SortOrder
     xp?: SortOrder
     level?: SortOrder
@@ -13895,7 +13867,6 @@ export namespace Prisma {
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
-    email?: SortOrder
     display_name?: SortOrder
     xp?: SortOrder
     level?: SortOrder
@@ -15962,7 +15933,6 @@ export namespace Prisma {
 
   export type UserCreateWithoutUserGamesInput = {
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -15974,7 +15944,6 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutUserGamesInput = {
     id?: number
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -16043,7 +16012,6 @@ export namespace Prisma {
 
   export type UserUpdateWithoutUserGamesInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -16055,7 +16023,6 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutUserGamesInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -16253,7 +16220,6 @@ export namespace Prisma {
 
   export type UserCreateWithoutUserAchievementsInput = {
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -16265,7 +16231,6 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutUserAchievementsInput = {
     id?: number
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -16324,7 +16289,6 @@ export namespace Prisma {
 
   export type UserUpdateWithoutUserAchievementsInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -16336,7 +16300,6 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutUserAchievementsInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -16383,7 +16346,6 @@ export namespace Prisma {
 
   export type UserCreateWithoutWishlistItemsInput = {
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -16395,7 +16357,6 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutWishlistItemsInput = {
     id?: number
     supabase_uid: string
-    email: string
     display_name?: string | null
     xp?: number
     level?: number
@@ -16464,7 +16425,6 @@ export namespace Prisma {
 
   export type UserUpdateWithoutWishlistItemsInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
@@ -16476,7 +16436,6 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutWishlistItemsInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number

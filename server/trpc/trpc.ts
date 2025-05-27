@@ -44,7 +44,7 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   return next({
     ctx: {
       user: ctx.user,
-      dbUser: ctx.dbUser // Ensure dbUser is passed along (no longer has accounts)
+      dbUser: ctx.dbUser
     }
   });
 });

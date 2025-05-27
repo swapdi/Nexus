@@ -58,8 +58,7 @@ export namespace AuthService {
     return prisma.user.create({
       data: {
         supabase_uid,
-        display_name,
-        email
+        display_name
       },
       include: {
         userAchievements: {

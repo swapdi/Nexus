@@ -21,11 +21,9 @@
 
   onMounted(async () => {
     isLoadingPage.value = true;
+    await accountStore.init();
     try {
       // Ensure init runs if store is not populated
-      if (!accountStore.user) {
-        await accountStore.init();
-      }
       // Populate editableDisplayName after init or if user data is already available
       if (user.value?.display_name) {
         editableDisplayName.value = user.value.display_name;
