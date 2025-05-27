@@ -1,23 +1,52 @@
-import { PrismaClient } from '~/prisma/client';
+import { PrismaClient, type User } from '~/prisma/client';
 const prisma = new PrismaClient();
-import { fullDBUser, type FullDBUser } from './service.types';
 
 export namespace AuthService {
-  export async function getFullUserBySupabaseId(
+  export async function getUserBySupabaseId(
     supabase_uid: string
-  ): Promise<FullDBUser | null> {
+  ): Promise<User | null> {
     return prisma.user.findFirst({
       where: { supabase_uid },
-      ...fullDBUser
+      include: {
+        userAchievements: {
+          include: {
+            achievement: true
+          }
+        },
+        userGames: {
+          include: {
+            game: true
+          }
+        },
+        wishlistItems: {
+          include: {
+            game: true
+          }
+        }
+      }
     });
   }
 
-  export async function getUserById(
-    user_id: number
-  ): Promise<FullDBUser | null> {
-    return prisma.user.findFirstOrThrow({
+  export async function getUserById(user_id: number): Promise<User | null> {
+    return prisma.user.findFirst({
       where: { id: user_id },
-      ...fullDBUser
+      include: {
+        userAchievements: {
+          include: {
+            achievement: true
+          }
+        },
+        userGames: {
+          include: {
+            game: true
+          }
+        },
+        wishlistItems: {
+          include: {
+            game: true
+          }
+        }
+      }
     });
   }
 
@@ -25,21 +54,86 @@ export namespace AuthService {
     supabase_uid: string,
     display_name: string,
     email: string
-  ): Promise<FullDBUser | null> {
+  ): Promise<User> {
     return prisma.user.create({
       data: {
-        supabase_uid: supabase_uid,
-        display_name: display_name,
-        email: email
+        supabase_uid,
+        display_name,
+        email
       },
-      ...fullDBUser
+      include: {
+        userAchievements: {
+          include: {
+            achievement: true
+          }
+        },
+        userGames: {
+          include: {
+            game: true
+          }
+        },
+        wishlistItems: {
+          include: {
+            game: true
+          }
+        }
+      }
     });
   }
 
-  export async function deleteUser(user_id: number): Promise<FullDBUser> {
+  export async function deleteUser(user_id: number): Promise<User> {
     return prisma.user.delete({
       where: { id: user_id },
-      ...fullDBUser
+      include: {
+        userAchievements: {
+          include: {
+            achievement: true
+          }
+        },
+        userGames: {
+          include: {
+            game: true
+          }
+        },
+        wishlistItems: {
+          include: {
+            game: true
+          }
+        }
+      }
+    });
+  }
+
+  export async function updateUser(
+    user_id: number,
+    data: {
+      display_name?: string;
+      email?: string;
+      xp?: number;
+      level?: number;
+      credits?: number;
+    }
+  ): Promise<User> {
+    return prisma.user.update({
+      where: { id: user_id },
+      data,
+      include: {
+        userAchievements: {
+          include: {
+            achievement: true
+          }
+        },
+        userGames: {
+          include: {
+            game: true
+          }
+        },
+        wishlistItems: {
+          include: {
+            game: true
+          }
+        }
+      }
     });
   }
 }

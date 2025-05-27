@@ -134,3 +134,11 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 ## Entdeckt während der Arbeit
 
 - [x] OAuth Provider in Anmelde- und Registrierungsseiten überarbeiten - Apple und Microsoft durch Discord ersetzen (27. Mai 2025)
+- [x] Refactoring des Auth-Systems von Account-basiert zu User-only System nach Schema-Migration (27. Mai 2025)
+  - [x] auth.service.ts zu User-only angepasst
+  - [x] account.store.ts von FullDBUser zu User umgestellt
+  - [x] TRPC Context und Router an neues Schema angepasst
+  - [x] UserAccountSwitch.client.vue zu User-Info-Komponente umgewandelt
+  - [x] account.vue Seite für User-only System neu erstellt
+  - [x] Alle Verweise auf activeAccount, activeAccountId und FullDBUser entfernt
+- [x] Admin@admin.de Benutzer aus Supabase Auth entfernt (28. Januar 2025)

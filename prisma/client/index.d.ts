@@ -19,11 +19,6 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
- * Model Account
- * 
- */
-export type Account = $Result.DefaultSelection<Prisma.$AccountPayload>
-/**
  * Model Game
  * 
  */
@@ -198,16 +193,6 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.account`: Exposes CRUD operations for the **Account** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Accounts
-    * const accounts = await prisma.account.findMany()
-    * ```
-    */
-  get account(): Prisma.AccountDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.game`: Exposes CRUD operations for the **Game** model.
@@ -729,7 +714,6 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    Account: 'Account',
     Game: 'Game',
     Platform: 'Platform',
     PlatformGame: 'PlatformGame',
@@ -756,7 +740,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "account" | "game" | "platform" | "platformGame" | "userGame" | "deal" | "achievement" | "userAchievement" | "wishlist"
+      modelProps: "user" | "game" | "platform" | "platformGame" | "userGame" | "deal" | "achievement" | "userAchievement" | "wishlist"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -831,80 +815,6 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
-          }
-        }
-      }
-      Account: {
-        payload: Prisma.$AccountPayload<ExtArgs>
-        fields: Prisma.AccountFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.AccountFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.AccountFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>
-          }
-          findFirst: {
-            args: Prisma.AccountFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.AccountFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>
-          }
-          findMany: {
-            args: Prisma.AccountFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>[]
-          }
-          create: {
-            args: Prisma.AccountCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>
-          }
-          createMany: {
-            args: Prisma.AccountCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.AccountCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>[]
-          }
-          delete: {
-            args: Prisma.AccountDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>
-          }
-          update: {
-            args: Prisma.AccountUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>
-          }
-          deleteMany: {
-            args: Prisma.AccountDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.AccountUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.AccountUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>[]
-          }
-          upsert: {
-            args: Prisma.AccountUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AccountPayload>
-          }
-          aggregate: {
-            args: Prisma.AccountAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateAccount>
-          }
-          groupBy: {
-            args: Prisma.AccountGroupByArgs<ExtArgs>
-            result: $Utils.Optional<AccountGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.AccountCountArgs<ExtArgs>
-            result: $Utils.Optional<AccountCountAggregateOutputType> | number
           }
         }
       }
@@ -1585,7 +1495,6 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
-    account?: AccountOmit
     game?: GameOmit
     platform?: PlatformOmit
     platformGame?: PlatformGameOmit
@@ -1688,14 +1597,14 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    userGames: number
     userAchievements: number
+    userGames: number
     wishlistItems: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userGames?: boolean | UserCountOutputTypeCountUserGamesArgs
     userAchievements?: boolean | UserCountOutputTypeCountUserAchievementsArgs
+    userGames?: boolean | UserCountOutputTypeCountUserGamesArgs
     wishlistItems?: boolean | UserCountOutputTypeCountWishlistItemsArgs
   }
 
@@ -1713,15 +1622,15 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserGameWhereInput
+  export type UserCountOutputTypeCountUserAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserAchievementWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountUserAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserAchievementWhereInput
+  export type UserCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserGameWhereInput
   }
 
   /**
@@ -1737,17 +1646,17 @@ export namespace Prisma {
    */
 
   export type GameCountOutputType = {
-    userGames: number
-    platformGames: number
-    wishlistedBy: number
     deals: number
+    platformGames: number
+    userGames: number
+    wishlistedBy: number
   }
 
   export type GameCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userGames?: boolean | GameCountOutputTypeCountUserGamesArgs
-    platformGames?: boolean | GameCountOutputTypeCountPlatformGamesArgs
-    wishlistedBy?: boolean | GameCountOutputTypeCountWishlistedByArgs
     deals?: boolean | GameCountOutputTypeCountDealsArgs
+    platformGames?: boolean | GameCountOutputTypeCountPlatformGamesArgs
+    userGames?: boolean | GameCountOutputTypeCountUserGamesArgs
+    wishlistedBy?: boolean | GameCountOutputTypeCountWishlistedByArgs
   }
 
   // Custom InputTypes
@@ -1764,8 +1673,8 @@ export namespace Prisma {
   /**
    * GameCountOutputType without action
    */
-  export type GameCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserGameWhereInput
+  export type GameCountOutputTypeCountDealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DealWhereInput
   }
 
   /**
@@ -1778,15 +1687,15 @@ export namespace Prisma {
   /**
    * GameCountOutputType without action
    */
-  export type GameCountOutputTypeCountWishlistedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: WishlistWhereInput
+  export type GameCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserGameWhereInput
   }
 
   /**
    * GameCountOutputType without action
    */
-  export type GameCountOutputTypeCountDealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DealWhereInput
+  export type GameCountOutputTypeCountWishlistedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WishlistWhereInput
   }
 
 
@@ -2113,9 +2022,8 @@ export namespace Prisma {
     xp?: boolean
     level?: boolean
     credits?: boolean
-    account?: boolean | User$accountArgs<ExtArgs>
-    userGames?: boolean | User$userGamesArgs<ExtArgs>
     userAchievements?: boolean | User$userAchievementsArgs<ExtArgs>
+    userGames?: boolean | User$userGamesArgs<ExtArgs>
     wishlistItems?: boolean | User$wishlistItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -2152,9 +2060,8 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supabase_uid" | "email" | "display_name" | "xp" | "level" | "credits", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    account?: boolean | User$accountArgs<ExtArgs>
-    userGames?: boolean | User$userGamesArgs<ExtArgs>
     userAchievements?: boolean | User$userAchievementsArgs<ExtArgs>
+    userGames?: boolean | User$userGamesArgs<ExtArgs>
     wishlistItems?: boolean | User$wishlistItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2164,9 +2071,8 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      account: Prisma.$AccountPayload<ExtArgs> | null
-      userGames: Prisma.$UserGamePayload<ExtArgs>[]
       userAchievements: Prisma.$UserAchievementPayload<ExtArgs>[]
+      userGames: Prisma.$UserGamePayload<ExtArgs>[]
       wishlistItems: Prisma.$WishlistPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2571,9 +2477,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    account<T extends User$accountArgs<ExtArgs> = {}>(args?: Subset<T, User$accountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    userGames<T extends User$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, User$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userAchievements<T extends User$userAchievementsArgs<ExtArgs> = {}>(args?: Subset<T, User$userAchievementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userGames<T extends User$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, User$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     wishlistItems<T extends User$wishlistItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$wishlistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2999,22 +2904,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.account
+   * User.userAchievements
    */
-  export type User$accountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$userAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Account
+     * Select specific fields to fetch from the UserAchievement
      */
-    select?: AccountSelect<ExtArgs> | null
+    select?: UserAchievementSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Account
+     * Omit specific fields from the UserAchievement
      */
-    omit?: AccountOmit<ExtArgs> | null
+    omit?: UserAchievementOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AccountInclude<ExtArgs> | null
-    where?: AccountWhereInput
+    include?: UserAchievementInclude<ExtArgs> | null
+    where?: UserAchievementWhereInput
+    orderBy?: UserAchievementOrderByWithRelationInput | UserAchievementOrderByWithRelationInput[]
+    cursor?: UserAchievementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
 
   /**
@@ -3039,30 +2949,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
-  }
-
-  /**
-   * User.userAchievements
-   */
-  export type User$userAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the UserAchievement
-     */
-    select?: UserAchievementSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the UserAchievement
-     */
-    omit?: UserAchievementOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserAchievementInclude<ExtArgs> | null
-    where?: UserAchievementWhereInput
-    orderBy?: UserAchievementOrderByWithRelationInput | UserAchievementOrderByWithRelationInput[]
-    cursor?: UserAchievementWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
 
   /**
@@ -3105,1098 +2991,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Account
-   */
-
-  export type AggregateAccount = {
-    _count: AccountCountAggregateOutputType | null
-    _avg: AccountAvgAggregateOutputType | null
-    _sum: AccountSumAggregateOutputType | null
-    _min: AccountMinAggregateOutputType | null
-    _max: AccountMaxAggregateOutputType | null
-  }
-
-  export type AccountAvgAggregateOutputType = {
-    id: number | null
-    user_id: number | null
-  }
-
-  export type AccountSumAggregateOutputType = {
-    id: number | null
-    user_id: number | null
-  }
-
-  export type AccountMinAggregateOutputType = {
-    id: number | null
-    name: string | null
-    current_period_ends: Date | null
-    user_id: number | null
-  }
-
-  export type AccountMaxAggregateOutputType = {
-    id: number | null
-    name: string | null
-    current_period_ends: Date | null
-    user_id: number | null
-  }
-
-  export type AccountCountAggregateOutputType = {
-    id: number
-    name: number
-    current_period_ends: number
-    features: number
-    user_id: number
-    _all: number
-  }
-
-
-  export type AccountAvgAggregateInputType = {
-    id?: true
-    user_id?: true
-  }
-
-  export type AccountSumAggregateInputType = {
-    id?: true
-    user_id?: true
-  }
-
-  export type AccountMinAggregateInputType = {
-    id?: true
-    name?: true
-    current_period_ends?: true
-    user_id?: true
-  }
-
-  export type AccountMaxAggregateInputType = {
-    id?: true
-    name?: true
-    current_period_ends?: true
-    user_id?: true
-  }
-
-  export type AccountCountAggregateInputType = {
-    id?: true
-    name?: true
-    current_period_ends?: true
-    features?: true
-    user_id?: true
-    _all?: true
-  }
-
-  export type AccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Account to aggregate.
-     */
-    where?: AccountWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Accounts to fetch.
-     */
-    orderBy?: AccountOrderByWithRelationInput | AccountOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: AccountWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Accounts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Accounts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Accounts
-    **/
-    _count?: true | AccountCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: AccountAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: AccountSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: AccountMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: AccountMaxAggregateInputType
-  }
-
-  export type GetAccountAggregateType<T extends AccountAggregateArgs> = {
-        [P in keyof T & keyof AggregateAccount]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateAccount[P]>
-      : GetScalarType<T[P], AggregateAccount[P]>
-  }
-
-
-
-
-  export type AccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AccountWhereInput
-    orderBy?: AccountOrderByWithAggregationInput | AccountOrderByWithAggregationInput[]
-    by: AccountScalarFieldEnum[] | AccountScalarFieldEnum
-    having?: AccountScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: AccountCountAggregateInputType | true
-    _avg?: AccountAvgAggregateInputType
-    _sum?: AccountSumAggregateInputType
-    _min?: AccountMinAggregateInputType
-    _max?: AccountMaxAggregateInputType
-  }
-
-  export type AccountGroupByOutputType = {
-    id: number
-    name: string
-    current_period_ends: Date
-    features: string[]
-    user_id: number
-    _count: AccountCountAggregateOutputType | null
-    _avg: AccountAvgAggregateOutputType | null
-    _sum: AccountSumAggregateOutputType | null
-    _min: AccountMinAggregateOutputType | null
-    _max: AccountMaxAggregateOutputType | null
-  }
-
-  type GetAccountGroupByPayload<T extends AccountGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<AccountGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof AccountGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], AccountGroupByOutputType[P]>
-            : GetScalarType<T[P], AccountGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type AccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    current_period_ends?: boolean
-    features?: boolean
-    user_id?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["account"]>
-
-  export type AccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    current_period_ends?: boolean
-    features?: boolean
-    user_id?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["account"]>
-
-  export type AccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    current_period_ends?: boolean
-    features?: boolean
-    user_id?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["account"]>
-
-  export type AccountSelectScalar = {
-    id?: boolean
-    name?: boolean
-    current_period_ends?: boolean
-    features?: boolean
-    user_id?: boolean
-  }
-
-  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "current_period_ends" | "features" | "user_id", ExtArgs["result"]["account"]>
-  export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type AccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type AccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-
-  export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Account"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: number
-      name: string
-      current_period_ends: Date
-      features: string[]
-      user_id: number
-    }, ExtArgs["result"]["account"]>
-    composites: {}
-  }
-
-  type AccountGetPayload<S extends boolean | null | undefined | AccountDefaultArgs> = $Result.GetResult<Prisma.$AccountPayload, S>
-
-  type AccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<AccountFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: AccountCountAggregateInputType | true
-    }
-
-  export interface AccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Account'], meta: { name: 'Account' } }
-    /**
-     * Find zero or one Account that matches the filter.
-     * @param {AccountFindUniqueArgs} args - Arguments to find a Account
-     * @example
-     * // Get one Account
-     * const account = await prisma.account.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends AccountFindUniqueArgs>(args: SelectSubset<T, AccountFindUniqueArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Account that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {AccountFindUniqueOrThrowArgs} args - Arguments to find a Account
-     * @example
-     * // Get one Account
-     * const account = await prisma.account.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends AccountFindUniqueOrThrowArgs>(args: SelectSubset<T, AccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Account that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountFindFirstArgs} args - Arguments to find a Account
-     * @example
-     * // Get one Account
-     * const account = await prisma.account.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends AccountFindFirstArgs>(args?: SelectSubset<T, AccountFindFirstArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Account that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountFindFirstOrThrowArgs} args - Arguments to find a Account
-     * @example
-     * // Get one Account
-     * const account = await prisma.account.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends AccountFindFirstOrThrowArgs>(args?: SelectSubset<T, AccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Accounts that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Accounts
-     * const accounts = await prisma.account.findMany()
-     * 
-     * // Get first 10 Accounts
-     * const accounts = await prisma.account.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const accountWithIdOnly = await prisma.account.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends AccountFindManyArgs>(args?: SelectSubset<T, AccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Account.
-     * @param {AccountCreateArgs} args - Arguments to create a Account.
-     * @example
-     * // Create one Account
-     * const Account = await prisma.account.create({
-     *   data: {
-     *     // ... data to create a Account
-     *   }
-     * })
-     * 
-     */
-    create<T extends AccountCreateArgs>(args: SelectSubset<T, AccountCreateArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Accounts.
-     * @param {AccountCreateManyArgs} args - Arguments to create many Accounts.
-     * @example
-     * // Create many Accounts
-     * const account = await prisma.account.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends AccountCreateManyArgs>(args?: SelectSubset<T, AccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Accounts and returns the data saved in the database.
-     * @param {AccountCreateManyAndReturnArgs} args - Arguments to create many Accounts.
-     * @example
-     * // Create many Accounts
-     * const account = await prisma.account.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Accounts and only return the `id`
-     * const accountWithIdOnly = await prisma.account.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends AccountCreateManyAndReturnArgs>(args?: SelectSubset<T, AccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Account.
-     * @param {AccountDeleteArgs} args - Arguments to delete one Account.
-     * @example
-     * // Delete one Account
-     * const Account = await prisma.account.delete({
-     *   where: {
-     *     // ... filter to delete one Account
-     *   }
-     * })
-     * 
-     */
-    delete<T extends AccountDeleteArgs>(args: SelectSubset<T, AccountDeleteArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Account.
-     * @param {AccountUpdateArgs} args - Arguments to update one Account.
-     * @example
-     * // Update one Account
-     * const account = await prisma.account.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends AccountUpdateArgs>(args: SelectSubset<T, AccountUpdateArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Accounts.
-     * @param {AccountDeleteManyArgs} args - Arguments to filter Accounts to delete.
-     * @example
-     * // Delete a few Accounts
-     * const { count } = await prisma.account.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends AccountDeleteManyArgs>(args?: SelectSubset<T, AccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Accounts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Accounts
-     * const account = await prisma.account.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends AccountUpdateManyArgs>(args: SelectSubset<T, AccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Accounts and returns the data updated in the database.
-     * @param {AccountUpdateManyAndReturnArgs} args - Arguments to update many Accounts.
-     * @example
-     * // Update many Accounts
-     * const account = await prisma.account.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Accounts and only return the `id`
-     * const accountWithIdOnly = await prisma.account.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends AccountUpdateManyAndReturnArgs>(args: SelectSubset<T, AccountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Account.
-     * @param {AccountUpsertArgs} args - Arguments to update or create a Account.
-     * @example
-     * // Update or create a Account
-     * const account = await prisma.account.upsert({
-     *   create: {
-     *     // ... data to create a Account
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Account we want to update
-     *   }
-     * })
-     */
-    upsert<T extends AccountUpsertArgs>(args: SelectSubset<T, AccountUpsertArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Accounts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountCountArgs} args - Arguments to filter Accounts to count.
-     * @example
-     * // Count the number of Accounts
-     * const count = await prisma.account.count({
-     *   where: {
-     *     // ... the filter for the Accounts we want to count
-     *   }
-     * })
-    **/
-    count<T extends AccountCountArgs>(
-      args?: Subset<T, AccountCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], AccountCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Account.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends AccountAggregateArgs>(args: Subset<T, AccountAggregateArgs>): Prisma.PrismaPromise<GetAccountAggregateType<T>>
-
-    /**
-     * Group by Account.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AccountGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends AccountGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AccountGroupByArgs['orderBy'] }
-        : { orderBy?: AccountGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, AccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Account model
-   */
-  readonly fields: AccountFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Account.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__AccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Account model
-   */
-  interface AccountFieldRefs {
-    readonly id: FieldRef<"Account", 'Int'>
-    readonly name: FieldRef<"Account", 'String'>
-    readonly current_period_ends: FieldRef<"Account", 'DateTime'>
-    readonly features: FieldRef<"Account", 'String[]'>
-    readonly user_id: FieldRef<"Account", 'Int'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Account findUnique
-   */
-  export type AccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * Filter, which Account to fetch.
-     */
-    where: AccountWhereUniqueInput
-  }
-
-  /**
-   * Account findUniqueOrThrow
-   */
-  export type AccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * Filter, which Account to fetch.
-     */
-    where: AccountWhereUniqueInput
-  }
-
-  /**
-   * Account findFirst
-   */
-  export type AccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * Filter, which Account to fetch.
-     */
-    where?: AccountWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Accounts to fetch.
-     */
-    orderBy?: AccountOrderByWithRelationInput | AccountOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Accounts.
-     */
-    cursor?: AccountWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Accounts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Accounts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Accounts.
-     */
-    distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
-  }
-
-  /**
-   * Account findFirstOrThrow
-   */
-  export type AccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * Filter, which Account to fetch.
-     */
-    where?: AccountWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Accounts to fetch.
-     */
-    orderBy?: AccountOrderByWithRelationInput | AccountOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Accounts.
-     */
-    cursor?: AccountWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Accounts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Accounts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Accounts.
-     */
-    distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
-  }
-
-  /**
-   * Account findMany
-   */
-  export type AccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * Filter, which Accounts to fetch.
-     */
-    where?: AccountWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Accounts to fetch.
-     */
-    orderBy?: AccountOrderByWithRelationInput | AccountOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Accounts.
-     */
-    cursor?: AccountWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Accounts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Accounts.
-     */
-    skip?: number
-    distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
-  }
-
-  /**
-   * Account create
-   */
-  export type AccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Account.
-     */
-    data: XOR<AccountCreateInput, AccountUncheckedCreateInput>
-  }
-
-  /**
-   * Account createMany
-   */
-  export type AccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Accounts.
-     */
-    data: AccountCreateManyInput | AccountCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Account createManyAndReturn
-   */
-  export type AccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * The data used to create many Accounts.
-     */
-    data: AccountCreateManyInput | AccountCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Account update
-   */
-  export type AccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Account.
-     */
-    data: XOR<AccountUpdateInput, AccountUncheckedUpdateInput>
-    /**
-     * Choose, which Account to update.
-     */
-    where: AccountWhereUniqueInput
-  }
-
-  /**
-   * Account updateMany
-   */
-  export type AccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Accounts.
-     */
-    data: XOR<AccountUpdateManyMutationInput, AccountUncheckedUpdateManyInput>
-    /**
-     * Filter which Accounts to update
-     */
-    where?: AccountWhereInput
-    /**
-     * Limit how many Accounts to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Account updateManyAndReturn
-   */
-  export type AccountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * The data used to update Accounts.
-     */
-    data: XOR<AccountUpdateManyMutationInput, AccountUncheckedUpdateManyInput>
-    /**
-     * Filter which Accounts to update
-     */
-    where?: AccountWhereInput
-    /**
-     * Limit how many Accounts to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Account upsert
-   */
-  export type AccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Account to update in case it exists.
-     */
-    where: AccountWhereUniqueInput
-    /**
-     * In case the Account found by the `where` argument doesn't exist, create a new Account with this data.
-     */
-    create: XOR<AccountCreateInput, AccountUncheckedCreateInput>
-    /**
-     * In case the Account was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<AccountUpdateInput, AccountUncheckedUpdateInput>
-  }
-
-  /**
-   * Account delete
-   */
-  export type AccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    /**
-     * Filter which Account to delete.
-     */
-    where: AccountWhereUniqueInput
-  }
-
-  /**
-   * Account deleteMany
-   */
-  export type AccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Accounts to delete
-     */
-    where?: AccountWhereInput
-    /**
-     * Limit how many Accounts to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Account without action
-   */
-  export type AccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
   }
 
 
@@ -4434,10 +3228,10 @@ export namespace Prisma {
     genres?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userGames?: boolean | Game$userGamesArgs<ExtArgs>
-    platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
-    wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     deals?: boolean | Game$dealsArgs<ExtArgs>
+    platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
+    userGames?: boolean | Game$userGamesArgs<ExtArgs>
+    wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["game"]>
 
@@ -4482,10 +3276,10 @@ export namespace Prisma {
 
   export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "coverUrl" | "releaseDate" | "developer" | "publisher" | "genres" | "createdAt" | "updatedAt", ExtArgs["result"]["game"]>
   export type GameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    userGames?: boolean | Game$userGamesArgs<ExtArgs>
-    platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
-    wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     deals?: boolean | Game$dealsArgs<ExtArgs>
+    platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
+    userGames?: boolean | Game$userGamesArgs<ExtArgs>
+    wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type GameIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4494,10 +3288,10 @@ export namespace Prisma {
   export type $GamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Game"
     objects: {
-      userGames: Prisma.$UserGamePayload<ExtArgs>[]
-      platformGames: Prisma.$PlatformGamePayload<ExtArgs>[]
-      wishlistedBy: Prisma.$WishlistPayload<ExtArgs>[]
       deals: Prisma.$DealPayload<ExtArgs>[]
+      platformGames: Prisma.$PlatformGamePayload<ExtArgs>[]
+      userGames: Prisma.$UserGamePayload<ExtArgs>[]
+      wishlistedBy: Prisma.$WishlistPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -4904,10 +3698,10 @@ export namespace Prisma {
    */
   export interface Prisma__GameClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    userGames<T extends Game$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    platformGames<T extends Game$platformGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$platformGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    wishlistedBy<T extends Game$wishlistedByArgs<ExtArgs> = {}>(args?: Subset<T, Game$wishlistedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     deals<T extends Game$dealsArgs<ExtArgs> = {}>(args?: Subset<T, Game$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    platformGames<T extends Game$platformGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$platformGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userGames<T extends Game$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    wishlistedBy<T extends Game$wishlistedByArgs<ExtArgs> = {}>(args?: Subset<T, Game$wishlistedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5335,27 +4129,27 @@ export namespace Prisma {
   }
 
   /**
-   * Game.userGames
+   * Game.deals
    */
-  export type Game$userGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Game$dealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UserGame
+     * Select specific fields to fetch from the Deal
      */
-    select?: UserGameSelect<ExtArgs> | null
+    select?: DealSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UserGame
+     * Omit specific fields from the Deal
      */
-    omit?: UserGameOmit<ExtArgs> | null
+    omit?: DealOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserGameInclude<ExtArgs> | null
-    where?: UserGameWhereInput
-    orderBy?: UserGameOrderByWithRelationInput | UserGameOrderByWithRelationInput[]
-    cursor?: UserGameWhereUniqueInput
+    include?: DealInclude<ExtArgs> | null
+    where?: DealWhereInput
+    orderBy?: DealOrderByWithRelationInput | DealOrderByWithRelationInput[]
+    cursor?: DealWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
+    distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
   }
 
   /**
@@ -5383,6 +4177,30 @@ export namespace Prisma {
   }
 
   /**
+   * Game.userGames
+   */
+  export type Game$userGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGame
+     */
+    select?: UserGameSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGame
+     */
+    omit?: UserGameOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGameInclude<ExtArgs> | null
+    where?: UserGameWhereInput
+    orderBy?: UserGameOrderByWithRelationInput | UserGameOrderByWithRelationInput[]
+    cursor?: UserGameWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
+  }
+
+  /**
    * Game.wishlistedBy
    */
   export type Game$wishlistedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5404,30 +4222,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
-  }
-
-  /**
-   * Game.deals
-   */
-  export type Game$dealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Deal
-     */
-    select?: DealSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Deal
-     */
-    omit?: DealOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DealInclude<ExtArgs> | null
-    where?: DealWhereInput
-    orderBy?: DealOrderByWithRelationInput | DealOrderByWithRelationInput[]
-    cursor?: DealWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
   }
 
   /**
@@ -6759,9 +5553,9 @@ export namespace Prisma {
     platformId?: boolean
     platformSpecificId?: boolean
     url?: boolean
+    deals?: boolean | PlatformGame$dealsArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
     platform?: boolean | PlatformDefaultArgs<ExtArgs>
-    deals?: boolean | PlatformGame$dealsArgs<ExtArgs>
     _count?: boolean | PlatformGameCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["platformGame"]>
 
@@ -6795,9 +5589,9 @@ export namespace Prisma {
 
   export type PlatformGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformId" | "platformSpecificId" | "url", ExtArgs["result"]["platformGame"]>
   export type PlatformGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    deals?: boolean | PlatformGame$dealsArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
     platform?: boolean | PlatformDefaultArgs<ExtArgs>
-    deals?: boolean | PlatformGame$dealsArgs<ExtArgs>
     _count?: boolean | PlatformGameCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PlatformGameIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6812,9 +5606,9 @@ export namespace Prisma {
   export type $PlatformGamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "PlatformGame"
     objects: {
+      deals: Prisma.$DealPayload<ExtArgs>[]
       game: Prisma.$GamePayload<ExtArgs>
       platform: Prisma.$PlatformPayload<ExtArgs>
-      deals: Prisma.$DealPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -7216,9 +6010,9 @@ export namespace Prisma {
    */
   export interface Prisma__PlatformGameClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    deals<T extends PlatformGame$dealsArgs<ExtArgs> = {}>(args?: Subset<T, PlatformGame$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     game<T extends GameDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GameDefaultArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     platform<T extends PlatformDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlatformDefaultArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    deals<T extends PlatformGame$dealsArgs<ExtArgs> = {}>(args?: Subset<T, PlatformGame$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7937,8 +6731,8 @@ export namespace Prisma {
     isInstalled?: boolean
     notes?: boolean
     rating?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
 
   export type UserGameSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -7951,8 +6745,8 @@ export namespace Prisma {
     isInstalled?: boolean
     notes?: boolean
     rating?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
 
   export type UserGameSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -7965,8 +6759,8 @@ export namespace Prisma {
     isInstalled?: boolean
     notes?: boolean
     rating?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
 
   export type UserGameSelectScalar = {
@@ -7983,23 +6777,23 @@ export namespace Prisma {
 
   export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "notes" | "rating", ExtArgs["result"]["userGame"]>
   export type UserGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type UserGameIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type UserGameIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $UserGamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserGame"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       game: Prisma.$GamePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -8405,8 +7199,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserGameClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     game<T extends GameDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GameDefaultArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11464,8 +10258,8 @@ export namespace Prisma {
     userId?: boolean
     achievementId?: boolean
     unlockedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userAchievement"]>
 
   export type UserAchievementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11473,8 +10267,8 @@ export namespace Prisma {
     userId?: boolean
     achievementId?: boolean
     unlockedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userAchievement"]>
 
   export type UserAchievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11482,8 +10276,8 @@ export namespace Prisma {
     userId?: boolean
     achievementId?: boolean
     unlockedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userAchievement"]>
 
   export type UserAchievementSelectScalar = {
@@ -11495,23 +10289,23 @@ export namespace Prisma {
 
   export type UserAchievementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "achievementId" | "unlockedAt", ExtArgs["result"]["userAchievement"]>
   export type UserAchievementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type UserAchievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type UserAchievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $UserAchievementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserAchievement"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       achievement: Prisma.$AchievementPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -11912,8 +10706,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserAchievementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     achievement<T extends AchievementDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AchievementDefaultArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12559,8 +11353,8 @@ export namespace Prisma {
     userId?: boolean
     gameId?: boolean
     addedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wishlist"]>
 
   export type WishlistSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12568,8 +11362,8 @@ export namespace Prisma {
     userId?: boolean
     gameId?: boolean
     addedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wishlist"]>
 
   export type WishlistSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12577,8 +11371,8 @@ export namespace Prisma {
     userId?: boolean
     gameId?: boolean
     addedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wishlist"]>
 
   export type WishlistSelectScalar = {
@@ -12590,23 +11384,23 @@ export namespace Prisma {
 
   export type WishlistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt", ExtArgs["result"]["wishlist"]>
   export type WishlistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type WishlistIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type WishlistIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     game?: boolean | GameDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $WishlistPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Wishlist"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       game: Prisma.$GamePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -13007,8 +11801,8 @@ export namespace Prisma {
    */
   export interface Prisma__WishlistClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     game<T extends GameDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GameDefaultArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13483,17 +12277,6 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-  export const AccountScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    current_period_ends: 'current_period_ends',
-    features: 'features',
-    user_id: 'user_id'
-  };
-
-  export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
-
-
   export const GameScalarFieldEnum: {
     id: 'id',
     title: 'title',
@@ -13707,9 +12490,8 @@ export namespace Prisma {
     xp?: IntFilter<"User"> | number
     level?: IntFilter<"User"> | number
     credits?: IntFilter<"User"> | number
-    account?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    userGames?: UserGameListRelationFilter
     userAchievements?: UserAchievementListRelationFilter
+    userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
   }
 
@@ -13721,9 +12503,8 @@ export namespace Prisma {
     xp?: SortOrder
     level?: SortOrder
     credits?: SortOrder
-    account?: AccountOrderByWithRelationInput
-    userGames?: UserGameOrderByRelationAggregateInput
     userAchievements?: UserAchievementOrderByRelationAggregateInput
+    userGames?: UserGameOrderByRelationAggregateInput
     wishlistItems?: WishlistOrderByRelationAggregateInput
   }
 
@@ -13738,9 +12519,8 @@ export namespace Prisma {
     xp?: IntFilter<"User"> | number
     level?: IntFilter<"User"> | number
     credits?: IntFilter<"User"> | number
-    account?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    userGames?: UserGameListRelationFilter
     userAchievements?: UserAchievementListRelationFilter
+    userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
   }, "id" | "supabase_uid" | "email">
 
@@ -13772,63 +12552,6 @@ export namespace Prisma {
     credits?: IntWithAggregatesFilter<"User"> | number
   }
 
-  export type AccountWhereInput = {
-    AND?: AccountWhereInput | AccountWhereInput[]
-    OR?: AccountWhereInput[]
-    NOT?: AccountWhereInput | AccountWhereInput[]
-    id?: IntFilter<"Account"> | number
-    name?: StringFilter<"Account"> | string
-    current_period_ends?: DateTimeFilter<"Account"> | Date | string
-    features?: StringNullableListFilter<"Account">
-    user_id?: IntFilter<"Account"> | number
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }
-
-  export type AccountOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    current_period_ends?: SortOrder
-    features?: SortOrder
-    user_id?: SortOrder
-    user?: UserOrderByWithRelationInput
-  }
-
-  export type AccountWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    user_id?: number
-    AND?: AccountWhereInput | AccountWhereInput[]
-    OR?: AccountWhereInput[]
-    NOT?: AccountWhereInput | AccountWhereInput[]
-    name?: StringFilter<"Account"> | string
-    current_period_ends?: DateTimeFilter<"Account"> | Date | string
-    features?: StringNullableListFilter<"Account">
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "user_id">
-
-  export type AccountOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    current_period_ends?: SortOrder
-    features?: SortOrder
-    user_id?: SortOrder
-    _count?: AccountCountOrderByAggregateInput
-    _avg?: AccountAvgOrderByAggregateInput
-    _max?: AccountMaxOrderByAggregateInput
-    _min?: AccountMinOrderByAggregateInput
-    _sum?: AccountSumOrderByAggregateInput
-  }
-
-  export type AccountScalarWhereWithAggregatesInput = {
-    AND?: AccountScalarWhereWithAggregatesInput | AccountScalarWhereWithAggregatesInput[]
-    OR?: AccountScalarWhereWithAggregatesInput[]
-    NOT?: AccountScalarWhereWithAggregatesInput | AccountScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Account"> | number
-    name?: StringWithAggregatesFilter<"Account"> | string
-    current_period_ends?: DateTimeWithAggregatesFilter<"Account"> | Date | string
-    features?: StringNullableListFilter<"Account">
-    user_id?: IntWithAggregatesFilter<"Account"> | number
-  }
-
   export type GameWhereInput = {
     AND?: GameWhereInput | GameWhereInput[]
     OR?: GameWhereInput[]
@@ -13843,10 +12566,10 @@ export namespace Prisma {
     genres?: StringNullableListFilter<"Game">
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
-    userGames?: UserGameListRelationFilter
-    platformGames?: PlatformGameListRelationFilter
-    wishlistedBy?: WishlistListRelationFilter
     deals?: DealListRelationFilter
+    platformGames?: PlatformGameListRelationFilter
+    userGames?: UserGameListRelationFilter
+    wishlistedBy?: WishlistListRelationFilter
   }
 
   export type GameOrderByWithRelationInput = {
@@ -13860,10 +12583,10 @@ export namespace Prisma {
     genres?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userGames?: UserGameOrderByRelationAggregateInput
-    platformGames?: PlatformGameOrderByRelationAggregateInput
-    wishlistedBy?: WishlistOrderByRelationAggregateInput
     deals?: DealOrderByRelationAggregateInput
+    platformGames?: PlatformGameOrderByRelationAggregateInput
+    userGames?: UserGameOrderByRelationAggregateInput
+    wishlistedBy?: WishlistOrderByRelationAggregateInput
   }
 
   export type GameWhereUniqueInput = Prisma.AtLeast<{
@@ -13880,10 +12603,10 @@ export namespace Prisma {
     genres?: StringNullableListFilter<"Game">
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
-    userGames?: UserGameListRelationFilter
-    platformGames?: PlatformGameListRelationFilter
-    wishlistedBy?: WishlistListRelationFilter
     deals?: DealListRelationFilter
+    platformGames?: PlatformGameListRelationFilter
+    userGames?: UserGameListRelationFilter
+    wishlistedBy?: WishlistListRelationFilter
   }, "id">
 
   export type GameOrderByWithAggregationInput = {
@@ -13986,9 +12709,9 @@ export namespace Prisma {
     platformId?: IntFilter<"PlatformGame"> | number
     platformSpecificId?: StringFilter<"PlatformGame"> | string
     url?: StringNullableFilter<"PlatformGame"> | string | null
+    deals?: DealListRelationFilter
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     platform?: XOR<PlatformScalarRelationFilter, PlatformWhereInput>
-    deals?: DealListRelationFilter
   }
 
   export type PlatformGameOrderByWithRelationInput = {
@@ -13997,9 +12720,9 @@ export namespace Prisma {
     platformId?: SortOrder
     platformSpecificId?: SortOrder
     url?: SortOrderInput | SortOrder
+    deals?: DealOrderByRelationAggregateInput
     game?: GameOrderByWithRelationInput
     platform?: PlatformOrderByWithRelationInput
-    deals?: DealOrderByRelationAggregateInput
   }
 
   export type PlatformGameWhereUniqueInput = Prisma.AtLeast<{
@@ -14013,10 +12736,10 @@ export namespace Prisma {
     platformId?: IntFilter<"PlatformGame"> | number
     platformSpecificId?: StringFilter<"PlatformGame"> | string
     url?: StringNullableFilter<"PlatformGame"> | string | null
+    deals?: DealListRelationFilter
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     platform?: XOR<PlatformScalarRelationFilter, PlatformWhereInput>
-    deals?: DealListRelationFilter
-  }, "id" | "gameId_platformId" | "platformId_platformSpecificId">
+  }, "id" | "gameId_platformId" | "platformId_platformSpecificId" | "gameId_platformId" | "platformId_platformSpecificId">
 
   export type PlatformGameOrderByWithAggregationInput = {
     id?: SortOrder
@@ -14055,8 +12778,8 @@ export namespace Prisma {
     isInstalled?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
     rating?: IntNullableFilter<"UserGame"> | number | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type UserGameOrderByWithRelationInput = {
@@ -14069,8 +12792,8 @@ export namespace Prisma {
     isInstalled?: SortOrder
     notes?: SortOrderInput | SortOrder
     rating?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
     game?: GameOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type UserGameWhereUniqueInput = Prisma.AtLeast<{
@@ -14087,9 +12810,9 @@ export namespace Prisma {
     isInstalled?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
     rating?: IntNullableFilter<"UserGame"> | number | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
-  }, "id" | "userId_gameId">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_gameId" | "userId_gameId">
 
   export type UserGameOrderByWithAggregationInput = {
     id?: SortOrder
@@ -14308,8 +13031,8 @@ export namespace Prisma {
     userId?: IntFilter<"UserAchievement"> | number
     achievementId?: IntFilter<"UserAchievement"> | number
     unlockedAt?: DateTimeFilter<"UserAchievement"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     achievement?: XOR<AchievementScalarRelationFilter, AchievementWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type UserAchievementOrderByWithRelationInput = {
@@ -14317,8 +13040,8 @@ export namespace Prisma {
     userId?: SortOrder
     achievementId?: SortOrder
     unlockedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     achievement?: AchievementOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type UserAchievementWhereUniqueInput = Prisma.AtLeast<{
@@ -14330,9 +13053,9 @@ export namespace Prisma {
     userId?: IntFilter<"UserAchievement"> | number
     achievementId?: IntFilter<"UserAchievement"> | number
     unlockedAt?: DateTimeFilter<"UserAchievement"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     achievement?: XOR<AchievementScalarRelationFilter, AchievementWhereInput>
-  }, "id" | "userId_achievementId">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_achievementId" | "userId_achievementId">
 
   export type UserAchievementOrderByWithAggregationInput = {
     id?: SortOrder
@@ -14364,8 +13087,8 @@ export namespace Prisma {
     userId?: IntFilter<"Wishlist"> | number
     gameId?: IntFilter<"Wishlist"> | number
     addedAt?: DateTimeFilter<"Wishlist"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type WishlistOrderByWithRelationInput = {
@@ -14373,8 +13096,8 @@ export namespace Prisma {
     userId?: SortOrder
     gameId?: SortOrder
     addedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
     game?: GameOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type WishlistWhereUniqueInput = Prisma.AtLeast<{
@@ -14386,9 +13109,9 @@ export namespace Prisma {
     userId?: IntFilter<"Wishlist"> | number
     gameId?: IntFilter<"Wishlist"> | number
     addedAt?: DateTimeFilter<"Wishlist"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
-  }, "id" | "userId_gameId">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_gameId" | "userId_gameId">
 
   export type WishlistOrderByWithAggregationInput = {
     id?: SortOrder
@@ -14419,9 +13142,8 @@ export namespace Prisma {
     xp?: number
     level?: number
     credits?: number
-    account?: AccountCreateNestedOneWithoutUserInput
-    userGames?: UserGameCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    userGames?: UserGameCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
   }
 
@@ -14433,9 +13155,8 @@ export namespace Prisma {
     xp?: number
     level?: number
     credits?: number
-    account?: AccountUncheckedCreateNestedOneWithoutUserInput
-    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -14446,9 +13167,8 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUpdateOneWithoutUserNestedInput
-    userGames?: UserGameUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    userGames?: UserGameUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
   }
 
@@ -14460,9 +13180,8 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUncheckedUpdateOneWithoutUserNestedInput
-    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -14495,58 +13214,6 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
   }
 
-  export type AccountCreateInput = {
-    name: string
-    current_period_ends?: Date | string
-    features?: AccountCreatefeaturesInput | string[]
-    user: UserCreateNestedOneWithoutAccountInput
-  }
-
-  export type AccountUncheckedCreateInput = {
-    id?: number
-    name: string
-    current_period_ends?: Date | string
-    features?: AccountCreatefeaturesInput | string[]
-    user_id: number
-  }
-
-  export type AccountUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    current_period_ends?: DateTimeFieldUpdateOperationsInput | Date | string
-    features?: AccountUpdatefeaturesInput | string[]
-    user?: UserUpdateOneRequiredWithoutAccountNestedInput
-  }
-
-  export type AccountUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    current_period_ends?: DateTimeFieldUpdateOperationsInput | Date | string
-    features?: AccountUpdatefeaturesInput | string[]
-    user_id?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type AccountCreateManyInput = {
-    id?: number
-    name: string
-    current_period_ends?: Date | string
-    features?: AccountCreatefeaturesInput | string[]
-    user_id: number
-  }
-
-  export type AccountUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    current_period_ends?: DateTimeFieldUpdateOperationsInput | Date | string
-    features?: AccountUpdatefeaturesInput | string[]
-  }
-
-  export type AccountUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    current_period_ends?: DateTimeFieldUpdateOperationsInput | Date | string
-    features?: AccountUpdatefeaturesInput | string[]
-    user_id?: IntFieldUpdateOperationsInput | number
-  }
-
   export type GameCreateInput = {
     title: string
     description?: string | null
@@ -14557,10 +13224,10 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    userGames?: UserGameCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
-    wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
     deals?: DealCreateNestedManyWithoutGameInput
+    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
+    userGames?: UserGameCreateNestedManyWithoutGameInput
+    wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateInput = {
@@ -14574,10 +13241,10 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
-    wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
+    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
+    wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameUpdateInput = {
@@ -14590,10 +13257,10 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userGames?: UserGameUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
-    wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
     deals?: DealUpdateManyWithoutGameNestedInput
+    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUpdateManyWithoutGameNestedInput
+    wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateInput = {
@@ -14607,10 +13274,10 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
-    wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
+    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
+    wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
 
   export type GameCreateManyInput = {
@@ -14711,9 +13378,9 @@ export namespace Prisma {
   export type PlatformGameCreateInput = {
     platformSpecificId: string
     url?: string | null
+    deals?: DealCreateNestedManyWithoutPlatformGameInput
     game: GameCreateNestedOneWithoutPlatformGamesInput
     platform: PlatformCreateNestedOneWithoutPlatformGamesInput
-    deals?: DealCreateNestedManyWithoutPlatformGameInput
   }
 
   export type PlatformGameUncheckedCreateInput = {
@@ -14728,9 +13395,9 @@ export namespace Prisma {
   export type PlatformGameUpdateInput = {
     platformSpecificId?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
+    deals?: DealUpdateManyWithoutPlatformGameNestedInput
     game?: GameUpdateOneRequiredWithoutPlatformGamesNestedInput
     platform?: PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput
-    deals?: DealUpdateManyWithoutPlatformGameNestedInput
   }
 
   export type PlatformGameUncheckedUpdateInput = {
@@ -14770,8 +13437,8 @@ export namespace Prisma {
     isInstalled?: boolean
     notes?: string | null
     rating?: number | null
-    user: UserCreateNestedOneWithoutUserGamesInput
     game: GameCreateNestedOneWithoutUserGamesInput
+    user: UserCreateNestedOneWithoutUserGamesInput
   }
 
   export type UserGameUncheckedCreateInput = {
@@ -14793,8 +13460,8 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableIntFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
+    user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
 
   export type UserGameUncheckedUpdateInput = {
@@ -15036,8 +13703,8 @@ export namespace Prisma {
 
   export type UserAchievementCreateInput = {
     unlockedAt?: Date | string
-    user: UserCreateNestedOneWithoutUserAchievementsInput
     achievement: AchievementCreateNestedOneWithoutUserAchievementsInput
+    user: UserCreateNestedOneWithoutUserAchievementsInput
   }
 
   export type UserAchievementUncheckedCreateInput = {
@@ -15049,8 +13716,8 @@ export namespace Prisma {
 
   export type UserAchievementUpdateInput = {
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutUserAchievementsNestedInput
     achievement?: AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput
+    user?: UserUpdateOneRequiredWithoutUserAchievementsNestedInput
   }
 
   export type UserAchievementUncheckedUpdateInput = {
@@ -15080,8 +13747,8 @@ export namespace Prisma {
 
   export type WishlistCreateInput = {
     addedAt?: Date | string
-    user: UserCreateNestedOneWithoutWishlistItemsInput
     game: GameCreateNestedOneWithoutWishlistedByInput
+    user: UserCreateNestedOneWithoutWishlistItemsInput
   }
 
   export type WishlistUncheckedCreateInput = {
@@ -15093,8 +13760,8 @@ export namespace Prisma {
 
   export type WishlistUpdateInput = {
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutWishlistItemsNestedInput
     game?: GameUpdateOneRequiredWithoutWishlistedByNestedInput
+    user?: UserUpdateOneRequiredWithoutWishlistItemsNestedInput
   }
 
   export type WishlistUncheckedUpdateInput = {
@@ -15163,21 +13830,16 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type AccountNullableScalarRelationFilter = {
-    is?: AccountWhereInput | null
-    isNot?: AccountWhereInput | null
+  export type UserAchievementListRelationFilter = {
+    every?: UserAchievementWhereInput
+    some?: UserAchievementWhereInput
+    none?: UserAchievementWhereInput
   }
 
   export type UserGameListRelationFilter = {
     every?: UserGameWhereInput
     some?: UserGameWhereInput
     none?: UserGameWhereInput
-  }
-
-  export type UserAchievementListRelationFilter = {
-    every?: UserAchievementWhereInput
-    some?: UserAchievementWhereInput
-    none?: UserAchievementWhereInput
   }
 
   export type WishlistListRelationFilter = {
@@ -15191,11 +13853,11 @@ export namespace Prisma {
     nulls?: NullsOrder
   }
 
-  export type UserGameOrderByRelationAggregateInput = {
+  export type UserAchievementOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type UserAchievementOrderByRelationAggregateInput = {
+  export type UserGameOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -15299,76 +13961,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type StringNullableListFilter<$PrismaModel = never> = {
-    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    has?: string | StringFieldRefInput<$PrismaModel> | null
-    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
-    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
-    isEmpty?: boolean
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
-  export type AccountCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    current_period_ends?: SortOrder
-    features?: SortOrder
-    user_id?: SortOrder
-  }
-
-  export type AccountAvgOrderByAggregateInput = {
-    id?: SortOrder
-    user_id?: SortOrder
-  }
-
-  export type AccountMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    current_period_ends?: SortOrder
-    user_id?: SortOrder
-  }
-
-  export type AccountMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    current_period_ends?: SortOrder
-    user_id?: SortOrder
-  }
-
-  export type AccountSumOrderByAggregateInput = {
-    id?: SortOrder
-    user_id?: SortOrder
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -15380,10 +13972,23 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type PlatformGameListRelationFilter = {
-    every?: PlatformGameWhereInput
-    some?: PlatformGameWhereInput
-    none?: PlatformGameWhereInput
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type DealListRelationFilter = {
@@ -15392,11 +13997,17 @@ export namespace Prisma {
     none?: DealWhereInput
   }
 
-  export type PlatformGameOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type PlatformGameListRelationFilter = {
+    every?: PlatformGameWhereInput
+    some?: PlatformGameWhereInput
+    none?: PlatformGameWhereInput
   }
 
   export type DealOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlatformGameOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -15457,6 +14068,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type PlatformCountOrderByAggregateInput = {
@@ -15561,6 +14186,11 @@ export namespace Prisma {
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
   }
 
   export type UserGameUserIdGameIdCompoundUniqueInput = {
@@ -15871,10 +14501,11 @@ export namespace Prisma {
     gameId?: SortOrder
   }
 
-  export type AccountCreateNestedOneWithoutUserInput = {
-    create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput>
-    connectOrCreate?: AccountCreateOrConnectWithoutUserInput
-    connect?: AccountWhereUniqueInput
+  export type UserAchievementCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
+    createMany?: UserAchievementCreateManyUserInputEnvelope
+    connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
 
   export type UserGameCreateNestedManyWithoutUserInput = {
@@ -15884,13 +14515,6 @@ export namespace Prisma {
     connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
   }
 
-  export type UserAchievementCreateNestedManyWithoutUserInput = {
-    create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
-    createMany?: UserAchievementCreateManyUserInputEnvelope
-    connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
-  }
-
   export type WishlistCreateNestedManyWithoutUserInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
@@ -15898,10 +14522,11 @@ export namespace Prisma {
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
 
-  export type AccountUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput>
-    connectOrCreate?: AccountCreateOrConnectWithoutUserInput
-    connect?: AccountWhereUniqueInput
+  export type UserAchievementUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
+    createMany?: UserAchievementCreateManyUserInputEnvelope
+    connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
 
   export type UserGameUncheckedCreateNestedManyWithoutUserInput = {
@@ -15909,13 +14534,6 @@ export namespace Prisma {
     connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
     createMany?: UserGameCreateManyUserInputEnvelope
     connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-  }
-
-  export type UserAchievementUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
-    createMany?: UserAchievementCreateManyUserInputEnvelope
-    connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
 
   export type WishlistUncheckedCreateNestedManyWithoutUserInput = {
@@ -15941,14 +14559,18 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type AccountUpdateOneWithoutUserNestedInput = {
-    create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput>
-    connectOrCreate?: AccountCreateOrConnectWithoutUserInput
-    upsert?: AccountUpsertWithoutUserInput
-    disconnect?: AccountWhereInput | boolean
-    delete?: AccountWhereInput | boolean
-    connect?: AccountWhereUniqueInput
-    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutUserInput, AccountUpdateWithoutUserInput>, AccountUncheckedUpdateWithoutUserInput>
+  export type UserAchievementUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
+    upsert?: UserAchievementUpsertWithWhereUniqueWithoutUserInput | UserAchievementUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserAchievementCreateManyUserInputEnvelope
+    set?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
+    disconnect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
+    delete?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
+    connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
+    update?: UserAchievementUpdateWithWhereUniqueWithoutUserInput | UserAchievementUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserAchievementUpdateManyWithWhereWithoutUserInput | UserAchievementUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
 
   export type UserGameUpdateManyWithoutUserNestedInput = {
@@ -15965,20 +14587,6 @@ export namespace Prisma {
     deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
   }
 
-  export type UserAchievementUpdateManyWithoutUserNestedInput = {
-    create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
-    upsert?: UserAchievementUpsertWithWhereUniqueWithoutUserInput | UserAchievementUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: UserAchievementCreateManyUserInputEnvelope
-    set?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
-    disconnect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
-    delete?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
-    connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
-    update?: UserAchievementUpdateWithWhereUniqueWithoutUserInput | UserAchievementUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: UserAchievementUpdateManyWithWhereWithoutUserInput | UserAchievementUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
-  }
-
   export type WishlistUpdateManyWithoutUserNestedInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
@@ -15991,30 +14599,6 @@ export namespace Prisma {
     update?: WishlistUpdateWithWhereUniqueWithoutUserInput | WishlistUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: WishlistUpdateManyWithWhereWithoutUserInput | WishlistUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
-  }
-
-  export type AccountUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput>
-    connectOrCreate?: AccountCreateOrConnectWithoutUserInput
-    upsert?: AccountUpsertWithoutUserInput
-    disconnect?: AccountWhereInput | boolean
-    delete?: AccountWhereInput | boolean
-    connect?: AccountWhereUniqueInput
-    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutUserInput, AccountUpdateWithoutUserInput>, AccountUncheckedUpdateWithoutUserInput>
-  }
-
-  export type UserGameUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput> | UserGameCreateWithoutUserInput[] | UserGameUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
-    upsert?: UserGameUpsertWithWhereUniqueWithoutUserInput | UserGameUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: UserGameCreateManyUserInputEnvelope
-    set?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    disconnect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    delete?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    update?: UserGameUpdateWithWhereUniqueWithoutUserInput | UserGameUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: UserGameUpdateManyWithWhereWithoutUserInput | UserGameUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
   }
 
   export type UserAchievementUncheckedUpdateManyWithoutUserNestedInput = {
@@ -16031,6 +14615,20 @@ export namespace Prisma {
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
 
+  export type UserGameUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput> | UserGameCreateWithoutUserInput[] | UserGameUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
+    upsert?: UserGameUpsertWithWhereUniqueWithoutUserInput | UserGameUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserGameCreateManyUserInputEnvelope
+    set?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    disconnect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    delete?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    update?: UserGameUpdateWithWhereUniqueWithoutUserInput | UserGameUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserGameUpdateManyWithWhereWithoutUserInput | UserGameUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
+  }
+
   export type WishlistUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
@@ -16045,56 +14643,8 @@ export namespace Prisma {
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
-  export type AccountCreatefeaturesInput = {
-    set: string[]
-  }
-
-  export type UserCreateNestedOneWithoutAccountInput = {
-    create?: XOR<UserCreateWithoutAccountInput, UserUncheckedCreateWithoutAccountInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAccountInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
-  }
-
-  export type AccountUpdatefeaturesInput = {
-    set?: string[]
-    push?: string | string[]
-  }
-
-  export type UserUpdateOneRequiredWithoutAccountNestedInput = {
-    create?: XOR<UserCreateWithoutAccountInput, UserUncheckedCreateWithoutAccountInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAccountInput
-    upsert?: UserUpsertWithoutAccountInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAccountInput, UserUpdateWithoutAccountInput>, UserUncheckedUpdateWithoutAccountInput>
-  }
-
   export type GameCreategenresInput = {
     set: string[]
-  }
-
-  export type UserGameCreateNestedManyWithoutGameInput = {
-    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
-    createMany?: UserGameCreateManyGameInputEnvelope
-    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-  }
-
-  export type PlatformGameCreateNestedManyWithoutGameInput = {
-    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
-    createMany?: PlatformGameCreateManyGameInputEnvelope
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-  }
-
-  export type WishlistCreateNestedManyWithoutGameInput = {
-    create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
-    createMany?: WishlistCreateManyGameInputEnvelope
-    connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
 
   export type DealCreateNestedManyWithoutGameInput = {
@@ -16104,21 +14654,21 @@ export namespace Prisma {
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
   }
 
-  export type UserGameUncheckedCreateNestedManyWithoutGameInput = {
-    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
-    createMany?: UserGameCreateManyGameInputEnvelope
-    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-  }
-
-  export type PlatformGameUncheckedCreateNestedManyWithoutGameInput = {
+  export type PlatformGameCreateNestedManyWithoutGameInput = {
     create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
     createMany?: PlatformGameCreateManyGameInputEnvelope
     connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
   }
 
-  export type WishlistUncheckedCreateNestedManyWithoutGameInput = {
+  export type UserGameCreateNestedManyWithoutGameInput = {
+    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
+    createMany?: UserGameCreateManyGameInputEnvelope
+    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+  }
+
+  export type WishlistCreateNestedManyWithoutGameInput = {
     create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
     createMany?: WishlistCreateManyGameInputEnvelope
@@ -16132,6 +14682,27 @@ export namespace Prisma {
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
   }
 
+  export type PlatformGameUncheckedCreateNestedManyWithoutGameInput = {
+    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
+    createMany?: PlatformGameCreateManyGameInputEnvelope
+    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
+  }
+
+  export type UserGameUncheckedCreateNestedManyWithoutGameInput = {
+    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
+    createMany?: UserGameCreateManyGameInputEnvelope
+    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+  }
+
+  export type WishlistUncheckedCreateNestedManyWithoutGameInput = {
+    create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
+    createMany?: WishlistCreateManyGameInputEnvelope
+    connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+  }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
   }
@@ -16141,46 +14712,8 @@ export namespace Prisma {
     push?: string | string[]
   }
 
-  export type UserGameUpdateManyWithoutGameNestedInput = {
-    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
-    upsert?: UserGameUpsertWithWhereUniqueWithoutGameInput | UserGameUpsertWithWhereUniqueWithoutGameInput[]
-    createMany?: UserGameCreateManyGameInputEnvelope
-    set?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    disconnect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    delete?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    update?: UserGameUpdateWithWhereUniqueWithoutGameInput | UserGameUpdateWithWhereUniqueWithoutGameInput[]
-    updateMany?: UserGameUpdateManyWithWhereWithoutGameInput | UserGameUpdateManyWithWhereWithoutGameInput[]
-    deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
-  }
-
-  export type PlatformGameUpdateManyWithoutGameNestedInput = {
-    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
-    upsert?: PlatformGameUpsertWithWhereUniqueWithoutGameInput | PlatformGameUpsertWithWhereUniqueWithoutGameInput[]
-    createMany?: PlatformGameCreateManyGameInputEnvelope
-    set?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    disconnect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    delete?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    update?: PlatformGameUpdateWithWhereUniqueWithoutGameInput | PlatformGameUpdateWithWhereUniqueWithoutGameInput[]
-    updateMany?: PlatformGameUpdateManyWithWhereWithoutGameInput | PlatformGameUpdateManyWithWhereWithoutGameInput[]
-    deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-  }
-
-  export type WishlistUpdateManyWithoutGameNestedInput = {
-    create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
-    upsert?: WishlistUpsertWithWhereUniqueWithoutGameInput | WishlistUpsertWithWhereUniqueWithoutGameInput[]
-    createMany?: WishlistCreateManyGameInputEnvelope
-    set?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
-    disconnect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
-    delete?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
-    connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
-    update?: WishlistUpdateWithWhereUniqueWithoutGameInput | WishlistUpdateWithWhereUniqueWithoutGameInput[]
-    updateMany?: WishlistUpdateManyWithWhereWithoutGameInput | WishlistUpdateManyWithWhereWithoutGameInput[]
-    deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type DealUpdateManyWithoutGameNestedInput = {
@@ -16197,21 +14730,7 @@ export namespace Prisma {
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
 
-  export type UserGameUncheckedUpdateManyWithoutGameNestedInput = {
-    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
-    upsert?: UserGameUpsertWithWhereUniqueWithoutGameInput | UserGameUpsertWithWhereUniqueWithoutGameInput[]
-    createMany?: UserGameCreateManyGameInputEnvelope
-    set?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    disconnect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    delete?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
-    update?: UserGameUpdateWithWhereUniqueWithoutGameInput | UserGameUpdateWithWhereUniqueWithoutGameInput[]
-    updateMany?: UserGameUpdateManyWithWhereWithoutGameInput | UserGameUpdateManyWithWhereWithoutGameInput[]
-    deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
-  }
-
-  export type PlatformGameUncheckedUpdateManyWithoutGameNestedInput = {
+  export type PlatformGameUpdateManyWithoutGameNestedInput = {
     create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
     upsert?: PlatformGameUpsertWithWhereUniqueWithoutGameInput | PlatformGameUpsertWithWhereUniqueWithoutGameInput[]
@@ -16225,7 +14744,21 @@ export namespace Prisma {
     deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
   }
 
-  export type WishlistUncheckedUpdateManyWithoutGameNestedInput = {
+  export type UserGameUpdateManyWithoutGameNestedInput = {
+    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
+    upsert?: UserGameUpsertWithWhereUniqueWithoutGameInput | UserGameUpsertWithWhereUniqueWithoutGameInput[]
+    createMany?: UserGameCreateManyGameInputEnvelope
+    set?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    disconnect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    delete?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    update?: UserGameUpdateWithWhereUniqueWithoutGameInput | UserGameUpdateWithWhereUniqueWithoutGameInput[]
+    updateMany?: UserGameUpdateManyWithWhereWithoutGameInput | UserGameUpdateManyWithWhereWithoutGameInput[]
+    deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
+  }
+
+  export type WishlistUpdateManyWithoutGameNestedInput = {
     create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
     upsert?: WishlistUpsertWithWhereUniqueWithoutGameInput | WishlistUpsertWithWhereUniqueWithoutGameInput[]
@@ -16251,6 +14784,48 @@ export namespace Prisma {
     update?: DealUpdateWithWhereUniqueWithoutGameInput | DealUpdateWithWhereUniqueWithoutGameInput[]
     updateMany?: DealUpdateManyWithWhereWithoutGameInput | DealUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
+  }
+
+  export type PlatformGameUncheckedUpdateManyWithoutGameNestedInput = {
+    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
+    upsert?: PlatformGameUpsertWithWhereUniqueWithoutGameInput | PlatformGameUpsertWithWhereUniqueWithoutGameInput[]
+    createMany?: PlatformGameCreateManyGameInputEnvelope
+    set?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
+    disconnect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
+    delete?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
+    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
+    update?: PlatformGameUpdateWithWhereUniqueWithoutGameInput | PlatformGameUpdateWithWhereUniqueWithoutGameInput[]
+    updateMany?: PlatformGameUpdateManyWithWhereWithoutGameInput | PlatformGameUpdateManyWithWhereWithoutGameInput[]
+    deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
+  }
+
+  export type UserGameUncheckedUpdateManyWithoutGameNestedInput = {
+    create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
+    upsert?: UserGameUpsertWithWhereUniqueWithoutGameInput | UserGameUpsertWithWhereUniqueWithoutGameInput[]
+    createMany?: UserGameCreateManyGameInputEnvelope
+    set?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    disconnect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    delete?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
+    update?: UserGameUpdateWithWhereUniqueWithoutGameInput | UserGameUpdateWithWhereUniqueWithoutGameInput[]
+    updateMany?: UserGameUpdateManyWithWhereWithoutGameInput | UserGameUpdateManyWithWhereWithoutGameInput[]
+    deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
+  }
+
+  export type WishlistUncheckedUpdateManyWithoutGameNestedInput = {
+    create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
+    upsert?: WishlistUpsertWithWhereUniqueWithoutGameInput | WishlistUpsertWithWhereUniqueWithoutGameInput[]
+    createMany?: WishlistCreateManyGameInputEnvelope
+    set?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+    disconnect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+    delete?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+    connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+    update?: WishlistUpdateWithWhereUniqueWithoutGameInput | WishlistUpdateWithWhereUniqueWithoutGameInput[]
+    updateMany?: WishlistUpdateManyWithWhereWithoutGameInput | WishlistUpdateManyWithWhereWithoutGameInput[]
+    deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
   export type PlatformGameCreateNestedManyWithoutPlatformInput = {
@@ -16295,6 +14870,13 @@ export namespace Prisma {
     deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
   }
 
+  export type DealCreateNestedManyWithoutPlatformGameInput = {
+    create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
+    connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
+    createMany?: DealCreateManyPlatformGameInputEnvelope
+    connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
+  }
+
   export type GameCreateNestedOneWithoutPlatformGamesInput = {
     create?: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
     connectOrCreate?: GameCreateOrConnectWithoutPlatformGamesInput
@@ -16307,18 +14889,25 @@ export namespace Prisma {
     connect?: PlatformWhereUniqueInput
   }
 
-  export type DealCreateNestedManyWithoutPlatformGameInput = {
+  export type DealUncheckedCreateNestedManyWithoutPlatformGameInput = {
     create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
     createMany?: DealCreateManyPlatformGameInputEnvelope
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
   }
 
-  export type DealUncheckedCreateNestedManyWithoutPlatformGameInput = {
+  export type DealUpdateManyWithoutPlatformGameNestedInput = {
     create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
+    upsert?: DealUpsertWithWhereUniqueWithoutPlatformGameInput | DealUpsertWithWhereUniqueWithoutPlatformGameInput[]
     createMany?: DealCreateManyPlatformGameInputEnvelope
+    set?: DealWhereUniqueInput | DealWhereUniqueInput[]
+    disconnect?: DealWhereUniqueInput | DealWhereUniqueInput[]
+    delete?: DealWhereUniqueInput | DealWhereUniqueInput[]
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
+    update?: DealUpdateWithWhereUniqueWithoutPlatformGameInput | DealUpdateWithWhereUniqueWithoutPlatformGameInput[]
+    updateMany?: DealUpdateManyWithWhereWithoutPlatformGameInput | DealUpdateManyWithWhereWithoutPlatformGameInput[]
+    deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
 
   export type GameUpdateOneRequiredWithoutPlatformGamesNestedInput = {
@@ -16337,20 +14926,6 @@ export namespace Prisma {
     update?: XOR<XOR<PlatformUpdateToOneWithWhereWithoutPlatformGamesInput, PlatformUpdateWithoutPlatformGamesInput>, PlatformUncheckedUpdateWithoutPlatformGamesInput>
   }
 
-  export type DealUpdateManyWithoutPlatformGameNestedInput = {
-    create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
-    connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
-    upsert?: DealUpsertWithWhereUniqueWithoutPlatformGameInput | DealUpsertWithWhereUniqueWithoutPlatformGameInput[]
-    createMany?: DealCreateManyPlatformGameInputEnvelope
-    set?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    disconnect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    delete?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    update?: DealUpdateWithWhereUniqueWithoutPlatformGameInput | DealUpdateWithWhereUniqueWithoutPlatformGameInput[]
-    updateMany?: DealUpdateManyWithWhereWithoutPlatformGameInput | DealUpdateManyWithWhereWithoutPlatformGameInput[]
-    deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
-  }
-
   export type DealUncheckedUpdateManyWithoutPlatformGameNestedInput = {
     create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
@@ -16365,16 +14940,16 @@ export namespace Prisma {
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutUserGamesInput = {
-    create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type GameCreateNestedOneWithoutUserGamesInput = {
     create?: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: GameCreateOrConnectWithoutUserGamesInput
     connect?: GameWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutUserGamesInput = {
+    create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
+    connect?: UserWhereUniqueInput
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -16389,20 +14964,20 @@ export namespace Prisma {
     set?: boolean
   }
 
-  export type UserUpdateOneRequiredWithoutUserGamesNestedInput = {
-    create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
-    upsert?: UserUpsertWithoutUserGamesInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserGamesInput, UserUpdateWithoutUserGamesInput>, UserUncheckedUpdateWithoutUserGamesInput>
-  }
-
   export type GameUpdateOneRequiredWithoutUserGamesNestedInput = {
     create?: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: GameCreateOrConnectWithoutUserGamesInput
     upsert?: GameUpsertWithoutUserGamesInput
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutUserGamesInput, GameUpdateWithoutUserGamesInput>, GameUncheckedUpdateWithoutUserGamesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutUserGamesNestedInput = {
+    create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
+    upsert?: UserUpsertWithoutUserGamesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserGamesInput, UserUpdateWithoutUserGamesInput>, UserUncheckedUpdateWithoutUserGamesInput>
   }
 
   export type GameCreateNestedOneWithoutDealsInput = {
@@ -16485,24 +15060,16 @@ export namespace Prisma {
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutUserAchievementsInput = {
-    create?: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUserAchievementsInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type AchievementCreateNestedOneWithoutUserAchievementsInput = {
     create?: XOR<AchievementCreateWithoutUserAchievementsInput, AchievementUncheckedCreateWithoutUserAchievementsInput>
     connectOrCreate?: AchievementCreateOrConnectWithoutUserAchievementsInput
     connect?: AchievementWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutUserAchievementsNestedInput = {
+  export type UserCreateNestedOneWithoutUserAchievementsInput = {
     create?: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserAchievementsInput
-    upsert?: UserUpsertWithoutUserAchievementsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserAchievementsInput, UserUpdateWithoutUserAchievementsInput>, UserUncheckedUpdateWithoutUserAchievementsInput>
   }
 
   export type AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput = {
@@ -16513,10 +15080,12 @@ export namespace Prisma {
     update?: XOR<XOR<AchievementUpdateToOneWithWhereWithoutUserAchievementsInput, AchievementUpdateWithoutUserAchievementsInput>, AchievementUncheckedUpdateWithoutUserAchievementsInput>
   }
 
-  export type UserCreateNestedOneWithoutWishlistItemsInput = {
-    create?: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutWishlistItemsInput
+  export type UserUpdateOneRequiredWithoutUserAchievementsNestedInput = {
+    create?: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserAchievementsInput
+    upsert?: UserUpsertWithoutUserAchievementsInput
     connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserAchievementsInput, UserUpdateWithoutUserAchievementsInput>, UserUncheckedUpdateWithoutUserAchievementsInput>
   }
 
   export type GameCreateNestedOneWithoutWishlistedByInput = {
@@ -16525,12 +15094,10 @@ export namespace Prisma {
     connect?: GameWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutWishlistItemsNestedInput = {
+  export type UserCreateNestedOneWithoutWishlistItemsInput = {
     create?: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
     connectOrCreate?: UserCreateOrConnectWithoutWishlistItemsInput
-    upsert?: UserUpsertWithoutWishlistItemsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWishlistItemsInput, UserUpdateWithoutWishlistItemsInput>, UserUncheckedUpdateWithoutWishlistItemsInput>
   }
 
   export type GameUpdateOneRequiredWithoutWishlistedByNestedInput = {
@@ -16539,6 +15106,14 @@ export namespace Prisma {
     upsert?: GameUpsertWithoutWishlistedByInput
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutWishlistedByInput, GameUpdateWithoutWishlistedByInput>, GameUncheckedUpdateWithoutWishlistedByInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutWishlistItemsNestedInput = {
+    create?: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWishlistItemsInput
+    upsert?: UserUpsertWithoutWishlistItemsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWishlistItemsInput, UserUpdateWithoutWishlistItemsInput>, UserUncheckedUpdateWithoutWishlistItemsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -16652,31 +15227,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -16686,6 +15236,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -16700,6 +15261,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -16758,22 +15333,25 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type AccountCreateWithoutUserInput = {
-    name: string
-    current_period_ends?: Date | string
-    features?: AccountCreatefeaturesInput | string[]
+  export type UserAchievementCreateWithoutUserInput = {
+    unlockedAt?: Date | string
+    achievement: AchievementCreateNestedOneWithoutUserAchievementsInput
   }
 
-  export type AccountUncheckedCreateWithoutUserInput = {
+  export type UserAchievementUncheckedCreateWithoutUserInput = {
     id?: number
-    name: string
-    current_period_ends?: Date | string
-    features?: AccountCreatefeaturesInput | string[]
+    achievementId: number
+    unlockedAt?: Date | string
   }
 
-  export type AccountCreateOrConnectWithoutUserInput = {
-    where: AccountWhereUniqueInput
-    create: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput>
+  export type UserAchievementCreateOrConnectWithoutUserInput = {
+    where: UserAchievementWhereUniqueInput
+    create: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserAchievementCreateManyUserInputEnvelope = {
+    data: UserAchievementCreateManyUserInput | UserAchievementCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserGameCreateWithoutUserInput = {
@@ -16807,27 +15385,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserAchievementCreateWithoutUserInput = {
-    unlockedAt?: Date | string
-    achievement: AchievementCreateNestedOneWithoutUserAchievementsInput
-  }
-
-  export type UserAchievementUncheckedCreateWithoutUserInput = {
-    id?: number
-    achievementId: number
-    unlockedAt?: Date | string
-  }
-
-  export type UserAchievementCreateOrConnectWithoutUserInput = {
-    where: UserAchievementWhereUniqueInput
-    create: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput>
-  }
-
-  export type UserAchievementCreateManyUserInputEnvelope = {
-    data: UserAchievementCreateManyUserInput | UserAchievementCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
   export type WishlistCreateWithoutUserInput = {
     addedAt?: Date | string
     game: GameCreateNestedOneWithoutWishlistedByInput
@@ -16849,28 +15406,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AccountUpsertWithoutUserInput = {
-    update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
-    create: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput>
-    where?: AccountWhereInput
+  export type UserAchievementUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserAchievementWhereUniqueInput
+    update: XOR<UserAchievementUpdateWithoutUserInput, UserAchievementUncheckedUpdateWithoutUserInput>
+    create: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput>
   }
 
-  export type AccountUpdateToOneWithWhereWithoutUserInput = {
-    where?: AccountWhereInput
-    data: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
+  export type UserAchievementUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserAchievementWhereUniqueInput
+    data: XOR<UserAchievementUpdateWithoutUserInput, UserAchievementUncheckedUpdateWithoutUserInput>
   }
 
-  export type AccountUpdateWithoutUserInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    current_period_ends?: DateTimeFieldUpdateOperationsInput | Date | string
-    features?: AccountUpdatefeaturesInput | string[]
+  export type UserAchievementUpdateManyWithWhereWithoutUserInput = {
+    where: UserAchievementScalarWhereInput
+    data: XOR<UserAchievementUpdateManyMutationInput, UserAchievementUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type AccountUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    current_period_ends?: DateTimeFieldUpdateOperationsInput | Date | string
-    features?: AccountUpdatefeaturesInput | string[]
+  export type UserAchievementScalarWhereInput = {
+    AND?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
+    OR?: UserAchievementScalarWhereInput[]
+    NOT?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
+    id?: IntFilter<"UserAchievement"> | number
+    userId?: IntFilter<"UserAchievement"> | number
+    achievementId?: IntFilter<"UserAchievement"> | number
+    unlockedAt?: DateTimeFilter<"UserAchievement"> | Date | string
   }
 
   export type UserGameUpsertWithWhereUniqueWithoutUserInput = {
@@ -16904,32 +15463,6 @@ export namespace Prisma {
     rating?: IntNullableFilter<"UserGame"> | number | null
   }
 
-  export type UserAchievementUpsertWithWhereUniqueWithoutUserInput = {
-    where: UserAchievementWhereUniqueInput
-    update: XOR<UserAchievementUpdateWithoutUserInput, UserAchievementUncheckedUpdateWithoutUserInput>
-    create: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput>
-  }
-
-  export type UserAchievementUpdateWithWhereUniqueWithoutUserInput = {
-    where: UserAchievementWhereUniqueInput
-    data: XOR<UserAchievementUpdateWithoutUserInput, UserAchievementUncheckedUpdateWithoutUserInput>
-  }
-
-  export type UserAchievementUpdateManyWithWhereWithoutUserInput = {
-    where: UserAchievementScalarWhereInput
-    data: XOR<UserAchievementUpdateManyMutationInput, UserAchievementUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type UserAchievementScalarWhereInput = {
-    AND?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
-    OR?: UserAchievementScalarWhereInput[]
-    NOT?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
-    id?: IntFilter<"UserAchievement"> | number
-    userId?: IntFilter<"UserAchievement"> | number
-    achievementId?: IntFilter<"UserAchievement"> | number
-    unlockedAt?: DateTimeFilter<"UserAchievement"> | Date | string
-  }
-
   export type WishlistUpsertWithWhereUniqueWithoutUserInput = {
     where: WishlistWhereUniqueInput
     update: XOR<WishlistUpdateWithoutUserInput, WishlistUncheckedUpdateWithoutUserInput>
@@ -16954,149 +15487,6 @@ export namespace Prisma {
     userId?: IntFilter<"Wishlist"> | number
     gameId?: IntFilter<"Wishlist"> | number
     addedAt?: DateTimeFilter<"Wishlist"> | Date | string
-  }
-
-  export type UserCreateWithoutAccountInput = {
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    userGames?: UserGameCreateNestedManyWithoutUserInput
-    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
-    wishlistItems?: WishlistCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutAccountInput = {
-    id?: number
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
-    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
-    wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutAccountInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutAccountInput, UserUncheckedCreateWithoutAccountInput>
-  }
-
-  export type UserUpsertWithoutAccountInput = {
-    update: XOR<UserUpdateWithoutAccountInput, UserUncheckedUpdateWithoutAccountInput>
-    create: XOR<UserCreateWithoutAccountInput, UserUncheckedCreateWithoutAccountInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutAccountInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutAccountInput, UserUncheckedUpdateWithoutAccountInput>
-  }
-
-  export type UserUpdateWithoutAccountInput = {
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    userGames?: UserGameUpdateManyWithoutUserNestedInput
-    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
-    wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutAccountInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
-    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
-    wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserGameCreateWithoutGameInput = {
-    addedAt?: Date | string
-    playtimeMinutes?: number | null
-    lastPlayed?: Date | string | null
-    isInstalled?: boolean
-    notes?: string | null
-    rating?: number | null
-    user: UserCreateNestedOneWithoutUserGamesInput
-  }
-
-  export type UserGameUncheckedCreateWithoutGameInput = {
-    id?: number
-    userId: number
-    addedAt?: Date | string
-    playtimeMinutes?: number | null
-    lastPlayed?: Date | string | null
-    isInstalled?: boolean
-    notes?: string | null
-    rating?: number | null
-  }
-
-  export type UserGameCreateOrConnectWithoutGameInput = {
-    where: UserGameWhereUniqueInput
-    create: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput>
-  }
-
-  export type UserGameCreateManyGameInputEnvelope = {
-    data: UserGameCreateManyGameInput | UserGameCreateManyGameInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type PlatformGameCreateWithoutGameInput = {
-    platformSpecificId: string
-    url?: string | null
-    platform: PlatformCreateNestedOneWithoutPlatformGamesInput
-    deals?: DealCreateNestedManyWithoutPlatformGameInput
-  }
-
-  export type PlatformGameUncheckedCreateWithoutGameInput = {
-    id?: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealUncheckedCreateNestedManyWithoutPlatformGameInput
-  }
-
-  export type PlatformGameCreateOrConnectWithoutGameInput = {
-    where: PlatformGameWhereUniqueInput
-    create: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput>
-  }
-
-  export type PlatformGameCreateManyGameInputEnvelope = {
-    data: PlatformGameCreateManyGameInput | PlatformGameCreateManyGameInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type WishlistCreateWithoutGameInput = {
-    addedAt?: Date | string
-    user: UserCreateNestedOneWithoutWishlistItemsInput
-  }
-
-  export type WishlistUncheckedCreateWithoutGameInput = {
-    id?: number
-    userId: number
-    addedAt?: Date | string
-  }
-
-  export type WishlistCreateOrConnectWithoutGameInput = {
-    where: WishlistWhereUniqueInput
-    create: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput>
-  }
-
-  export type WishlistCreateManyGameInputEnvelope = {
-    data: WishlistCreateManyGameInput | WishlistCreateManyGameInput[]
-    skipDuplicates?: boolean
   }
 
   export type DealCreateWithoutGameInput = {
@@ -17140,63 +15530,81 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserGameUpsertWithWhereUniqueWithoutGameInput = {
-    where: UserGameWhereUniqueInput
-    update: XOR<UserGameUpdateWithoutGameInput, UserGameUncheckedUpdateWithoutGameInput>
-    create: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput>
+  export type PlatformGameCreateWithoutGameInput = {
+    platformSpecificId: string
+    url?: string | null
+    deals?: DealCreateNestedManyWithoutPlatformGameInput
+    platform: PlatformCreateNestedOneWithoutPlatformGamesInput
   }
 
-  export type UserGameUpdateWithWhereUniqueWithoutGameInput = {
-    where: UserGameWhereUniqueInput
-    data: XOR<UserGameUpdateWithoutGameInput, UserGameUncheckedUpdateWithoutGameInput>
+  export type PlatformGameUncheckedCreateWithoutGameInput = {
+    id?: number
+    platformId: number
+    platformSpecificId: string
+    url?: string | null
+    deals?: DealUncheckedCreateNestedManyWithoutPlatformGameInput
   }
 
-  export type UserGameUpdateManyWithWhereWithoutGameInput = {
-    where: UserGameScalarWhereInput
-    data: XOR<UserGameUpdateManyMutationInput, UserGameUncheckedUpdateManyWithoutGameInput>
-  }
-
-  export type PlatformGameUpsertWithWhereUniqueWithoutGameInput = {
+  export type PlatformGameCreateOrConnectWithoutGameInput = {
     where: PlatformGameWhereUniqueInput
-    update: XOR<PlatformGameUpdateWithoutGameInput, PlatformGameUncheckedUpdateWithoutGameInput>
     create: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput>
   }
 
-  export type PlatformGameUpdateWithWhereUniqueWithoutGameInput = {
-    where: PlatformGameWhereUniqueInput
-    data: XOR<PlatformGameUpdateWithoutGameInput, PlatformGameUncheckedUpdateWithoutGameInput>
+  export type PlatformGameCreateManyGameInputEnvelope = {
+    data: PlatformGameCreateManyGameInput | PlatformGameCreateManyGameInput[]
+    skipDuplicates?: boolean
   }
 
-  export type PlatformGameUpdateManyWithWhereWithoutGameInput = {
-    where: PlatformGameScalarWhereInput
-    data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyWithoutGameInput>
+  export type UserGameCreateWithoutGameInput = {
+    addedAt?: Date | string
+    playtimeMinutes?: number | null
+    lastPlayed?: Date | string | null
+    isInstalled?: boolean
+    notes?: string | null
+    rating?: number | null
+    user: UserCreateNestedOneWithoutUserGamesInput
   }
 
-  export type PlatformGameScalarWhereInput = {
-    AND?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-    OR?: PlatformGameScalarWhereInput[]
-    NOT?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-    id?: IntFilter<"PlatformGame"> | number
-    gameId?: IntFilter<"PlatformGame"> | number
-    platformId?: IntFilter<"PlatformGame"> | number
-    platformSpecificId?: StringFilter<"PlatformGame"> | string
-    url?: StringNullableFilter<"PlatformGame"> | string | null
+  export type UserGameUncheckedCreateWithoutGameInput = {
+    id?: number
+    userId: number
+    addedAt?: Date | string
+    playtimeMinutes?: number | null
+    lastPlayed?: Date | string | null
+    isInstalled?: boolean
+    notes?: string | null
+    rating?: number | null
   }
 
-  export type WishlistUpsertWithWhereUniqueWithoutGameInput = {
+  export type UserGameCreateOrConnectWithoutGameInput = {
+    where: UserGameWhereUniqueInput
+    create: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput>
+  }
+
+  export type UserGameCreateManyGameInputEnvelope = {
+    data: UserGameCreateManyGameInput | UserGameCreateManyGameInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WishlistCreateWithoutGameInput = {
+    addedAt?: Date | string
+    user: UserCreateNestedOneWithoutWishlistItemsInput
+  }
+
+  export type WishlistUncheckedCreateWithoutGameInput = {
+    id?: number
+    userId: number
+    addedAt?: Date | string
+  }
+
+  export type WishlistCreateOrConnectWithoutGameInput = {
     where: WishlistWhereUniqueInput
-    update: XOR<WishlistUpdateWithoutGameInput, WishlistUncheckedUpdateWithoutGameInput>
     create: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput>
   }
 
-  export type WishlistUpdateWithWhereUniqueWithoutGameInput = {
-    where: WishlistWhereUniqueInput
-    data: XOR<WishlistUpdateWithoutGameInput, WishlistUncheckedUpdateWithoutGameInput>
-  }
-
-  export type WishlistUpdateManyWithWhereWithoutGameInput = {
-    where: WishlistScalarWhereInput
-    data: XOR<WishlistUpdateManyMutationInput, WishlistUncheckedUpdateManyWithoutGameInput>
+  export type WishlistCreateManyGameInputEnvelope = {
+    data: WishlistCreateManyGameInput | WishlistCreateManyGameInput[]
+    skipDuplicates?: boolean
   }
 
   export type DealUpsertWithWhereUniqueWithoutGameInput = {
@@ -17235,11 +15643,70 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
   }
 
+  export type PlatformGameUpsertWithWhereUniqueWithoutGameInput = {
+    where: PlatformGameWhereUniqueInput
+    update: XOR<PlatformGameUpdateWithoutGameInput, PlatformGameUncheckedUpdateWithoutGameInput>
+    create: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput>
+  }
+
+  export type PlatformGameUpdateWithWhereUniqueWithoutGameInput = {
+    where: PlatformGameWhereUniqueInput
+    data: XOR<PlatformGameUpdateWithoutGameInput, PlatformGameUncheckedUpdateWithoutGameInput>
+  }
+
+  export type PlatformGameUpdateManyWithWhereWithoutGameInput = {
+    where: PlatformGameScalarWhereInput
+    data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyWithoutGameInput>
+  }
+
+  export type PlatformGameScalarWhereInput = {
+    AND?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
+    OR?: PlatformGameScalarWhereInput[]
+    NOT?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
+    id?: IntFilter<"PlatformGame"> | number
+    gameId?: IntFilter<"PlatformGame"> | number
+    platformId?: IntFilter<"PlatformGame"> | number
+    platformSpecificId?: StringFilter<"PlatformGame"> | string
+    url?: StringNullableFilter<"PlatformGame"> | string | null
+  }
+
+  export type UserGameUpsertWithWhereUniqueWithoutGameInput = {
+    where: UserGameWhereUniqueInput
+    update: XOR<UserGameUpdateWithoutGameInput, UserGameUncheckedUpdateWithoutGameInput>
+    create: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput>
+  }
+
+  export type UserGameUpdateWithWhereUniqueWithoutGameInput = {
+    where: UserGameWhereUniqueInput
+    data: XOR<UserGameUpdateWithoutGameInput, UserGameUncheckedUpdateWithoutGameInput>
+  }
+
+  export type UserGameUpdateManyWithWhereWithoutGameInput = {
+    where: UserGameScalarWhereInput
+    data: XOR<UserGameUpdateManyMutationInput, UserGameUncheckedUpdateManyWithoutGameInput>
+  }
+
+  export type WishlistUpsertWithWhereUniqueWithoutGameInput = {
+    where: WishlistWhereUniqueInput
+    update: XOR<WishlistUpdateWithoutGameInput, WishlistUncheckedUpdateWithoutGameInput>
+    create: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput>
+  }
+
+  export type WishlistUpdateWithWhereUniqueWithoutGameInput = {
+    where: WishlistWhereUniqueInput
+    data: XOR<WishlistUpdateWithoutGameInput, WishlistUncheckedUpdateWithoutGameInput>
+  }
+
+  export type WishlistUpdateManyWithWhereWithoutGameInput = {
+    where: WishlistScalarWhereInput
+    data: XOR<WishlistUpdateManyMutationInput, WishlistUncheckedUpdateManyWithoutGameInput>
+  }
+
   export type PlatformGameCreateWithoutPlatformInput = {
     platformSpecificId: string
     url?: string | null
-    game: GameCreateNestedOneWithoutPlatformGamesInput
     deals?: DealCreateNestedManyWithoutPlatformGameInput
+    game: GameCreateNestedOneWithoutPlatformGamesInput
   }
 
   export type PlatformGameUncheckedCreateWithoutPlatformInput = {
@@ -17274,62 +15741,6 @@ export namespace Prisma {
   export type PlatformGameUpdateManyWithWhereWithoutPlatformInput = {
     where: PlatformGameScalarWhereInput
     data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyWithoutPlatformInput>
-  }
-
-  export type GameCreateWithoutPlatformGamesInput = {
-    title: string
-    description?: string | null
-    coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
-    genres?: GameCreategenresInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userGames?: UserGameCreateNestedManyWithoutGameInput
-    wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
-    deals?: DealCreateNestedManyWithoutGameInput
-  }
-
-  export type GameUncheckedCreateWithoutPlatformGamesInput = {
-    id?: number
-    title: string
-    description?: string | null
-    coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
-    genres?: GameCreategenresInput | string[]
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
-    wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
-    deals?: DealUncheckedCreateNestedManyWithoutGameInput
-  }
-
-  export type GameCreateOrConnectWithoutPlatformGamesInput = {
-    where: GameWhereUniqueInput
-    create: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
-  }
-
-  export type PlatformCreateWithoutPlatformGamesInput = {
-    name: string
-    slug: string
-    iconUrl?: string | null
-    siteUrl?: string | null
-  }
-
-  export type PlatformUncheckedCreateWithoutPlatformGamesInput = {
-    id?: number
-    name: string
-    slug: string
-    iconUrl?: string | null
-    siteUrl?: string | null
-  }
-
-  export type PlatformCreateOrConnectWithoutPlatformGamesInput = {
-    where: PlatformWhereUniqueInput
-    create: XOR<PlatformCreateWithoutPlatformGamesInput, PlatformUncheckedCreateWithoutPlatformGamesInput>
   }
 
   export type DealCreateWithoutPlatformGameInput = {
@@ -17373,6 +15784,78 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type GameCreateWithoutPlatformGamesInput = {
+    title: string
+    description?: string | null
+    coverUrl?: string | null
+    releaseDate?: Date | string | null
+    developer?: string | null
+    publisher?: string | null
+    genres?: GameCreategenresInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deals?: DealCreateNestedManyWithoutGameInput
+    userGames?: UserGameCreateNestedManyWithoutGameInput
+    wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
+  }
+
+  export type GameUncheckedCreateWithoutPlatformGamesInput = {
+    id?: number
+    title: string
+    description?: string | null
+    coverUrl?: string | null
+    releaseDate?: Date | string | null
+    developer?: string | null
+    publisher?: string | null
+    genres?: GameCreategenresInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deals?: DealUncheckedCreateNestedManyWithoutGameInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
+    wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
+  }
+
+  export type GameCreateOrConnectWithoutPlatformGamesInput = {
+    where: GameWhereUniqueInput
+    create: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
+  }
+
+  export type PlatformCreateWithoutPlatformGamesInput = {
+    name: string
+    slug: string
+    iconUrl?: string | null
+    siteUrl?: string | null
+  }
+
+  export type PlatformUncheckedCreateWithoutPlatformGamesInput = {
+    id?: number
+    name: string
+    slug: string
+    iconUrl?: string | null
+    siteUrl?: string | null
+  }
+
+  export type PlatformCreateOrConnectWithoutPlatformGamesInput = {
+    where: PlatformWhereUniqueInput
+    create: XOR<PlatformCreateWithoutPlatformGamesInput, PlatformUncheckedCreateWithoutPlatformGamesInput>
+  }
+
+  export type DealUpsertWithWhereUniqueWithoutPlatformGameInput = {
+    where: DealWhereUniqueInput
+    update: XOR<DealUpdateWithoutPlatformGameInput, DealUncheckedUpdateWithoutPlatformGameInput>
+    create: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput>
+  }
+
+  export type DealUpdateWithWhereUniqueWithoutPlatformGameInput = {
+    where: DealWhereUniqueInput
+    data: XOR<DealUpdateWithoutPlatformGameInput, DealUncheckedUpdateWithoutPlatformGameInput>
+  }
+
+  export type DealUpdateManyWithWhereWithoutPlatformGameInput = {
+    where: DealScalarWhereInput
+    data: XOR<DealUpdateManyMutationInput, DealUncheckedUpdateManyWithoutPlatformGameInput>
+  }
+
   export type GameUpsertWithoutPlatformGamesInput = {
     update: XOR<GameUpdateWithoutPlatformGamesInput, GameUncheckedUpdateWithoutPlatformGamesInput>
     create: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
@@ -17394,9 +15877,9 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deals?: DealUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
-    deals?: DealUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateWithoutPlatformGamesInput = {
@@ -17410,9 +15893,9 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
-    deals?: DealUncheckedUpdateManyWithoutGameNestedInput
   }
 
   export type PlatformUpsertWithoutPlatformGamesInput = {
@@ -17441,52 +15924,6 @@ export namespace Prisma {
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type DealUpsertWithWhereUniqueWithoutPlatformGameInput = {
-    where: DealWhereUniqueInput
-    update: XOR<DealUpdateWithoutPlatformGameInput, DealUncheckedUpdateWithoutPlatformGameInput>
-    create: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput>
-  }
-
-  export type DealUpdateWithWhereUniqueWithoutPlatformGameInput = {
-    where: DealWhereUniqueInput
-    data: XOR<DealUpdateWithoutPlatformGameInput, DealUncheckedUpdateWithoutPlatformGameInput>
-  }
-
-  export type DealUpdateManyWithWhereWithoutPlatformGameInput = {
-    where: DealScalarWhereInput
-    data: XOR<DealUpdateManyMutationInput, DealUncheckedUpdateManyWithoutPlatformGameInput>
-  }
-
-  export type UserCreateWithoutUserGamesInput = {
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    account?: AccountCreateNestedOneWithoutUserInput
-    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
-    wishlistItems?: WishlistCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutUserGamesInput = {
-    id?: number
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    account?: AccountUncheckedCreateNestedOneWithoutUserInput
-    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
-    wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutUserGamesInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
-  }
-
   export type GameCreateWithoutUserGamesInput = {
     title: string
     description?: string | null
@@ -17497,9 +15934,9 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
+    deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
-    deals?: DealCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateWithoutUserGamesInput = {
@@ -17513,9 +15950,9 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
+    deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
-    deals?: DealUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameCreateOrConnectWithoutUserGamesInput = {
@@ -17523,40 +15960,32 @@ export namespace Prisma {
     create: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
   }
 
-  export type UserUpsertWithoutUserGamesInput = {
-    update: XOR<UserUpdateWithoutUserGamesInput, UserUncheckedUpdateWithoutUserGamesInput>
+  export type UserCreateWithoutUserGamesInput = {
+    supabase_uid: string
+    email: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUserGamesInput = {
+    id?: number
+    supabase_uid: string
+    email: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUserGamesInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutUserGamesInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutUserGamesInput, UserUncheckedUpdateWithoutUserGamesInput>
-  }
-
-  export type UserUpdateWithoutUserGamesInput = {
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUpdateOneWithoutUserNestedInput
-    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
-    wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutUserGamesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUncheckedUpdateOneWithoutUserNestedInput
-    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
-    wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GameUpsertWithoutUserGamesInput = {
@@ -17580,9 +16009,9 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
-    deals?: DealUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateWithoutUserGamesInput = {
@@ -17596,9 +16025,43 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
-    deals?: DealUncheckedUpdateManyWithoutGameNestedInput
+  }
+
+  export type UserUpsertWithoutUserGamesInput = {
+    update: XOR<UserUpdateWithoutUserGamesInput, UserUncheckedUpdateWithoutUserGamesInput>
+    create: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUserGamesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUserGamesInput, UserUncheckedUpdateWithoutUserGamesInput>
+  }
+
+  export type UserUpdateWithoutUserGamesInput = {
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUserGamesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GameCreateWithoutDealsInput = {
@@ -17611,8 +16074,8 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    userGames?: UserGameCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
+    userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
 
@@ -17627,8 +16090,8 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
 
@@ -17678,8 +16141,8 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userGames?: UserGameUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
 
@@ -17694,8 +16157,8 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
 
@@ -17762,36 +16225,6 @@ export namespace Prisma {
     data: XOR<UserAchievementUpdateManyMutationInput, UserAchievementUncheckedUpdateManyWithoutAchievementInput>
   }
 
-  export type UserCreateWithoutUserAchievementsInput = {
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    account?: AccountCreateNestedOneWithoutUserInput
-    userGames?: UserGameCreateNestedManyWithoutUserInput
-    wishlistItems?: WishlistCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutUserAchievementsInput = {
-    id?: number
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    account?: AccountUncheckedCreateNestedOneWithoutUserInput
-    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
-    wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutUserAchievementsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
-  }
-
   export type AchievementCreateWithoutUserAchievementsInput = {
     name: string
     description: string
@@ -17818,40 +16251,32 @@ export namespace Prisma {
     create: XOR<AchievementCreateWithoutUserAchievementsInput, AchievementUncheckedCreateWithoutUserAchievementsInput>
   }
 
-  export type UserUpsertWithoutUserAchievementsInput = {
-    update: XOR<UserUpdateWithoutUserAchievementsInput, UserUncheckedUpdateWithoutUserAchievementsInput>
+  export type UserCreateWithoutUserAchievementsInput = {
+    supabase_uid: string
+    email: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    userGames?: UserGameCreateNestedManyWithoutUserInput
+    wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUserAchievementsInput = {
+    id?: number
+    supabase_uid: string
+    email: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
+    wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUserAchievementsInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutUserAchievementsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutUserAchievementsInput, UserUncheckedUpdateWithoutUserAchievementsInput>
-  }
-
-  export type UserUpdateWithoutUserAchievementsInput = {
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUpdateOneWithoutUserNestedInput
-    userGames?: UserGameUpdateManyWithoutUserNestedInput
-    wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutUserAchievementsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUncheckedUpdateOneWithoutUserNestedInput
-    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
-    wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AchievementUpsertWithoutUserAchievementsInput = {
@@ -17886,34 +16311,38 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UserCreateWithoutWishlistItemsInput = {
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    account?: AccountCreateNestedOneWithoutUserInput
-    userGames?: UserGameCreateNestedManyWithoutUserInput
-    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+  export type UserUpsertWithoutUserAchievementsInput = {
+    update: XOR<UserUpdateWithoutUserAchievementsInput, UserUncheckedUpdateWithoutUserAchievementsInput>
+    create: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
+    where?: UserWhereInput
   }
 
-  export type UserUncheckedCreateWithoutWishlistItemsInput = {
-    id?: number
-    supabase_uid: string
-    email: string
-    display_name?: string | null
-    xp?: number
-    level?: number
-    credits?: number
-    account?: AccountUncheckedCreateNestedOneWithoutUserInput
-    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
-    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  export type UserUpdateToOneWithWhereWithoutUserAchievementsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUserAchievementsInput, UserUncheckedUpdateWithoutUserAchievementsInput>
   }
 
-  export type UserCreateOrConnectWithoutWishlistItemsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
+  export type UserUpdateWithoutUserAchievementsInput = {
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    userGames?: UserGameUpdateManyWithoutUserNestedInput
+    wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUserAchievementsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
+    wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GameCreateWithoutWishlistedByInput = {
@@ -17926,9 +16355,9 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    userGames?: UserGameCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     deals?: DealCreateNestedManyWithoutGameInput
+    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
+    userGames?: UserGameCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateWithoutWishlistedByInput = {
@@ -17942,9 +16371,9 @@ export namespace Prisma {
     genres?: GameCreategenresInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
-    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
+    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameCreateOrConnectWithoutWishlistedByInput = {
@@ -17952,40 +16381,32 @@ export namespace Prisma {
     create: XOR<GameCreateWithoutWishlistedByInput, GameUncheckedCreateWithoutWishlistedByInput>
   }
 
-  export type UserUpsertWithoutWishlistItemsInput = {
-    update: XOR<UserUpdateWithoutWishlistItemsInput, UserUncheckedUpdateWithoutWishlistItemsInput>
+  export type UserCreateWithoutWishlistItemsInput = {
+    supabase_uid: string
+    email: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    userGames?: UserGameCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutWishlistItemsInput = {
+    id?: number
+    supabase_uid: string
+    email: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutWishlistItemsInput = {
+    where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutWishlistItemsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutWishlistItemsInput, UserUncheckedUpdateWithoutWishlistItemsInput>
-  }
-
-  export type UserUpdateWithoutWishlistItemsInput = {
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUpdateOneWithoutUserNestedInput
-    userGames?: UserGameUpdateManyWithoutUserNestedInput
-    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutWishlistItemsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    supabase_uid?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    display_name?: NullableStringFieldUpdateOperationsInput | string | null
-    xp?: IntFieldUpdateOperationsInput | number
-    level?: IntFieldUpdateOperationsInput | number
-    credits?: IntFieldUpdateOperationsInput | number
-    account?: AccountUncheckedUpdateOneWithoutUserNestedInput
-    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
-    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GameUpsertWithoutWishlistedByInput = {
@@ -18009,9 +16430,9 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userGames?: UserGameUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     deals?: DealUpdateManyWithoutGameNestedInput
+    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateWithoutWishlistedByInput = {
@@ -18025,9 +16446,49 @@ export namespace Prisma {
     genres?: GameUpdategenresInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
+    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
+  }
+
+  export type UserUpsertWithoutWishlistItemsInput = {
+    update: XOR<UserUpdateWithoutWishlistItemsInput, UserUncheckedUpdateWithoutWishlistItemsInput>
+    create: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutWishlistItemsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutWishlistItemsInput, UserUncheckedUpdateWithoutWishlistItemsInput>
+  }
+
+  export type UserUpdateWithoutWishlistItemsInput = {
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    userGames?: UserGameUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWishlistItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserAchievementCreateManyUserInput = {
+    id?: number
+    achievementId: number
+    unlockedAt?: Date | string
   }
 
   export type UserGameCreateManyUserInput = {
@@ -18041,16 +16502,27 @@ export namespace Prisma {
     rating?: number | null
   }
 
-  export type UserAchievementCreateManyUserInput = {
-    id?: number
-    achievementId: number
-    unlockedAt?: Date | string
-  }
-
   export type WishlistCreateManyUserInput = {
     id?: number
     gameId: number
     addedAt?: Date | string
+  }
+
+  export type UserAchievementUpdateWithoutUserInput = {
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    achievement?: AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput
+  }
+
+  export type UserAchievementUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    achievementId?: IntFieldUpdateOperationsInput | number
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserAchievementUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    achievementId?: IntFieldUpdateOperationsInput | number
+    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserGameUpdateWithoutUserInput = {
@@ -18085,23 +16557,6 @@ export namespace Prisma {
     rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
-  export type UserAchievementUpdateWithoutUserInput = {
-    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    achievement?: AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput
-  }
-
-  export type UserAchievementUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    achievementId?: IntFieldUpdateOperationsInput | number
-    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserAchievementUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    achievementId?: IntFieldUpdateOperationsInput | number
-    unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type WishlistUpdateWithoutUserInput = {
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     game?: GameUpdateOneRequiredWithoutWishlistedByNestedInput
@@ -18117,30 +16572,6 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserGameCreateManyGameInput = {
-    id?: number
-    userId: number
-    addedAt?: Date | string
-    playtimeMinutes?: number | null
-    lastPlayed?: Date | string | null
-    isInstalled?: boolean
-    notes?: string | null
-    rating?: number | null
-  }
-
-  export type PlatformGameCreateManyGameInput = {
-    id?: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-  }
-
-  export type WishlistCreateManyGameInput = {
-    id?: number
-    userId: number
-    addedAt?: Date | string
   }
 
   export type DealCreateManyGameInput = {
@@ -18159,75 +16590,28 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type UserGameUpdateWithoutGameInput = {
-    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isInstalled?: BoolFieldUpdateOperationsInput | boolean
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
+  export type PlatformGameCreateManyGameInput = {
+    id?: number
+    platformId: number
+    platformSpecificId: string
+    url?: string | null
   }
 
-  export type UserGameUncheckedUpdateWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isInstalled?: BoolFieldUpdateOperationsInput | boolean
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
+  export type UserGameCreateManyGameInput = {
+    id?: number
+    userId: number
+    addedAt?: Date | string
+    playtimeMinutes?: number | null
+    lastPlayed?: Date | string | null
+    isInstalled?: boolean
+    notes?: string | null
+    rating?: number | null
   }
 
-  export type UserGameUncheckedUpdateManyWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isInstalled?: BoolFieldUpdateOperationsInput | boolean
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type PlatformGameUpdateWithoutGameInput = {
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    platform?: PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput
-    deals?: DealUpdateManyWithoutPlatformGameNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUncheckedUpdateManyWithoutPlatformGameNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateManyWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type WishlistUpdateWithoutGameInput = {
-    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutWishlistItemsNestedInput
-  }
-
-  export type WishlistUncheckedUpdateWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type WishlistUncheckedUpdateManyWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type WishlistCreateManyGameInput = {
+    id?: number
+    userId: number
+    addedAt?: Date | string
   }
 
   export type DealUpdateWithoutGameInput = {
@@ -18277,6 +16661,77 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PlatformGameUpdateWithoutGameInput = {
+    platformSpecificId?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    deals?: DealUpdateManyWithoutPlatformGameNestedInput
+    platform?: PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput
+  }
+
+  export type PlatformGameUncheckedUpdateWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    platformId?: IntFieldUpdateOperationsInput | number
+    platformSpecificId?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    deals?: DealUncheckedUpdateManyWithoutPlatformGameNestedInput
+  }
+
+  export type PlatformGameUncheckedUpdateManyWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    platformId?: IntFieldUpdateOperationsInput | number
+    platformSpecificId?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserGameUpdateWithoutGameInput = {
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
+    user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
+  }
+
+  export type UserGameUncheckedUpdateWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type UserGameUncheckedUpdateManyWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type WishlistUpdateWithoutGameInput = {
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWishlistItemsNestedInput
+  }
+
+  export type WishlistUncheckedUpdateWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistUncheckedUpdateManyWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PlatformGameCreateManyPlatformInput = {
     id?: number
     gameId: number
@@ -18287,8 +16742,8 @@ export namespace Prisma {
   export type PlatformGameUpdateWithoutPlatformInput = {
     platformSpecificId?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
-    game?: GameUpdateOneRequiredWithoutPlatformGamesNestedInput
     deals?: DealUpdateManyWithoutPlatformGameNestedInput
+    game?: GameUpdateOneRequiredWithoutPlatformGamesNestedInput
   }
 
   export type PlatformGameUncheckedUpdateWithoutPlatformInput = {

@@ -1,20 +1,19 @@
-import { describe, expect, afterEach, beforeEach, it, vi } from 'vitest';
+import { describe, expect, beforeEach, it, vi } from 'vitest';
 import { useAccountStore } from '../stores/account.store';
 import { setActivePinia, createPinia } from 'pinia';
+import type { User } from '~/prisma/client';
 
-import type { FullDBUser } from '~/lib/services/service.types';
-
-const fakeInitAccountStoreAdmin = (accountStore: any) => {
-  const dbUser: FullDBUser = {
+const fakeInitAccountStore = (accountStore: any) => {
+  const user: User = {
     id: 1,
-    name: 'John Doe',
-    memberships: [
-      { account_id: 1, access: 'ADMIN' },
-      { account_id: 2, access: 'READ_ONLY' }
-    ]
+    supabase_uid: 'test-uid',
+    email: 'john@example.com',
+    display_name: 'John Doe',
+    xp: 100,
+    level: 2,
+    credits: 50
   } as any;
-  accountStore.dbUser = dbUser;
-  accountStore.activeAccountId = 1;
+  accountStore.user = user;
 };
 
 describe('Account Store', async () => {
@@ -31,15 +30,14 @@ describe('Account Store', async () => {
             query: () => ({
               dbUser: {
                 id: 1,
-                name: 'John Doe',
-                memberships: []
+                supabase_uid: 'test-uid',
+                email: 'john@example.com',
+                display_name: 'John Doe',
+                xp: 100,
+                level: 2,
+                credits: 50
               }
             })
-          }
-        },
-        account: {
-          getActiveAccountId: {
-            query: () => ({ activeAccountId: 1 })
           }
         }
       }
@@ -50,23 +48,25 @@ describe('Account Store', async () => {
     // method under test
     await accountStore.init();
 
-    expect(accountStore.dbUser).toEqual({
+    expect(accountStore.user).toEqual({
       id: 1,
-      name: 'John Doe',
-      memberships: []
+      supabase_uid: 'test-uid',
+      email: 'john@example.com',
+      display_name: 'John Doe',
+      xp: 100,
+      level: 2,
+      credits: 50
     });
-
-    expect(accountStore.activeAccountId).toEqual(1);
   });
 
-  it('should get active account members', async () => {
-    // stub the useNuxtApp function with a mock client
+  it('should handle missing user data gracefully', async () => {
+    // stub the useNuxtApp function with a mock client that returns no user
     vi.stubGlobal('useNuxtApp', () => ({
       $client: {
-        account: {
-          getAccountMembers: {
-            useQuery: () => ({
-              data: { value: { memberships: [new Object() as any] } }
+        auth: {
+          getDBUser: {
+            query: () => ({
+              dbUser: null
             })
           }
         }
@@ -74,32 +74,19 @@ describe('Account Store', async () => {
     }));
 
     const accountStore = useAccountStore();
-    fakeInitAccountStoreAdmin(accountStore);
 
     // method under test
-    await accountStore.getActiveAccountMembers();
+    await accountStore.init();
 
-    expect(accountStore.activeAccountMembers.length).toEqual(1);
-  });
-
-  it('should get an active membership', async () => {
-    const accountStore = useAccountStore();
-    fakeInitAccountStoreAdmin(accountStore);
-
-    expect(accountStore.activeMembership).toEqual({
-      account_id: 1,
-      access: 'ADMIN'
-    });
+    expect(accountStore.user).toBeNull();
   });
 
   it('should signout', async () => {
     const accountStore = useAccountStore();
-    fakeInitAccountStoreAdmin(accountStore);
+    fakeInitAccountStore(accountStore);
 
     await accountStore.signout();
 
-    expect(accountStore.dbUser).toBeNull();
-    expect(accountStore.activeAccountId).toBeNull();
-    expect(accountStore.activeAccountMembers.length).toEqual(0);
+    expect(accountStore.user).toBeNull();
   });
 });

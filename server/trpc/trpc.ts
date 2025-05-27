@@ -44,31 +44,10 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   return next({
     ctx: {
       user: ctx.user,
-      dbUser: ctx.dbUser, // Ensure dbUser is passed along
-      // Ensure activeAccountId is number | undefined
-      activeAccountId: ctx.dbUser?.account?.id // This will be number | undefined
+      dbUser: ctx.dbUser // Ensure dbUser is passed along (no longer has accounts)
     }
   });
 });
-
-export const isAccountWithFeature = (feature: string) =>
-  t.middleware(({ next, ctx }) => {
-    if (!ctx.dbUser?.account) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User does not have an associated account.'
-      });
-    }
-
-    if (!ctx.dbUser.account.features.includes(feature)) {
-      throw new TRPCError({
-        code: 'FORBIDDEN', // Changed from UNAUTHORIZED for clarity
-        message: `Account does not have the ${feature} feature.`
-      });
-    }
-
-    return next({ ctx });
-  });
 
 /**
  * Procedures

@@ -130,14 +130,6 @@ exports.Prisma.UserScalarFieldEnum = {
   credits: 'credits'
 };
 
-exports.Prisma.AccountScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  current_period_ends: 'current_period_ends',
-  features: 'features',
-  user_id: 'user_id'
-};
-
 exports.Prisma.GameScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -239,7 +231,6 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Account: 'Account',
   Game: 'Game',
   Platform: 'Platform',
   PlatformGame: 'PlatformGame',
