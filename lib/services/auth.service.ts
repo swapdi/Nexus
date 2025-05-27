@@ -1,11 +1,12 @@
-import prisma_client from '~~/prisma/prisma.client';
+import { PrismaClient } from '~/prisma/client';
+const prisma = new PrismaClient();
 import { fullDBUser, type FullDBUser } from './service.types';
 
 export namespace AuthService {
   export async function getFullUserBySupabaseId(
     supabase_uid: string
   ): Promise<FullDBUser | null> {
-    return prisma_client.user.findFirst({
+    return prisma.user.findFirst({
       where: { supabase_uid },
       ...fullDBUser
     });
@@ -14,7 +15,7 @@ export namespace AuthService {
   export async function getUserById(
     user_id: number
   ): Promise<FullDBUser | null> {
-    return prisma_client.user.findFirstOrThrow({
+    return prisma.user.findFirstOrThrow({
       where: { id: user_id },
       ...fullDBUser
     });
@@ -25,7 +26,7 @@ export namespace AuthService {
     display_name: string,
     email: string
   ): Promise<FullDBUser | null> {
-    return prisma_client.user.create({
+    return prisma.user.create({
       data: {
         supabase_uid: supabase_uid,
         display_name: display_name,
@@ -36,7 +37,7 @@ export namespace AuthService {
   }
 
   export async function deleteUser(user_id: number): Promise<FullDBUser> {
-    return prisma_client.user.delete({
+    return prisma.user.delete({
       where: { id: user_id },
       ...fullDBUser
     });

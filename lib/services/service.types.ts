@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '~/prisma/client';
 
 // Membership-bezogene Typen sind nicht mehr notwendig und werden entfernt.
 

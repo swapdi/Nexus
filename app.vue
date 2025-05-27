@@ -6,7 +6,7 @@
         : 'Nexus - Deine All-in-One Spieleverwaltung';
     },
     ogTitle: 'Nexus - Deine All-in-One Spieleverwaltung',
-    ogUrl: 'https://nexus.netlify.app/', // Ersetze dies mit deiner URL
+    ogUrl: 'https://nexus.netlify.app/',
     ogType: 'website',
     description:
       'Nexus ist deine zentrale Plattform zur Verwaltung all deiner PC-Spiele von Steam, Epic Games Store, GOG und mehr. Behalte den Überblick über deine gesamte Bibliothek, entdecke die besten Angebote und maximiere dein Spielerlebnis mit Gamification.',
