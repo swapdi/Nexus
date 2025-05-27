@@ -130,3 +130,7 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [ ] Implementiere IPC zwischen Renderer und Main Prozess.
   - [ ] Implementiere Logik zum Starten von Spielen/Launchern aus der Desktop-App (im Electron Main Prozess).
   - [ ] Passe UI/UX für Desktop an (z. B. Tray Icon, native Menüs - falls gewünscht).
+
+## Entdeckt während der Arbeit
+
+- [x] OAuth Provider in Anmelde- und Registrierungsseiten überarbeiten - Apple und Microsoft durch Discord ersetzen (27. Mai 2025)

@@ -11,9 +11,6 @@
   const config = useRuntimeConfig();
 
   const handleStandardSignin = async () => {
-    console.log(
-      `handleStandardSignin email.value:${email.value}, password.value:${password.value}`
-    );
     try {
       loading.value = true;
       const { error } = await supabase.auth.signInWithPassword({
@@ -27,13 +24,14 @@
       loading.value = false;
     }
   };
-
-  const handleGoogleSignin = async () => {
-    console.log('handleGoogleSignin');
+  const handleOAuthSignin = async (
+    providerName: 'google' | 'discord' | 'github'
+  ) => {
+    console.log(`handleOAuthSignin for ${providerName}`);
     try {
       loading.value = true;
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: providerName,
         options: {
           redirectTo: `${config.public.siteRootUrl}/confirm`
         }
@@ -100,7 +98,7 @@
               >Passwort</label
             >
             <NuxtLink
-              to="/forgot-password"
+              to="/forgotpassword"
               class="text-sm text-blue-400 hover:text-blue-300"
               >Vergessen?</NuxtLink
             >
@@ -151,10 +149,9 @@
             >
           </div>
         </div>
-
         <div class="mt-6 space-y-3">
           <button
-            @click="handleGoogleSignin"
+            @click="handleOAuthSignin('google')"
             :disabled="loading"
             class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg
@@ -178,47 +175,19 @@
             <span>Mit Google anmelden</span>
           </button>
           <button
-            @click="handleOAuthSignin('microsoft')"
+            @click="handleOAuthSignin('discord')"
             :disabled="loading"
             class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
+              viewBox="0 0 24 24"
               width="20px"
               height="20px">
               <path
-                fill="#ff5722"
-                d="M6 6H22V22H6z"
-                transform="rotate(-180 14 14)" />
-              <path
-                fill="#4caf50"
-                d="M26 6H42V22H26z"
-                transform="rotate(-180 34 14)" />
-              <path
-                fill="#ffc107"
-                d="M26 26H42V42H26z"
-                transform="rotate(-180 34 34)" />
-              <path
-                fill="#03a9f4"
-                d="M6 26H22V42H6z"
-                transform="rotate(-180 14 34)" />
+                fill="#5865f2"
+                d="M20.222 0c1.406 0 2.54 1.137 2.607 2.475V24l-2.677-2.273-1.47-1.338-1.604-1.398.67 2.205H3.71c-1.402 0-2.54-1.065-2.54-2.476V2.48C1.17 1.142 2.31.003 3.715.003h16.5L20.222 0zm-6.118 5.683h-.03l-.202.2c2.073.6 3.076 1.537 3.076 1.537-1.336-.668-2.54-1.002-3.744-1.137-.87-.135-1.74-.064-2.475 0h-.2c-.47 0-1.47.2-2.81.735-.467.203-.735.336-.735.336s1.002-1.002 3.21-1.537l-.135-.135s-1.672-.064-3.477 1.27c0 0-1.805 3.144-1.805 7.02 0 0 1 1.74 3.743 1.806 0 0 .4-.533.805-1.002-1.54-.4-2.172-1.27-2.172-1.27s.135.068.335.2h.06c.03 0 .044.015.06.03v.006c.016.016.03.03.06.03.33.136.66.27.93.4.466.202 1.065.403 1.8.536.93.135 1.996.2 3.21 0 .6-.135 1.2-.267 1.8-.535.39-.2.87-.4 1.397-.737 0 0-.6.936-2.205 1.337.33.466.795 1 .795 1 2.744-.06 3.81-1.8 3.87-1.726 0-3.87-1.815-7.02-1.815-7.02-1.635-1.214-3.165-1.26-3.435-1.26l.056-.02zm.168 4.413c.703 0 1.27.6 1.27 1.335 0 .74-.57 1.34-1.27 1.34-.7 0-1.27-.6-1.27-1.34.002-.74.573-1.338 1.27-1.335zm-4.543 0c.7 0 1.266.6 1.266 1.335 0 .74-.57 1.34-1.27 1.34-.7 0-1.27-.6-1.27-1.34 0-.74.57-1.335 1.27-1.335z" />
             </svg>
-            <span>Mit Microsoft anmelden</span>
-          </button>
-          <button
-            @click="handleOAuthSignin('apple')"
-            :disabled="loading"
-            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 384 512"
-              width="16px"
-              height="20px">
-              <path
-                fill="currentColor"
-                d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
-            </svg>
-            <span>Mit Apple anmelden</span>
+            <span>Mit Discord anmelden</span>
           </button>
           <button
             @click="handleOAuthSignin('github')"
