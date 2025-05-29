@@ -91,22 +91,16 @@
       ]
     },
     {
+      name: 'Profil',
+      path: '/profile',
+      icon: 'heroicons:user-20-solid',
+      subItems: []
+    },
+    {
       name: 'Einstellungen',
-      path: '/account',
+      path: '/settings',
       icon: 'heroicons:cog-6-tooth-20-solid',
-      subItems: [
-        { name: 'Profil', path: '/account', icon: 'heroicons:user-20-solid' },
-        {
-          name: 'Plattformen',
-          path: '/account/platforms',
-          icon: 'heroicons:link-20-solid'
-        },
-        {
-          name: 'Benachrichtigungen',
-          path: '/account/notifications',
-          icon: 'heroicons:bell-20-solid'
-        }
-      ]
+      subItems: []
     }
   ];
 

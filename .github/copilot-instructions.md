@@ -2,7 +2,7 @@
 
 - **Lese immer `PLANNING.md`** zu Beginn eines neuen Gesprächs, um die Architektur, Ziele, den Stil und die Einschränkungen des Projekts zu verstehen.
 
-- **Überprüfe `TASK.md`**, bevor Sie eine neue Aufgabe beginnen. Wenn die Aufgabe nicht aufgeführt ist, fügen Sie sie mit einer kurzen Beschreibung und dem heutigen Datum hinzu.
+- **Überprüfe `Tasks.md`**, bevor Sie eine neue Aufgabe beginnen. Wenn die Aufgabe nicht aufgeführt ist, fügen Sie sie mit einer kurzen Beschreibung und dem heutigen Datum hinzu.
 
 - **Nutze Context7 MCP**, wenn du mit externen Technologien arbeitest, um die neuste Dokumentation zu verstehen.
 
@@ -18,9 +18,9 @@
 
 ### ✅ Aufgabenerledigung
 
-- **Markieren Sie abgeschlossene Aufgaben in `TASK.md`** sofort nach Abschluss.
+- **Markieren Sie abgeschlossene Aufgaben in `Tasks.md`** sofort nach Abschluss.
 
-- Fügen Sie neue Unteraufgaben oder TODOs, die während der Entwicklung entdeckt wurden, unter einem Abschnitt "Entdeckt während der Arbeit" zu `TASK.md` hinzu.
+- Fügen Sie neue Unteraufgaben oder TODOs, die während der Entwicklung entdeckt wurden, unter einem Abschnitt "Entdeckt während der Arbeit" zu `Tasks.md` hinzu.
 
 ### 📎 Stil & Konventionen
 
