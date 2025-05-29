@@ -4,6 +4,8 @@
 
 - **Überprüfe `TASK.md`**, bevor Sie eine neue Aufgabe beginnen. Wenn die Aufgabe nicht aufgeführt ist, fügen Sie sie mit einer kurzen Beschreibung und dem heutigen Datum hinzu.
 
+- **Nutze Context7 MCP**, wenn du mit externen Technologien arbeitest, um die neuste Dokumentation zu verstehen.
+
 - **Verwende konsistente Namenskonventionen, Dateistrukturen und Architekturmuster**, wie in `PLANNING.md` beschrieben.
 
 ### 🧱 Codestruktur & Modularität
@@ -14,19 +16,6 @@
 
 - **Verwenden Sie klare, konsistente Imports** (bevorzugen Sie relative Imports innerhalb von Paketen).
 
-### 🧪 Testen & Zuverlässigkeit
-
-- **Erstellen Sie immer Unit-Tests für neue Funktionen** (Funktionen, Klassen, Routen usw.).
-
-- **Überprüfen Sie nach dem Aktualisieren von Logik**, ob vorhandene Unit-Tests aktualisiert werden müssen. Wenn ja, tun Sie es.
-
-- **Tests sollten in einem `/tests`-Ordner liegen**, der die Hauptanwendungsstruktur widerspiegelt.
-
-- Mindestens einschließen:
-  - 1 Test für erwartete Verwendung
-  - 1 Edge-Case
-  - 1 Fehlerfall
-
 ### ✅ Aufgabenerledigung
 
 - **Markieren Sie abgeschlossene Aufgaben in `TASK.md`** sofort nach Abschluss.
@@ -35,7 +24,7 @@
 
 ### 📎 Stil & Konventionen
 
-- **Verwenden Sie <Programmiersprache>** als primäre Sprache.
+- **Verwenden Sie TypeScript** als primäre Sprache.
 
 ### 📚 Dokumentation & Erklärbarkeit
 

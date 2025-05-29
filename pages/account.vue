@@ -1,8 +1,4 @@
 <script setup lang="ts">
-  import { ref, onMounted, computed, watch } from 'vue';
-  import { useAccountStore } from '~/stores/account.store';
-  import { useNotifyStore, NotificationType } from '~/stores/notify.store';
-
   const accountStore = useAccountStore();
   const notifyStore = useNotifyStore();
 

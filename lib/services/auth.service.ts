@@ -1,4 +1,5 @@
 import { PrismaClient, type User } from '~/prisma/client';
+import type { FullUser } from './types.service';
 const prisma = new PrismaClient();
 
 export namespace AuthService {

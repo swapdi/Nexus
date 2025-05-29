@@ -1,16 +1,22 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import type { User } from '~/prisma/client';
+import type { FullUser } from '~/lib/services/types.service';
 
 export const useAccountStore = defineStore('account', () => {
-  const user = ref<User | null>(null);
+  const user = ref<FullUser | null>(null);
+  const loadingUser = ref(false);
   const init = async () => {
     const { $client } = useNuxtApp();
     if (!user.value) {
-      const { dbUser: _user } = await $client.auth.getDBUser.query();
-      if (_user) {
-        user.value = _user;
+      loadingUser.value = true;
+      const result = await $client.auth.getDBUser.query();
+      if (result) {
+        user.value = {
+          dbUser: result.dbUser,
+          account: result.user
+        };
+        loadingUser.value = false;
       }
+      console.log(user.value);
     }
   };
 
@@ -20,6 +26,7 @@ export const useAccountStore = defineStore('account', () => {
 
   return {
     user,
+    loadingUser,
     init,
     signout
   };

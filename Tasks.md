@@ -142,3 +142,9 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] account.vue Seite für User-only System neu erstellt
   - [x] Alle Verweise auf activeAccount, activeAccountId und FullDBUser entfernt
 - [x] Admin@admin.de Benutzer aus Supabase Auth entfernt (28. Januar 2025)
+- [x] **types.service.ts erstellt und überarbeitet** - Zentrale Definition von User-Typen mit Supabase-Integration (29. Mai 2025)
+  - [x] Erste Version mit BaseUser, UserWithSupabase, FullDatabaseUser, PublicUser, AccountUser Typen definiert
+  - [x] Vereinfachung auf nur zwei Haupttypen: User und UserWithSupabase
+  - [x] UserTypeGuards Namespace für Type Guards implementiert
+  - [x] UserTransformers Namespace für User-Transformationen implementiert
+  - [x] Umfassende Unit-Tests für alle Typen und Hilfsfunktionen erstellt

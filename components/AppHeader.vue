@@ -1,8 +1,28 @@
 <script setup lang="ts">
   const user = useSupabaseUser();
+  console.log(user);
   const route = useRoute();
   const mobileMenuOpen = ref(false);
 
+  onMounted(async () => {
+    isLoadingPage.value = true;
+    await accountStore.init();
+    try {
+      // Ensure init runs if store is not populated
+      // Populate editableDisplayName after init or if user data is already available
+      if (user.value?.display_name) {
+        editableDisplayName.value = user.value.display_name;
+      }
+    } catch (error) {
+      console.error('Error initializing account page:', error);
+      notifyStore.notify(
+        'Could not load account details. Please try again.',
+        NotificationType.Error
+      );
+    } finally {
+      isLoadingPage.value = false;
+    }
+  });
   watch(
     () => route.path,
     () => {

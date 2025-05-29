@@ -6,6 +6,7 @@
     }
   });
   const { user } = props;
+  console.log(user);
 </script>
 
 <template>
