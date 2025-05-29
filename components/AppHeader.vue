@@ -1,15 +1,3 @@
-<script setup lang="ts">
-  import type { User } from '~/prisma/client';
-
-  const accountStore = useAccountStore();
-  const user = ref<User | null>(null);
-
-  onMounted(async () => {
-    await accountStore.init();
-    user.value = accountStore.user;
-  });
-</script>
-
 <template>
   <nav
     class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/60 shadow-lg">
@@ -31,8 +19,8 @@
 
         <!-- User Account (nur Avatar und Dropdown) -->
         <div class="flex items-center">
-          <template v-if="user">
-            <UserAccount :user="user" />
+          <template>
+            <UserAccount />
           </template>
         </div>
       </div>

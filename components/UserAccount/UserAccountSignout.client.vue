@@ -2,10 +2,6 @@
   const supabase = useSupabaseClient();
   const accountStore = useAccountStore();
 
-  onMounted(async () => {
-    await accountStore.init();
-  });
-
   async function signout() {
     await supabase.auth.signOut();
     if (accountStore) {

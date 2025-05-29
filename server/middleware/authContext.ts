@@ -20,8 +20,7 @@ export default defineEventHandler(async event => {
           user.id,
           user.user_metadata.full_name
             ? user.user_metadata.full_name
-            : 'no name supplied',
-          user.email ? user.email : 'no@email.supplied'
+            : 'no name supplied'
         );
         console.log(`\n Created DB User \n ${JSON.stringify(dbUser)}\n`);
       }

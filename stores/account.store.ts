@@ -1,8 +1,18 @@
-import type { User } from '~/prisma/client';
+import type {
+  User,
+  UserAchievement,
+  UserGame,
+  Wishlist
+} from '~/prisma/client';
 import type { FullUser } from '~/lib/services/types.service';
 
 export const useAccountStore = defineStore('account', () => {
-  const user = ref<User | null>(null);
+  type DBUser = User & {
+    userAchievements: UserAchievement[];
+    userGames: UserGame[];
+    wishlistItems: Wishlist[];
+  };
+  const user = ref<DBUser | null>(null);
   const loadingUser = ref(false);
   const init = async () => {
     const { $client } = useNuxtApp();

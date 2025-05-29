@@ -53,8 +53,7 @@ export namespace AuthService {
 
   export async function createUser(
     supabase_uid: string,
-    display_name: string,
-    email: string
+    display_name: string
   ): Promise<User> {
     return prisma.user.create({
       data: {

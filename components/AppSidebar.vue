@@ -1,11 +1,7 @@
 <script setup lang="ts">
-  import type { User } from '~/prisma/client';
+  const accountStore = useAccountStore();
+  const user = computed(() => accountStore.user);
 
-  interface Props {
-    user: User | null;
-  }
-
-  const props = defineProps<Props>();
   const emit = defineEmits<{
     hoverChange: [isHovered: boolean];
   }>();

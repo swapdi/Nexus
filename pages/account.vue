@@ -1,79 +1,39 @@
 <script setup lang="ts">
   const accountStore = useAccountStore();
-  const notifyStore = useNotifyStore();
-
-  const editableDisplayName = ref('');
-  const isLoadingNameChange = ref(false);
 
   const fullUser = computed(() => accountStore.fullUser);
-  // Computed properties for safe access and reactivity
   const user = computed(() => fullUser.value?.dbUser);
   const account = computed(() => fullUser.value?.account);
-  const userEmail = computed(() => account.value?.email);
+
+  // Profile information for quick overview
   const userDisplayName = computed(() => user.value?.display_name);
+  const userAvatarUrl = computed(
+    () => account.value?.user_metadata?.avatar_url
+  );
+  const userFullName = computed(() => account.value?.user_metadata?.full_name);
+
+  // Gaming stats for quick overview
   const userLevel = computed(() => user.value?.level || 1);
   const userXP = computed(() => user.value?.xp || 0);
   const userCredits = computed(() => user.value?.credits || 0);
+
   definePageMeta({
     middleware: ['auth'],
     layout: 'authenticated'
   });
-
-  onMounted(async () => {
-    await accountStore.init();
-  });
-
-  async function handleChangeDisplayName() {
-    if (!editableDisplayName.value.trim()) {
-      notifyStore.notify(
-        'Display name cannot be empty.',
-        NotificationType.Error
-      );
-      return;
-    }
-    if (!user.value) {
-      notifyStore.notify('User data not available.', NotificationType.Error);
-      return;
-    }
-    if (editableDisplayName.value.trim() === user.value.display_name) {
-      notifyStore.notify(
-        'Display name is already set to this value.',
-        NotificationType.Info
-      );
-      return;
-    }
-
-    isLoadingNameChange.value = true;
-    try {
-      // TODO: Implement updateUser method in account store
-      // await accountStore.updateUser({ display_name: editableDisplayName.value.trim() });
-      notifyStore.notify(
-        'Display name updated successfully!',
-        NotificationType.Success
-      );
-    } catch (error: any) {
-      console.error('Failed to change display name:', error);
-      notifyStore.notify(
-        error.message || 'Failed to update display name.',
-        NotificationType.Error
-      );
-    } finally {
-      isLoadingNameChange.value = false;
-    }
-  }
 </script>
 
 <template>
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="mx-auto">
       <!-- Header -->
       <div class="mb-8">
         <h1
           class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
-          Account Settings
+          Account Overview
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
-          Manage your account details and preferences.
+          Manage your gaming profile and account settings.
         </p>
       </div>
 
@@ -93,143 +53,259 @@
           </div>
         </div>
         <p class="text-center text-gray-500 dark:text-gray-400 mt-4">
-          Loading account details...
+          Loading account information...
         </p>
       </div>
 
-      <!-- Account Content -->
+      <!-- Account Overview Content -->
       <div v-else class="space-y-6">
-        <!-- User Profile Card -->
+        <!-- Quick Profile Overview -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
           <div class="p-6">
-            <h2
-              class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
-              User Profile
-            </h2>
-            <div class="space-y-3 mt-4">
-              <div>
-                <label
-                  class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-                  >Email Address</label
-                >
-                <p class="mt-1 text-lg text-gray-900 dark:text-gray-100">
-                  {{ userEmail || 'N/A' }}
-                </p>
+            <div class="flex items-center space-x-4 mb-6">
+              <div class="flex-shrink-0">
+                <img
+                  v-if="userAvatarUrl"
+                  :src="userAvatarUrl"
+                  :alt="userDisplayName || 'User Avatar'"
+                  class="h-16 w-16 rounded-full border-2 border-gray-300 dark:border-gray-600" />
+                <div
+                  v-else
+                  class="h-16 w-16 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                  <svg
+                    class="h-8 w-8 text-gray-500 dark:text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
               </div>
               <div>
-                <label
-                  for="displayNameInput"
-                  class="block text-sm font-medium text-gray-500 dark:text-gray-400"
-                  >Display Name</label
-                >
-                <div class="mt-1 flex rounded-md shadow-sm">
-                  <input
-                    id="displayNameInput"
-                    v-model="editableDisplayName"
-                    type="text"
-                    class="flex-1 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500 p-3"
-                    placeholder="Your Display Name"
-                    :disabled="isLoadingNameChange" />
-                  <button
-                    @click="handleChangeDisplayName"
-                    :disabled="isLoadingNameChange"
-                    class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-md bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150">
-                    <svg
-                      v-if="!isLoadingNameChange"
-                      class="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7" />
-                    </svg>
-                    <svg
-                      v-else
-                      class="animate-spin h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24">
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </button>
-                </div>
+                <h2
+                  class="text-2xl font-medium text-gray-900 dark:text-gray-100">
+                  {{ userFullName || userDisplayName || 'Gamer' }}
+                </h2>
+                <p class="text-gray-500 dark:text-gray-400">
+                  Level {{ userLevel }} • {{ userXP.toLocaleString() }} XP •
+                  {{ userCredits.toLocaleString() }} Credits
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Gaming Stats Card -->
+        <!-- Quick Actions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Gaming Profile Card -->
+          <div
+            class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 shadow-xl rounded-lg overflow-hidden border border-purple-200 dark:border-purple-700/50">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3
+                  class="text-xl font-semibold text-purple-900 dark:text-purple-100">
+                  Gaming Profile
+                </h3>
+                <svg
+                  class="w-8 h-8 text-purple-600 dark:text-purple-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <p class="text-purple-700 dark:text-purple-300 mb-4">
+                View your gaming stats, achievements, collection, and level
+                progress in a beautiful gaming-themed interface.
+              </p>
+              <NuxtLink
+                to="/profile"
+                class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200">
+                View Gaming Profile
+                <svg
+                  class="w-4 h-4 ml-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7" />
+                </svg>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Account Settings Card -->
+          <div
+            class="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800/50 dark:to-slate-800/50 shadow-xl rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700/50">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3
+                  class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                  Account Settings
+                </h3>
+                <svg
+                  class="w-8 h-8 text-gray-600 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <p class="text-gray-700 dark:text-gray-300 mb-4">
+                Manage your personal information, security settings,
+                preferences, and connected platforms.
+              </p>
+              <NuxtLink
+                to="/settings"
+                class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200">
+                Manage Settings
+                <svg
+                  class="w-4 h-4 ml-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7" />
+                </svg>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Overview -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
           <div class="p-6">
-            <h2
-              class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
-              Gaming Stats
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
+            <h3
+              class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
+              Quick Stats
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div
+                class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                 <div
-                  class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                  class="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {{ userLevel }}
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400">
                   Level
                 </div>
               </div>
-              <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+              <div
+                class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <div
-                  class="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {{ userXP }}
+                  class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {{ userXP.toLocaleString() }}
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400">
-                  Experience Points
+                  Experience
                 </div>
               </div>
-              <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+              <div
+                class="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                 <div
                   class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                  {{ userCredits }}
+                  {{ userCredits.toLocaleString() }}
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400">
                   Credits
+                </div>
+              </div>
+              <div
+                class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div
+                  class="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {{ user?.userGames?.length || 0 }}
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  Games
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Danger Zone Card -->
+        <!-- Quick Links -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
           <div class="p-6">
-            <h2
-              class="text-2xl font-semibold mb-4 text-red-600 dark:text-red-500 border-b pb-2 dark:border-gray-700">
-              Danger Zone
-            </h2>
-            <div class="space-y-3 mt-4">
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Manage sensitive account operations with caution.
-                </p>
-                <NuxtLink
-                  to="/deletemyaccount"
-                  class="inline-flex items-center px-4 py-2 border border-red-500 text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:text-red-300 dark:border-red-600 dark:bg-red-700 dark:hover:bg-red-600 transition ease-in-out duration-150">
-                  Delete My Account
-                </NuxtLink>
-              </div>
+            <h3
+              class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
+              Quick Links
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <NuxtLink
+                to="/my-games"
+                class="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <svg
+                  class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700 dark:text-gray-300">My Games</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/wishlist"
+                class="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <svg
+                  class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700 dark:text-gray-300">Wishlist</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/deals"
+                class="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <svg
+                  class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700 dark:text-gray-300">Deals</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/dashboard"
+                class="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <svg
+                  class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+                </svg>
+                <span class="text-gray-700 dark:text-gray-300">Dashboard</span>
+              </NuxtLink>
             </div>
           </div>
         </div>

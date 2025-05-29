@@ -5,7 +5,7 @@
   const sidebarHovered = ref(false);
 
   onMounted(async () => {
-    await accountStore.init();
+    accountStore.init();
     user.value = accountStore.user;
   });
 
@@ -26,7 +26,8 @@
       class="pt-1 transition-all duration-500 ease-out"
       :class="sidebarHovered ? 'ml-64' : 'ml-20'">
       <!-- Notifications -->
-      <Notifications class="fixed top-20 right-4 z-40" />
+      <Notifications
+        class="mr-3 text-gray-400 hover:text-white transition-colors" />
 
       <!-- Page Content -->
       <main class="min-h-[calc(100vh-4rem)] overflow-y-auto">

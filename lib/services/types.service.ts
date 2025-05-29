@@ -1,4 +1,9 @@
-import type { User as PrismaUser } from '~/prisma/client';
+import type {
+  User as PrismaUser,
+  UserAchievement,
+  UserGame,
+  Wishlist
+} from '~/prisma/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 /**
@@ -7,7 +12,11 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
  */
 export type FullUser = {
   /** Basis-User Informationen aus der Datenbank */
-  dbUser: PrismaUser;
+  dbUser: PrismaUser & {
+    userAchievements: UserAchievement[];
+    userGames: UserGame[];
+    wishlistItems: Wishlist[];
+  };
   /** Supabase Auth-User Informationen */
   account: SupabaseUser;
 };

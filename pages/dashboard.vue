@@ -1,9 +1,4 @@
 <script setup lang="ts">
-  const accountStore = useAccountStore();
-
-  onMounted(async () => {
-    await accountStore.init();
-  });
   definePageMeta({
     middleware: ['auth'],
     title: 'Meine Spielebibliothek',
