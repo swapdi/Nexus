@@ -1,31 +1,48 @@
-import { defineStore } from 'pinia';
+import type { User } from '~/prisma/client';
 import type { FullUser } from '~/lib/services/types.service';
 
 export const useAccountStore = defineStore('account', () => {
-  const user = ref<FullUser | null>(null);
+  const user = ref<User | null>(null);
   const loadingUser = ref(false);
   const init = async () => {
     const { $client } = useNuxtApp();
     if (!user.value) {
-      loadingUser.value = true;
-      const result = await $client.auth.getDBUser.query();
-      if (result) {
-        user.value = {
-          dbUser: result.dbUser,
-          account: result.user
-        };
+      try {
+        loadingUser.value = true;
+        const { dbUser: _user } = await $client.auth.getDBUser.query();
+        if (_user) {
+          user.value = _user;
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        // Optionally handle the error, e.g., show a notification
+        useNotifyStore().notify(
+          'Fehler beim Laden des Benutzers. Bitte versuche es später erneut.',
+          3
+        );
+        user.value = null;
+      } finally {
         loadingUser.value = false;
       }
-      console.log(user.value);
     }
   };
 
+  const fullUser = computed<FullUser | null>(() => {
+    const supabaseUser = useSupabaseUser().value;
+    if (!user.value || !supabaseUser) return null;
+    return {
+      dbUser: user.value,
+      account: supabaseUser
+    };
+  });
+  console.log(fullUser.value);
   const signout = () => {
     user.value = null;
   };
 
   return {
     user,
+    fullUser,
     loadingUser,
     init,
     signout

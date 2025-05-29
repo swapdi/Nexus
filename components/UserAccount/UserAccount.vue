@@ -1,12 +1,5 @@
 <script setup lang="ts">
-  const props = defineProps({
-    user: {
-      type: Object,
-      required: true
-    }
-  });
-  const { user } = props;
-  console.log(user);
+  const user = useSupabaseUser();
 </script>
 
 <template>
@@ -15,7 +8,7 @@
       <label tabindex="0" class="btn btn-ghost btn-circle avatar">
         <div class="w-10 rounded-full">
           <img
-            v-if="user.user_metadata?.avatar_url"
+            v-if="user?.user_metadata?.avatar_url"
             :src="user.user_metadata.avatar_url"
             alt="avatar image" />
           <img

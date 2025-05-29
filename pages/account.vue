@@ -4,46 +4,25 @@
 
   const editableDisplayName = ref('');
   const isLoadingNameChange = ref(false);
-  const isLoadingPage = ref(true);
 
+  const fullUser = computed(() => accountStore.fullUser);
   // Computed properties for safe access and reactivity
-  const user = computed(() => accountStore.user);
-
-  const userEmail = computed(() => user.value?.email);
+  const user = computed(() => fullUser.value?.dbUser);
+  const account = computed(() => fullUser.value?.account);
+  const userEmail = computed(() => account.value?.email);
   const userDisplayName = computed(() => user.value?.display_name);
   const userLevel = computed(() => user.value?.level || 1);
   const userXP = computed(() => user.value?.xp || 0);
   const userCredits = computed(() => user.value?.credits || 0);
 
-  onMounted(async () => {
-    isLoadingPage.value = true;
-    await accountStore.init();
-    try {
-      // Ensure init runs if store is not populated
-      // Populate editableDisplayName after init or if user data is already available
-      if (user.value?.display_name) {
-        editableDisplayName.value = user.value.display_name;
-      }
-    } catch (error) {
-      console.error('Error initializing account page:', error);
-      notifyStore.notify(
-        'Could not load account details. Please try again.',
-        NotificationType.Error
-      );
-    } finally {
-      isLoadingPage.value = false;
-    }
+  definePageMeta({
+    middleware: ['auth'],
+    layout: 'application'
   });
 
-  // Watch for changes in the store's display name and update the local ref
-  watch(
-    () => user.value?.display_name,
-    newName => {
-      if (newName && editableDisplayName.value !== newName) {
-        editableDisplayName.value = newName;
-      }
-    }
-  );
+  onMounted(async () => {
+    await accountStore.init();
+  });
 
   async function handleChangeDisplayName() {
     if (!editableDisplayName.value.trim()) {
@@ -101,7 +80,7 @@
 
       <!-- Loading State -->
       <div
-        v-if="isLoadingPage"
+        v-if="accountStore.loadingUser"
         class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6">
         <div class="animate-pulse flex space-x-4">
           <div

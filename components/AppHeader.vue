@@ -1,27 +1,14 @@
 <script setup lang="ts">
-  const user = useSupabaseUser();
-  console.log(user);
+  import type { User } from '~/prisma/client';
+
+  const accountStore = useAccountStore();
+  const user = ref<User | null>(null);
   const route = useRoute();
   const mobileMenuOpen = ref(false);
 
   onMounted(async () => {
-    isLoadingPage.value = true;
     await accountStore.init();
-    try {
-      // Ensure init runs if store is not populated
-      // Populate editableDisplayName after init or if user data is already available
-      if (user.value?.display_name) {
-        editableDisplayName.value = user.value.display_name;
-      }
-    } catch (error) {
-      console.error('Error initializing account page:', error);
-      notifyStore.notify(
-        'Could not load account details. Please try again.',
-        NotificationType.Error
-      );
-    } finally {
-      isLoadingPage.value = false;
-    }
+    user.value = accountStore.user;
   });
   watch(
     () => route.path,
@@ -79,8 +66,7 @@
               @click="mobileMenuOpen = !mobileMenuOpen"
               type="button"
               class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-              aria-controls="mobile-menu-app"
-              :aria-expanded="mobileMenuOpen.toString()">
+              aria-controls="mobile-menu-app">
               <span class="sr-only">Hauptmenü öffnen</span>
               <Icon
                 v-if="!mobileMenuOpen"

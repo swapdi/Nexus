@@ -5,11 +5,5 @@ export const authRouter = router({
     return {
       dbUser: ctx.dbUser // Für Rückwärtskompatibilität, enthält jetzt User ohne Account
     };
-  }),
-
-  getUser: publicProcedure.query(({ ctx }) => {
-    return {
-      user: ctx.user // Neuer Name für den User
-    };
   })
 });

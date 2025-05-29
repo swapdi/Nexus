@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { computed } from 'vue';
   const user = useSupabaseUser();
   const route = useRoute();
   const mobileMenuOpen = ref(false);
