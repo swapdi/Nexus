@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="sticky bottom-0 z-40 bg-gray-900/80 backdrop-blur-md border-t border-gray-700/60 text-gray-400 text-sm relative overflow-hidden">
+    class="bottom-0 z-40 bg-gray-900/80 backdrop-blur-md border-t border-gray-700/60 text-gray-400 text-sm relative overflow-hidden">
     <div
       class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 animate-border-flow"
       style="background-size: 200% 100%" />

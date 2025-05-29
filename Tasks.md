@@ -31,10 +31,12 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 - **Basis UI & Navigation:**
   - [ ] Richte Nuxt 3 Projekt mit Tailwind CSS ein.
   - [ ] Erstelle Haupt-Layout (`MainLayout.vue`).
-  - [ ] Erstelle Navigationskomponente (`NavBar.vue`).
+  - [x] Erstelle Navigationskomponente (`NavBar.vue`). (29. Mai 2025)
+  - [x] Erstelle einklappbare Seitennavigation für angemeldete Benutzer (`AppSidebar.vue`). (29. Mai 2025)
+  - [x] Implementiere Layout für authentifizierte Benutzer (`authenticated.vue`). (29. Mai 2025)
   - [ ] Richte Basis-Routing ein (Landing, Bibliothek, Angebote).
-  - [ ] Erstelle Platzhalter-Seiten (`LandingPage.vue`, `LibraryPage.vue`, `DealsPage.vue`).
-  - [ ] Implementiere das dunkle UI-Design konsistent auf den Basis-Seiten.
+  - [x] Erstelle Platzhalter-Seiten (`LandingPage.vue`, `LibraryPage.vue`, `DealsPage.vue`). (29. Mai 2025)
+  - [x] Implementiere das dunkle UI-Design konsistent auf den Basis-Seiten. (29. Mai 2025)
 - **Bibliotheksimport (Steam MVP):**
   - [ ] Implementiere Backend/Nuxt Server API-Route zum Aufruf der Steam Web API (`GetOwnedGames`).
   - [ ] Implementiere Frontend UI (Button, Eingabefeld für SteamID/Link - siehe frühere Diskussionen).
@@ -131,20 +133,45 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [ ] Implementiere Logik zum Starten von Spielen/Launchern aus der Desktop-App (im Electron Main Prozess).
   - [ ] Passe UI/UX für Desktop an (z. B. Tray Icon, native Menüs - falls gewünscht).
 
+---
+
 ## Entdeckt während der Arbeit
 
-- [x] OAuth Provider in Anmelde- und Registrierungsseiten überarbeiten - Apple und Microsoft durch Discord ersetzen (27. Mai 2025)
-- [x] Refactoring des Auth-Systems von Account-basiert zu User-only System nach Schema-Migration (27. Mai 2025)
-  - [x] auth.service.ts zu User-only angepasst
-  - [x] account.store.ts von FullDBUser zu User umgestellt
-  - [x] TRPC Context und Router an neues Schema angepasst
-  - [x] UserAccountSwitch.client.vue zu User-Info-Komponente umgewandelt
-  - [x] account.vue Seite für User-only System neu erstellt
-  - [x] Alle Verweise auf activeAccount, activeAccountId und FullDBUser entfernt
-- [x] Admin@admin.de Benutzer aus Supabase Auth entfernt (28. Januar 2025)
-- [x] **types.service.ts erstellt und überarbeitet** - Zentrale Definition von User-Typen mit Supabase-Integration (29. Mai 2025)
-  - [x] Erste Version mit BaseUser, UserWithSupabase, FullDatabaseUser, PublicUser, AccountUser Typen definiert
-  - [x] Vereinfachung auf nur zwei Haupttypen: User und UserWithSupabase
-  - [x] UserTypeGuards Namespace für Type Guards implementiert
-  - [x] UserTransformers Namespace für User-Transformationen implementiert
-  - [x] Umfassende Unit-Tests für alle Typen und Hilfsfunktionen erstellt
+**29. Mai 2025 - Sidebar Navigation Implementation:**
+
+- [x] Erstelle einklappbare Seitennavigation (`AppSidebar.vue`) mit folgenden Features:
+  - Einklappbar auf nur Icons oder vollständige Labels
+  - Tooltips für eingeklappten Zustand
+  - Aktive Seiten-Markierung mit Purple-Theme
+  - Benutzerinformationen im Footer (Avatar, Name, Level, XP)
+  - Lokale Speicherung des Sidebar-Status in localStorage
+- [x] Implementiere Sidebar-Toggle Komponente (`SidebarToggle.vue`):
+  - Floating Toggle-Button mit Animation
+  - Automatische Positionsanpassung je nach Sidebar-Status
+- [x] Erstelle authenticated Layout (`layouts/authenticated.vue`):
+  - Vollständige Integration der Sidebar
+  - Responsive Content-Area mit automatischen Margins
+  - Platzierung für Notifications
+- [x] Implementiere Detailnavigation in Sidebar:
+
+  - Sub-Navigation für aktive Hauptbereiche
+  - Filteroptionen für Meine Spiele (Alle, Zuletzt gespielt, Favoriten)
+  - Filteroptionen für Angebote (Alle, Kostenlos, Hohe Rabatte)
+  - Filteroptionen für Wishlist (Alle, Im Angebot, Bald verfügbar)
+  - Unterseiten für Einstellungen (Profil, Plattformen, Benachrichtigungen)
+
+- [x] Erstelle vollständige Seiten mit modernem UI:
+  - `pages/my-games.vue` - Spielebibliothek mit Filtern, Suche, Statistiken
+  - `pages/deals.vue` - Angebots-Übersicht mit umfangreichen Filteroptionen
+  - `pages/wishlist.vue` - Wishlist mit Preisverfolgung und Statistiken
+- [x] Aktualisiere bestehende Seiten auf neues Layout:
+  - `pages/dashboard.vue` - Layout von 'application' zu 'authenticated'
+  - `pages/account.vue` - Layout von 'application' zu 'authenticated'
+
+**Technische Details:**
+
+- Verwendung von Heroicons für konsistente Icon-Darstellung
+- Responsive Design mit Tailwind CSS
+- Smooth Transitions und Hover-Effekte
+- Consistent Purple/Blue Gradient Theme
+- Mock-Daten für Entwicklung (später durch echte APIs zu ersetzen)

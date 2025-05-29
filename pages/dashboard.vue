@@ -7,7 +7,7 @@
   definePageMeta({
     middleware: ['auth'],
     title: 'Meine Spielebibliothek',
-    layout: 'application'
+    layout: 'authenticated'
   });
 
   // Mock-Daten für die Plattformen

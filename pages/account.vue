@@ -14,10 +14,9 @@
   const userLevel = computed(() => user.value?.level || 1);
   const userXP = computed(() => user.value?.xp || 0);
   const userCredits = computed(() => user.value?.credits || 0);
-
   definePageMeta({
     middleware: ['auth'],
-    layout: 'application'
+    layout: 'authenticated'
   });
 
   onMounted(async () => {
