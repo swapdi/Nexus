@@ -20,6 +20,7 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Konsistente 2-Sekunden Rotation ohne Pause
   - [x] Münze in die untere rechte Ecke der Karte repositioniert
   - [x] Münzgröße vergrößert für bessere Sichtbarkeit
+- [x] User Credits Anzeige im App Header implementiert (31. Mai 2025)
 
 ---
 

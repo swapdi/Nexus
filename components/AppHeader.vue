@@ -11,8 +11,6 @@
                 src="/favicon.ico"
                 alt="Nexus Logo"
                 class="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3" />
-              <div
-                class="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-0 group-hover:opacity-30 blur transition-opacity duration-300"></div>
             </div>
             <span
               class="text-2xl font-bold whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 transition-all duration-300 group-hover:from-purple-300 group-hover:via-blue-300 group-hover:to-cyan-300">
@@ -20,9 +18,12 @@
             </span>
           </NuxtLink>
         </div>
-
         <!-- Avatar & Dropdown Menü - ganz rechts -->
-        <div class="flex items-center">
+        <div class="flex items-center space-x-4">
+          <!-- User Credits -->
+          <UserCredits />
+
+          <!-- User Account -->
           <UserAccount />
         </div>
       </div>

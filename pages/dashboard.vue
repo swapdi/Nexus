@@ -160,7 +160,7 @@
 </script>
 
 <template>
-  <div class="py-8 space-y-8">
+  <div class="space-y-8">
     <!-- Welcome Header -->
     <div
       class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-purple-900/20 to-blue-900/20 rounded-2xl border border-purple-500/20 p-8">
@@ -303,6 +303,7 @@
 
             <!-- Discrete Purchase Link -->
             <NuxtLink
+              :to="'/credits/purchase'"
               class="text-slate-300 hover:text-slate-100 text-sm font-medium transition-colors"
               title="Credits nachkaufen"
               @click="testNotify">
@@ -373,7 +374,7 @@
     </div>
   </div>
   <!-- Main Content Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 my-8">
     <!-- Left Column: Recent Games & Activity -->
     <div class="lg:col-span-2 flex flex-col space-y-8">
       <!-- Recently Played Games -->
