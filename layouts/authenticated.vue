@@ -23,10 +23,9 @@
     <AppHeader class="fixed top-0 left-0 right-0 z-50" />
     <!-- Sidebar -->
     <AppSidebar :user="user" @hover-change="handleSidebarHover" />
-
     <!-- Main Content Area -->
     <div
-      class="pt-1 transition-all duration-500 ease-out"
+      class="pt-1 transition-all duration-500 ease-out relative z-10"
       :class="sidebarHovered ? 'ml-64' : 'ml-20'">
       <!-- Notifications -->
       <Notifications

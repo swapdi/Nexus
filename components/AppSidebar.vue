@@ -129,7 +129,7 @@
   <aside
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
-    class="group fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] flex flex-col bg-gray-900 overflow-hidden"
+    class="group fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] flex flex-col bg-gray-900 overflow-hidden transition-all duration-500 ease-out"
     :style="{ width: showExpanded ? '256px' : '78px' }">
     <!-- Futuristischer Hintergrund mit Gradient und Glow -->
     <div
@@ -177,7 +177,7 @@
                 <!-- Label mit Slide-In Animation -->
                 <span
                   v-if="showExpanded"
-                  class="ml-4 transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0"
+                  class="ml-4 transition-all duration-500 ease-out whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0"
                   :class="
                     showExpanded
                       ? 'translate-x-0 opacity-100'
