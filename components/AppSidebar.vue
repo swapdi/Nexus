@@ -129,7 +129,7 @@
   <aside
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
-    class="group fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] flex flex-col bg-gray-900"
+    class="group fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] flex flex-col bg-gray-900 overflow-hidden"
     :style="{ width: showExpanded ? '256px' : '78px' }">
     <!-- Futuristischer Hintergrund mit Gradient und Glow -->
     <div
@@ -141,12 +141,11 @@
       <div
         class="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-purple-500/50 via-blue-500/50 to-green-500/50 shadow-glow"></div>
     </div>
-
     <!-- Navigation Content Container -->
-    <div class="relative z-10 flex flex-col h-full min-h-0">
+    <div class="relative z-10 flex flex-col h-full min-h-0 overflow-hidden">
       <!-- Navigation (nimmt verfügbaren Platz ein) -->
-      <nav class="flex-1 px-2 pt-4 min-h-0">
-        <div class="h-full overflow-y-auto custom-scrollbar">
+      <nav class="flex-1 px-2 pt-4 min-h-0 overflow-hidden">
+        <div class="h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
           <ul class="space-y-2 pb-4">
             <li v-for="item in navigationItems" :key="item.path">
               <NuxtLink
@@ -175,11 +174,10 @@
                     v-if="isActiveRoute(item.path)"
                     class="absolute inset-0 bg-purple-400/30 rounded-full blur-md animate-pulse-slow"></div>
                 </div>
-
                 <!-- Label mit Slide-In Animation -->
                 <span
                   v-if="showExpanded"
-                  class="ml-4 transition-all duration-300 whitespace-nowrap overflow-hidden"
+                  class="ml-4 transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0"
                   :class="
                     showExpanded
                       ? 'translate-x-0 opacity-100'
@@ -221,9 +219,10 @@
                       'text-gray-500 group-hover/sub:text-gray-300':
                         route.fullPath !== subItem.path
                     }" />
-                  <span class="whitespace-nowrap overflow-hidden">{{
-                    subItem.name
-                  }}</span>
+                  <span
+                    class="whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0"
+                    >{{ subItem.name }}</span
+                  >
 
                   <!-- Sub-item glow -->
                   <div
@@ -253,7 +252,6 @@
             <div
               class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900 shadow-sm"></div>
           </div>
-
           <!-- User Info mit Animation (nur bei erweitert) -->
           <div
             v-if="showExpanded"
@@ -263,24 +261,28 @@
                 ? 'translate-x-0 opacity-100'
                 : '-translate-x-4 opacity-0'
             ">
-            <div class="flex flex-col">
+            <div class="flex flex-col min-w-0 overflow-hidden">
               <!-- Name -->
-              <p class="text-sm font-medium text-white truncate mb-1">
+              <p class="text-sm font-medium text-white truncate mb-1 min-w-0">
                 {{ user.display_name || 'User' }}
               </p>
 
               <!-- Level und XP -->
-              <div class="flex items-center justify-between text-xs mb-2">
-                <div class="flex items-center space-x-2">
-                  <span class="text-purple-300 font-medium whitespace-nowrap"
+              <div
+                class="flex items-center justify-between text-xs mb-2 min-w-0 overflow-hidden">
+                <div
+                  class="flex items-center space-x-2 min-w-0 overflow-hidden">
+                  <span
+                    class="text-purple-300 font-medium whitespace-nowrap flex-shrink-0"
                     >Level {{ user.level }}</span
                   >
-                  <span class="text-gray-500">•</span>
-                  <span class="text-blue-300 whitespace-nowrap"
+                  <span class="text-gray-500 flex-shrink-0">•</span>
+                  <span class="text-blue-300 whitespace-nowrap flex-shrink-0"
                     >{{ user.xp }} XP</span
                   >
                 </div>
-                <span class="text-gray-400 text-xs whitespace-nowrap"
+                <span
+                  class="text-gray-400 text-xs whitespace-nowrap flex-shrink-0"
                   >{{ user.credits }} Credits</span
                 >
               </div>
@@ -295,9 +297,9 @@
                     class="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full opacity-50 animate-pulse-slow"></div>
                 </div>
               </div>
-
               <!-- Next Level Info -->
-              <div class="text-xs text-gray-400 whitespace-nowrap">
+              <div
+                class="text-xs text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
                 {{ Math.max(0, 1000 - (user.xp % 1000)) }} XP bis Level
                 {{ user.level + 1 }}
               </div>
@@ -342,6 +344,11 @@
 </template>
 
 <style scoped>
+  /* Verhindere horizontale Scrollbars */
+  aside {
+    overflow-x: hidden;
+  }
+
   /* Custom Scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
@@ -372,6 +379,14 @@
       rgba(147, 51, 234, 0.9),
       rgba(59, 130, 246, 0.9)
     );
+  }
+
+  /* Verhindere Text-Overflow für alle Elemente */
+  .truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
   /* Glow Effects */

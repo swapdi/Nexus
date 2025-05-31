@@ -1,254 +1,720 @@
 <script setup lang="ts">
   definePageMeta({
     middleware: ['auth'],
-    title: 'Meine Spielebibliothek',
+    title: 'Dashboard - Gaming Nexus',
     layout: 'authenticated'
   });
 
-  // Mock-Daten für die Plattformen
-  const platforms = ref([
-    { id: 'all', name: 'Alle Plattformen' },
-    { id: 'steam', name: 'Steam' },
-    { id: 'epic', name: 'Epic Games' },
-    { id: 'gog', name: 'GOG' },
-    { id: 'origin', name: 'Origin / EA' },
-    { id: 'uplay', name: 'Ubisoft Connect' },
-    { id: 'xbox', name: 'Xbox Game Pass' },
-    { id: 'other', name: 'Andere' }
-  ]);
+  const accountStore = useAccountStore();
+  const user = computed(() => accountStore.user);
 
-  // Ausgewählte Plattform
-  const selectedPlatform = ref('all');
+  // Dashboard Stats (Mock-Daten)
+  const stats = ref({
+    totalGames: 127,
+    hoursPlayed: 1847,
+    achievementsUnlocked: 342,
+    gamesCompleted: 23,
+    currentLevel: user.value?.level || 15,
+    currentXP: user.value?.xp || 2750,
+    nextLevelXP: 3000,
+    credits: user.value?.credits || 1250
+  });
 
-  // Mock-Daten für die Spiele
-  const games = ref([
+  // Zuletzt gespielte Spiele
+  const recentGames = ref([
     {
       id: 1,
       title: 'Cyberpunk 2077',
-      coverUrl: 'https://via.placeholder.com/300x400',
-      platformId: 'steam',
-      releaseYear: 2020,
-      genre: 'RPG',
-      playTime: '120h'
+      coverUrl: 'https://via.placeholder.com/200x280',
+      platform: 'Steam',
+      lastPlayed: '2 Stunden',
+      progress: 78
     },
     {
       id: 2,
-      title: 'The Witcher 3: Wild Hunt',
-      coverUrl: 'https://via.placeholder.com/300x400',
-      platformId: 'gog',
-      releaseYear: 2015,
-      genre: 'RPG',
-      playTime: '250h'
+      title: 'Elden Ring',
+      coverUrl: 'https://via.placeholder.com/200x280',
+      platform: 'Steam',
+      lastPlayed: '1 Tag',
+      progress: 45
     },
     {
       id: 3,
       title: 'Red Dead Redemption 2',
-      coverUrl: 'https://via.placeholder.com/300x400',
-      platformId: 'epic',
-      releaseYear: 2019,
-      genre: 'Action-Adventure',
-      playTime: '80h'
+      coverUrl: 'https://via.placeholder.com/200x280',
+      platform: 'Epic Games',
+      lastPlayed: '3 Tage',
+      progress: 92
     },
     {
       id: 4,
-      title: 'Elden Ring',
-      coverUrl: 'https://via.placeholder.com/300x400',
-      platformId: 'steam',
-      releaseYear: 2022,
-      genre: 'Action-RPG',
-      playTime: '100h'
-    },
-    {
-      id: 5,
-      title: "Assassin's Creed Valhalla",
-      coverUrl: 'https://via.placeholder.com/300x400',
-      platformId: 'uplay',
-      releaseYear: 2020,
-      genre: 'Action-RPG',
-      playTime: '60h'
-    },
-    {
-      id: 6,
-      title: 'Mass Effect Legendary Edition',
-      coverUrl: 'https://via.placeholder.com/300x400',
-      platformId: 'origin',
-      releaseYear: 2021,
-      genre: 'RPG',
-      playTime: '120h'
+      title: 'The Witcher 3',
+      coverUrl: 'https://via.placeholder.com/200x280',
+      platform: 'GOG',
+      lastPlayed: '1 Woche',
+      progress: 100
     }
   ]);
 
-  // Filtere Spiele basierend auf der ausgewählten Plattform
-  const displayedGames = computed(() => {
-    if (selectedPlatform.value === 'all') {
-      return games.value;
-    } else {
-      return games.value.filter(
-        game => game.platformId === selectedPlatform.value
-      );
+  // Aktuelle Achievements
+  const recentAchievements = ref([
+    {
+      id: 1,
+      title: 'Legendary Warrior',
+      description: 'Erreiche Level 50 in Elden Ring',
+      game: 'Elden Ring',
+      icon: '🏆',
+      rarity: 'Legendär',
+      earnedAt: '2 Stunden'
+    },
+    {
+      id: 2,
+      title: 'Night City Legend',
+      description: 'Schließe alle Hauptmissionen ab',
+      game: 'Cyberpunk 2077',
+      icon: '🌃',
+      rarity: 'Episch',
+      earnedAt: '1 Tag'
+    },
+    {
+      id: 3,
+      title: 'Master Explorer',
+      description: 'Entdecke alle Gebiete',
+      game: 'Red Dead Redemption 2',
+      icon: '🗺️',
+      rarity: 'Selten',
+      earnedAt: '3 Tage'
     }
+  ]);
+
+  // Aktuelle Deals/Angebote
+  const featuredDeals = ref([
+    {
+      id: 1,
+      title: "Baldur's Gate 3",
+      originalPrice: 59.99,
+      discountPrice: 47.99,
+      discount: 20,
+      platform: 'Steam',
+      coverUrl: 'https://via.placeholder.com/200x280',
+      endsIn: '2 Tage'
+    },
+    {
+      id: 2,
+      title: 'Hades',
+      originalPrice: 24.99,
+      discountPrice: 12.49,
+      discount: 50,
+      platform: 'Epic Games',
+      coverUrl: 'https://via.placeholder.com/200x280',
+      endsIn: '5 Tage'
+    },
+    {
+      id: 3,
+      title: 'Disco Elysium',
+      originalPrice: 39.99,
+      discountPrice: 19.99,
+      discount: 50,
+      platform: 'GOG',
+      coverUrl: 'https://via.placeholder.com/200x280',
+      endsIn: '1 Woche'
+    }
+  ]);
+
+  // Gaming-Aktivitäten diese Woche
+  const weeklyActivity = ref([
+    { day: 'Mo', hours: 2.5 },
+    { day: 'Di', hours: 1.0 },
+    { day: 'Mi', hours: 3.5 },
+    { day: 'Do', hours: 2.0 },
+    { day: 'Fr', hours: 4.0 },
+    { day: 'Sa', hours: 5.5 },
+    { day: 'So', hours: 3.0 }
+  ]);
+
+  // Berechne XP-Fortschritt
+  const xpProgress = computed(() => {
+    return Math.round((stats.value.currentXP / stats.value.nextLevelXP) * 100);
   });
 
-  // Funktion zum Abrufen des Plattform-Icons
-  function getPlatformIcon(platformId: string): string {
-    // Hier könnte später die richtige Icon-Logik implementiert werden
-    const icons: { [key: string]: string } = {
-      steam: 'S',
-      epic: 'E',
-      gog: 'G',
-      origin: 'O',
-      uplay: 'U',
-      xbox: 'X',
-      other: '?'
-    };
-    const result = icons[platformId];
+  // Aktuelle Uhrzeit für Begrüßung
+  const currentTime = ref(new Date());
+  const greeting = computed(() => {
+    const hour = currentTime.value.getHours();
+    if (hour < 12) return 'Guten Morgen';
+    if (hour < 18) return 'Guten Tag';
+    return 'Guten Abend';
+  });
 
-    return result || '?';
-  }
+  // Update Zeit jede Minute
+  onMounted(() => {
+    setInterval(() => {
+      currentTime.value = new Date();
+    }, 60000);
+  });
 </script>
+
 <template>
-  <div class="py-8">
-    <h1 class="text-3xl font-bold mb-8">Meine Spielebibliothek</h1>
-
-    <!-- Plattform-Tabs -->
-    <div class="mb-8">
-      <div class="flex overflow-x-auto pb-2 space-x-2">
-        <button
-          v-for="platform in platforms"
-          :key="platform.id"
-          :class="[
-            'px-4 py-2 rounded-md whitespace-nowrap text-sm font-medium transition-all',
-            selectedPlatform === platform.id
-              ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          ]"
-          @click="selectedPlatform = platform.id">
-          {{ platform.name }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Suchleiste und Filter -->
-    <div class="flex flex-wrap gap-4 mb-8">
-      <div class="relative flex-1">
-        <input
-          type="text"
-          placeholder="Spiel suchen..."
-          class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent" />
-        <span class="absolute right-3 top-2.5">🔍</span>
-      </div>
-      <div class="flex space-x-2">
-        <select
-          class="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-600">
-          <option>Alle Genres</option>
-          <option>Action</option>
-          <option>RPG</option>
-          <option>Strategie</option>
-          <option>Simulation</option>
-        </select>
-        <select
-          class="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-600">
-          <option>Sortieren nach</option>
-          <option>Name (A-Z)</option>
-          <option>Name (Z-A)</option>
-          <option>Zuletzt gespielt</option>
-          <option>Spielzeit</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Spielekarten-Grid -->
+  <div class="py-8 space-y-8">
+    <!-- Welcome Header -->
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-purple-900/20 to-blue-900/20 rounded-2xl border border-purple-500/20 p-8">
+      <!-- Animated Background -->
       <div
-        v-for="game in displayedGames"
-        :key="game.id"
-        class="group relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(124,58,237,0.2)]">
-        <!-- Spielecover -->
-        <div class="relative aspect-[3/4] w-full overflow-hidden">
-          <img
-            :src="game.coverUrl"
-            :alt="game.title"
-            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0" />
+        class="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-blue-600/5 to-green-600/5 animate-pulse-slow"></div>
+      <div
+        class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
 
-          <!-- Spielzeit-Badge -->
-          <div
-            class="absolute bottom-2 right-2 px-2 py-1 bg-black/70 rounded text-xs font-medium">
-            {{ game.playTime }}
+      <div class="relative z-10">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1
+              class="text-4xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-green-400 bg-clip-text text-transparent mb-2">
+              {{ greeting }}, {{ user?.display_name || 'Gamer' }}! 🎮
+            </h1>
+            <p class="text-lg text-gray-300">
+              Bereit für dein nächstes Gaming-Abenteuer? Hier ist deine
+              Übersicht.
+            </p>
           </div>
 
-          <!-- Plattform-Logo -->
+          <!-- Level & XP Progress -->
           <div
-            class="absolute top-2 left-2 w-8 h-8 bg-black/70 flex items-center justify-center rounded">
-            <span>{{ getPlatformIcon(game.platformId) }}</span>
-          </div>
-        </div>
-
-        <!-- Spielinfo -->
-        <div class="p-4">
-          <h3 class="font-semibold text-base mb-1 line-clamp-1">
-            {{ game.title }}
-          </h3>
-          <div class="flex items-center space-x-2 text-sm text-gray-400">
-            <span>{{ game.releaseYear }}</span>
-            <span class="text-xs">•</span>
-            <span>{{ game.genre }}</span>
-          </div>
-        </div>
-
-        <!-- Hover-Overlay mit Aktionen -->
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-gray-900/90 to-gray-900/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4">
-          <h3 class="font-bold text-center mb-2">{{ game.title }}</h3>
-          <div class="flex space-x-2 mb-4">
-            <button
-              class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded text-sm font-medium transition-colors">
-              Spielen
-            </button>
-            <button
-              class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-sm font-medium transition-colors">
-              Details
-            </button>
+            class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
+            <div class="flex items-center space-x-4">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-400">
+                  {{ stats.currentLevel }}
+                </div>
+                <div class="text-xs text-gray-400">Level</div>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-300">{{ stats.currentXP }} XP</span>
+                  <span class="text-gray-400">{{ stats.nextLevelXP }} XP</span>
+                </div>
+                <div class="w-32 bg-gray-700 rounded-full h-2">
+                  <div
+                    class="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-1000"
+                    :style="`width: ${xpProgress}%`"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Gaming Stats -->
+      <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Total Games -->
+        <div
+          class="bg-gradient-to-br from-purple-900/30 to-purple-800/20 rounded-xl p-6 border border-purple-500/20 relative overflow-hidden group hover:border-purple-400/50 transition-all duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-2">
+              <Icon
+                name="heroicons:squares-2x2-20-solid"
+                class="w-8 h-8 text-purple-400" />
+              <span class="text-xs text-purple-300 font-medium"
+                >+12 diese Woche</span
+              >
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">
+              {{ stats.totalGames }}
+            </div>
+            <div class="text-sm text-gray-400">Spiele in Bibliothek</div>
+          </div>
+        </div>
+        <!-- Hours Played -->
+        <div
+          class="bg-gradient-to-br from-blue-900/30 to-blue-800/20 rounded-xl p-6 border border-blue-500/20 relative overflow-hidden group hover:border-blue-400/50 transition-all duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-2">
+              <Icon
+                name="heroicons:clock-20-solid"
+                class="w-8 h-8 text-blue-400" />
+              <span class="text-xs text-blue-300 font-medium"
+                >+21h diese Woche</span
+              >
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">
+              {{ stats.hoursPlayed }}
+            </div>
+            <div class="text-sm text-gray-400">Gespielte Stunden</div>
+          </div>
+        </div>
+        <!-- Achievements -->
+        <div
+          class="bg-gradient-to-br from-green-900/30 to-green-800/20 rounded-xl p-6 border border-green-500/20 relative overflow-hidden group hover:border-green-400/50 transition-all duration-500">
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-green-600/10 to-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-2">
+              <Icon
+                name="heroicons:trophy-20-solid"
+                class="w-8 h-8 text-green-400" />
+              <span class="text-xs text-green-300 font-medium"
+                >+8 diese Woche</span
+              >
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">
+              {{ stats.achievementsUnlocked }}
+            </div>
+            <div class="text-sm text-gray-400">Errungenschaften</div>
+          </div>
+        </div>
+      </div>
+      <!-- Right Column: Nexus Credits -->
+      <div class="flex flex-col">
+        <!-- Stylish Silver Credits Card -->
+        <div
+          class="bg-gradient-to-br from-slate-800 via-gray-700/80 to-slate-900 rounded-xl p-4 border border-slate-400/30 relative overflow-hidden group hover:border-slate-300/50 transition-all duration-500 shadow-xl">
+          <!-- Animated Background Effects -->
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-slate-300/3 via-gray-300/5 to-slate-400/3 animate-pulse-slow"></div>
+          <div
+            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-300/8 to-gray-300/8 rounded-full blur-2xl transform translate-x-12 -translate-y-12"></div>
+          <div
+            class="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-slate-400/8 to-gray-400/8 rounded-full blur-xl transform -translate-x-10 translate-y-10"></div>
+          <!-- Header with Purchase Link -->
+          <div class="relative z-10 flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <div
+                class="w-7 h-7 bg-gradient-to-br from-slate-400 to-gray-500 rounded-lg flex items-center justify-center shadow-md">
+                <Icon
+                  name="heroicons:banknotes-20-solid"
+                  class="w-4 h-4 text-white" />
+              </div>
+              <span
+                class="text-sm font-semibold text-slate-200 uppercase tracking-wide">
+                Guthaben
+              </span>
+            </div>
 
-    <!-- Keine Spiele gefunden -->
-    <div
-      v-if="displayedGames.length === 0"
-      class="mt-12 text-center py-16 border border-dashed border-gray-700 rounded-md bg-gray-800/40">
-      <div class="text-4xl mb-4">🎮</div>
-      <h3 class="text-xl font-medium mb-2">Keine Spiele gefunden</h3>
-      <p class="text-gray-400 max-w-md mx-auto">
-        Es sieht so aus, als hättest du für diese Plattform noch keine Spiele
-        importiert oder deine Suche hat keine Ergebnisse geliefert.
-      </p>
-      <button
-        class="mt-6 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-md text-sm font-medium transition-all">
-        Spiele importieren
-      </button>
+            <!-- Discrete Purchase Link -->
+            <NuxtLink
+              to="/credits/purchase"
+              class="inline-flex items-center space-x-1.5 bg-slate-400/10 hover:bg-slate-300/15 rounded-lg px-3 py-1.5 border border-slate-400/30 hover:border-slate-300/50 transition-all duration-300 group/btn"
+              title="Credits nachkaufen">
+              <Icon
+                name="heroicons:plus-circle-20-solid"
+                class="w-4 h-4 text-slate-300 group-hover/btn:text-slate-200 transition-colors" />
+              <span
+                class="text-xs font-medium text-slate-300 group-hover/btn:text-slate-200 transition-colors">
+                Aufladen
+              </span>
+            </NuxtLink>
+          </div>
+          <!-- Credit Display -->
+          <div class="relative z-10 text-center">
+            <!-- Credit Icon with Enhanced Styling -->
+            <div class="relative inline-block mb-3">
+              <div class="w-16 h-16 relative">
+                <!-- Outer glow ring -->
+                <div
+                  class="absolute inset-0 rounded-full bg-gradient-to-r from-slate-300/20 to-gray-300/20 blur-sm"></div>
+
+                <!-- Rotating border effect -->
+                <div
+                  class="absolute inset-1 rounded-full border-2 border-slate-300/30 animate-spin-slow"></div>
+
+                <!-- Credit container -->
+                <div
+                  class="absolute inset-2 bg-gradient-to-br from-slate-700 via-gray-600/50 to-slate-800 rounded-full flex items-center justify-center shadow-xl border border-slate-400/40 group-hover:border-slate-300/60 transition-all duration-500">
+                  <img
+                    src="/assets/images/NexusCredit.png"
+                    alt="Nexus Credit"
+                    class="w-full h-full object-contain drop-shadow-lg transform rotate-12 group-hover:rotate-6 transition-transform duration-700" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Balance Display -->
+            <div class="space-y-1">
+              <div
+                class="text-2xl font-bold bg-gradient-to-r from-slate-100 via-white to-slate-200 bg-clip-text text-transparent tracking-wide">
+                {{ stats.credits.toLocaleString() }}
+              </div>
+              <div
+                class="text-slate-300/80 text-xs font-medium uppercase tracking-widest">
+                Nexus Credits
+              </div>
+            </div>
+
+            <!-- Credit Value Hint -->
+            <div class="mt-2 text-xs text-slate-400/70">
+              ≈ {{ (stats.credits * 0.01).toFixed(2) }}€ Wert
+            </div>
+          </div>
+          <!-- Security Badge -->
+          <div class="absolute bottom-2 left-2">
+            <div
+              class="flex items-center space-x-1 bg-emerald-500/10 border border-emerald-400/30 rounded-full px-2 py-0.5">
+              <Icon
+                name="heroicons:shield-check-20-solid"
+                class="w-3 h-3 text-emerald-400" />
+              <span class="text-xs text-emerald-300 font-medium">Sicher</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Recent Games & Activity -->
+      <div class="lg:col-span-2 flex flex-col space-y-8">
+        <!-- Recently Played Games -->
+        <div
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-purple-400/50 transition-all duration-500">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-white flex items-center">
+              <Icon
+                name="heroicons:play-20-solid"
+                class="w-6 h-6 text-purple-400 mr-2" />
+              Zuletzt gespielt
+            </h2>
+            <NuxtLink
+              to="/my-games"
+              class="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors">
+              Alle anzeigen →
+            </NuxtLink>
+          </div>
 
-    <!-- Pagination -->
-    <div class="mt-8 flex justify-center">
-      <div class="flex space-x-1">
-        <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-md">
-          &lt;
-        </button>
-        <button class="px-3 py-1 bg-purple-600 rounded-md">1</button>
-        <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-md">
-          2
-        </button>
-        <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-md">
-          3
-        </button>
-        <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-md">
-          &gt;
-        </button>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div
+              v-for="game in recentGames"
+              :key="game.id"
+              class="group relative bg-gray-900/50 rounded-lg overflow-hidden border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1">
+              <!-- Game Cover -->
+              <div class="aspect-[3/4] relative overflow-hidden">
+                <img
+                  :src="game.coverUrl"
+                  :alt="game.title"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+
+                <!-- Progress Bar -->
+                <div class="absolute bottom-0 left-0 right-0 p-2">
+                  <div class="bg-gray-900/70 rounded-full h-1.5 mb-1">
+                    <div
+                      class="bg-gradient-to-r from-purple-500 to-blue-500 h-1.5 rounded-full transition-all duration-500"
+                      :style="`width: ${game.progress}%`"></div>
+                  </div>
+                  <div class="text-xs text-white font-medium">
+                    {{ game.progress }}%
+                  </div>
+                </div>
+              </div>
+
+              <!-- Game Info -->
+              <div class="p-3">
+                <h3 class="font-medium text-white text-sm mb-1 truncate">
+                  {{ game.title }}
+                </h3>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-gray-400">{{ game.platform }}</span>
+                  <span class="text-purple-300">{{ game.lastPlayed }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Weekly Activity Chart -->
+        <div
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 flex-1 flex flex-col hover:border-blue-400/50 transition-all duration-500">
+          <h2 class="text-xl font-bold text-white mb-6 flex items-center">
+            <Icon
+              name="heroicons:chart-bar-20-solid"
+              class="w-6 h-6 text-blue-400 mr-2" />
+            Gaming-Aktivität diese Woche
+          </h2>
+
+          <!-- Chart -->
+          <div
+            class="flex items-end justify-between space-x-3 flex-1 mb-6 min-h-[200px]">
+            <div
+              v-for="day in weeklyActivity"
+              :key="day.day"
+              class="flex-1 flex flex-col items-center group cursor-pointer h-full">
+              <div class="relative flex-1 flex items-end w-full">
+                <div
+                  class="w-full bg-gradient-to-t from-purple-600 to-blue-500 rounded-t-lg transition-all duration-500 hover:from-purple-500 hover:to-blue-400 group-hover:scale-105 relative min-h-[20px]"
+                  :style="`height: ${Math.max((day.hours / 6) * 100, 15)}%`">
+                  <!-- Glow effect -->
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-purple-400/50 to-blue-400/50 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+                </div>
+              </div>
+              <div class="text-xs text-gray-400 mt-2 font-medium">
+                {{ day.day }}
+              </div>
+              <div class="text-xs text-white font-bold">{{ day.hours }}h</div>
+            </div>
+          </div>
+
+          <!-- Stats Summary -->
+          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-700/30">
+            <div class="text-center">
+              <div class="text-lg font-bold text-blue-400">
+                {{
+                  weeklyActivity
+                    .reduce((sum, day) => sum + day.hours, 0)
+                    .toFixed(1)
+                }}h
+              </div>
+              <div class="text-xs text-gray-400">Diese Woche</div>
+            </div>
+            <div class="text-center">
+              <div class="text-lg font-bold text-purple-400">
+                {{ Math.max(...weeklyActivity.map(d => d.hours)).toFixed(1) }}h
+              </div>
+              <div class="text-xs text-gray-400">Bester Tag</div>
+            </div>
+            <div class="text-center">
+              <div class="text-lg font-bold text-green-400">
+                {{
+                  (
+                    weeklyActivity.reduce((sum, day) => sum + day.hours, 0) / 7
+                  ).toFixed(1)
+                }}h
+              </div>
+              <div class="text-xs text-gray-400">Ø pro Tag</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Achievements & Deals -->
+      <div class="flex flex-col space-y-8">
+        <!-- Recent Achievements -->
+        <div
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 flex-1 flex flex-col hover:border-yellow-400/50 transition-all duration-500">
+          <h2 class="text-xl font-bold text-white mb-6 flex items-center">
+            <Icon
+              name="heroicons:star-20-solid"
+              class="w-6 h-6 text-yellow-400 mr-2" />
+            Neue Errungenschaften
+          </h2>
+
+          <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
+            <div
+              v-for="achievement in recentAchievements"
+              :key="achievement.id"
+              class="flex items-start space-x-3 p-3 bg-gray-900/50 rounded-lg border border-gray-600/30 hover:border-yellow-500/30 transition-all duration-300">
+              <div class="text-2xl">{{ achievement.icon }}</div>
+
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-white text-sm mb-1">
+                  {{ achievement.title }}
+                </h3>
+                <p class="text-xs text-gray-400 mb-1">
+                  {{ achievement.description }}
+                </p>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-blue-300">{{
+                    achievement.game
+                  }}</span>
+                  <span
+                    class="text-xs px-2 py-1 rounded-full"
+                    :class="{
+                      'bg-yellow-500/20 text-yellow-300':
+                        achievement.rarity === 'Legendär',
+                      'bg-purple-500/20 text-purple-300':
+                        achievement.rarity === 'Episch',
+                      'bg-blue-500/20 text-blue-300':
+                        achievement.rarity === 'Selten'
+                    }">
+                    {{ achievement.rarity }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Featured Deals -->
+        <div
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 flex-1 flex flex-col hover:border-red-400/50 transition-all duration-500">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-white flex items-center">
+              <Icon
+                name="heroicons:fire-20-solid"
+                class="w-6 h-6 text-red-400 mr-2" />
+              Heiße Deals
+            </h2>
+            <NuxtLink
+              to="/deals"
+              class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors">
+              Alle Deals →
+            </NuxtLink>
+          </div>
+
+          <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
+            <div
+              v-for="deal in featuredDeals"
+              :key="deal.id"
+              class="flex items-center space-x-3 p-3 bg-gray-900/50 rounded-lg border border-gray-600/30 hover:border-red-500/30 transition-all duration-300 group">
+              <div
+                class="w-12 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
+                <img
+                  :src="deal.coverUrl"
+                  :alt="deal.title"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-white text-sm mb-1 truncate">
+                  {{ deal.title }}
+                </h3>
+                <div class="flex items-center space-x-2 mb-1">
+                  <span class="text-lg font-bold text-green-400"
+                    >{{ deal.discountPrice.toFixed(2) }}€</span
+                  >
+                  <span class="text-sm text-gray-400 line-through"
+                    >{{ deal.originalPrice.toFixed(2) }}€</span
+                  >
+                  <span
+                    class="text-xs bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded"
+                    >-{{ deal.discount }}%</span
+                  >
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-gray-400">{{ deal.platform }}</span>
+                  <span class="text-xs text-orange-300">{{ deal.endsIn }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Quick Actions -->
+    <div
+      class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/50 transition-all duration-500">
+      <h2 class="text-xl font-bold text-white mb-6 flex items-center">
+        <Icon
+          name="heroicons:bolt-20-solid"
+          class="w-6 h-6 text-yellow-400 mr-2" />
+        Schnellzugriff
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <NuxtLink
+          to="/my-games"
+          class="flex flex-col items-center p-4 bg-purple-900/20 rounded-lg border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 group">
+          <Icon
+            name="heroicons:squares-2x2-20-solid"
+            class="w-8 h-8 text-purple-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-white">Meine Spiele</span>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/deals"
+          class="flex flex-col items-center p-4 bg-red-900/20 rounded-lg border border-red-500/20 hover:border-red-500/50 transition-all duration-300 transform hover:-translate-y-1 group">
+          <Icon
+            name="heroicons:fire-20-solid"
+            class="w-8 h-8 text-red-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-white">Angebote</span>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/wishlist"
+          class="flex flex-col items-center p-4 bg-pink-900/20 rounded-lg border border-pink-500/20 hover:border-pink-500/50 transition-all duration-300 transform hover:-translate-y-1 group">
+          <Icon
+            name="heroicons:heart-20-solid"
+            class="w-8 h-8 text-pink-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-white">Wishlist</span>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/profile"
+          class="flex flex-col items-center p-4 bg-blue-900/20 rounded-lg border border-blue-500/20 hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 group">
+          <Icon
+            name="heroicons:user-20-solid"
+            class="w-8 h-8 text-blue-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-white">Profil</span>
+        </NuxtLink>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+  /* Animations */
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin-reverse {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+
+  .animate-spin-reverse {
+    animation: spin-reverse 6s linear infinite;
+  }
+
+  /* Custom scrollbar for any overflow content */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(147, 51, 234, 0.5) rgba(75, 85, 99, 0.1);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(75, 85, 99, 0.1);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      rgba(147, 51, 234, 0.6),
+      rgba(59, 130, 246, 0.6)
+    );
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to bottom,
+      rgba(147, 51, 234, 0.9),
+      rgba(59, 130, 246, 0.9)
+    );
+  }
+</style>

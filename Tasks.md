@@ -189,3 +189,41 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - Middleware-Ausführung für `/api/trpc` Pfade bestätigt und getestet
   - Error-Handling verbessert mit try-catch Block
   - Vollständig funktionsfähige Authentifizierung für TRPC-Routen implementiert
+
+**31. Mai 2025 - NexusCredits Dashboard Überarbeitung:**
+
+- [x] NexusCredits-Karte im Dashboard komplett überarbeitet (31. Mai 2025):
+  - Elegantes Premium-Design mit Indigo/Purple Farbschema
+  - Animierte Hintergrundeffekte und glühende Elemente
+  - Verbessertes Credit-Icon mit rotierendem Border und Glow-Effekt
+  - Dezente "Aufladen"-Verlinkung statt prominenter Kauf-Button
+  - Professionelle Balance-Anzeige mit Gradient-Text
+  - Wert-Anzeige in Euro hinzugefügt
+  - Sicherheits-Badge integriert
+  - Dekorative Akzent-Elemente für Gaming-Ästhetik
+  - Tailwind-Animationen erweitert (spin-slow, pulse-slow)
+
+**31. Mai 2025 - NexusCredits Silber-Design:**
+
+- [x] NexusCredits-Karte auf stilvolles Silber-Design umgestellt (31. Mai 2025):
+  - Elegante Slate/Gray Farbpalette statt Purple/Indigo
+  - Reduzierte Höhe: p-4 statt p-6, kleinere Abstände
+  - Kompakteres Design: Icon 16x16 statt 20x20, Text 2xl statt 3xl
+  - Silber-Gradienten für Text und Effekte
+  - Angepasste Hover-Effekte und Animationen
+  - Modernerer, minimalistischerer Look
+
+**31. Mai 2025 - Dashboard Hover-Effekte:**
+
+- [x] Partikel-Elemente entfernt und Hover-Rahmen-Effekte hinzugefügt (31. Mai 2025):
+  - Dekorative Partikel-Punkte (animate-ping, animate-pulse) aus NexusCredits-Karte entfernt
+  - Hover-Rahmen-Effekte zu Total Games Karte hinzugefügt: hover:border-purple-400/50
+  - Hover-Rahmen-Effekte zu Hours Played Karte hinzugefügt: hover:border-blue-400/50
+  - Hover-Rahmen-Effekte zu Achievements Karte hinzugefügt: hover:border-green-400/50
+  - Hover-Rahmen-Effekte zu Recently Played Games Karte hinzugefügt: hover:border-purple-400/50
+  - Hover-Rahmen-Effekte zu Weekly Activity Chart Karte hinzugefügt: hover:border-blue-400/50
+  - Hover-Rahmen-Effekte zu Recent Achievements Karte hinzugefügt: hover:border-yellow-400/50
+  - Hover-Rahmen-Effekte zu Featured Deals Karte hinzugefügt: hover:border-red-400/50
+  - Hover-Rahmen-Effekte zu Quick Actions Karte hinzugefügt: hover:border-yellow-400/50
+  - Alle Hover-Effekte mit transition-all duration-500 für sanfte Animationen
+  - Konsistente Farb-Themenzuordnung für verschiedene Kartentypen
