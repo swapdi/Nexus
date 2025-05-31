@@ -20,16 +20,16 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <!-- Fixed Header (über allem) -->
-    <AppHeader class="fixed top-0 left-0 right-0 z-50" />
+    <AppHeader />
     <!-- Sidebar -->
     <AppSidebar :user="user" @hover-change="handleSidebarHover" />
     <!-- Main Content Area -->
+    <Notifications
+      class="mr-3 text-gray-400 hover:text-white transition-colors" />
     <div
       class="pt-1 transition-all duration-500 ease-out relative z-10"
       :class="sidebarHovered ? 'ml-64' : 'ml-20'">
       <!-- Notifications -->
-      <Notifications
-        class="mr-3 text-gray-400 hover:text-white transition-colors" />
 
       <!-- Page Content -->
       <main class="min-h-[calc(100vh-4rem)] overflow-y-auto">

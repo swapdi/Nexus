@@ -13,6 +13,16 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 
 ---
 
+## Entdeckt während der Arbeit - UI/UX Verbesserungen
+
+- [x] 3D Münzrotations-Effekt für Nexus Credits Karte erstellt (30. Dezember 2024)
+  - [x] Hover-only Aktivierung implementiert
+  - [x] Konsistente 2-Sekunden Rotation ohne Pause
+  - [x] Münze in die untere rechte Ecke der Karte repositioniert
+  - [x] Münzgröße vergrößert für bessere Sichtbarkeit
+
+---
+
 ## Phase 1: Kernfunktionalität & UI (MVP)
 
 **Ziel:** Funktionaler Prototyp zur Validierung der Bibliothekszentralisierung, Basis-Angebotsübersicht und des UI.
