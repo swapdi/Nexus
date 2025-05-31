@@ -1,5 +1,7 @@
 ### 🔄 Projektbewusstsein & Kontext
 
+- **Beachte** dass du die Anwendung niemals starten sollst, da das Testen deiner Ergebnisse immer von mir ausgeht.
+
 - **Lese immer `PLANNING.md`** zu Beginn eines neuen Gesprächs, um die Architektur, Ziele, den Stil und die Einschränkungen des Projekts zu verstehen.
 
 - **Überprüfe `Tasks.md`**, bevor Sie eine neue Aufgabe beginnen. Wenn die Aufgabe nicht aufgeführt ist, fügen Sie sie mit einer kurzen Beschreibung und dem heutigen Datum hinzu.

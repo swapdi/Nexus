@@ -45,7 +45,7 @@ export const useAccountStore = defineStore('account', () => {
       account: supabaseUser
     };
   });
-  console.log(fullUser.value);
+
   const signout = () => {
     user.value = null;
   };

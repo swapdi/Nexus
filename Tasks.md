@@ -175,3 +175,17 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 - Smooth Transitions und Hover-Effekte
 - Consistent Purple/Blue Gradient Theme
 - Mock-Daten für Entwicklung (später durch echte APIs zu ersetzen)
+
+**31. Mai 2025 - AppHeader Verbesserung:**
+
+- [x] AppHeader-Design überarbeiten: Logo links, Avatar-Menü rechts, cooler Dropdown-Style mit Navigation zu profile.vue und settings.vue (31. Mai 2025)
+
+**31. Mai 2025 - AuthContext Middleware Behebung:**
+
+- [x] Problem mit `authContext` Middleware behoben (31. Mai 2025):
+  - Cookie-Parsing-Problematik identifiziert: Middleware suchte nach `'sb-access-token'` aber Supabase verwendet projektspezifische Cookie-Namen
+  - Middleware auf korrekte `serverSupabaseUser()` Funktion umgestellt, die automatisch Supabase-Cookies parst
+  - Erweiterte Logging-Funktionalität hinzugefügt mit Emojis für bessere Sichtbarkeit
+  - Middleware-Ausführung für `/api/trpc` Pfade bestätigt und getestet
+  - Error-Handling verbessert mit try-catch Block
+  - Vollständig funktionsfähige Authentifizierung für TRPC-Routen implementiert
