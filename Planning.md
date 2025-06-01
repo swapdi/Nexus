@@ -58,8 +58,16 @@ Diese `Planning.md`, `Tasks.md`, Code-Kommentare, API-Dokumentation (falls relev
 ## Projektfortschritt
 
 - [x] Projektinitialisierung (Nuxt 3 + Supabase + Tailwind Boilerplate)
-- [ ] Basis-Struktur (Layout, Navigation, Platzhalter-Seiten)
-- [ ] ... (Weitere abgeschlossene Meilensteine)
+- [x] Basis-Struktur (Layout, Navigation, authentifizierte/öffentliche Seiten)
+- [x] Benutzerkonto-Management (Registrierung, Login, Profilverwaltung)
+- [x] Bibliotheks-Zentralisierung (Steam Import, Spieleverwaltung)
+- [x] Automatisierte Metadaten (IGDB API Integration)
+- [x] Angebots-Aggregation (MVP mit Deal Service und Frontend)
+- [x] Gamification-System (Credits, Achievements, User XP)
+- [ ] Erweiterte Deal-Integration (Real-time APIs, Benachrichtigungen)
+- [ ] Premium-Features (erweiterte Statistiken, erweiterte Benachrichtigungen)
+- [ ] Payment Gateway Integration (Stripe für Credit-Käufe)
+- [ ] Desktop App (Electron-Integration)
 
 **Nächste Schritte:**
 Siehe `Tasks.md`.

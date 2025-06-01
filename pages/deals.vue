@@ -1,9 +1,13 @@
 <script setup lang="ts">
-  const accountStore = useAccountStore();
+  import type {
+    DealWithRelations,
+    DealFilters,
+    DealSortOptions
+  } from '~/lib/services/deals.service';
 
-  onMounted(async () => {
-    await accountStore.init();
-  });
+  const accountStore = useAccountStore();
+  // Using the store auto-import from Nuxt
+  const dealsStore = useDealsStore();
 
   definePageMeta({
     middleware: ['auth'],
@@ -11,199 +15,209 @@
     layout: 'authenticated'
   });
 
-  // Mock-Daten für Deals (später durch echte API ersetzen)
-  const deals = ref([
-    {
-      id: 1,
-      title: 'Cyberpunk 2077',
-      coverUrl:
-        'https://via.placeholder.com/300x400/6366f1/ffffff?text=Cyberpunk+2077',
-      storeName: 'Steam',
-      originalPrice: 59.99,
-      price: 29.99,
-      discountPercent: 50,
-      validUntil: '2024-02-15',
-      isFreebie: false,
-      genre: 'RPG',
-      isInLibrary: true
-    },
-    {
-      id: 2,
-      title: 'Control',
-      coverUrl:
-        'https://via.placeholder.com/300x400/8b5cf6/ffffff?text=Control',
-      storeName: 'Epic Games',
-      originalPrice: 39.99,
-      price: 0,
-      discountPercent: 100,
-      validUntil: '2024-02-10',
-      isFreebie: true,
-      genre: 'Action',
-      isInLibrary: false
-    },
-    {
-      id: 3,
-      title: 'The Witcher 3: Wild Hunt GOTY',
-      coverUrl:
-        'https://via.placeholder.com/300x400/06b6d4/ffffff?text=Witcher+3',
-      storeName: 'GOG',
-      originalPrice: 49.99,
-      price: 9.99,
-      discountPercent: 80,
-      validUntil: '2024-02-20',
-      isFreebie: false,
-      genre: 'RPG',
-      isInLibrary: false
-    },
-    {
-      id: 4,
-      title: "Assassin's Creed Odyssey",
-      coverUrl:
-        'https://via.placeholder.com/300x400/10b981/ffffff?text=AC+Odyssey',
-      storeName: 'Ubisoft Store',
-      originalPrice: 59.99,
-      price: 14.99,
-      discountPercent: 75,
-      validUntil: '2024-02-12',
-      isFreebie: false,
-      genre: 'Action-Adventure',
-      isInLibrary: false
-    },
-    {
-      id: 5,
-      title: 'Hades',
-      coverUrl: 'https://via.placeholder.com/300x400/f59e0b/ffffff?text=Hades',
-      storeName: 'Steam',
-      originalPrice: 24.99,
-      price: 12.49,
-      discountPercent: 50,
-      validUntil: '2024-02-18',
-      isFreebie: false,
-      genre: 'Roguelike',
-      isInLibrary: false
-    },
-    {
-      id: 6,
-      title: 'Metro Exodus',
-      coverUrl:
-        'https://via.placeholder.com/300x400/ef4444/ffffff?text=Metro+Exodus',
-      storeName: 'Epic Games',
-      originalPrice: 39.99,
-      price: 0,
-      discountPercent: 100,
-      validUntil: '2024-02-08',
-      isFreebie: true,
-      genre: 'FPS',
-      isInLibrary: false
-    }
-  ]);
-
+  // Local state for UI filters
   const searchQuery = ref('');
-  const selectedStore = ref('all');
-  const selectedGenre = ref('all');
+  const selectedStore = ref<string>('all');
   const showOnlyFree = ref(false);
   const hideOwned = ref(false);
-  const sortBy = ref('discount');
+  const sortBy = ref<DealSortOptions>('discount-desc');
 
-  // Filter Optionen
-  const stores = computed(() => {
-    const allStores = [
-      'all',
-      ...new Set(deals.value.map(deal => deal.storeName))
-    ];
-    return allStores.map(store => ({
+  // Initialize data
+  onMounted(async () => {
+    await accountStore.init();
+    await dealsStore.fetchDeals();
+    await dealsStore.fetchAvailableStores();
+    await dealsStore.fetchDealStats();
+  });
+
+  // Computed properties for filters
+  const availableStores = computed(() => [
+    { value: 'all', label: 'Alle Stores' },
+    ...dealsStore.availableStores.map((store: string) => ({
       value: store,
-      label: store === 'all' ? 'Alle Stores' : store
-    }));
+      label: store
+    }))
+  ]);
+  const availableGenres = computed(() => {
+    const genres = new Set<string>();
+    dealsStore.deals.forEach(deal => {
+      deal.game.genres.forEach(genre => genres.add(genre));
+    });
+    return [
+      { value: 'all', label: 'Alle Genres' },
+      ...Array.from(genres).map((genre: string) => ({
+        value: genre,
+        label: genre
+      }))
+    ];
   });
 
-  const genres = computed(() => {
-    const allGenres = ['all', ...new Set(deals.value.map(deal => deal.genre))];
-    return allGenres.map(genre => ({
-      value: genre,
-      label: genre === 'all' ? 'Alle Genres' : genre
-    }));
-  });
+  const selectedGenre = ref<string>('all');
 
-  // Gefilterte Deals
+  // Filtered and sorted deals
   const filteredDeals = computed(() => {
-    let filtered = deals.value.filter(deal => {
-      const matchesSearch = deal.title
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase());
+    let filtered = dealsStore.searchDeals(searchQuery.value); // Apply local filters
+    filtered = filtered.filter(deal => {
       const matchesStore =
         selectedStore.value === 'all' || deal.storeName === selectedStore.value;
       const matchesGenre =
-        selectedGenre.value === 'all' || deal.genre === selectedGenre.value;
+        selectedGenre.value === 'all' ||
+        deal.game.genres.includes(selectedGenre.value);
       const matchesFree = !showOnlyFree.value || deal.isFreebie;
-      const matchesOwned = !hideOwned.value || !deal.isInLibrary;
 
-      return (
-        matchesSearch &&
-        matchesStore &&
-        matchesGenre &&
-        matchesFree &&
-        matchesOwned
-      );
+      // Check if user owns this game - this would need to be implemented in the deal service
+      // For now, we'll assume none are owned since we don't have this relationship
+      const matchesOwned = !hideOwned.value;
+
+      return matchesStore && matchesGenre && matchesFree && matchesOwned;
     });
 
-    // Sortierung
-    if (sortBy.value === 'discount') {
-      filtered.sort((a, b) => b.discountPercent - a.discountPercent);
-    } else if (sortBy.value === 'price') {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (sortBy.value === 'title') {
-      filtered.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy.value === 'expiry') {
-      filtered.sort(
-        (a, b) =>
-          new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
-      );
+    // Sort deals
+    const sortedDeals = [...filtered];
+    switch (sortBy.value) {
+      case 'discount-desc':
+        sortedDeals.sort(
+          (a, b) => (b.discountPercent || 0) - (a.discountPercent || 0)
+        );
+        break;
+      case 'price-asc':
+        sortedDeals.sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case 'recent':
+        sortedDeals.sort(
+          (a, b) =>
+            new Date(b.discoveredAt).getTime() -
+            new Date(a.discoveredAt).getTime()
+        );
+        break;
+      case 'ending-soon':
+        sortedDeals.sort((a, b) => {
+          if (!a.validUntil && !b.validUntil) return 0;
+          if (!a.validUntil) return 1;
+          if (!b.validUntil) return -1;
+          return (
+            new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
+          );
+        });
+        break;
     }
 
-    return filtered;
+    return sortedDeals;
+  });
+  // Statistics
+  const statistics = computed(() => {
+    const stats = dealsStore.dealStats;
+    if (!stats) {
+      return {
+        totalDeals: dealsStore.deals.length,
+        freeGames: dealsStore.freebies.length,
+        averageDiscount: 0,
+        maxDiscount: Math.max(
+          ...dealsStore.deals.map(d => d.discountPercent || 0)
+        )
+      };
+    }
+    return {
+      totalDeals: stats.totalDeals,
+      freeGames: stats.freebies,
+      averageDiscount: Math.round(stats.averageDiscount),
+      maxDiscount: Math.max(
+        ...dealsStore.deals.map(d => d.discountPercent || 0)
+      )
+    };
   });
 
-  // Statistiken
-  const totalDeals = computed(() => deals.value.length);
-  const freeGames = computed(
-    () => deals.value.filter(deal => deal.isFreebie).length
-  );
-  const maxDiscount = computed(() => {
-    const discounts = deals.value
-      .filter(deal => !deal.isFreebie)
-      .map(deal => deal.discountPercent);
-    return discounts.length > 0 ? Math.max(...discounts) : 0;
+  // Watch for sort changes and apply to backend
+  watch(sortBy, async newSort => {
+    if (
+      ['discount-desc', 'price-asc', 'recent', 'ending-soon'].includes(newSort)
+    ) {
+      await dealsStore.setSortBy(newSort as DealSortOptions);
+    }
   });
 
-  // Format Funktionen
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(price);
+  // Helper functions
+  const getCoverUrl = (deal: DealWithRelations): string => {
+    if (deal.game.coverUrl) return deal.game.coverUrl;
+    return '/gameplaceholder.jpg';
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays <= 0) return 'Abgelaufen';
-    if (diffDays === 1) return 'Noch 1 Tag';
-    if (diffDays <= 7) return `Noch ${diffDays} Tage`;
-    return `Bis ${date.toLocaleDateString('de-DE')}`;
+  const getGenreDisplay = (deal: DealWithRelations): string => {
+    return deal.game.genres.slice(0, 2).join(', ') || 'Unbekannt';
   };
 
-  const getTimeRemaining = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const isGameOwned = (deal: DealWithRelations): boolean => {
+    // TODO: Implement ownership check against user's library
+    // This would require checking if the user owns this game in their library
+    return false;
+  };
 
-    if (diffDays <= 1) return 'text-red-400';
-    if (diffDays <= 3) return 'text-yellow-400';
+  const handleDealClick = (deal: DealWithRelations) => {
+    if (deal.url) {
+      window.open(deal.url, '_blank');
+    }
+  };
+
+  const refreshDeals = async () => {
+    await dealsStore.refreshDeals();
+  };
+
+  // Deal Aggregation testing
+  const isAggregating = ref(false);
+  const aggregationMessage = ref<string | null>(null);
+
+  const testDealAggregation = async () => {
+    isAggregating.value = true;
+    aggregationMessage.value = null;
+
+    try {
+      console.log('🚀 Starting deal aggregation...');
+      // This is a mock implementation for now - in a real scenario
+      // this would call the TRPC endpoint
+
+      // Simulate aggregation delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      aggregationMessage.value = `Mock-Deal-Aggregation abgeschlossen! 5 neue, 3 aktualisiert.`;
+
+      // Auto-hide message after 5 seconds
+      setTimeout(() => {
+        aggregationMessage.value = null;
+      }, 5000);
+
+      // Refresh deals to show any new data
+      await dealsStore.refreshDeals();
+    } catch (error: unknown) {
+      console.error('💥 Deal aggregation failed:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unbekannter Fehler';
+      aggregationMessage.value = `Fehler beim Sammeln der Deals: ${errorMessage}`;
+
+      // Auto-hide error message after 7 seconds
+      setTimeout(() => {
+        aggregationMessage.value = null;
+      }, 7000);
+    } finally {
+      isAggregating.value = false;
+    }
+  };
+
+  // Format functions
+  const formatPrice = (price: number | null) => {
+    return dealsStore.formatPrice(price);
+  };
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'Unbegrenzt';
+    return dealsStore.getTimeRemaining(date.toISOString()) || 'Abgelaufen';
+  };
+
+  const getTimeRemaining = (date: Date | null) => {
+    if (!date) return 'text-green-400';
+    const remaining = dealsStore.getTimeRemaining(date.toISOString());
+    if (!remaining || remaining === 'Abgelaufen') return 'text-red-400';
+    if (remaining.includes('Stunde') || remaining.includes('Minute'))
+      return 'text-red-400';
+    if (remaining.includes('1 Tag')) return 'text-yellow-400';
     return 'text-green-400';
   };
 </script>
@@ -213,25 +227,101 @@
     <!-- Header mit Statistiken -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
-      <h1
-        class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">
-        Aktuelle Angebote
-      </h1>
+      <div class="flex justify-between items-center mb-4">
+        <h1
+          class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+          Aktuelle Angebote
+        </h1>
+        <!-- Refresh Button -->
+        <div class="flex gap-2">
+          <button
+            @click="refreshDeals"
+            :disabled="dealsStore.loading"
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2">
+            <Icon
+              name="heroicons:arrow-path-20-solid"
+              class="w-4 h-4"
+              :class="{ 'animate-spin': dealsStore.loading }" />
+            Aktualisieren
+          </button>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Test Deal Aggregation Button -->
+          <button
+            @click="testDealAggregation"
+            :disabled="isAggregating"
+            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2">
+            <Icon
+              name="heroicons:cloud-arrow-down-20-solid"
+              class="w-4 h-4"
+              :class="{ 'animate-spin': isAggregating }" />
+            Deals Sammeln
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="dealsStore.loading" class="text-center py-8">
+        <Icon
+          name="heroicons:arrow-path-20-solid"
+          class="w-8 h-8 animate-spin text-green-400 mx-auto mb-2" />
+        <p class="text-gray-400">Lade Angebote...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="dealsStore.error" class="text-center py-8">
+        <Icon
+          name="heroicons:exclamation-triangle-20-solid"
+          class="w-8 h-8 text-red-400 mx-auto mb-2" />
+        <p class="text-red-400">{{ dealsStore.error }}</p>
+        <button
+          @click="refreshDeals"
+          class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+          Erneut versuchen
+        </button>
+      </div>
+
+      <!-- Aggregation Message -->
+      <div
+        v-if="aggregationMessage"
+        class="mb-4 p-4 rounded-lg border"
+        :class="
+          aggregationMessage.includes('Fehler')
+            ? 'bg-red-900/20 border-red-500/30 text-red-300'
+            : 'bg-green-900/20 border-green-500/30 text-green-300'
+        ">
+        <div class="flex items-center gap-2">
+          <Icon
+            :name="
+              aggregationMessage.includes('Fehler')
+                ? 'heroicons:exclamation-triangle-20-solid'
+                : 'heroicons:check-circle-20-solid'
+            "
+            class="w-5 h-5 flex-shrink-0" />
+          <span>{{ aggregationMessage }}</span>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div
           class="bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
-          <div class="text-2xl font-bold text-white">{{ totalDeals }}</div>
+          <div class="text-2xl font-bold text-white">
+            {{ statistics.totalDeals }}
+          </div>
           <div class="text-green-300 text-sm">Aktuelle Deals</div>
         </div>
         <div
           class="bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg p-4 border border-blue-500/30">
-          <div class="text-2xl font-bold text-white">{{ freeGames }}</div>
+          <div class="text-2xl font-bold text-white">
+            {{ statistics.freeGames }}
+          </div>
           <div class="text-blue-300 text-sm">Kostenlose Spiele</div>
         </div>
         <div
           class="bg-gradient-to-r from-purple-500/20 to-purple-600/20 rounded-lg p-4 border border-purple-500/30">
-          <div class="text-2xl font-bold text-white">{{ maxDiscount }}%</div>
+          <div class="text-2xl font-bold text-white">
+            {{ statistics.maxDiscount }}%
+          </div>
           <div class="text-purple-300 text-sm">Höchster Rabatt</div>
         </div>
       </div>
@@ -239,6 +329,7 @@
 
     <!-- Filter und Suche -->
     <div
+      v-if="!dealsStore.loading && !dealsStore.error"
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
       <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
         <!-- Suche -->
@@ -267,7 +358,7 @@
             v-model="selectedStore"
             class="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
             <option
-              v-for="store in stores"
+              v-for="store in availableStores"
               :key="store.value"
               :value="store.value">
               {{ store.label }}
@@ -284,7 +375,7 @@
             v-model="selectedGenre"
             class="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
             <option
-              v-for="genre in genres"
+              v-for="genre in availableGenres"
               :key="genre.value"
               :value="genre.value">
               {{ genre.label }}
@@ -300,10 +391,10 @@
           <select
             v-model="sortBy"
             class="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
-            <option value="discount">Höchster Rabatt</option>
-            <option value="price">Niedrigster Preis</option>
-            <option value="title">Titel (A-Z)</option>
-            <option value="expiry">Läuft bald ab</option>
+            <option value="discount-desc">Höchster Rabatt</option>
+            <option value="price-asc">Niedrigster Preis</option>
+            <option value="recent">Neueste zuerst</option>
+            <option value="ending-soon">Läuft bald ab</option>
           </select>
         </div>
 
@@ -332,15 +423,17 @@
 
     <!-- Deals Grid -->
     <div
+      v-if="!dealsStore.loading && !dealsStore.error"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div
         v-for="deal in filteredDeals"
         :key="deal.id"
-        class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group">
+        @click="handleDealClick(deal)"
+        class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer">
         <!-- Cover Image -->
         <div class="relative aspect-[3/4] overflow-hidden">
           <img
-            :src="deal.coverUrl"
+            :src="getCoverUrl(deal)"
             :alt="deal.title"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
@@ -352,9 +445,9 @@
 
           <!-- Discount Badge -->
           <div
-            v-if="deal.discountPercent > 0"
+            v-if="deal.discountPercent && deal.discountPercent > 0"
             class="absolute top-2 right-2 px-2 py-1 bg-green-600 rounded text-xs text-white font-bold">
-            -{{ deal.discountPercent }}%
+            {{ dealsStore.formatDiscount(deal.discountPercent) }}
           </div>
 
           <!-- Free Badge -->
@@ -366,7 +459,7 @@
 
           <!-- Library Badge -->
           <div
-            v-if="deal.isInLibrary"
+            v-if="isGameOwned(deal)"
             class="absolute bottom-2 left-2 px-2 py-1 bg-purple-600/80 backdrop-blur-sm rounded text-xs text-white">
             <Icon name="heroicons:check-20-solid" class="w-3 h-3 inline mr-1" />
             Besitzen
@@ -383,7 +476,7 @@
           <div class="space-y-2 text-sm">
             <div class="flex justify-between items-center">
               <span class="text-gray-400">Genre:</span>
-              <span class="text-gray-300">{{ deal.genre }}</span>
+              <span class="text-gray-300">{{ getGenreDisplay(deal) }}</span>
             </div>
 
             <!-- Preise -->
@@ -397,7 +490,10 @@
                     {{ formatPrice(deal.price) }}
                   </div>
                   <div
-                    v-if="deal.originalPrice > deal.price"
+                    v-if="
+                      deal.originalPrice &&
+                      deal.originalPrice > (deal.price || 0)
+                    "
                     class="text-gray-500 line-through text-xs">
                     {{ formatPrice(deal.originalPrice) }}
                   </div>
@@ -409,7 +505,9 @@
             </div>
 
             <!-- Gültigkeitsdauer -->
-            <div class="flex justify-between items-center">
+            <div
+              v-if="deal.validUntil"
+              class="flex justify-between items-center">
               <span class="text-gray-400">Gültig:</span>
               <span
                 :class="getTimeRemaining(deal.validUntil)"
@@ -422,7 +520,8 @@
           <!-- Action Buttons -->
           <div class="mt-4 space-y-2">
             <button
-              v-if="!deal.isInLibrary"
+              v-if="!isGameOwned(deal)"
+              @click.stop="handleDealClick(deal)"
               class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
               {{ deal.isFreebie ? 'Kostenlos holen' : 'Deal ansehen' }}
             </button>
@@ -434,6 +533,7 @@
             </button>
 
             <button
+              @click.stop
               class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">
               <Icon
                 name="heroicons:heart-20-solid"
@@ -446,7 +546,11 @@
     </div>
 
     <!-- Leerer Zustand -->
-    <div v-if="filteredDeals.length === 0" class="text-center py-12">
+    <div
+      v-if="
+        !dealsStore.loading && !dealsStore.error && filteredDeals.length === 0
+      "
+      class="text-center py-12">
       <Icon
         name="heroicons:tag-20-solid"
         class="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -454,6 +558,30 @@
         Keine Angebote gefunden
       </h3>
       <p class="text-gray-500">Versuchen Sie, Ihre Suchkriterien zu ändern.</p>
+    </div>
+
+    <!-- No deals state when store is empty -->
+    <div
+      v-if="
+        !dealsStore.loading &&
+        !dealsStore.error &&
+        dealsStore.deals.length === 0
+      "
+      class="text-center py-12">
+      <Icon
+        name="heroicons:tag-20-solid"
+        class="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      <h3 class="text-xl font-semibold text-gray-400 mb-2">
+        Keine Angebote verfügbar
+      </h3>
+      <p class="text-gray-500 mb-4">
+        Es sind derzeit keine Deals in der Datenbank.
+      </p>
+      <button
+        @click="refreshDeals"
+        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+        Angebote laden
+      </button>
     </div>
   </div>
 </template>
@@ -464,5 +592,6 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-clamp: 2;
   }
 </style>

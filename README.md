@@ -32,6 +32,24 @@ Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliot
 - **Payment Gateway (Konzeptionell):** Stripe (für Credit-Käufe).
 - **(Zukünftige Option) Desktop:** Electron (Wrapper für die Web-App, für OS-Integration wie Spielstart).
 
+## Aktueller Implementierungsstand
+
+### ✅ Vollständig implementiert
+
+- **Benutzerauthentifizierung:** Registrierung, Login, Logout über Supabase Auth
+- **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API
+- **IGDB-Metadaten-Anreicherung:** Automatische Anreicherung mit Beschreibungen, Genres, Cover-Bildern
+- **Spielebibliotheks-Anzeige:** Filterable und sortierbare Spieleübersicht
+- **Responsive UI:** Modernes, dunkles Design mit Tailwind CSS
+- **Gamification-Grundlagen:** Credits-System und User-XP-Framework
+
+### 🚧 In Entwicklung
+
+- **Epic Games Store Import:** API-Integration geplant
+- **GOG-Import:** API-Integration geplant
+- **Angebots-Aggregation:** Deal-Sammlungs-System
+- **Erweiterte Gamification:** Achievement-System und Level-Berechnung
+
 ## Projektstruktur (Überblick)
 
 Das Projekt folgt einer typischen Nuxt 3 Struktur:
@@ -83,13 +101,20 @@ Das Projekt folgt einer typischen Nuxt 3 Struktur:
 
       # Prisma (Verbindung zur Supabase Datenbank)
       DATABASE_URL="DEIN_POSTGRESQL_CONNECTION_STRING_VON_SUPABASE"
-      # Beispiel: postgresql://postgres:[DEIN_PASSWORT]@db.[DEINE_PROJEKT_ID].supabase.co:5432/postgres
+      # Beispiel: postgresql://postgres:[DEIN_PASSWORT]@db.[DEINE_PROJEKT_ID].supabase.co:5432/postgres      # Steam API
+      STEAM_API_KEY="DEIN_STEAM_WEB_API_KEY"
+
+      # IGDB API (für Spiel-Metadaten) - Erfordert Twitch Developer Account
+      IGDB_CLIENT_ID="DEIN_IGDB_CLIENT_ID"
+      IGDB_CLIENT_SECRET="DEIN_IGDB_CLIENT_SECRET"
 
       # Optional für Stripe (spätere Phasen)
       # STRIPE_SECRET_KEY="DEIN_STRIPE_SECRET_KEY"
       # STRIPE_ENDPOINT_SECRET="DEIN_STRIPE_WEBHOOK_SECRET"
       ```
 
+    - **Steam API Key:** Erhalte einen API-Key von [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)
+    - **IGDB API:** Siehe detaillierte Anleitung in [IGDB_SETUP.md](./IGDB_SETUP.md)
     - **Wichtig:** Den `DATABASE_URL` String findest du in deinem Supabase Projekt unter `Project Settings` > `Database` > `Connection string` (den URI-Typ verwenden). Stelle sicher, dass du `[YOUR-PASSWORD]` durch dein Datenbankpasswort ersetzt.
 
 4.  **Datenbank-Schema synchronisieren:**

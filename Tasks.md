@@ -29,6 +29,15 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Date | null vs Date | undefined Typen-Konflikte in processSteamGameImport behoben
   - [x] Saubere Struktur nach auth.service.ts Vorbild beibehalten
   - [x] Alle CRUD-Operationen in logische Sektionen organisiert
+- [x] IGDB API-Integration vollständig implementiert (1. Juni 2025)
+  - [x] Umfassender IGDB Service mit OAuth2-Token-Management erstellt
+  - [x] Automatische Spiel-Suche und Ähnlichkeits-Matching implementiert
+  - [x] Komplette Metadaten-Anreicherung (Beschreibungen, Genres, Cover, Developer/Publisher, Ratings)
+  - [x] Games Service erweitert mit IGDB-Enrichment-Funktionen
+  - [x] Router, Store und UI-Komponenten für optionale IGDB-Anreicherung angepasst
+  - [x] Rate Limiting und umfassendes Error Handling implementiert
+  - [x] Dokumentation und Setup-Anleitung erstellt (IGDB_SETUP.md)
+  - [x] README.md mit IGDB-Setup-Informationen erweitert
   - [x] Games.store.ts vollständig überarbeitet (1. Juni 2025)
     - [x] ImportResult Interface aus games.service.ts importiert
     - [x] Erweiterte Hilfsfunktionen hinzugefügt: getGamesByGenre, getTopRatedGames, getUnratedGames
@@ -40,6 +49,16 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
     - [x] Korrekte Parameter für findOrCreatePlatform Funktion
 - [x] Platform-Logos in Spieleansicht implementiert (1. Juni 2025)
   - [x] PlatformLogo.vue Component erstellt mit Simple Icons
+- [x] Angebotsübersicht (MVP) vollständig implementiert (1. Juni 2025)
+  - [x] Umfassender Deal Service mit CRUD-Operationen erstellt
+  - [x] Deal Aggregation Service für externe Datenquellen implementiert
+  - [x] TRPC Router für Deal-Endpoints erstellt
+  - [x] Frontend Store mit reaktiver Zustandsverwaltung implementiert
+  - [x] Complete UI-Überarbeitung mit Backend-Integration
+  - [x] TypeScript-Kompilierungsfehler vollständig behoben
+  - [x] Deal-Kategorisierung (Freebies, hohe Rabatte, bald endend) implementiert
+  - [x] Responsive Design mit Deal-Karten und visuellen Badges
+  - [x] Filtering und Sorting-Funktionalität integriert
   - [x] Unterstützung für Steam, Epic Games, GOG, Xbox, Origin, Ubisoft, Battle.net, Itch.io etc.
   - [x] Badge und Icon Varianten verfügbar
   - [x] Für dunklen Hintergrund optimierte Farben
@@ -56,6 +75,19 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] iconUrl aus Platform-Modell für Platform-Logo-Anzeige genutzt
   - [x] Fallback für fehlende Platform-Logos (erster Buchstabe des Platform-Namens)
   - [x] Platform-Text-Badges in die untere linke Ecke verschoben für bessere Anordnung
+- [x] Statistikbereich der my-games Seite überarbeitet (1. Juni 2025)
+  - [x] Bewertungsstatistik entfernt und durch plattformbasierte Daten ersetzt
+  - [x] Neues Glassmorphism-Design mit Hover-Effekten implementiert
+  - [x] Plattform-Aufschlüsselung mit PlatformLogo-Integration hinzugefügt
+  - [x] Responsive 4-Spalten-Layout für Hauptstatistiken erstellt
+  - [x] Icons und moderne Farbverläufe für bessere Visualisierung integriert
+- [x] Such- und Filterlogik der my-games Seite überarbeitet (1. Juni 2025)
+  - [x] Kombination von Textsuche, Plattformfilter und Sortierung korrekt implementiert
+  - [x] Erweiterte Suchfunktion: Suche in Titel, Genre und Plattform
+  - [x] Verbesserte Dropdown-Designs mit Icons und Spieleanzahl pro Plattform
+  - [x] Aktive Filter-Anzeige mit individuellen Lösch-Buttons hinzugefügt
+  - [x] "Alle Filter löschen" Funktionalität implementiert
+  - [x] Clear-Search Button im Suchfeld hinzugefügt
 
 ---
 
@@ -92,18 +124,23 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Erstelle games.service.ts für Datenbankoperationen. (1. Juni 2025)
   - [x] Erweitere TRPC-Kontext um Prisma-Datenbankverbindung. (1. Juni 2025)
 - **Metadaten (IGDB MVP):**
-  - [ ] Richte IGDB API-Zugang ein.
-  - [ ] Implementiere Backend/Nuxt Server Logik zum Abruf von Spieldetails (Cover, Genres, Beschreibung) von IGDB basierend auf Steam-Spieltitel/AppID.
-  - [ ] Speichere die IGDB-Daten zusammen mit den importierten Spielen in der DB.
+  - [x] Richte IGDB API-Zugang ein. (1. Juni 2025)
+  - [x] Implementiere Backend/Nuxt Server Logik zum Abruf von Spieldetails (Cover, Genres, Beschreibung) von IGDB basierend auf Steam-Spieltitel/AppID. (1. Juni 2025)
+  - [x] Speichere die IGDB-Daten zusammen mit den importierten Spielen in der DB. (1. Juni 2025)
   - [x] Erweitere das DB-Schema entsprechend. (14. Mai 2025)
 - **Bibliotheksanzeige:**
   - [x] Implementiere Backend/Nuxt Server API-Route zum Abrufen der Spielebibliothek des angemeldeten Benutzers aus der DB. (1. Juni 2025)
   - [x] Implementiere Frontend UI auf `my-games.vue` zur Anzeige der Spieleliste (mit Cover, Titel, Plattform). (1. Juni 2025)
   - [x] Füge Basis-Filter/Sortierung (z.B. nach Plattform) hinzu. (1. Juni 2025)
 - **Angebotsübersicht (MVP):**
-  - [ ] Implementiere Backend/Nuxt Server Logik oder nutze einen Feed, um eine Liste aktueller Deals/Freebies zu erhalten (Start mit wenigen Quellen oder Mock-Daten).
-  - [ ] Speichere Basis-Deal-Daten in der DB.
-  - [ ] Implementiere Frontend UI auf `DealsPage.vue` zur Anzeige der Dealsliste (Titel, Plattform, Rabatt, Preis).
+  - [x] Implementiere Backend/Nuxt Server Logik oder nutze einen Feed, um eine Liste aktueller Deals/Freebies zu erhalten (Start mit wenigen Quellen oder Mock-Daten). (2. Juni 2025)
+  - [x] Speichere Basis-Deal-Daten in der DB. (2. Juni 2025)
+  - [x] Implementiere Frontend UI auf `deals.vue` zur Anzeige der Dealsliste (Titel, Plattform, Rabatt, Preis). (2. Juni 2025)
+  - [x] Vollständige Deal-Service-Infrastruktur mit CRUD-Operationen erstellt (2. Juni 2025)
+  - [x] TRPC-Router für Deals mit Input-Validation und Error-Handling implementiert (2. Juni 2025)
+  - [x] Frontend Store mit reaktiver State-Verwaltung und Helper-Funktionen erstellt (2. Juni 2025)
+  - [x] Deal-Aggregation-System mit Mock-Daten für Steam, Epic Games, GOG implementiert (2. Juni 2025)
+  - [x] UI komplett überarbeitet: Backend-Integration statt Mock-Daten, Loading/Error States, erweiterte Filter (2. Juni 2025)
 
 ---
 

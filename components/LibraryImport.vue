@@ -46,7 +46,6 @@
             Steam Importieren
           </button>
         </div>
-
         <!-- Steam Import Form -->
         <div v-else class="space-y-3">
           <div>
@@ -62,6 +61,38 @@
             <p class="text-xs text-gray-500 mt-1">
               Ihr Steam-Profil muss öffentlich sein
             </p>
+          </div>
+
+          <!-- IGDB Enrichment Option -->
+          <div class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/30">
+            <label class="flex items-center cursor-pointer">
+              <input
+                v-model="enableIGDBEnrichment"
+                type="checkbox"
+                class="sr-only"
+                :disabled="isImporting" />
+              <div
+                class="relative w-5 h-5 rounded border-2 border-gray-500 mr-3 flex items-center justify-center transition-all duration-200"
+                :class="
+                  enableIGDBEnrichment
+                    ? 'bg-blue-600 border-blue-600'
+                    : 'bg-gray-700'
+                ">
+                <Icon
+                  v-if="enableIGDBEnrichment"
+                  name="heroicons:check-20-solid"
+                  class="w-3 h-3 text-white" />
+              </div>
+              <div class="flex-1">
+                <span class="text-sm font-medium text-gray-200">
+                  Spiele mit IGDB-Daten anreichern
+                </span>
+                <p class="text-xs text-gray-400 mt-0.5">
+                  Erweitert neue Spiele automatisch mit Beschreibungen, Genres,
+                  Cover-Bildern und weiteren Informationen
+                </p>
+              </div>
+            </label>
           </div>
 
           <div class="flex space-x-2">
@@ -193,9 +224,22 @@
               {{ importResult.skipped }} bereits vorhandene Spiele übersprungen
             </p>
             <p
+              v-if="importResult.enriched && importResult.enriched > 0"
+              class="text-blue-300">
+              {{ importResult.enriched }} Spiele mit IGDB-Daten angereichert
+            </p>
+            <p
               v-if="importResult.errors && importResult.errors > 0"
               class="text-yellow-300">
               {{ importResult.errors }} Fehler beim Import
+            </p>
+            <p
+              v-if="
+                importResult.enrichmentErrors &&
+                importResult.enrichmentErrors > 0
+              "
+              class="text-orange-300">
+              {{ importResult.enrichmentErrors }} Fehler bei IGDB-Anreicherung
             </p>
             <p
               v-if="
@@ -226,10 +270,10 @@
 
   const { $client } = useNuxtApp();
   const notifyStore = useNotifyStore();
-
   // Steam Import State
   const showSteamForm = ref(false);
   const steamInput = ref('');
+  const enableIGDBEnrichment = ref(true);
   const isImporting = ref(false);
   const importResult = ref<{
     success: boolean;
@@ -237,6 +281,8 @@
     updated?: number;
     skipped?: number;
     errors?: number;
+    enriched?: number;
+    enrichmentErrors?: number;
     message?: string;
   } | null>(null);
 
@@ -246,10 +292,10 @@
 
     isImporting.value = true;
     importResult.value = null;
-
     try {
       const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.value.trim()
+        steamInput: steamInput.value.trim(),
+        enableIGDBEnrichment: enableIGDBEnrichment.value
       });
 
       importResult.value = result;
@@ -261,6 +307,9 @@
         }
         if (result.updated && result.updated > 0) {
           notificationMessage += `${result.updated} Spiele aktualisiert. `;
+        }
+        if (result.enriched && result.enriched > 0) {
+          notificationMessage += `${result.enriched} Spiele mit zusätzlichen Informationen angereichert. `;
         }
         if (!result.imported && !result.updated && result.skipped) {
           notificationMessage =

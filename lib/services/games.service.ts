@@ -5,6 +5,7 @@ import {
   type Platform,
   type PlatformGame
 } from '~/prisma/client';
+import { IGDBService, type EnrichedGameData } from './igdb.service';
 const prisma = new PrismaClient();
 
 export interface GameWithPlatforms {
@@ -29,8 +30,11 @@ export interface ImportResult {
   success: boolean;
   totalGames: number;
   imported: number;
+  updated: number;
   skipped: number;
   errors: number;
+  enriched?: number; // Anzahl der Spiele mit IGDB-Daten angereichert
+  enrichmentErrors?: number; // Anzahl der IGDB-Anreicherungsfehler
 }
 
 export namespace GamesService {
@@ -248,7 +252,6 @@ export namespace GamesService {
 
     return platformGame?.game || null;
   }
-
   export async function createGame(
     title: string,
     data: {
@@ -287,6 +290,41 @@ export namespace GamesService {
             user: true
           }
         }
+      }
+    });
+  }
+
+  /**
+   * Suche Spiele nach Titel
+   */
+  export async function searchGamesByTitle(title: string): Promise<Game[]> {
+    return prisma.game.findMany({
+      where: {
+        title: {
+          contains: title,
+          mode: 'insensitive'
+        }
+      },
+      include: {
+        platformGames: {
+          include: {
+            platform: true
+          }
+        },
+        userGames: {
+          include: {
+            user: true
+          }
+        },
+        deals: true,
+        wishlistedBy: {
+          include: {
+            user: true
+          }
+        }
+      },
+      orderBy: {
+        title: 'asc'
       }
     });
   }
@@ -631,6 +669,180 @@ export namespace GamesService {
         }
         return 'skipped';
       }
+    } catch (error) {
+      console.error(
+        `Fehler beim Verarbeiten von Spiel ${steamGame.name}:`,
+        error
+      );
+      throw error;
+    }
+  }
+
+  // Spiel mit IGDB-Daten anreichern
+  export async function enrichGameWithIGDB(
+    gameId: number,
+    gameName: string,
+    platformName?: string
+  ): Promise<boolean> {
+    try {
+      // Prüfe ob das Spiel bereits IGDB-Daten hat
+      const game = await getGameById(gameId);
+      if (!game) return false;
+
+      // Überspringen falls bereits beschreibung und genres vorhanden sind
+      if (game.description && game.genres.length > 0) {
+        return false;
+      }
+
+      console.log(`Anreichern von "${gameName}" mit IGDB-Daten...`);
+
+      // IGDB-Daten abrufen
+      const enrichedData = await IGDBService.enrichGameData(
+        gameName,
+        platformName
+      );
+
+      if (!enrichedData || Object.keys(enrichedData).length === 0) {
+        console.log(`Keine IGDB-Daten für "${gameName}" gefunden`);
+        return false;
+      }
+
+      // Spiel mit neuen Daten aktualisieren
+      const updateData: {
+        description?: string;
+        coverUrl?: string;
+        releaseDate?: Date;
+        developer?: string;
+        publisher?: string;
+        genres?: string[];
+      } = {};
+
+      if (enrichedData.description && !game.description) {
+        updateData.description = enrichedData.description;
+      }
+
+      if (enrichedData.coverUrl && !game.coverUrl) {
+        updateData.coverUrl = enrichedData.coverUrl;
+      }
+
+      if (enrichedData.releaseDate && !game.releaseDate) {
+        updateData.releaseDate = enrichedData.releaseDate;
+      }
+
+      if (enrichedData.developer && !game.developer) {
+        updateData.developer = enrichedData.developer;
+      }
+
+      if (enrichedData.publisher && !game.publisher) {
+        updateData.publisher = enrichedData.publisher;
+      }
+
+      if (
+        enrichedData.genres &&
+        enrichedData.genres.length > 0 &&
+        game.genres.length === 0
+      ) {
+        updateData.genres = enrichedData.genres;
+      }
+
+      // Nur aktualisieren wenn neue Daten vorhanden sind
+      if (Object.keys(updateData).length > 0) {
+        await updateGame(gameId, updateData);
+        console.log(
+          `Spiel "${gameName}" mit IGDB-Daten aktualisiert:`,
+          Object.keys(updateData)
+        );
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error(
+        `Fehler beim Anreichern von "${gameName}" mit IGDB-Daten:`,
+        error
+      );
+      return false;
+    }
+  }
+
+  // Erweiterte Steam-Import-Funktion mit IGDB-Anreicherung
+  export async function processSteamGameImportWithEnrichment(
+    userId: number,
+    steamGame: {
+      appid: number;
+      name: string;
+      playtime_forever: number;
+      rtime_last_played?: number;
+    },
+    steamPlatformId: number,
+    enableEnrichment: boolean = true
+  ): Promise<{
+    result: 'imported' | 'updated' | 'skipped';
+    enriched: boolean;
+  }> {
+    try {
+      // Normale Steam-Import-Logik
+      let game = await getGameByPlatformId(
+        steamPlatformId,
+        steamGame.appid.toString()
+      );
+
+      let wasNewGame = false;
+
+      // Spiel erstellen falls es nicht existiert
+      if (!game) {
+        const coverUrl = `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamGame.appid}/library_600x900.jpg`;
+        const storeUrl = `https://store.steampowered.com/app/${steamGame.appid}/`;
+
+        game = await createGameWithPlatform(
+          steamGame.name,
+          steamPlatformId,
+          steamGame.appid.toString(),
+          { coverUrl: coverUrl },
+          storeUrl
+        );
+        wasNewGame = true;
+      }
+
+      // UserGame erstellen oder aktualisieren
+      const existingUserGame = await getUserGameByUserAndGame(userId, game.id);
+      const lastPlayed = steamGame.rtime_last_played
+        ? new Date(steamGame.rtime_last_played * 1000)
+        : null;
+
+      let importResult: 'imported' | 'updated' | 'skipped' = 'skipped';
+
+      if (!existingUserGame) {
+        await createUserGame(
+          userId,
+          game.id,
+          steamGame.playtime_forever,
+          lastPlayed || undefined
+        );
+        importResult = 'imported';
+      } else {
+        // Spielzeit aktualisieren falls größer
+        if (
+          steamGame.playtime_forever > (existingUserGame.playtimeMinutes || 0)
+        ) {
+          await updateUserGame(existingUserGame.id, {
+            playtimeMinutes: steamGame.playtime_forever,
+            lastPlayed: lastPlayed || undefined
+          });
+          importResult = 'updated';
+        }
+      }
+
+      // IGDB-Anreicherung nur für neue Spiele oder wenn explizit gewünscht
+      let enriched = false;
+      if (enableEnrichment && wasNewGame) {
+        enriched = await enrichGameWithIGDB(game.id, steamGame.name, 'Steam');
+
+        // Kleine Verzögerung um IGDB API nicht zu überlasten
+        await new Promise(resolve => setTimeout(resolve, 250));
+      }
+
+      return { result: importResult, enriched };
     } catch (error) {
       console.error(
         `Fehler beim Verarbeiten von Spiel ${steamGame.name}:`,

@@ -93,7 +93,8 @@ export const useGamesStore = defineStore('games', () => {
     }
   };
   const importSteamLibrary = async (
-    steamInput: string
+    steamInput: string,
+    enableIGDBEnrichment: boolean = true
   ): Promise<ImportResult | null> => {
     const { $client } = useNuxtApp();
     const notifyStore = useNotifyStore();
@@ -105,7 +106,8 @@ export const useGamesStore = defineStore('games', () => {
       error.value = null;
 
       const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.trim()
+        steamInput: steamInput.trim(),
+        enableIGDBEnrichment
       });
 
       lastImportResult.value = result;

@@ -29,14 +29,14 @@ export const gamesRouter = router({
   getUserGames: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserGames(ctx.dbUser.id);
   }),
-
   // Steam-Bibliothek importieren
   importSteamLibrary: protectedProcedure
     .input(
       z.object({
         steamInput: z
           .string()
-          .min(1, 'Steam ID oder Profil-URL ist erforderlich')
+          .min(1, 'Steam ID oder Profil-URL ist erforderlich'),
+        enableIGDBEnrichment: z.boolean().optional().default(true)
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -89,20 +89,25 @@ export const gamesRouter = router({
             siteUrl: 'https://store.steampowered.com'
           }
         );
-
         const importResults = {
           imported: 0,
           updated: 0,
           skipped: 0,
-          errors: 0
-        }; // Spiele importieren
+          errors: 0,
+          enriched: 0,
+          enrichmentErrors: 0
+        };
+
+        // Spiele importieren
         for (const steamGame of data.response.games) {
           try {
-            const result = await GamesService.processSteamGameImport(
-              ctx.dbUser.id,
-              steamGame,
-              steamPlatform.id
-            );
+            const { result, enriched } =
+              await GamesService.processSteamGameImportWithEnrichment(
+                ctx.dbUser.id,
+                steamGame,
+                steamPlatform.id,
+                input.enableIGDBEnrichment
+              );
 
             if (result === 'imported') {
               importResults.imported++;
@@ -110,6 +115,10 @@ export const gamesRouter = router({
               importResults.updated++;
             } else {
               importResults.skipped++;
+            }
+
+            if (enriched) {
+              importResults.enriched++;
             }
           } catch (error) {
             console.error(
@@ -125,14 +134,15 @@ export const gamesRouter = router({
           const xpReward = Math.min(importResults.imported * 10, 500); // Max 500 XP pro Import
           await GamesService.rewardUserXP(ctx.dbUser.id, xpReward);
         }
-
         return {
           success: true,
           totalGames: data.response.game_count,
           imported: importResults.imported,
           updated: importResults.updated,
           skipped: importResults.skipped,
-          errors: importResults.errors
+          errors: importResults.errors,
+          enriched: importResults.enriched,
+          enrichmentErrors: importResults.enrichmentErrors
         };
       } catch (error) {
         if (error instanceof TRPCError) {
