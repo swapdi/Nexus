@@ -21,6 +21,11 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Münze in die untere rechte Ecke der Karte repositioniert
   - [x] Münzgröße vergrößert für bessere Sichtbarkeit
 - [x] User Credits Anzeige im App Header implementiert (31. Mai 2025)
+- [x] Angepasste E-Mail-Templates für Supabase erstellt (1. Juni 2025)
+  - [x] Gaming-orientiertes Design mit Nexus-Branding
+  - [x] Alle 5 Template-Typen angepasst (Registrierung, Passwort-Reset, E-Mail-Änderung, Magic Link, Einladung)
+  - [x] Responsive Design und Sicherheitshinweise integriert
+  - [x] Dokumentation und Installationsanleitung erstellt
 
 ---
 
@@ -31,21 +36,21 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
 - **Datenbank-Setup & Schema:**
   - [x] Definiere das initiale Supabase DB-Schema für Benutzer (Erweiterung der Auth-Tabelle), Spiele, Benutzer-Spiele (Verknüpfung), Basis-Deals. (14. Mai 2025)
   - [x] Implementiere Prisma-Modelle basierend auf dem Supabase-Schema. (14. Mai 2025)
-  - [ ] Richte die DB-Verbindung in Nuxt/Prisma ein.
+  - [x] Richte die DB-Verbindung in Nuxt/Prisma ein.
 - **Benutzerauthentifizierung:**
-  - [ ] Richte Supabase Auth ein (E-Mail/Passwort).
-  - [ ] Implementiere Registrierungs-Seite und -Logik.
-  - [ ] Implementiere Login-Seite und -Logik.
-  - [ ] Implementiere Logout-Funktion.
-  - [ ] Richte E-Mail-Bestätigungs-Templates ein (via Supabase).
-  - [ ] Implementiere "Passwort vergessen"-Funktion.
+  - [x] Richte Supabase Auth ein (E-Mail/Passwort).
+  - [x] Implementiere Registrierungs-Seite und -Logik.
+  - [x] Implementiere Login-Seite und -Logik.
+  - [x] Implementiere Logout-Funktion.
+  - [x] Richte E-Mail-Bestätigungs-Templates ein (via Supabase). (1. Juni 2025)
+  - [x] Implementiere "Passwort vergessen"-Funktion.
 - **Basis UI & Navigation:**
-  - [ ] Richte Nuxt 3 Projekt mit Tailwind CSS ein.
-  - [ ] Erstelle Haupt-Layout (`MainLayout.vue`).
+  - [x] Richte Nuxt 3 Projekt mit Tailwind CSS ein.
+  - [x] Erstelle Haupt-Layout (`default.vue`).
   - [x] Erstelle Navigationskomponente (`NavBar.vue`). (29. Mai 2025)
   - [x] Erstelle einklappbare Seitennavigation für angemeldete Benutzer (`AppSidebar.vue`). (29. Mai 2025)
   - [x] Implementiere Layout für authentifizierte Benutzer (`authenticated.vue`). (29. Mai 2025)
-  - [ ] Richte Basis-Routing ein (Landing, Bibliothek, Angebote).
+  - [x] Richte Basis-Routing ein (Landing, Bibliothek, Angebote).
   - [x] Erstelle Platzhalter-Seiten (`LandingPage.vue`, `LibraryPage.vue`, `DealsPage.vue`). (29. Mai 2025)
   - [x] Implementiere das dunkle UI-Design konsistent auf den Basis-Seiten. (29. Mai 2025)
 - **Bibliotheksimport (Steam MVP):**
@@ -143,98 +148,3 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [ ] Implementiere IPC zwischen Renderer und Main Prozess.
   - [ ] Implementiere Logik zum Starten von Spielen/Launchern aus der Desktop-App (im Electron Main Prozess).
   - [ ] Passe UI/UX für Desktop an (z. B. Tray Icon, native Menüs - falls gewünscht).
-
----
-
-## Entdeckt während der Arbeit
-
-**29. Mai 2025 - Sidebar Navigation Implementation:**
-
-- [x] Erstelle einklappbare Seitennavigation (`AppSidebar.vue`) mit folgenden Features:
-  - Einklappbar auf nur Icons oder vollständige Labels
-  - Tooltips für eingeklappten Zustand
-  - Aktive Seiten-Markierung mit Purple-Theme
-  - Benutzerinformationen im Footer (Avatar, Name, Level, XP)
-  - Lokale Speicherung des Sidebar-Status in localStorage
-- [x] Implementiere Sidebar-Toggle Komponente (`SidebarToggle.vue`):
-  - Floating Toggle-Button mit Animation
-  - Automatische Positionsanpassung je nach Sidebar-Status
-- [x] Erstelle authenticated Layout (`layouts/authenticated.vue`):
-  - Vollständige Integration der Sidebar
-  - Responsive Content-Area mit automatischen Margins
-  - Platzierung für Notifications
-- [x] Implementiere Detailnavigation in Sidebar:
-
-  - Sub-Navigation für aktive Hauptbereiche
-  - Filteroptionen für Meine Spiele (Alle, Zuletzt gespielt, Favoriten)
-  - Filteroptionen für Angebote (Alle, Kostenlos, Hohe Rabatte)
-  - Filteroptionen für Wishlist (Alle, Im Angebot, Bald verfügbar)
-  - Unterseiten für Einstellungen (Profil, Plattformen, Benachrichtigungen)
-
-- [x] Erstelle vollständige Seiten mit modernem UI:
-  - `pages/my-games.vue` - Spielebibliothek mit Filtern, Suche, Statistiken
-  - `pages/deals.vue` - Angebots-Übersicht mit umfangreichen Filteroptionen
-  - `pages/wishlist.vue` - Wishlist mit Preisverfolgung und Statistiken
-- [x] Aktualisiere bestehende Seiten auf neues Layout:
-  - `pages/dashboard.vue` - Layout von 'application' zu 'authenticated'
-  - `pages/account.vue` - Layout von 'application' zu 'authenticated'
-
-**Technische Details:**
-
-- Verwendung von Heroicons für konsistente Icon-Darstellung
-- Responsive Design mit Tailwind CSS
-- Smooth Transitions und Hover-Effekte
-- Consistent Purple/Blue Gradient Theme
-- Mock-Daten für Entwicklung (später durch echte APIs zu ersetzen)
-
-**31. Mai 2025 - AppHeader Verbesserung:**
-
-- [x] AppHeader-Design überarbeiten: Logo links, Avatar-Menü rechts, cooler Dropdown-Style mit Navigation zu profile.vue und settings.vue (31. Mai 2025)
-
-**31. Mai 2025 - AuthContext Middleware Behebung:**
-
-- [x] Problem mit `authContext` Middleware behoben (31. Mai 2025):
-  - Cookie-Parsing-Problematik identifiziert: Middleware suchte nach `'sb-access-token'` aber Supabase verwendet projektspezifische Cookie-Namen
-  - Middleware auf korrekte `serverSupabaseUser()` Funktion umgestellt, die automatisch Supabase-Cookies parst
-  - Erweiterte Logging-Funktionalität hinzugefügt mit Emojis für bessere Sichtbarkeit
-  - Middleware-Ausführung für `/api/trpc` Pfade bestätigt und getestet
-  - Error-Handling verbessert mit try-catch Block
-  - Vollständig funktionsfähige Authentifizierung für TRPC-Routen implementiert
-
-**31. Mai 2025 - NexusCredits Dashboard Überarbeitung:**
-
-- [x] NexusCredits-Karte im Dashboard komplett überarbeitet (31. Mai 2025):
-  - Elegantes Premium-Design mit Indigo/Purple Farbschema
-  - Animierte Hintergrundeffekte und glühende Elemente
-  - Verbessertes Credit-Icon mit rotierendem Border und Glow-Effekt
-  - Dezente "Aufladen"-Verlinkung statt prominenter Kauf-Button
-  - Professionelle Balance-Anzeige mit Gradient-Text
-  - Wert-Anzeige in Euro hinzugefügt
-  - Sicherheits-Badge integriert
-  - Dekorative Akzent-Elemente für Gaming-Ästhetik
-  - Tailwind-Animationen erweitert (spin-slow, pulse-slow)
-
-**31. Mai 2025 - NexusCredits Silber-Design:**
-
-- [x] NexusCredits-Karte auf stilvolles Silber-Design umgestellt (31. Mai 2025):
-  - Elegante Slate/Gray Farbpalette statt Purple/Indigo
-  - Reduzierte Höhe: p-4 statt p-6, kleinere Abstände
-  - Kompakteres Design: Icon 16x16 statt 20x20, Text 2xl statt 3xl
-  - Silber-Gradienten für Text und Effekte
-  - Angepasste Hover-Effekte und Animationen
-  - Modernerer, minimalistischerer Look
-
-**31. Mai 2025 - Dashboard Hover-Effekte:**
-
-- [x] Partikel-Elemente entfernt und Hover-Rahmen-Effekte hinzugefügt (31. Mai 2025):
-  - Dekorative Partikel-Punkte (animate-ping, animate-pulse) aus NexusCredits-Karte entfernt
-  - Hover-Rahmen-Effekte zu Total Games Karte hinzugefügt: hover:border-purple-400/50
-  - Hover-Rahmen-Effekte zu Hours Played Karte hinzugefügt: hover:border-blue-400/50
-  - Hover-Rahmen-Effekte zu Achievements Karte hinzugefügt: hover:border-green-400/50
-  - Hover-Rahmen-Effekte zu Recently Played Games Karte hinzugefügt: hover:border-purple-400/50
-  - Hover-Rahmen-Effekte zu Weekly Activity Chart Karte hinzugefügt: hover:border-blue-400/50
-  - Hover-Rahmen-Effekte zu Recent Achievements Karte hinzugefügt: hover:border-yellow-400/50
-  - Hover-Rahmen-Effekte zu Featured Deals Karte hinzugefügt: hover:border-red-400/50
-  - Hover-Rahmen-Effekte zu Quick Actions Karte hinzugefügt: hover:border-yellow-400/50
-  - Alle Hover-Effekte mit transition-all duration-500 für sanfte Animationen
-  - Konsistente Farb-Themenzuordnung für verschiedene Kartentypen

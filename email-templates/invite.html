@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Einladung zu Nexus</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+        color: #ffffff;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6, #06b6d4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        font-weight: bold;
+        color: white;
+      }
+      .brand-name {
+        font-size: 32px;
+        font-weight: bold;
+        background: linear-gradient(90deg, #8b5cf6, #3b82f6, #06b6d4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+      }
+      .tagline {
+        color: #a1a1aa;
+        font-size: 16px;
+        margin-bottom: 0;
+      }
+      .main-content {
+        background: rgba(31, 41, 55, 0.6);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 16px;
+        padding: 40px;
+        backdrop-filter: blur(10px);
+        margin-bottom: 30px;
+      }
+      .greeting {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #ffffff;
+      }
+      .message {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #d1d5db;
+        margin-bottom: 30px;
+      }
+      .cta-button {
+        display: inline-block;
+        background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981);
+        color: white;
+        text-decoration: none;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+      }
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+      }
+      .alternative-link {
+        margin-top: 30px;
+        padding: 20px;
+        background: rgba(55, 65, 81, 0.4);
+        border-radius: 8px;
+        border-left: 4px solid #8b5cf6;
+      }
+      .alternative-link h4 {
+        margin: 0 0 10px 0;
+        color: #ffffff;
+        font-size: 16px;
+      }
+      .alternative-link p {
+        margin: 0;
+        color: #9ca3af;
+        font-size: 14px;
+        word-break: break-all;
+      }
+      .footer {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .footer a {
+        color: #8b5cf6;
+        text-decoration: none;
+      }
+      .features-list {
+        background: rgba(55, 65, 81, 0.3);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .features-list h4 {
+        color: #ffffff;
+        margin: 0 0 15px 0;
+        font-size: 18px;
+      }
+      .features-list ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #d1d5db;
+      }
+      .features-list li {
+        margin-bottom: 8px;
+      }
+      .invitation-info {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #6ee7b7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Main Content -->
+      <div class="main-content">
+        <h2 class="greeting">Du wurdest zu Nexus eingeladen! 🎮</h2>
+
+        <div class="message">
+          <p>
+            Du wurdest eingeladen, Nexus beizutreten - der ultimativen Plattform
+            für Gaming-Enthusiasten! Vereinige deine Spielebibliotheken,
+            entdecke die besten Deals und erlebe Gaming wie nie zuvor.
+          </p>
+        </div>
+
+        <div class="features-list">
+          <h4>🚀 Was dich bei Nexus erwartet:</h4>
+          <ul>
+            <li>
+              📚 Alle deine Spiele von Steam, Epic Games, GOG an einem Ort
+            </li>
+            <li>💰 Die besten Gaming-Deals und kostenlose Spiele entdecken</li>
+            <li>🏆 Achievements freischalten und Credits verdienen</li>
+            <li>📊 Detaillierte Statistiken zu deiner Gaming-Bibliothek</li>
+            <li>
+              🎯 Personalisierte Empfehlungen basierend auf deinen Spielen
+            </li>
+          </ul>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0">
+          <a href="{{ .ConfirmationURL }}" class="cta-button">
+            Einladung annehmen & Konto erstellen
+          </a>
+        </div>
+
+        <!-- Alternative Link -->
+        <div class="alternative-link">
+          <h4>Button funktioniert nicht?</h4>
+          <p>Kopiere diesen Link in deinen Browser:</p>
+          <p>{{ .ConfirmationURL }}</p>
+        </div>
+
+        <div class="invitation-info">
+          <strong>🎁 Exklusiver Einladungsbonus:</strong> Als eingeladener
+          Nutzer erhältst du 100 Nexus Credits als Willkommensgeschenk! Diese
+          kannst du für Premium-Features oder Store-Guthaben einlösen.
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          Diese Einladung wurde automatisch von Nexus gesendet.<br />
+          Fragen? Besuche unsere
+          <a href="{{ .SiteURL }}/contact">Kontaktseite</a> oder antworte nicht
+          auf diese E-Mail.
+        </p>
+        <p style="margin-top: 20px">
+          <a href="{{ .SiteURL }}">Nexus besuchen</a> |
+          <a href="{{ .SiteURL }}/privacy">Datenschutz</a> |
+          <a href="{{ .SiteURL }}/terms">Nutzungsbedingungen</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
