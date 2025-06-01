@@ -223,27 +223,14 @@
                   './gameplaceholder.jpg';
               }
             " />
-
           <!-- Platform Logos -->
           <div class="absolute top-2 left-2 flex flex-wrap gap-1">
-            <div
+            <PlatformLogo
               v-for="platform in game.platforms"
               :key="platform"
-              class="w-8 h-8 bg-black/70 rounded-md backdrop-blur-sm flex items-center justify-center">
-              <span class="text-white text-xs font-bold">
-                {{ platform.charAt(0) }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Platform Badges (Alternative Text Display) -->
-          <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
-            <span
-              v-for="platform in game.platforms"
-              :key="platform"
-              class="px-2 py-1 bg-black/70 text-white text-xs rounded-md backdrop-blur-sm">
-              {{ platform }}
-            </span>
+              :platform="platform"
+              size="md"
+              variant="badge" />
           </div>
 
           <!-- Rating -->

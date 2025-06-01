@@ -35,10 +35,15 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
     - [x] Verbesserte formatPlayTime Funktion mit "Nicht gespielt" für 0 Minuten
     - [x] Neue computed properties: getAvailableGenres, totalPlaytimeHours, averageRating
     - [x] Plattform-basierte Filterung: getGamesByPlatformName
-    - [x] TypeScript-Fehler behoben und saubere Struktur etabliert
-  - [x] Games.router.ts an überarbeiteten games.service.ts angepasst (1. Juni 2025)
+    - [x] TypeScript-Fehler behoben und saubere Struktur etabliert - [x] Games.router.ts an überarbeiteten games.service.ts angepasst (1. Juni 2025)
     - [x] GamesService Namespace-Aufrufe statt Klasseninstanziierung
     - [x] Korrekte Parameter für findOrCreatePlatform Funktion
+- [x] Platform-Logos in Spieleansicht implementiert (1. Juni 2025)
+  - [x] PlatformLogo.vue Component erstellt mit Simple Icons
+  - [x] Unterstützung für Steam, Epic Games, GOG, Xbox, Origin, Ubisoft, Battle.net, Itch.io etc.
+  - [x] Badge und Icon Varianten verfügbar
+  - [x] Für dunklen Hintergrund optimierte Farben
+  - [x] TypeScript-sichere Implementation mit PlatformKey Types
     - [x] Alle TypeScript-Fehler behoben
   - [x] Steam-Import Duplikatschutz überprüft und verbessert (1. Juni 2025)
     - [x] Duplicate-Prevention auf mehreren Ebenen bestätigt (DB Constraints + Code-Logik)
