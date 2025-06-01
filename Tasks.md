@@ -22,10 +22,24 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Münzgröße vergrößert für bessere Sichtbarkeit
 - [x] User Credits Anzeige im App Header implementiert (31. Mai 2025)
 - [x] Angepasste E-Mail-Templates für Supabase erstellt (1. Juni 2025)
-  - [x] Gaming-orientiertes Design mit Nexus-Branding
-  - [x] Alle 5 Template-Typen angepasst (Registrierung, Passwort-Reset, E-Mail-Änderung, Magic Link, Einladung)
+  - [x] Gaming-orientiertes Design mit Nexus-Branding - [x] Alle 5 Template-Typen angepasst (Registrierung, Passwort-Reset, E-Mail-Änderung, Magic Link, Einladung)
   - [x] Responsive Design und Sicherheitshinweise integriert
   - [x] Dokumentation und Installationsanleitung erstellt
+- [x] Games.service.ts überarbeitet und TypeScript-Fehler behoben (1. Juni 2025)
+  - [x] Date | null vs Date | undefined Typen-Konflikte in processSteamGameImport behoben
+  - [x] Saubere Struktur nach auth.service.ts Vorbild beibehalten
+  - [x] Alle CRUD-Operationen in logische Sektionen organisiert
+  - [x] Games.store.ts vollständig überarbeitet (1. Juni 2025)
+    - [x] ImportResult Interface aus games.service.ts importiert
+    - [x] Erweiterte Hilfsfunktionen hinzugefügt: getGamesByGenre, getTopRatedGames, getUnratedGames
+    - [x] Verbesserte formatPlayTime Funktion mit "Nicht gespielt" für 0 Minuten
+    - [x] Neue computed properties: getAvailableGenres, totalPlaytimeHours, averageRating
+    - [x] Plattform-basierte Filterung: getGamesByPlatformName
+    - [x] TypeScript-Fehler behoben und saubere Struktur etabliert
+  - [x] Games.router.ts an überarbeiteten games.service.ts angepasst (1. Juni 2025)
+    - [x] GamesService Namespace-Aufrufe statt Klasseninstanziierung
+    - [x] Korrekte Parameter für findOrCreatePlatform Funktion
+    - [x] Alle TypeScript-Fehler behoben
 
 ---
 
@@ -54,20 +68,22 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Erstelle Platzhalter-Seiten (`LandingPage.vue`, `LibraryPage.vue`, `DealsPage.vue`). (29. Mai 2025)
   - [x] Implementiere das dunkle UI-Design konsistent auf den Basis-Seiten. (29. Mai 2025)
 - **Bibliotheksimport (Steam MVP):**
-  - [ ] Implementiere Backend/Nuxt Server API-Route zum Aufruf der Steam Web API (`GetOwnedGames`).
-  - [ ] Implementiere Frontend UI (Button, Eingabefeld für SteamID/Link - siehe frühere Diskussionen).
-  - [ ] Sende die SteamID/Link vom Frontend an die Backend-Route.
-  - [ ] Verarbeite die Steam API-Antwort im Backend.
-  - [ ] Speichere die Steam-Spiele (mit Benutzerverknüpfung) in der Supabase DB.
+  - [x] Implementiere Backend/Nuxt Server API-Route zum Aufruf der Steam Web API (`GetOwnedGames`). (1. Juni 2025)
+  - [x] Implementiere Frontend UI (Button, Eingabefeld für SteamID/Link - siehe frühere Diskussionen). (1. Juni 2025)
+  - [x] Sende die SteamID/Link vom Frontend an die Backend-Route. (1. Juni 2025)
+  - [x] Verarbeite die Steam API-Antwort im Backend. (1. Juni 2025)
+  - [x] Speichere die Steam-Spiele (mit Benutzerverknüpfung) in der Supabase DB. (1. Juni 2025)
+  - [x] Erstelle games.service.ts für Datenbankoperationen. (1. Juni 2025)
+  - [x] Erweitere TRPC-Kontext um Prisma-Datenbankverbindung. (1. Juni 2025)
 - **Metadaten (IGDB MVP):**
   - [ ] Richte IGDB API-Zugang ein.
   - [ ] Implementiere Backend/Nuxt Server Logik zum Abruf von Spieldetails (Cover, Genres, Beschreibung) von IGDB basierend auf Steam-Spieltitel/AppID.
   - [ ] Speichere die IGDB-Daten zusammen mit den importierten Spielen in der DB.
   - [x] Erweitere das DB-Schema entsprechend. (14. Mai 2025)
 - **Bibliotheksanzeige:**
-  - [ ] Implementiere Backend/Nuxt Server API-Route zum Abrufen der Spielebibliothek des angemeldeten Benutzers aus der DB.
-  - [ ] Implementiere Frontend UI auf `LibraryPage.vue` zur Anzeige der Spieleliste (mit Cover, Titel, Plattform).
-  - [ ] Füge Basis-Filter/Sortierung (z.B. nach Plattform) hinzu.
+  - [x] Implementiere Backend/Nuxt Server API-Route zum Abrufen der Spielebibliothek des angemeldeten Benutzers aus der DB. (1. Juni 2025)
+  - [x] Implementiere Frontend UI auf `my-games.vue` zur Anzeige der Spieleliste (mit Cover, Titel, Plattform). (1. Juni 2025)
+  - [x] Füge Basis-Filter/Sortierung (z.B. nach Plattform) hinzu. (1. Juni 2025)
 - **Angebotsübersicht (MVP):**
   - [ ] Implementiere Backend/Nuxt Server Logik oder nutze einen Feed, um eine Liste aktueller Deals/Freebies zu erhalten (Start mit wenigen Quellen oder Mock-Daten).
   - [ ] Speichere Basis-Deal-Daten in der DB.
