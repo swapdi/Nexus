@@ -40,6 +40,17 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
     - [x] GamesService Namespace-Aufrufe statt Klasseninstanziierung
     - [x] Korrekte Parameter für findOrCreatePlatform Funktion
     - [x] Alle TypeScript-Fehler behoben
+  - [x] Steam-Import Duplikatschutz überprüft und verbessert (1. Juni 2025)
+    - [x] Duplicate-Prevention auf mehreren Ebenen bestätigt (DB Constraints + Code-Logik)
+    - [x] LibraryImport.vue UI verbessert: Anzeige von "updated" Spielen
+    - [x] Bessere Benachrichtigungen für verschiedene Import-Szenarien
+    - [x] Test-Dokumentation für Steam-Import-Duplikatschutz erstellt
+- [x] Spielanzeige-Verbesserungen in my-games.vue implementiert (2. Juni 2025)
+  - [x] Fallback für Cover-Bilder auf gameplaceholder.jpg umgestellt
+  - [x] Platform-Logos in der oberen linken Ecke der Spielkarten hinzugefügt
+  - [x] iconUrl aus Platform-Modell für Platform-Logo-Anzeige genutzt
+  - [x] Fallback für fehlende Platform-Logos (erster Buchstabe des Platform-Namens)
+  - [x] Platform-Text-Badges in die untere linke Ecke verschoben für bessere Anordnung
 
 ---
 

@@ -213,21 +213,31 @@
         <!-- Cover Image -->
         <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
           <img
-            v-if="game.coverUrl"
-            :src="game.coverUrl"
+            :src="game.coverUrl || './gameplaceholder.jpg'"
             :alt="game.title"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy" />
-          <div
-            v-else
-            class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800">
-            <Icon
-              name="heroicons:photo-20-solid"
-              class="w-12 h-12 text-gray-500" />
+            loading="lazy"
+            @error="
+              if ($event.target) {
+                ($event.target as HTMLImageElement).src =
+                  './gameplaceholder.jpg';
+              }
+            " />
+
+          <!-- Platform Logos -->
+          <div class="absolute top-2 left-2 flex flex-wrap gap-1">
+            <div
+              v-for="platform in game.platforms"
+              :key="platform"
+              class="w-8 h-8 bg-black/70 rounded-md backdrop-blur-sm flex items-center justify-center">
+              <span class="text-white text-xs font-bold">
+                {{ platform.charAt(0) }}
+              </span>
+            </div>
           </div>
 
-          <!-- Platform Badges -->
-          <div class="absolute top-2 left-2 flex flex-wrap gap-1">
+          <!-- Platform Badges (Alternative Text Display) -->
+          <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
             <span
               v-for="platform in game.platforms"
               :key="platform"

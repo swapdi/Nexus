@@ -183,7 +183,12 @@
             v-if="importResult.success"
             class="text-sm mt-1"
             :class="importResult.success ? 'text-green-200' : 'text-red-200'">
-            <p>{{ importResult.imported }} neue Spiele importiert</p>
+            <p v-if="importResult.imported && importResult.imported > 0">
+              {{ importResult.imported }} neue Spiele importiert
+            </p>
+            <p v-if="importResult.updated && importResult.updated > 0">
+              {{ importResult.updated }} Spiele aktualisiert
+            </p>
             <p v-if="importResult.skipped && importResult.skipped > 0">
               {{ importResult.skipped }} bereits vorhandene Spiele übersprungen
             </p>
@@ -191,6 +196,15 @@
               v-if="importResult.errors && importResult.errors > 0"
               class="text-yellow-300">
               {{ importResult.errors }} Fehler beim Import
+            </p>
+            <p
+              v-if="
+                !importResult.imported &&
+                !importResult.updated &&
+                importResult.skipped
+              ">
+              Keine neuen Spiele gefunden - alle Spiele sind bereits in Ihrer
+              Bibliothek
             </p>
           </div>
           <p v-else class="text-sm mt-1 text-red-200">
@@ -220,6 +234,7 @@
   const importResult = ref<{
     success: boolean;
     imported?: number;
+    updated?: number;
     skipped?: number;
     errors?: number;
     message?: string;
@@ -238,12 +253,21 @@
       });
 
       importResult.value = result;
-
       if (result.success) {
-        notifyStore.notify(
-          `Steam-Import erfolgreich, ${result.imported} neue Spiele wurden importiert`,
-          1
-        );
+        // Dynamische Erfolgs-Benachrichtigung basierend auf Ergebnissen
+        let notificationMessage = 'Steam-Import abgeschlossen! ';
+        if (result.imported && result.imported > 0) {
+          notificationMessage += `${result.imported} neue Spiele importiert. `;
+        }
+        if (result.updated && result.updated > 0) {
+          notificationMessage += `${result.updated} Spiele aktualisiert. `;
+        }
+        if (!result.imported && !result.updated && result.skipped) {
+          notificationMessage =
+            'Steam-Import abgeschlossen - alle Spiele sind bereits in Ihrer Bibliothek.';
+        }
+
+        notifyStore.notify(notificationMessage.trim(), 1);
 
         // Form zurücksetzen
         showSteamForm.value = false;
