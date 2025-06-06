@@ -89,7 +89,8 @@
                 </span>
                 <p class="text-xs text-gray-400 mt-0.5">
                   Erweitert neue Spiele automatisch mit Beschreibungen, Genres,
-                  Cover-Bildern und weiteren Informationen
+                  Cover-Bildern und weiteren Informationen. Dies kann den
+                  Importprozess etwas verlängern.
                 </p>
               </div>
             </label>

@@ -88,6 +88,14 @@ Dies ist die zentrale Task-Liste für das Projekt Nexus. Tasks werden hier defin
   - [x] Aktive Filter-Anzeige mit individuellen Lösch-Buttons hinzugefügt
   - [x] "Alle Filter löschen" Funktionalität implementiert
   - [x] Clear-Search Button im Suchfeld hinzugefügt
+- [x] Auswahlmodus für Bibliotheksverwaltung implementiert (6. Juni 2025)
+  - [x] Backend-Endpoint für das Löschen mehrerer UserGames erstellt
+  - [x] Games Store um Auswahlmodus-Funktionalität erweitert
+  - [x] Toolbar mit "Auswählen"-Button in my-games.vue hinzugefügt
+  - [x] Interaktive Spielkarten mit Auswahlmöglichkeit implementiert
+  - [x] Bestätigungsmodal für sicheres Löschen von Spielen hinzugefügt
+  - [x] Alle auswählen/abwählen Funktionalität implementiert
+  - [x] Sichere Entfernung nur von UserGames, nicht von Game-Entitäten
 
 ---
 

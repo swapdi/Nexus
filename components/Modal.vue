@@ -8,11 +8,13 @@
     showOk: true,
     showCancel: false
   });
-
   const open = () => {
     modalIsVisible.value = true;
   };
-  defineExpose({ open });
+  const close = () => {
+    modalIsVisible.value = false;
+  };
+  defineExpose({ open, close });
   const emit = defineEmits(['closeOk', 'closeCancel']);
   const closeOk = () => {
     emit('closeOk');

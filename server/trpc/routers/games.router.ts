@@ -29,6 +29,63 @@ export const gamesRouter = router({
   getUserGames: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserGames(ctx.dbUser.id);
   }),
+  // Mehrere Spiele aus der Bibliothek entfernen
+  removeGamesFromLibrary: protectedProcedure
+    .input(
+      z.object({
+        gameIds: z
+          .array(z.number())
+          .min(1, 'Mindestens ein Spiel muss ausgewählt werden')
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        console.log('removeGamesFromLibrary called with:', {
+          userId: ctx.dbUser.id,
+          gameIds: input.gameIds,
+          gameIdsLength: input.gameIds.length
+        });
+
+        const removedGames = [];
+
+        // Alle ausgewählten Spiele aus der Benutzer-Bibliothek entfernen
+        for (const gameId of input.gameIds) {
+          console.log(`Processing gameId: ${gameId} (type: ${typeof gameId})`);
+
+          const userGame = await GamesService.getUserGameByUserAndGame(
+            ctx.dbUser.id,
+            gameId
+          );
+
+          console.log(
+            `UserGame found for gameId ${gameId}:`,
+            userGame ? 'YES' : 'NO'
+          );
+
+          if (userGame) {
+            await GamesService.deleteUserGame(userGame.id);
+            removedGames.push(gameId);
+            console.log(`Successfully removed gameId: ${gameId}`);
+          }
+        }
+
+        console.log(
+          `Final result: ${removedGames.length} games removed out of ${input.gameIds.length} requested`
+        );
+
+        return {
+          success: true,
+          removedCount: removedGames.length,
+          removedGameIds: removedGames
+        };
+      } catch (error) {
+        console.error('Error removing games from library:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Fehler beim Entfernen der Spiele aus der Bibliothek'
+        });
+      }
+    }),
   // Steam-Bibliothek importieren
   importSteamLibrary: protectedProcedure
     .input(

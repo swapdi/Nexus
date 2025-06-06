@@ -15,6 +15,11 @@ export const useGamesStore = defineStore('games', () => {
   const lastImportResult = ref<ImportResult | null>(null);
   const error = ref<string | null>(null);
 
+  // Neue State für Auswahlmodus
+  const isSelectionMode = ref(false);
+  const selectedGameIds = ref<Set<number>>(new Set());
+  const isRemovingGames = ref(false);
+
   // Getters
   const totalGames = computed(() => games.value.length);
 
@@ -145,6 +150,80 @@ export const useGamesStore = defineStore('games', () => {
   const refreshData = async () => {
     await Promise.all([loadGames(), loadStats()]);
   };
+
+  // Neue Funktionen für Auswahlmodus
+  const enterSelectionMode = () => {
+    isSelectionMode.value = true;
+    selectedGameIds.value.clear();
+  };
+
+  const exitSelectionMode = () => {
+    isSelectionMode.value = false;
+    selectedGameIds.value.clear();
+  };
+
+  const toggleGameSelection = (gameId: number) => {
+    if (selectedGameIds.value.has(gameId)) {
+      selectedGameIds.value.delete(gameId);
+    } else {
+      selectedGameIds.value.add(gameId);
+    }
+  };
+
+  const selectAllFilteredGames = (filteredGames: GameWithPlatforms[]) => {
+    filteredGames.forEach(game => selectedGameIds.value.add(game.id));
+  };
+
+  const deselectAllGames = () => {
+    selectedGameIds.value.clear();
+  };
+  const removeSelectedGames = async (): Promise<boolean> => {
+    const { $client } = useNuxtApp();
+    const notifyStore = useNotifyStore();
+
+    if (selectedGameIds.value.size === 0 || isRemovingGames.value) {
+      return false;
+    }
+
+    try {
+      isRemovingGames.value = true;
+
+      const gameIdsArray = Array.from(selectedGameIds.value);
+
+      const result = await $client.games.removeGamesFromLibrary.mutate({
+        gameIds: gameIdsArray
+      });
+
+      if (result.success) {
+        // Erfolgreiche Entfernung
+        const message = `${result.removedCount} Spiel${
+          result.removedCount > 1 ? 'e' : ''
+        } erfolgreich aus der Bibliothek entfernt.`;
+        notifyStore.notify(message, 1);
+
+        // Entfernte Spiele aus dem lokalen State entfernen
+        games.value = games.value.filter(
+          game => !gameIdsArray.includes(game.id)
+        );
+
+        // Statistiken neu berechnen
+        await loadStats();
+
+        // Auswahlmodus beenden
+        exitSelectionMode();
+        return true;
+      }
+
+      return false;
+    } catch (err: any) {
+      const errorMessage = err.message || 'Fehler beim Entfernen der Spiele';
+      notifyStore.notify(errorMessage, 3);
+      return false;
+    } finally {
+      isRemovingGames.value = false;
+    }
+  };
+
   const getGameById = (gameId: number) => {
     return games.value.find(game => game.id === gameId);
   };
@@ -271,7 +350,6 @@ export const useGamesStore = defineStore('games', () => {
       await refreshData();
     }
   };
-
   // Reset store
   const reset = () => {
     games.value = [];
@@ -280,6 +358,9 @@ export const useGamesStore = defineStore('games', () => {
     isImporting.value = false;
     lastImportResult.value = null;
     error.value = null;
+    isSelectionMode.value = false;
+    selectedGameIds.value.clear();
+    isRemovingGames.value = false;
   };
 
   return {
@@ -289,7 +370,10 @@ export const useGamesStore = defineStore('games', () => {
     isLoading,
     isImporting,
     lastImportResult,
-    error, // Getters
+    error,
+    isSelectionMode,
+    selectedGameIds,
+    isRemovingGames, // Getters
     totalGames,
     gamesByPlatform,
     availablePlatforms,
@@ -315,6 +399,13 @@ export const useGamesStore = defineStore('games', () => {
     getGamesByPlaytime,
     getGamesByPlatformName,
     init,
-    reset
+    reset,
+    // Neue Aktionen für Auswahlmodus
+    enterSelectionMode,
+    exitSelectionMode,
+    toggleGameSelection,
+    selectAllFilteredGames,
+    deselectAllGames,
+    removeSelectedGames
   };
 });
