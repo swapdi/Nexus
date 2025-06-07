@@ -202,18 +202,6 @@
                   class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
                 <span>Bibliothek</span>
               </button>
-
-              <!-- Quick Stats Bar -->
-              <div class="hidden md:flex items-center gap-6 text-sm">
-                <div class="flex items-center gap-2 text-purple-300">
-                  <Icon name="heroicons:clock-20-solid" class="w-4 h-4" />
-                  <span>{{ formatPlayTime(game.playtimeMinutes) }}</span>
-                </div>
-                <div class="flex items-center gap-2 text-blue-300">
-                  <Icon name="heroicons:star-20-solid" class="w-4 h-4" />
-                  <span>{{ game.rating || '?' }}/5</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -257,43 +245,6 @@
                           :key="platform"
                           class="bg-black/90 backdrop-blur-md rounded-lg px-3 py-2 border border-purple-500/30 shadow-lg hover:border-purple-400/50 transition-all duration-300 hover:scale-110">
                           <PlatformLogo :platform="platform" size="lg" />
-                        </div>
-                      </div>
-
-                      <!-- Enhanced rating badge -->
-                      <div
-                        v-if="game.rating"
-                        class="absolute top-4 right-4 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 backdrop-blur-md px-4 py-3 rounded-xl border border-yellow-500/30 shadow-lg">
-                        <div class="flex items-center gap-2">
-                          <div class="flex items-center">
-                            <Icon
-                              v-for="(filled, index) in getStars(game.rating)"
-                              :key="index"
-                              name="heroicons:star-16-solid"
-                              :class="[
-                                'w-4 h-4 transition-all duration-300',
-                                filled
-                                  ? 'text-yellow-400 drop-shadow-lg'
-                                  : 'text-gray-600'
-                              ]" />
-                          </div>
-                          <span class="text-sm text-yellow-100 font-bold"
-                            >{{ game.rating }}/5</span
-                          >
-                        </div>
-                      </div>
-
-                      <!-- Play time overlay -->
-                      <div class="absolute bottom-4 left-4 right-4">
-                        <div
-                          class="bg-black/80 backdrop-blur-md rounded-xl p-3 border border-gray-700/50">
-                          <div
-                            class="flex items-center justify-between text-sm">
-                            <span class="text-gray-300">Gespielt</span>
-                            <span class="text-white font-bold">{{
-                              formatPlayTime(game.playtimeMinutes)
-                            }}</span>
-                          </div>
                         </div>
                       </div>
                     </div>
