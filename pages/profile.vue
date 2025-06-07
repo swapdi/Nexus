@@ -1,5 +1,6 @@
 <script setup lang="ts">
   const accountStore = useAccountStore();
+  const loadingStore = useLoadingStore();
   const supabaseUser = useSupabaseUser();
 
   // Initialize user data
@@ -130,10 +131,9 @@
         </p>
       </div>
     </div>
-
     <!-- Loading State -->
     <div
-      v-if="accountStore.loadingUser"
+      v-if="loadingStore.hasOperations"
       class="bg-gray-800/50 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-700/50">
       <div class="animate-pulse flex space-x-4">
         <div

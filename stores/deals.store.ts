@@ -1,3 +1,6 @@
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { useLoading } from '~/stores/loading.store';
 import type { any } from 'zod/v4';
 import type {
   DealWithRelations,
@@ -6,6 +9,9 @@ import type {
 } from '~/lib/services/deals.service';
 
 export const useDealsStore = defineStore('deals', () => {
+  // Loading store integration
+  const { loading: loadingHelper } = useLoading();
+
   // State
   const deals = ref<DealWithRelations[]>([]);
   const loading = ref(false);
@@ -23,62 +29,83 @@ export const useDealsStore = defineStore('deals', () => {
   const currentSortBy = ref<DealSortOptions>('recent');
 
   const { $client } = useNuxtApp();
-
   /**
    * Lade alle Deals mit aktuellen Filtern
    */
   async function fetchDeals(filters?: DealFilters, sortBy?: DealSortOptions) {
-    loading.value = true;
-    error.value = null;
+    return await loadingHelper(
+      'deals-fetch',
+      'Lade aktuelle Deals...',
+      async () => {
+        error.value = null;
 
-    try {
-      const filtersToUse = filters || currentFilters.value;
-      const sortToUse = sortBy || currentSortBy.value;
+        try {
+          const filtersToUse = filters || currentFilters.value;
+          const sortToUse = sortBy || currentSortBy.value;
 
-      const response = await $client.deals.getDeals.query({
-        filters: filtersToUse,
-        sortBy: sortToUse
-      });
+          const response = await $client.deals.getDeals.query({
+            filters: filtersToUse,
+            sortBy: sortToUse
+          });
 
-      if (response.success) {
-        deals.value = response.deals;
-        currentFilters.value = filtersToUse;
-        currentSortBy.value = sortToUse;
-      }
-    } catch (err) {
-      console.error('Error fetching deals:', err);
-      error.value = 'Fehler beim Laden der Angebote';
-    } finally {
-      loading.value = false;
-    }
+          if (response.success) {
+            deals.value = response.deals;
+            currentFilters.value = filtersToUse;
+            currentSortBy.value = sortToUse;
+          } else {
+            throw new Error('Fehler beim Laden der Angebote');
+          }
+        } catch (err) {
+          console.error('Error fetching deals:', err);
+          error.value = 'Fehler beim Laden der Angebote';
+          throw err;
+        }
+      },
+      'data'
+    );
   }
-
   /**
    * Lade verfügbare Stores für Filter
    */
   async function fetchAvailableStores() {
-    try {
-      const response = await $client.deals.getAvailableStores.query();
-      if (response.success) {
-        availableStores.value = response.stores;
-      }
-    } catch (err) {
-      console.error('Error fetching available stores:', err);
-    }
+    return await loadingHelper(
+      'stores-fetch',
+      'Lade verfügbare Stores...',
+      async () => {
+        try {
+          const response = await $client.deals.getAvailableStores.query();
+          if (response.success) {
+            availableStores.value = response.stores;
+          }
+        } catch (err) {
+          console.error('Error fetching available stores:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   }
 
   /**
    * Lade Deal-Statistiken
    */
   async function fetchDealStats() {
-    try {
-      const response = await $client.deals.getDealStats.query();
-      if (response.success) {
-        dealStats.value = response.stats;
-      }
-    } catch (err) {
-      console.error('Error fetching deal stats:', err);
-    }
+    return await loadingHelper(
+      'stats-fetch',
+      'Lade Deal-Statistiken...',
+      async () => {
+        try {
+          const response = await $client.deals.getDealStats.query();
+          if (response.success) {
+            dealStats.value = response.stats;
+          }
+        } catch (err) {
+          console.error('Error fetching deal stats:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   }
 
   /**
@@ -87,16 +114,25 @@ export const useDealsStore = defineStore('deals', () => {
   async function fetchDealsByGameId(
     gameId: number
   ): Promise<DealWithRelations[]> {
-    try {
-      const response = await $client.deals.getDealsByGameId.query({ gameId });
-      if (response.success) {
-        return response.deals;
-      }
-      return [];
-    } catch (err) {
-      console.error('Error fetching deals by game ID:', err);
-      return [];
-    }
+    return await loadingHelper(
+      'game-deals-fetch',
+      `Lade Deals für Spiel...`,
+      async () => {
+        try {
+          const response = await $client.deals.getDealsByGameId.query({
+            gameId
+          });
+          if (response.success) {
+            return response.deals;
+          }
+          return [];
+        } catch (err) {
+          console.error('Error fetching deals by game ID:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   }
 
   /**

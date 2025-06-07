@@ -1,6 +1,7 @@
 <script setup lang="ts">
   const accountStore = useAccountStore();
   const notifyStore = useNotifyStore();
+  const loadingStore = useLoadingStore();
   const editableDisplayName = ref('');
   const isLoadingNameChange = ref(false);
 
@@ -98,10 +99,9 @@
           Manage your account details, preferences, and security settings.
         </p>
       </div>
-
       <!-- Loading State -->
       <div
-        v-if="accountStore.loadingUser"
+        v-if="loadingStore.hasOperations"
         class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6">
         <div class="animate-pulse flex space-x-4">
           <div

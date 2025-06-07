@@ -37,11 +37,12 @@ Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliot
 ### ✅ Vollständig implementiert
 
 - **Benutzerauthentifizierung:** Registrierung, Login, Logout über Supabase Auth
-- **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API
+- **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API mit Echtzeit-Progress-Tracking
 - **IGDB-Metadaten-Anreicherung:** Automatische Anreicherung mit Beschreibungen, Genres, Cover-Bildern
 - **Spielebibliotheks-Anzeige:** Filterable und sortierbare Spieleübersicht
 - **Responsive UI:** Modernes, dunkles Design mit Tailwind CSS
 - **Gamification-Grundlagen:** Credits-System und User-XP-Framework
+- **Real-time Progress-Tracking:** Server-Sent Events für Live-Import-Updates
 
 ### 🚧 In Entwicklung
 
@@ -49,6 +50,23 @@ Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliot
 - **GOG-Import:** API-Integration geplant
 - **Angebots-Aggregation:** Deal-Sammlungs-System
 - **Erweiterte Gamification:** Achievement-System und Level-Berechnung
+
+### 🔧 Technische Features
+
+#### Progress-Tracking-System
+
+Das Projekt implementiert ein fortschrittliches Progress-Tracking-System für lang andauernde Operationen wie Steam-Imports:
+
+- **Server-Sent Events (SSE):** Echtzeit-Updates vom Backend zum Frontend
+- **Fallback-Mechanismus:** Automatischer Fallback auf standard Progress-Anzeige bei SSE-Fehlern
+- **Batch-Processing:** Optimierte Import-Performance mit 15er-Batches
+- **Detaillierte Progress-Nachrichten:** Spezifische Fortschrittsmeldungen für jede Import-Phase
+
+**Dateien:**
+
+- `server/api/progress/[operationId].get.ts` - SSE-Endpunkt für Progress-Updates
+- `components/LibraryImport.vue` - Frontend Progress-Integration
+- `server/trpc/routers/games.router.ts` - Backend Progress-Implementation
 
 ## Projektstruktur (Überblick)
 

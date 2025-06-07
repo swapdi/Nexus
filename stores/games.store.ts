@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
+import { useLoading } from '~/stores/loading.store';
 import type {
   GameWithPlatforms,
   UserGameStats,
@@ -7,11 +8,12 @@ import type {
 } from '~/lib/services/games.service';
 
 export const useGamesStore = defineStore('games', () => {
+  // Loading store integration
+  const { loading, progressLoading } = useLoading();
+
   // State
   const games = ref<GameWithPlatforms[]>([]);
   const stats = ref<UserGameStats | null>(null);
-  const isLoading = ref(false);
-  const isImporting = ref(false);
   const lastImportResult = ref<ImportResult | null>(null);
   const error = ref<string | null>(null);
   // Neue State für Auswahlmodus
@@ -60,88 +62,99 @@ export const useGamesStore = defineStore('games', () => {
       .filter(game => game.playtimeMinutes > 0)
       .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes)
       .slice(0, 10);
-  });
-  // Actions
+  }); // Actions
   const loadGames = async () => {
-    const { $client } = useNuxtApp();
-    const notifyStore = useNotifyStore();
+    return await loading(
+      'games-load',
+      'Lade Spielebibliothek...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
 
-    if (isLoading.value) return;
-
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      const gamesData = await $client.games.getUserGames.query();
-      games.value = gamesData;
-    } catch (err: any) {
-      error.value = err.message || 'Fehler beim Laden der Spiele';
-      notifyStore.notify(error.value, 3);
-      console.error('Fehler beim Laden der Spiele:', err);
-    } finally {
-      isLoading.value = false;
-    }
+        try {
+          error.value = null;
+          const gamesData = await $client.games.getUserGames.query();
+          games.value = gamesData;
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Laden der Spiele';
+          notifyStore.notify(error.value, 3);
+          console.error('Fehler beim Laden der Spiele:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   };
-
   const loadStats = async () => {
-    const { $client } = useNuxtApp();
-    const notifyStore = useNotifyStore();
+    return await loading(
+      'games-stats',
+      'Lade Spielstatistiken...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
 
-    try {
-      const statsData = await $client.games.getUserStats.query();
-      stats.value = statsData;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Fehler beim Laden der Statistiken';
-      notifyStore.notify(errorMessage, 3);
-      console.error('Fehler beim Laden der Statistiken:', err);
-    }
+        try {
+          const statsData = await $client.games.getUserStats.query();
+          stats.value = statsData;
+        } catch (err: any) {
+          const errorMessage =
+            err.message || 'Fehler beim Laden der Statistiken';
+          notifyStore.notify(errorMessage, 3);
+          console.error('Fehler beim Laden der Statistiken:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   };
   const importSteamLibrary = async (
     steamInput: string
   ): Promise<ImportResult | null> => {
-    const { $client } = useNuxtApp();
-    const notifyStore = useNotifyStore();
+    return await loading(
+      'steam-import',
+      'Steam-Bibliothek importieren...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
 
-    if (isImporting.value) return null;
+        try {
+          error.value = null;
 
-    try {
-      isImporting.value = true;
-      error.value = null;
+          const result = await $client.games.importSteamLibrary.mutate({
+            steamInput: steamInput.trim()
+          });
 
-      const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.trim()
-      });
+          lastImportResult.value = result;
 
-      lastImportResult.value = result;
+          if (result.success) {
+            // Detaillierte Erfolgsmeldung erstellen
+            let message = 'Steam-Import abgeschlossen! ';
+            if (result.imported > 0) {
+              message += `${result.imported} neue Spiele importiert. `;
+            }
+            if (result.updated && result.updated > 0) {
+              message += `${result.updated} Spiele aktualisiert. `;
+            }
+            if (result.skipped > 0) {
+              message += `${result.skipped} bereits vorhandene Spiele übersprungen.`;
+            }
 
-      if (result.success) {
-        // Detaillierte Erfolgsmeldung erstellen
-        let message = 'Steam-Import abgeschlossen! ';
-        if (result.imported > 0) {
-          message += `${result.imported} neue Spiele importiert. `;
+            notifyStore.notify(message, 1);
+
+            // Daten neu laden nach erfolgreichem Import
+            await refreshData();
+          }
+
+          return result;
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Steam-Import';
+          notifyStore.notify(error.value, 3);
+          console.error('Fehler beim Steam-Import:', err);
+          throw err;
         }
-        if (result.updated && result.updated > 0) {
-          message += `${result.updated} Spiele aktualisiert. `;
-        }
-        if (result.skipped > 0) {
-          message += `${result.skipped} bereits vorhandene Spiele übersprungen.`;
-        }
-
-        notifyStore.notify(message, 1);
-
-        // Daten neu laden nach erfolgreichem Import
-        await refreshData();
-      }
-
-      return result;
-    } catch (err: any) {
-      error.value = err.message || 'Fehler beim Steam-Import';
-      notifyStore.notify(error.value, 3);
-      console.error('Fehler beim Steam-Import:', err);
-      return null;
-    } finally {
-      isImporting.value = false;
-    }
+      },
+      'import'
+    );
   };
 
   const refreshData = async () => {
@@ -175,50 +188,76 @@ export const useGamesStore = defineStore('games', () => {
     selectedGameIds.value.clear();
   };
   const removeSelectedGames = async (): Promise<boolean> => {
-    const { $client } = useNuxtApp();
-    const notifyStore = useNotifyStore();
-
     if (selectedGameIds.value.size === 0 || isRemovingGames.value) {
       return false;
     }
 
-    try {
-      isRemovingGames.value = true;
+    return await progressLoading(
+      'remove-games',
+      'Entferne Spiele aus der Bibliothek...',
+      async updateProgress => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
 
-      const gameIdsArray = Array.from(selectedGameIds.value);
+        try {
+          isRemovingGames.value = true;
+          const gameIdsArray = Array.from(selectedGameIds.value);
 
-      const result = await $client.games.removeGamesFromLibrary.mutate({
-        gameIds: gameIdsArray
-      });
+          // Fortschritt initialisieren
+          updateProgress(0, gameIdsArray.length, 'Bereite Entfernung vor...');
 
-      if (result.success) {
-        // Erfolgreiche Entfernung
-        const message = `${result.removedCount} Spiel${
-          result.removedCount > 1 || 0 ? 'e' : ''
-        } erfolgreich aus der Bibliothek entfernt.`;
-        notifyStore.notify(message, 1);
+          const result = await $client.games.removeGamesFromLibrary.mutate({
+            gameIds: gameIdsArray
+          });
 
-        // Entfernte Spiele aus dem lokalen State entfernen
-        games.value = games.value.filter(
-          game => !gameIdsArray.includes(game.id)
-        );
+          if (result.success) {
+            updateProgress(
+              gameIdsArray.length * 0.8,
+              gameIdsArray.length,
+              'Aktualisiere lokale Daten...'
+            );
 
-        // Statistiken neu berechnen
-        await loadStats();
+            // Erfolgreiche Entfernung
+            const message = `${result.removedCount} Spiel${
+              result.removedCount > 1 || 0 ? 'e' : ''
+            } erfolgreich aus der Bibliothek entfernt.`;
+            notifyStore.notify(message, 1);
 
-        // Auswahlmodus beenden
-        exitSelectionMode();
-        return true;
-      }
+            // Entfernte Spiele aus dem lokalen State entfernen
+            games.value = games.value.filter(
+              game => !gameIdsArray.includes(game.id)
+            );
 
-      return false;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Fehler beim Entfernen der Spiele';
-      notifyStore.notify(errorMessage, 3);
-      return false;
-    } finally {
-      isRemovingGames.value = false;
-    }
+            updateProgress(
+              gameIdsArray.length * 0.9,
+              gameIdsArray.length,
+              'Lade Statistiken neu...'
+            );
+            // Statistiken neu berechnen
+            await loadStats();
+
+            // Auswahlmodus beenden
+            exitSelectionMode();
+            updateProgress(
+              gameIdsArray.length,
+              gameIdsArray.length,
+              'Abgeschlossen'
+            );
+            return true;
+          }
+
+          return false;
+        } catch (err: any) {
+          const errorMessage =
+            err.message || 'Fehler beim Entfernen der Spiele';
+          notifyStore.notify(errorMessage, 3);
+          throw err;
+        } finally {
+          isRemovingGames.value = false;
+        }
+      },
+      'process'
+    );
   };
 
   const getGameById = (gameId: number) => {
@@ -346,13 +385,10 @@ export const useGamesStore = defineStore('games', () => {
     if (games.value.length === 0) {
       await refreshData();
     }
-  };
-  // Reset store
+  }; // Reset store
   const reset = () => {
     games.value = [];
     stats.value = null;
-    isLoading.value = false;
-    isImporting.value = false;
     lastImportResult.value = null;
     error.value = null;
     isSelectionMode.value = false;
@@ -363,8 +399,6 @@ export const useGamesStore = defineStore('games', () => {
     // State
     games,
     stats,
-    isLoading,
-    isImporting,
     lastImportResult,
     error,
     isSelectionMode,

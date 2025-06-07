@@ -1,6 +1,6 @@
 import type { inferAsyncReturnType } from '@trpc/server';
 import { H3Event } from 'h3';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '~/prisma/client';
 
 // Globale Prisma-Instanz für Entwicklung (verhindert zu viele Verbindungen)
 const globalForPrisma = globalThis as unknown as {

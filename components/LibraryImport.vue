@@ -57,33 +57,32 @@
               type="text"
               placeholder="z.B. 76561198000000000 oder https://steamcommunity.com/profiles/..."
               class="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              :disabled="isImporting" />
+              :disabled="loadingStore.hasOperations" />
             <p class="text-xs text-gray-500 mt-1">
               Ihr Steam-Profil muss öffentlich sein
             </p>
           </div>
-
           <div class="flex space-x-2">
             <button
               @click="importSteamLibrary"
-              :disabled="!steamInput.trim() || isImporting"
+              :disabled="!steamInput.trim() || loadingStore.hasOperations"
               class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200 font-medium text-sm flex items-center justify-center">
               <Icon
-                v-if="isImporting"
+                v-if="loadingStore.hasOperations"
                 name="heroicons:arrow-path-20-solid"
                 class="w-4 h-4 mr-2 animate-spin" />
               <Icon
                 v-else
                 name="heroicons:arrow-down-tray-20-solid"
                 class="w-4 h-4 mr-2" />
-              {{ isImporting ? 'Importiere...' : 'Importieren' }}
+              {{ loadingStore.hasOperations ? 'Importiere...' : 'Importieren' }}
             </button>
             <button
               @click="
                 showSteamForm = false;
                 steamInput = '';
               "
-              :disabled="isImporting"
+              :disabled="loadingStore.hasOperations"
               class="px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200 text-sm">
               Abbrechen
             </button>
@@ -235,12 +234,22 @@
 
 <script setup lang="ts">
   import { ref } from 'vue';
-
   const { $client } = useNuxtApp();
-  const notifyStore = useNotifyStore(); // Steam Import State
+  const notifyStore = useNotifyStore();
+  const { progressLoading } = useLoading();
+  const loadingStore = useLoadingStore();
+
+  // Progress-Update-Interface für TypeScript
+  interface ServerProgressUpdate {
+    current: number;
+    total: number;
+    message: string;
+    timestamp: number;
+  }
+
+  // Steam Import State
   const showSteamForm = ref(false);
   const steamInput = ref('');
-  const isImporting = ref(false);
   const importResult = ref<{
     success: boolean;
     imported?: number;
@@ -250,18 +259,84 @@
     enriched?: number;
     enrichmentErrors?: number;
     message?: string;
-  } | null>(null);
-
-  // Steam Import Function
+  } | null>(null); // Steam Import Function
   const importSteamLibrary = async () => {
     if (!steamInput.value.trim()) return;
 
-    isImporting.value = true;
     importResult.value = null;
+
+    // Generiere eindeutige Operation-ID für Progress-Tracking
+    const operationId = `steam-import-${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+
     try {
-      const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.value.trim()
-      });
+      const result = await progressLoading(
+        'steam-library-import',
+        'Steam-Bibliothek wird importiert...',
+        async (
+          updateProgress: (
+            current: number,
+            total: number,
+            newLabel?: string
+          ) => void
+        ) => {
+          // Generiere eindeutige Operation-ID für Progress-Tracking
+          let eventSource: any = null;
+
+          // Server-Progress-Tracking mit Server-Sent Events
+          const connectToServerProgress = () => {
+            eventSource = new EventSource(`/api/progress/${operationId}`);
+            eventSource.onmessage = (event: any) => {
+              try {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'progress') {
+                  // Server-Progress in Frontend-Progress umwandeln
+                  const percentage = Math.round(
+                    (data.current / data.total) * 100
+                  );
+                  updateProgress(percentage, 100, data.message);
+                }
+              } catch (error) {
+                console.error('Fehler beim Parsen der SSE-Nachricht:', error);
+              }
+            };
+
+            eventSource.onerror = (error: any) => {
+              console.error('SSE Verbindungsfehler:', error);
+            };
+          };
+
+          try {
+            // Initiale Phase
+            updateProgress(0, 100, 'Verbinde mit Steam API...');
+
+            // SSE-Verbindung aufbauen
+            connectToServerProgress();
+
+            // Backend-Import mit Progress-Tracking starten
+            const steamResult = await $client.games.importSteamLibrary.mutate({
+              steamInput: steamInput.value.trim(),
+              operationId: operationId
+            });
+
+            // Finaler Progress-Update
+            updateProgress(100, 100, 'Import abgeschlossen!');
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            return steamResult;
+          } catch (error) {
+            throw error;
+          } finally {
+            // SSE-Verbindung schließen
+            if (eventSource && typeof eventSource.close === 'function') {
+              eventSource.close();
+            }
+          }
+        },
+        'import'
+      );
 
       importResult.value = result;
       if (result.success) {
@@ -302,8 +377,7 @@
         'Steam-Import fehlgeschlagen. Ein unerwarteter Fehler ist aufgetreten',
         3
       );
-    } finally {
-      isImporting.value = false;
+      throw error;
     }
   };
 

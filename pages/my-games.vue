@@ -3,6 +3,7 @@
 
   const accountStore = useAccountStore();
   const gamesStore = useGamesStore();
+  const loadingStore = useLoadingStore();
 
   onMounted(async () => {
     await accountStore.init();
@@ -416,14 +417,15 @@
         <div
           class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-gray-700/30">
           <!-- Linke Seite: Ergebnisanzeige -->
-          <div v-if="!gamesStore.isLoading && gamesStore.games.length > 0">
+          <div
+            v-if="!loadingStore.hasOperations && gamesStore.games.length > 0">
             <span class="text-sm text-gray-500">
               {{ filteredGames.length }} von {{ totalGames }} Spielen angezeigt
             </span>
           </div>
           <!-- Rechte Seite: Buttons für Aktionen -->
           <div
-            v-if="!gamesStore.isLoading && gamesStore.games.length > 0"
+            v-if="!loadingStore.hasOperations && gamesStore.games.length > 0"
             class="flex items-center gap-3">
             <!-- Löschen Button (Normal Mode) -->
             <button
@@ -493,9 +495,8 @@
         </div>
       </div>
     </div>
-
     <!-- Loading State -->
-    <div v-if="gamesStore.isLoading" class="text-center py-12">
+    <div v-if="loadingStore.hasOperations" class="text-center py-12">
       <Icon
         name="heroicons:arrow-path-20-solid"
         class="w-8 h-8 text-purple-400 animate-spin mx-auto mb-4" />
@@ -637,11 +638,10 @@
         </div>
       </div>
     </div>
-
     <!-- Keine Ergebnisse -->
     <div
       v-if="
-        !gamesStore.isLoading &&
+        !loadingStore.hasOperations &&
         gamesStore.games.length > 0 &&
         filteredGames.length === 0
       "

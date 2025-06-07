@@ -1,3 +1,6 @@
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { useLoading } from '~/stores/loading.store';
 import type {
   User,
   UserAchievement,
@@ -7,33 +10,41 @@ import type {
 import type { FullUser } from '~/lib/services/types.service';
 
 export const useAccountStore = defineStore('account', () => {
+  // Loading store integration
+  const { loading } = useLoading();
   type DBUser = User & {
     userAchievements: UserAchievement[];
     userGames: UserGame[];
     wishlistItems: Wishlist[];
   };
   const user = ref<DBUser | null>(null);
-  const loadingUser = ref(false);
+
   const init = async () => {
-    const { $client } = useNuxtApp();
     if (!user.value) {
-      try {
-        loadingUser.value = true;
-        const { dbUser: _user } = await $client.auth.getDBUser.query();
-        if (_user) {
-          user.value = _user;
-        }
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        // Optionally handle the error, e.g., show a notification
-        useNotifyStore().notify(
-          'Fehler beim Laden des Benutzers. Bitte versuche es später erneut.',
-          3
-        );
-        user.value = null;
-      } finally {
-        loadingUser.value = false;
-      }
+      return await loading(
+        'account-init',
+        'Lade Benutzerdaten...',
+        async () => {
+          const { $client } = useNuxtApp();
+
+          try {
+            const { dbUser: _user } = await $client.auth.getDBUser.query();
+            if (_user) {
+              user.value = _user;
+            }
+          } catch (error) {
+            console.error('Error fetching user:', error);
+            // Optionally handle the error, e.g., show a notification
+            useNotifyStore().notify(
+              'Fehler beim Laden des Benutzers. Bitte versuche es später erneut.',
+              3
+            );
+            user.value = null;
+            throw error;
+          }
+        },
+        'data'
+      );
     }
   };
 
@@ -49,11 +60,9 @@ export const useAccountStore = defineStore('account', () => {
   const signout = () => {
     user.value = null;
   };
-
   return {
     user,
     fullUser,
-    loadingUser,
     init,
     signout
   };
