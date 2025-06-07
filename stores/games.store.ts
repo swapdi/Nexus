@@ -156,12 +156,19 @@ export const useGamesStore = defineStore('games', () => {
       'import'
     );
   };
-
   const refreshData = async () => {
     await Promise.all([loadGames(), loadStats()]);
   };
 
-  // Neue Funktionen für Auswahlmodus
+  // Funktionen für Auswahlmodus
+  const toggleSelectionMode = () => {
+    if (isSelectionMode.value) {
+      exitSelectionMode();
+    } else {
+      enterSelectionMode();
+    }
+  };
+
   const enterSelectionMode = () => {
     isSelectionMode.value = true;
     selectedGameIds.value.clear();
@@ -433,6 +440,7 @@ export const useGamesStore = defineStore('games', () => {
     init,
     reset,
     // Neue Aktionen für Auswahlmodus
+    toggleSelectionMode,
     enterSelectionMode,
     exitSelectionMode,
     toggleGameSelection,

@@ -39,7 +39,8 @@ Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliot
 - **Benutzerauthentifizierung:** Registrierung, Login, Logout über Supabase Auth
 - **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API mit Echtzeit-Progress-Tracking
 - **IGDB-Metadaten-Anreicherung:** Automatische Anreicherung mit Beschreibungen, Genres, Cover-Bildern
-- **Spielebibliotheks-Anzeige:** Filterable und sortierbare Spieleübersicht
+- **Spielebibliotheks-Anzeige:** Filterable und sortierbare Spieleübersicht mit verschiedenen Ansichtsmodi
+- **View-Mode-System:** 4 verschiedene Ansichtsmodi (Große Kacheln, Mittlere Kacheln, Mini-Kacheln, Listenansicht) mit localStorage-Persistierung
 - **Responsive UI:** Modernes, dunkles Design mit Tailwind CSS
 - **Gamification-Grundlagen:** Credits-System und User-XP-Framework
 - **Real-time Progress-Tracking:** Server-Sent Events für Live-Import-Updates

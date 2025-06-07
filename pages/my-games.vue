@@ -4,6 +4,21 @@
   const accountStore = useAccountStore();
   const gamesStore = useGamesStore();
   const loadingStore = useLoadingStore();
+  // View Mode Management
+  const { currentViewMode, getCurrentConfig } = useViewMode();
+  // Debug: Watch für currentViewMode
+  watch(
+    currentViewMode,
+    (newMode, oldMode) => {
+      console.log('my-games: ViewMode changed from', oldMode, 'to', newMode);
+      console.log('my-games: Current grid config:', getCurrentConfig());
+      console.log(
+        'my-games: Grid class will be:',
+        getCurrentConfig().gridClass
+      );
+    },
+    { immediate: true }
+  );
 
   onMounted(async () => {
     await accountStore.init();
@@ -34,25 +49,80 @@
     return count === 1 ? '1 Spiel ausgewählt' : `${count} Spiele ausgewählt`;
   });
 
-  // Funktionen für Auswahlmodus
-  const handleSelectionToggle = () => {
-    if (gamesStore.isSelectionMode) {
-      gamesStore.exitSelectionMode();
-    } else {
-      gamesStore.enterSelectionMode();
-    }
-  };
-  const handleGameSelection = (gameId: number) => {
-    console.log('handleGameSelection called with gameId:', gameId);
-    console.log('Current selection mode:', gamesStore.isSelectionMode);
+  // Computed properties für Filter und Suche
+  const platforms = computed(() => {
+    const uniquePlatforms = new Set(
+      gamesStore.games.flatMap(game => game.platforms)
+    );
+    return [
+      { value: 'all', label: 'Alle Plattformen' },
+      ...Array.from(uniquePlatforms)
+        .sort()
+        .map(platform => ({
+          value: platform,
+          label: platform
+        }))
+    ];
+  });
 
-    if (gamesStore.isSelectionMode) {
-      gamesStore.toggleGameSelection(gameId);
-      console.log(
-        'After toggle - selected games:',
-        Array.from(gamesStore.selectedGameIds)
+  const filteredGames = computed(() => {
+    let games = [...gamesStore.games];
+
+    // Suchfilter
+    if (searchQuery.value.trim()) {
+      const query = searchQuery.value.toLowerCase();
+      games = games.filter(
+        game =>
+          game.title.toLowerCase().includes(query) ||
+          game.genres.some(genre => genre.toLowerCase().includes(query)) ||
+          game.platforms.some(platform =>
+            platform.toLowerCase().includes(query)
+          )
       );
     }
+
+    // Plattformfilter
+    if (selectedPlatform.value !== 'all') {
+      games = games.filter(game =>
+        game.platforms.includes(selectedPlatform.value)
+      );
+    }
+
+    // Sortierung
+    games.sort((a, b) => {
+      switch (sortBy.value) {
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'playTime':
+          return (b.playtimeMinutes || 0) - (a.playtimeMinutes || 0);
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'addedAt':
+          return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+        case 'lastPlayed':
+        default:
+          if (!a.lastPlayed && !b.lastPlayed) return 0;
+          if (!a.lastPlayed) return 1;
+          if (!b.lastPlayed) return -1;
+          return (
+            new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime()
+          );
+      }
+    });
+
+    return games;
+  });
+
+  const totalGames = computed(() => gamesStore.games.length);
+  const totalPlayTime = computed(() => {
+    const minutes = gamesStore.games.reduce(
+      (sum, game) => sum + (game.playtimeMinutes || 0),
+      0
+    );
+    return Math.round(minutes / 60);
+  }); // Auswahl-Funktionen
+  const handleSelectionToggle = () => {
+    gamesStore.toggleSelectionMode();
   };
 
   const handleSelectAll = () => {
@@ -62,77 +132,34 @@
   const handleDeselectAll = () => {
     gamesStore.deselectAllGames();
   };
-  const confirmRemoveGames = async () => {
-    // Prüfe ob Spiele ausgewählt sind
-    console.log('Selected games:', gamesStore.selectedGameIds);
-    console.log('Selected games count:', selectedGamesCount.value);
 
-    if (selectedGamesCount.value === 0) {
-      console.error('No games selected');
-      return;
-    }
-
-    // Zeige Bestätigungsmodal
+  const confirmRemoveGames = () => {
+    if (selectedGamesCount.value === 0) return;
     showConfirmModal.value = true;
   };
+
   const handleConfirmRemoval = async () => {
+    const success = await gamesStore.removeSelectedGames();
     showConfirmModal.value = false;
-
-    try {
-      const result = await gamesStore.removeSelectedGames();
-      console.log('removeSelectedGames result:', result);
-
-      if (!result) {
-        // Fehler wird bereits vom Store gehandhabt (Notification)
-        console.error('Failed to remove games');
-      }
-    } catch (error) {
-      console.error('Error in handleConfirmRemoval:', error);
-    }
+    // Der Auswahlmodus wird automatisch im Store beendet
   };
 
-  const handleCancelRemoval = () => {
-    showConfirmModal.value = false;
+  // Formatierungsfunktionen
+  const formatPlayTime = (minutes: number): string => {
+    if (minutes === 0) return '0 Min';
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    // Ab 2+ Stunden nur "Xh", unter 2 Stunden detailliert
+    if (hours >= 2) {
+      return `${hours}h`;
+    } else if (hours === 1) {
+      return remainingMinutes > 0 ? `1h ${remainingMinutes}m` : '1h';
+    } else {
+      return `${minutes} Min`;
+    }
   };
-
-  // Verfügbare Plattformen für Filter
-  const platforms = computed(() => {
-    const allPlatforms = ['all', ...gamesStore.availablePlatforms];
-    return allPlatforms.map(platform => ({
-      value: platform,
-      label: platform === 'all' ? 'Alle Plattformen' : platform
-    }));
-  });
-  // Gefilterte und sortierte Spiele
-  const filteredGames = computed(() => {
-    let filtered = [...gamesStore.games]; // Kopie erstellen
-
-    // Nach Suchbegriff filtern
-    if (searchQuery.value.trim()) {
-      const searchTerm = searchQuery.value.toLowerCase().trim();
-      filtered = filtered.filter(
-        game =>
-          game.title.toLowerCase().includes(searchTerm) ||
-          game.genres.some(genre => genre.toLowerCase().includes(searchTerm)) ||
-          game.platforms.some(platform =>
-            platform.toLowerCase().includes(searchTerm)
-          )
-      );
-    }
-
-    // Nach Plattform filtern
-    if (selectedPlatform.value !== 'all') {
-      filtered = filtered.filter(game =>
-        game.platforms.includes(selectedPlatform.value)
-      );
-    }
-
-    // Sortieren
-    return gamesStore.sortGames(filtered, sortBy.value);
-  });
-  // Berechnete Werte für Statistiken
-  const totalGames = computed(() => gamesStore.totalGames);
-  const totalPlayTime = computed(() => gamesStore.totalPlaytimeHours);
 
   // Plattform-basierte Statistiken
   const platformStats = computed(() => {
@@ -185,6 +212,7 @@
   <div class="space-y-6">
     <!-- Import-Bereich -->
     <LibraryImport @import-completed="onImportCompleted" />
+
     <!-- Header mit Statistiken -->
     <div
       class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8 relative overflow-hidden">
@@ -256,79 +284,27 @@
               class="absolute inset-0 bg-gradient-to-br from-green-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div class="relative z-10">
               <div class="flex items-center justify-between mb-2">
-                <PlatformLogo
-                  v-if="topPlatform.name !== 'Keine'"
-                  :platform="topPlatform.name"
-                  size="md"
-                  variant="icon" />
                 <Icon
-                  v-else
-                  name="heroicons:computer-desktop-20-solid"
+                  name="heroicons:trophy-20-solid"
                   class="w-8 h-8 text-green-400" />
                 <div class="text-4xl font-bold text-white">
                   {{ topPlatform.count }}
                 </div>
               </div>
               <div class="text-green-300 text-sm font-medium">
-                Meiste Spiele
+                Top Plattform
               </div>
               <div class="text-green-200/60 text-xs mt-1">
-                {{
-                  topPlatform.name !== 'Keine'
-                    ? `Hauptsächlich ${topPlatform.name}`
-                    : 'Keine Plattform'
-                }}
+                {{ topPlatform.name }}
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Detaillierte Plattform-Aufschlüsselung -->
+    <!-- Filter Bar -->
     <div
-      v-if="platformStats.length > 0"
-      class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
-      <h3 class="text-2xl font-semibold text-white mb-6 flex items-center">
-        <Icon
-          name="heroicons:chart-pie-20-solid"
-          class="w-7 h-7 mr-3 text-purple-400" />
-        Plattform-Aufschlüsselung
-      </h3>
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div
-          v-for="platform in platformStats.slice(0, 8)"
-          :key="platform.name"
-          class="bg-gradient-to-br from-gray-700/40 to-gray-800/40 rounded-lg p-5 border border-gray-600/30 hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 group">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center space-x-3">
-              <PlatformLogo
-                :platform="platform.name"
-                size="md"
-                variant="icon" />
-              <span class="text-white font-semibold">{{ platform.name }}</span>
-            </div>
-            <span
-              class="text-2xl font-bold text-purple-400 group-hover:text-purple-300 transition-colors">
-              {{ platform.count }}
-            </span>
-          </div>
-          <div class="space-y-1">
-            <div class="text-sm text-gray-300">
-              {{ Math.floor(platform.totalPlaytime / 60) }}h Spielzeit
-            </div>
-            <div class="text-xs text-gray-500">
-              {{ Math.round((platform.count / totalGames) * 100) }}% der
-              Bibliothek
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Filter und Suche -->
-    <div
-      class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
+      class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
       <div class="space-y-4">
         <!-- Haupt-Filter -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -413,17 +389,10 @@
           </div>
         </div>
 
-        <!-- Aktionsbereich mit verbessertem Responsive Layout -->
+        <!-- Aktionsbereich mit optimiertem Layout -->
         <div
           class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-gray-700/30">
-          <!-- Linke Seite: Ergebnisanzeige -->
-          <div
-            v-if="!loadingStore.hasOperations && gamesStore.games.length > 0">
-            <span class="text-sm text-gray-500">
-              {{ filteredGames.length }} von {{ totalGames }} Spielen angezeigt
-            </span>
-          </div>
-          <!-- Rechte Seite: Buttons für Aktionen -->
+          <!-- Linke Seite: Aktions-Button oder Selection-Modus -->
           <div
             v-if="!loadingStore.hasOperations && gamesStore.games.length > 0"
             class="flex items-center gap-3">
@@ -435,7 +404,8 @@
               <Icon name="heroicons:trash-20-solid" class="w-4 h-4" />
               <span class="hidden sm:inline font-medium">Löschen</span>
             </button>
-            <!-- Selection Menu (Selection Mode) -->
+
+            <!-- Selection Controls (Selection Mode) -->
             <div
               v-else
               class="flex items-center gap-3 px-4 py-2.5 bg-gray-800 border border-gray-600 rounded-lg">
@@ -464,6 +434,7 @@
                 class="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-all duration-200">
                 Keine
               </button>
+
               <!-- Löschen Button -->
               <button
                 @click="confirmRemoveGames"
@@ -492,210 +463,103 @@
               </button>
             </div>
           </div>
+
+          <!-- Rechte Seite: View Mode Toggle und Game Count -->
+          <div
+            v-if="!loadingStore.hasOperations && gamesStore.games.length > 0"
+            class="flex items-center gap-4">
+            <!-- Game Count -->
+            <span class="text-sm text-gray-500 whitespace-nowrap">
+              {{ filteredGames.length }} von {{ totalGames }}
+            </span>
+            <!-- View Mode Toggle (nur im normalen Modus) -->
+            <ViewModeToggle v-if="!gamesStore.isSelectionMode" />
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Loading State -->
-    <div v-if="loadingStore.hasOperations" class="text-center py-12">
-      <Icon
-        name="heroicons:arrow-path-20-solid"
-        class="w-8 h-8 text-purple-400 animate-spin mx-auto mb-4" />
-      <p class="text-gray-400">Lade Spiele...</p>
-    </div>
-
-    <!-- Empty State -->
-    <div
-      v-else-if="gamesStore.games.length === 0"
-      class="text-center py-12 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
-      <Icon
-        name="heroicons:no-symbol-20-solid"
-        class="w-16 h-16 text-gray-500 mx-auto mb-4" />
-      <h3 class="text-xl font-semibold text-gray-300 mb-2">
-        Noch keine Spiele in Ihrer Bibliothek
-      </h3>
-      <p class="text-gray-500 mb-6">
-        Importieren Sie Ihre Spielebibliothek von verschiedenen Plattformen
-      </p>
     </div>
 
     <!-- Spiele Grid -->
-    <div
-      v-else
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <div
-        v-for="game in filteredGames"
-        :key="game.id"
-        :class="[
-          'bg-gray-800/50 backdrop-blur-sm rounded-xl border overflow-hidden transition-all duration-300 group relative',
-          gamesStore.isSelectionMode
-            ? 'cursor-pointer hover:border-blue-500/50'
-            : 'hover:border-purple-500/50',
-          gamesStore.selectedGameIds.has(game.id)
-            ? 'border-blue-500 ring-2 ring-blue-500/30'
-            : 'border-gray-700/50'
-        ]"
-        @click="
-          gamesStore.isSelectionMode ? handleGameSelection(game.id) : null
-        ">
-        <!-- Auswahlindikator -->
-        <div
-          v-if="gamesStore.isSelectionMode"
-          class="absolute top-3 right-3 z-20">
-          <div
-            :class="[
-              'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200',
-              gamesStore.selectedGameIds.has(game.id)
-                ? 'bg-blue-500 border-blue-500'
-                : 'bg-gray-800/80 border-gray-400 backdrop-blur-sm'
-            ]">
-            <Icon
-              v-if="gamesStore.selectedGameIds.has(game.id)"
-              name="heroicons:check-20-solid"
-              class="w-4 h-4 text-white" />
-          </div>
-        </div>
-
-        <!-- Cover Image -->
-        <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
-          <img
-            :src="game.coverUrl || './gameplaceholder.jpg'"
-            :alt="game.title"
-            :class="[
-              'w-full h-full object-cover transition-transform duration-300',
-              gamesStore.isSelectionMode
-                ? gamesStore.selectedGameIds.has(game.id)
-                  ? 'scale-105'
-                  : 'group-hover:scale-105'
-                : 'group-hover:scale-105'
-            ]"
-            loading="lazy"
-            @error="
-              if ($event.target) {
-                ($event.target as HTMLImageElement).src =
-                  './gameplaceholder.jpg';
-              }
-            " />
-          <!-- Platform Logos -->
-          <div class="absolute top-2 left-2 flex flex-wrap gap-1">
-            <PlatformLogo
-              v-for="platform in game.platforms"
-              :key="platform"
-              :platform="platform"
-              size="md"
-              variant="badge" />
-          </div>
-
-          <!-- Rating -->
-          <div v-if="game.rating" class="absolute top-2 right-2 flex space-x-1">
-            <Icon
-              v-for="(filled, index) in getStars(game.rating)"
-              :key="index"
-              name="heroicons:star-20-solid"
-              :class="[
-                'w-4 h-4',
-                filled ? 'text-yellow-400' : 'text-gray-500'
-              ]" />
-          </div>
-        </div>
-
-        <!-- Game Info -->
-        <div class="p-4">
-          <h3
-            class="font-semibold text-white mb-2 line-clamp-2 group-hover:text-purple-400 transition-colors">
-            {{ game.title }}
-          </h3>
-
-          <!-- Genres -->
-          <div v-if="game.genres.length > 0" class="mb-3 flex flex-wrap gap-1">
-            <span
-              v-for="genre in game.genres.slice(0, 3)"
-              :key="genre"
-              class="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-md">
-              {{ genre }}
-            </span>
-            <span
-              v-if="game.genres.length > 3"
-              class="px-2 py-1 bg-gray-600/50 text-gray-400 text-xs rounded-md">
-              +{{ game.genres.length - 3 }}
-            </span>
-          </div>
-
-          <!-- Stats -->
-          <div class="space-y-2 text-sm text-gray-400">
-            <div class="flex justify-between">
-              <span>Spielzeit:</span>
-              <span class="text-white">{{
-                gamesStore.formatPlayTime(game.playtimeMinutes)
-              }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Zuletzt gespielt:</span>
-              <span class="text-white">{{
-                formatRelativeTime(game.lastPlayed)
-              }}</span>
-            </div>
-          </div>
-        </div>
+    <div v-if="filteredGames.length > 0">
+      <div :class="getCurrentConfig().gridClass">
+        <GameCard
+          v-for="game in filteredGames"
+          :key="game.id"
+          :game="game"
+          :view-mode="currentViewMode"
+          :is-selection-mode="gamesStore.isSelectionMode"
+          :is-selected="gamesStore.selectedGameIds.has(game.id)"
+          @click="() => gamesStore.toggleGameSelection(game.id)" />
       </div>
     </div>
-    <!-- Keine Ergebnisse -->
-    <div
-      v-if="
-        !loadingStore.hasOperations &&
-        gamesStore.games.length > 0 &&
-        filteredGames.length === 0
-      "
-      class="text-center py-12 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
-      <Icon
-        name="heroicons:magnifying-glass-20-solid"
-        class="w-16 h-16 text-gray-500 mx-auto mb-4" />
-      <h3 class="text-xl font-semibold text-gray-300 mb-2">
-        Keine Spiele gefunden
-      </h3>
-      <p class="text-gray-500 mb-4">
-        Versuchen Sie andere Suchbegriffe oder Filter
-      </p>
-      <button
-        @click="
-          searchQuery = '';
-          selectedPlatform = 'all';
-        "
-        class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
-        Filter zurücksetzen
-      </button>
+
+    <!-- Empty State -->
+    <div v-else-if="!loadingStore.hasOperations" class="text-center py-16 px-6">
+      <div
+        class="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-12 max-w-md mx-auto">
+        <Icon
+          name="heroicons:magnifying-glass-20-solid"
+          class="w-16 h-16 text-gray-500 mx-auto mb-6" />
+        <h3 class="text-xl font-semibold text-gray-300 mb-4">
+          Keine Spiele gefunden
+        </h3>
+        <p class="text-gray-400 leading-relaxed">
+          {{
+            searchQuery.trim() || selectedPlatform !== 'all'
+              ? 'Versuche andere Suchkriterien oder Filter.'
+              : 'Deine Spielebibliothek ist leer. Füge Spiele über den Import hinzu.'
+          }}
+        </p>
+        <button
+          v-if="searchQuery.trim() || selectedPlatform !== 'all'"
+          @click="
+            searchQuery = '';
+            selectedPlatform = 'all';
+          "
+          class="mt-6 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-all duration-300 inline-flex items-center gap-2">
+          <Icon name="heroicons:arrow-path-20-solid" class="w-4 h-4" />
+          Filter zurücksetzen
+        </button>
+      </div>
     </div>
 
-    <!-- Bestätigungsmodal -->
+    <!-- Loading State -->
+    <div
+      v-if="loadingStore.hasOperations"
+      class="flex flex-col items-center justify-center py-16 space-y-6">
+      <div class="relative">
+        <!-- Animated Ring -->
+        <div
+          class="w-16 h-16 border-4 border-purple-200/20 border-t-purple-500 rounded-full animate-spin"></div>
+        <div
+          class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-blue-500 rounded-full animate-spin animation-delay-75"></div>
+      </div>
+      <div class="text-center">
+        <h3 class="text-lg font-semibold text-gray-300 mb-2">
+          Wird geladen...
+        </h3>
+        <p class="text-gray-400">
+          {{ loadingStore.primaryOperation?.label || 'Wird geladen...' }}
+        </p>
+      </div>
+    </div>
+    <!-- Confirm Modal -->
     <ConfirmModal
-      :isVisible="showConfirmModal"
-      title="Spiele aus Bibliothek entfernen"
-      :message="`Möchten Sie wirklich ${selectedGamesCount} ${
+      v-if="showConfirmModal"
+      :is-visible="showConfirmModal"
+      title="Spiele entfernen"
+      :message="`Möchtest du wirklich ${selectedGamesCount} ${
         selectedGamesCount === 1 ? 'Spiel' : 'Spiele'
-      } aus Ihrer Bibliothek entfernen?`"
-      hint="Dies entfernt die Spiele nur aus Ihrer persönlichen Bibliothek. Die Spiele bleiben weiterhin in der Datenbank verfügbar und können erneut importiert werden."
-      confirmText="Entfernen"
-      cancelText="Abbrechen"
-      loadingText="Entferne..."
-      :isLoading="gamesStore.isRemovingGames"
+      } aus deiner Bibliothek entfernen?`"
+      confirm-text="Entfernen"
+      cancel-text="Abbrechen"
+      confirm-variant="danger"
       @confirm="handleConfirmRemoval"
-      @cancel="handleCancelRemoval" />
+      @cancel="showConfirmModal = false" />
   </div>
 </template>
 
 <style scoped>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-clamp: 2;
-  }
-
-  /* Verbesserte Animation-Performance */
-  * {
-    will-change: auto;
-  }
-
   /* Smooth transition für alle interaktiven Elemente */
   button {
     transition-property: all;
