@@ -14,7 +14,6 @@ export const useGamesStore = defineStore('games', () => {
   const isImporting = ref(false);
   const lastImportResult = ref<ImportResult | null>(null);
   const error = ref<string | null>(null);
-
   // Neue State für Auswahlmodus
   const isSelectionMode = ref(false);
   const selectedGameIds = ref<Set<number>>(new Set());
@@ -98,8 +97,7 @@ export const useGamesStore = defineStore('games', () => {
     }
   };
   const importSteamLibrary = async (
-    steamInput: string,
-    enableIGDBEnrichment: boolean = true
+    steamInput: string
   ): Promise<ImportResult | null> => {
     const { $client } = useNuxtApp();
     const notifyStore = useNotifyStore();
@@ -111,8 +109,7 @@ export const useGamesStore = defineStore('games', () => {
       error.value = null;
 
       const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.trim(),
-        enableIGDBEnrichment
+        steamInput: steamInput.trim()
       });
 
       lastImportResult.value = result;
@@ -197,7 +194,7 @@ export const useGamesStore = defineStore('games', () => {
       if (result.success) {
         // Erfolgreiche Entfernung
         const message = `${result.removedCount} Spiel${
-          result.removedCount > 1 ? 'e' : ''
+          result.removedCount > 1 || 0 ? 'e' : ''
         } erfolgreich aus der Bibliothek entfernt.`;
         notifyStore.notify(message, 1);
 
@@ -362,7 +359,6 @@ export const useGamesStore = defineStore('games', () => {
     selectedGameIds.value.clear();
     isRemovingGames.value = false;
   };
-
   return {
     // State
     games,
@@ -373,7 +369,9 @@ export const useGamesStore = defineStore('games', () => {
     error,
     isSelectionMode,
     selectedGameIds,
-    isRemovingGames, // Getters
+    isRemovingGames,
+
+    // Getters
     totalGames,
     gamesByPlatform,
     availablePlatforms,

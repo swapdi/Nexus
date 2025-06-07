@@ -74,21 +74,8 @@
     // Zeige Bestätigungsmodal
     showConfirmModal.value = true;
   };
-
   const handleConfirmRemoval = async () => {
     showConfirmModal.value = false;
-    await handleRemoveGames();
-  };
-
-  const handleCancelRemoval = () => {
-    showConfirmModal.value = false;
-  };
-  const handleRemoveGames = async () => {
-    console.log('handleRemoveGames called');
-    console.log(
-      'Selected games before removal:',
-      Array.from(gamesStore.selectedGameIds)
-    );
 
     try {
       const result = await gamesStore.removeSelectedGames();
@@ -99,8 +86,12 @@
         console.error('Failed to remove games');
       }
     } catch (error) {
-      console.error('Error in handleRemoveGames:', error);
+      console.error('Error in handleConfirmRemoval:', error);
     }
+  };
+
+  const handleCancelRemoval = () => {
+    showConfirmModal.value = false;
   };
 
   // Verfügbare Plattformen für Filter
@@ -430,10 +421,10 @@
               {{ filteredGames.length }} von {{ totalGames }} Spielen angezeigt
             </span>
           </div>
-          <!-- Rechte Seite: Einfacher Auswahlbutton -->
+          <!-- Rechte Seite: Buttons für Aktionen -->
           <div
             v-if="!gamesStore.isLoading && gamesStore.games.length > 0"
-            class="flex items-center">
+            class="flex items-center gap-3">
             <!-- Löschen Button (Normal Mode) -->
             <button
               v-if="!gamesStore.isSelectionMode"
@@ -442,7 +433,6 @@
               <Icon name="heroicons:trash-20-solid" class="w-4 h-4" />
               <span class="hidden sm:inline font-medium">Löschen</span>
             </button>
-
             <!-- Selection Menu (Selection Mode) -->
             <div
               v-else
@@ -472,7 +462,6 @@
                 class="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-all duration-200">
                 Keine
               </button>
-
               <!-- Löschen Button -->
               <button
                 @click="confirmRemoveGames"
@@ -518,7 +507,7 @@
       v-else-if="gamesStore.games.length === 0"
       class="text-center py-12 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
       <Icon
-        name="heroicons:game-pad-20-solid"
+        name="heroicons:no-symbol-20-solid"
         class="w-16 h-16 text-gray-500 mx-auto mb-4" />
       <h3 class="text-xl font-semibold text-gray-300 mb-2">
         Noch keine Spiele in Ihrer Bibliothek

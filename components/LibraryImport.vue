@@ -63,39 +63,6 @@
             </p>
           </div>
 
-          <!-- IGDB Enrichment Option -->
-          <div class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/30">
-            <label class="flex items-center cursor-pointer">
-              <input
-                v-model="enableIGDBEnrichment"
-                type="checkbox"
-                class="sr-only"
-                :disabled="isImporting" />
-              <div
-                class="relative w-5 h-5 rounded border-2 border-gray-500 mr-3 flex items-center justify-center transition-all duration-200"
-                :class="
-                  enableIGDBEnrichment
-                    ? 'bg-blue-600 border-blue-600'
-                    : 'bg-gray-700'
-                ">
-                <Icon
-                  v-if="enableIGDBEnrichment"
-                  name="heroicons:check-20-solid"
-                  class="w-3 h-3 text-white" />
-              </div>
-              <div class="flex-1">
-                <span class="text-sm font-medium text-gray-200">
-                  Spiele mit IGDB-Daten anreichern
-                </span>
-                <p class="text-xs text-gray-400 mt-0.5">
-                  Erweitert neue Spiele automatisch mit Beschreibungen, Genres,
-                  Cover-Bildern und weiteren Informationen. Dies kann den
-                  Importprozess etwas verlängern.
-                </p>
-              </div>
-            </label>
-          </div>
-
           <div class="flex space-x-2">
             <button
               @click="importSteamLibrary"
@@ -159,7 +126,7 @@
         <div class="flex items-center mb-4">
           <div
             class="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center mr-3">
-            <Icon name="simple-icons:gog" class="w-6 h-6 text-white" />
+            <Icon name="simple-icons:gogdotcom" class="w-6 h-6 text-white" />
           </div>
           <div>
             <h3 class="font-semibold text-white">GOG</h3>
@@ -270,11 +237,9 @@
   import { ref } from 'vue';
 
   const { $client } = useNuxtApp();
-  const notifyStore = useNotifyStore();
-  // Steam Import State
+  const notifyStore = useNotifyStore(); // Steam Import State
   const showSteamForm = ref(false);
   const steamInput = ref('');
-  const enableIGDBEnrichment = ref(true);
   const isImporting = ref(false);
   const importResult = ref<{
     success: boolean;
@@ -295,8 +260,7 @@
     importResult.value = null;
     try {
       const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.value.trim(),
-        enableIGDBEnrichment: enableIGDBEnrichment.value
+        steamInput: steamInput.value.trim()
       });
 
       importResult.value = result;

@@ -6,6 +6,14 @@ import {
   type PlatformGame
 } from '~/prisma/client';
 import { IGDBService, type EnrichedGameData } from './igdb.service';
+
+// Extended Game type with relations
+type GameWithRelations = Game & {
+  platformGames: (PlatformGame & {
+    platform: Platform;
+  })[];
+};
+
 const prisma = new PrismaClient();
 
 export interface GameWithPlatforms {
@@ -181,6 +189,7 @@ export namespace GamesService {
   }
 
   export async function deleteUserGame(userGameId: number): Promise<UserGame> {
+    console.log(`Deleting user game with ID: ${userGameId}`);
     return prisma.userGame.delete({
       where: { id: userGameId },
       include: {
@@ -677,24 +686,28 @@ export namespace GamesService {
       throw error;
     }
   }
-
   // Spiel mit IGDB-Daten anreichern
   export async function enrichGameWithIGDB(
     gameId: number,
     gameName: string,
-    platformName?: string
+    platformName?: string,
+    forceUpdate: boolean = false
   ): Promise<boolean> {
     try {
+      console.log(`[IGDB] Starting enrichment for: "${gameName}"`);
+
       // Prüfe ob das Spiel bereits IGDB-Daten hat
       const game = await getGameById(gameId);
-      if (!game) return false;
-
-      // Überspringen falls bereits beschreibung und genres vorhanden sind
-      if (game.description && game.genres.length > 0) {
+      if (!game) {
+        console.log(`[IGDB] Game not found in DB: ${gameName}`);
+        return false;
+      } // Überspringen falls bereits beschreibung und genres vorhanden sind (außer bei forceUpdate)
+      if (!forceUpdate && game.description && game.genres.length > 0) {
+        console.log(`[IGDB] Game already has metadata, skipping: ${gameName}`);
         return false;
       }
 
-      console.log(`Anreichern von "${gameName}" mit IGDB-Daten...`);
+      console.log(`[IGDB] Fetching data for: "${gameName}" (ID: ${gameId})`);
 
       // IGDB-Daten abrufen
       const enrichedData = await IGDBService.enrichGameData(
@@ -703,7 +716,7 @@ export namespace GamesService {
       );
 
       if (!enrichedData || Object.keys(enrichedData).length === 0) {
-        console.log(`Keine IGDB-Daten für "${gameName}" gefunden`);
+        console.log(`[IGDB] No data found for: "${gameName}"`);
         return false;
       }
 
@@ -716,31 +729,31 @@ export namespace GamesService {
         publisher?: string;
         genres?: string[];
       } = {};
-
-      if (enrichedData.description && !game.description) {
+      if (enrichedData.description && (!game.description || forceUpdate)) {
         updateData.description = enrichedData.description;
       }
 
-      if (enrichedData.coverUrl && !game.coverUrl) {
+      // IGDB Cover-URLs nur verwenden wenn kein Cover vorhanden ist oder forceUpdate aktiviert
+      if (enrichedData.coverUrl && (!game.coverUrl || forceUpdate)) {
         updateData.coverUrl = enrichedData.coverUrl;
       }
 
-      if (enrichedData.releaseDate && !game.releaseDate) {
+      if (enrichedData.releaseDate && (!game.releaseDate || forceUpdate)) {
         updateData.releaseDate = enrichedData.releaseDate;
       }
 
-      if (enrichedData.developer && !game.developer) {
+      if (enrichedData.developer && (!game.developer || forceUpdate)) {
         updateData.developer = enrichedData.developer;
       }
 
-      if (enrichedData.publisher && !game.publisher) {
+      if (enrichedData.publisher && (!game.publisher || forceUpdate)) {
         updateData.publisher = enrichedData.publisher;
       }
 
       if (
         enrichedData.genres &&
         enrichedData.genres.length > 0 &&
-        game.genres.length === 0
+        (game.genres.length === 0 || forceUpdate)
       ) {
         updateData.genres = enrichedData.genres;
       }
@@ -764,8 +777,7 @@ export namespace GamesService {
       return false;
     }
   }
-
-  // Erweiterte Steam-Import-Funktion mit IGDB-Anreicherung
+  // Erweiterte Steam-Import-Funktion mit automatischer IGDB-Anreicherung
   export async function processSteamGameImportWithEnrichment(
     userId: number,
     steamGame: {
@@ -781,15 +793,14 @@ export namespace GamesService {
     enriched: boolean;
   }> {
     try {
-      // Normale Steam-Import-Logik
+      // Prüfe ob Spiel bereits existiert
       let game = await getGameByPlatformId(
         steamPlatformId,
         steamGame.appid.toString()
       );
-
       let wasNewGame = false;
 
-      // Spiel erstellen falls es nicht existiert
+      // Spiel erstellen falls es nicht existiert - mit Steam-Metadaten
       if (!game) {
         const coverUrl = `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamGame.appid}/library_600x900.jpg`;
         const storeUrl = `https://store.steampowered.com/app/${steamGame.appid}/`;
@@ -798,7 +809,7 @@ export namespace GamesService {
           steamGame.name,
           steamPlatformId,
           steamGame.appid.toString(),
-          { coverUrl: coverUrl },
+          { coverUrl: coverUrl }, // Steam Cover-URL als Basis
           storeUrl
         );
         wasNewGame = true;
@@ -831,15 +842,37 @@ export namespace GamesService {
           });
           importResult = 'updated';
         }
-      }
-
-      // IGDB-Anreicherung nur für neue Spiele oder wenn explizit gewünscht
+      } // IGDB-Anreicherung - IMMER für neue Spiele, nur für bestehende wenn aktiviert
       let enriched = false;
-      if (enableEnrichment && wasNewGame) {
-        enriched = await enrichGameWithIGDB(game.id, steamGame.name, 'Steam');
+      if (wasNewGame) {
+        // Neue Spiele IMMER mit Steam-first IGDB-Anreicherung
+        console.log(
+          `Mandatory Steam-first IGDB enrichment for new game: ${steamGame.name}`
+        );
+        enriched = await enrichSteamGameWithIGDB(game.id, steamGame.name);
+        console.log(
+          `Steam-first IGDB enrichment result for ${steamGame.name}: ${enriched}`
+        );
 
-        // Kleine Verzögerung um IGDB API nicht zu überlasten
+        // Verzögerung um IGDB API zu schonen
         await new Promise(resolve => setTimeout(resolve, 250));
+      } else if (enableEnrichment) {
+        // Bestehende Spiele nur anreichern wenn explizit aktiviert und unvollständige Metadaten
+        const shouldEnrich =
+          !game.description || game.genres.length === 0 || !game.coverUrl;
+
+        if (shouldEnrich) {
+          console.log(
+            `Optional Steam-first IGDB enrichment for existing game with missing data: ${steamGame.name}`
+          );
+          enriched = await enrichSteamGameWithIGDB(game.id, steamGame.name);
+          console.log(
+            `Steam-first IGDB enrichment result for ${steamGame.name}: ${enriched}`
+          );
+
+          // Verzögerung um IGDB API zu schonen
+          await new Promise(resolve => setTimeout(resolve, 250));
+        }
       }
 
       return { result: importResult, enriched };
@@ -878,5 +911,119 @@ export namespace GamesService {
         credits: { increment: creditsAmount }
       }
     });
+  }
+
+  // Spezielle IGDB-Anreicherung für Steam-Spiele - ergänzt nur fehlende Daten
+  export async function enrichSteamGameWithIGDB(
+    gameId: number,
+    gameName: string,
+    forceUpdate: boolean = false
+  ): Promise<boolean> {
+    try {
+      console.log(`[IGDB Steam] Starting enrichment for: "${gameName}"`);
+
+      // Spiel laden
+      const game = await getGameById(gameId);
+      if (!game) {
+        console.log(`[IGDB Steam] Game not found in DB: ${gameName}`);
+        return false;
+      }
+
+      // Prüfe welche Daten fehlen (Steam liefert normalerweise nur Titel und Cover)
+      const missingData = {
+        description: !game.description,
+        genres: !game.genres || game.genres.length === 0,
+        developer: !game.developer,
+        publisher: !game.publisher,
+        releaseDate: !game.releaseDate
+      };
+
+      // Überspringen falls bereits alle wichtigen Daten vorhanden sind (außer bei forceUpdate)
+      if (!forceUpdate && !missingData.description && !missingData.genres) {
+        console.log(
+          `[IGDB Steam] Game already has essential metadata, skipping: ${gameName}`
+        );
+        return false;
+      }
+
+      console.log(`[IGDB Steam] Missing data for "${gameName}":`, missingData);
+
+      // IGDB-Daten abrufen
+      const enrichedData = await IGDBService.enrichGameData(gameName, 'Steam');
+
+      if (!enrichedData || Object.keys(enrichedData).length === 0) {
+        console.log(`[IGDB Steam] No data found for: "${gameName}"`);
+        return false;
+      }
+
+      // Nur fehlende Daten ergänzen
+      const updateData: {
+        description?: string;
+        coverUrl?: string;
+        releaseDate?: Date;
+        developer?: string;
+        publisher?: string;
+        genres?: string[];
+      } = {};
+
+      // Beschreibung nur ergänzen wenn fehlt
+      if (
+        enrichedData.description &&
+        (missingData.description || forceUpdate)
+      ) {
+        updateData.description = enrichedData.description;
+      } // Cover nur ergänzen wenn kein Cover vorhanden ist (Steam-Cover haben Priorität)
+      if (enrichedData.coverUrl && (!game.coverUrl || forceUpdate)) {
+        updateData.coverUrl = enrichedData.coverUrl;
+      }
+
+      // Release-Datum nur ergänzen wenn fehlt
+      if (
+        enrichedData.releaseDate &&
+        (missingData.releaseDate || forceUpdate)
+      ) {
+        updateData.releaseDate = enrichedData.releaseDate;
+      }
+
+      // Developer nur ergänzen wenn fehlt
+      if (enrichedData.developer && (missingData.developer || forceUpdate)) {
+        updateData.developer = enrichedData.developer;
+      }
+
+      // Publisher nur ergänzen wenn fehlt
+      if (enrichedData.publisher && (missingData.publisher || forceUpdate)) {
+        updateData.publisher = enrichedData.publisher;
+      }
+
+      // Genres nur ergänzen wenn fehlen
+      if (
+        enrichedData.genres &&
+        enrichedData.genres.length > 0 &&
+        (missingData.genres || forceUpdate)
+      ) {
+        updateData.genres = enrichedData.genres;
+      }
+
+      // Nur aktualisieren wenn neue Daten vorhanden sind
+      if (Object.keys(updateData).length > 0) {
+        await updateGame(gameId, updateData);
+        console.log(
+          `[IGDB Steam] Spiel "${gameName}" mit fehlenden IGDB-Daten ergänzt:`,
+          Object.keys(updateData)
+        );
+        return true;
+      }
+
+      console.log(
+        `[IGDB Steam] No missing data to supplement for: "${gameName}"`
+      );
+      return false;
+    } catch (error) {
+      console.error(
+        `[IGDB Steam] Fehler beim Ergänzen von "${gameName}" mit IGDB-Daten:`,
+        error
+      );
+      return false;
+    }
   }
 }

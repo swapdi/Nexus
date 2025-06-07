@@ -2,6 +2,14 @@ import { z } from 'zod';
 import { router, protectedProcedure } from '~/server/trpc/trpc';
 import { TRPCError } from '@trpc/server';
 import { GamesService } from '~/lib/services/games.service';
+import type { Game, PlatformGame, Platform } from '~/prisma/client';
+
+// Extended Game type with relations
+type GameWithRelations = Game & {
+  platformGames: (PlatformGame & {
+    platform: Platform;
+  })[];
+};
 
 // Steam API Response Types
 interface SteamGame {
@@ -40,38 +48,19 @@ export const gamesRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        console.log('removeGamesFromLibrary called with:', {
-          userId: ctx.dbUser.id,
-          gameIds: input.gameIds,
-          gameIdsLength: input.gameIds.length
-        });
-
         const removedGames = [];
 
         // Alle ausgewählten Spiele aus der Benutzer-Bibliothek entfernen
         for (const gameId of input.gameIds) {
           console.log(`Processing gameId: ${gameId} (type: ${typeof gameId})`);
 
-          const userGame = await GamesService.getUserGameByUserAndGame(
-            ctx.dbUser.id,
-            gameId
-          );
-
-          console.log(
-            `UserGame found for gameId ${gameId}:`,
-            userGame ? 'YES' : 'NO'
-          );
+          const userGame = await GamesService.getUserGameById(gameId);
 
           if (userGame) {
             await GamesService.deleteUserGame(userGame.id);
             removedGames.push(gameId);
-            console.log(`Successfully removed gameId: ${gameId}`);
           }
         }
-
-        console.log(
-          `Final result: ${removedGames.length} games removed out of ${input.gameIds.length} requested`
-        );
 
         return {
           success: true,
@@ -92,8 +81,7 @@ export const gamesRouter = router({
       z.object({
         steamInput: z
           .string()
-          .min(1, 'Steam ID oder Profil-URL ist erforderlich'),
-        enableIGDBEnrichment: z.boolean().optional().default(true)
+          .min(1, 'Steam ID oder Profil-URL ist erforderlich')
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -153,18 +141,26 @@ export const gamesRouter = router({
           errors: 0,
           enriched: 0,
           enrichmentErrors: 0
-        };
+        }; // Spiele importieren
+        console.log('Starting Steam import with automatic IGDB enrichment');
+        console.log(`Total games to import: ${data.response.games.length}`);
 
-        // Spiele importieren
         for (const steamGame of data.response.games) {
           try {
+            console.log(
+              `Processing: ${steamGame.name} (AppID: ${steamGame.appid})`
+            );
             const { result, enriched } =
               await GamesService.processSteamGameImportWithEnrichment(
                 ctx.dbUser.id,
                 steamGame,
                 steamPlatform.id,
-                input.enableIGDBEnrichment
+                true // IGDB enrichment is always enabled
               );
+
+            console.log(
+              `Game "${steamGame.name}" - Result: ${result}, Enriched: ${enriched}`
+            );
 
             if (result === 'imported') {
               importResults.imported++;
@@ -173,9 +169,12 @@ export const gamesRouter = router({
             } else {
               importResults.skipped++;
             }
-
             if (enriched) {
               importResults.enriched++;
+            } else {
+              // Grund: IGDB-Anreicherung fehlgeschlagen
+              console.log(`IGDB enrichment failed for: ${steamGame.name}`);
+              importResults.enrichmentErrors++;
             }
           } catch (error) {
             console.error(
@@ -205,7 +204,6 @@ export const gamesRouter = router({
         if (error instanceof TRPCError) {
           throw error;
         }
-
         console.error('Steam Import Error:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
