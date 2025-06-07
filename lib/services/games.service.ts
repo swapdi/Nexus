@@ -19,11 +19,17 @@ const prisma = new PrismaClient();
 export interface GameWithPlatforms {
   id: number;
   title: string;
+  description?: string | null;
   coverUrl: string | null;
+  releaseDate?: Date | string | null;
+  developer?: string | null;
+  publisher?: string | null;
   genres: string[];
   playtimeMinutes: number;
   lastPlayed: Date | null;
   rating: number | null;
+  notes?: string | null;
+  isInstalled?: boolean;
   platforms: string[];
   addedAt: Date;
 }
@@ -68,15 +74,20 @@ export namespace GamesService {
         addedAt: 'desc'
       }
     });
-
     return userGames.map(userGame => ({
       id: userGame.id,
       title: userGame.game.title,
+      description: userGame.game.description,
       coverUrl: userGame.game.coverUrl,
+      releaseDate: userGame.game.releaseDate,
+      developer: userGame.game.developer,
+      publisher: userGame.game.publisher,
       genres: userGame.game.genres,
       playtimeMinutes: userGame.playtimeMinutes || 0,
       lastPlayed: userGame.lastPlayed,
       rating: userGame.rating,
+      notes: userGame.notes,
+      isInstalled: userGame.isInstalled,
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     }));
@@ -1025,5 +1036,52 @@ export namespace GamesService {
       );
       return false;
     }
+  }
+
+  export async function getGameWithPlatforms(
+    gameId: number,
+    userId: number
+  ): Promise<GameWithPlatforms | null> {
+    const userGame = await prisma.userGame.findUnique({
+      where: {
+        userId_gameId: {
+          userId: userId,
+          gameId: gameId
+        }
+      },
+      include: {
+        game: {
+          include: {
+            platformGames: {
+              include: {
+                platform: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!userGame) {
+      return null;
+    }
+
+    return {
+      id: userGame.id,
+      title: userGame.game.title,
+      description: userGame.game.description,
+      coverUrl: userGame.game.coverUrl,
+      releaseDate: userGame.game.releaseDate,
+      developer: userGame.game.developer,
+      publisher: userGame.game.publisher,
+      genres: userGame.game.genres,
+      playtimeMinutes: userGame.playtimeMinutes || 0,
+      lastPlayed: userGame.lastPlayed,
+      rating: userGame.rating,
+      notes: userGame.notes,
+      isInstalled: userGame.isInstalled,
+      platforms: userGame.game.platformGames.map(pg => pg.platform.name),
+      addedAt: userGame.addedAt
+    };
   }
 }

@@ -489,7 +489,11 @@
           :view-mode="currentViewMode"
           :is-selection-mode="gamesStore.isSelectionMode"
           :is-selected="gamesStore.selectedGameIds.has(game.id)"
-          @click="() => gamesStore.toggleGameSelection(game.id)" />
+          @click="
+            gamesStore.isSelectionMode
+              ? gamesStore.toggleGameSelection(game.id)
+              : undefined
+          " />
       </div>
     </div>
 

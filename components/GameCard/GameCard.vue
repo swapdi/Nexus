@@ -43,8 +43,13 @@
         return GameCardLarge;
     }
   });
-
   const handleClick = () => {
-    emit('click');
+    if (props.isSelectionMode) {
+      // Im Auswahlmodus: Emit für Auswahl
+      emit('click');
+    } else {
+      // Im normalen Modus: Navigation zur Detailseite
+      navigateTo(`/game/${props.game.id}`);
+    }
   };
 </script>

@@ -38,6 +38,29 @@ export const gamesRouter = router({
   getUserGames: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserGames(ctx.dbUser.id);
   }),
+
+  // Einzelnes Spiel mit Plattformen abrufen
+  getGameWithPlatforms: protectedProcedure
+    .input(
+      z.object({
+        gameId: z.number()
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const game = await GamesService.getGameWithPlatforms(
+        input.gameId,
+        ctx.dbUser.id
+      );
+
+      if (!game) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Spiel nicht gefunden'
+        });
+      }
+
+      return game;
+    }),
   // Mehrere Spiele aus der Bibliothek entfernen
   removeGamesFromLibrary: protectedProcedure
     .input(

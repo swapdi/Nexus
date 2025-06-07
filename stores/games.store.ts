@@ -266,9 +266,36 @@ export const useGamesStore = defineStore('games', () => {
       'process'
     );
   };
-
   const getGameById = (gameId: number) => {
     return games.value.find(game => game.id === gameId);
+  };
+
+  const getGameWithPlatforms = async (
+    gameId: number
+  ): Promise<GameWithPlatforms | null> => {
+    return await loading(
+      'game-details',
+      'Lade Spiel-Details...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+
+        try {
+          error.value = null;
+          const gameData = await $client.games.getGameWithPlatforms.query({
+            gameId: gameId
+          });
+          return gameData;
+        } catch (err: any) {
+          const errorMessage =
+            err.message || 'Fehler beim Laden der Spiel-Details';
+          notifyStore.notify(errorMessage, 3);
+          console.error('Fehler beim Laden der Spiel-Details:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   };
 
   const searchGames = (query: string) => {
@@ -420,14 +447,13 @@ export const useGamesStore = defineStore('games', () => {
     mostPlayed,
     getAvailableGenres,
     totalPlaytimeHours,
-    averageRating,
-
-    // Actions
+    averageRating, // Actions
     loadGames,
     loadStats,
     importSteamLibrary,
     refreshData,
     getGameById,
+    getGameWithPlatforms,
     searchGames,
     filterGamesByPlatform,
     sortGames,

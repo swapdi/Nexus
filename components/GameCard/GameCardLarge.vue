@@ -2,9 +2,9 @@
 <template>
   <div
     :class="[
-      'bg-gray-800/50 backdrop-blur-sm rounded-xl border overflow-hidden transition-all duration-300 group relative flex flex-col h-full',
+      'bg-gray-800/50 backdrop-blur-sm rounded-xl border overflow-hidden transition-all duration-300 group relative flex flex-col h-full cursor-pointer',
       isSelectionMode
-        ? 'cursor-pointer hover:border-blue-500/50'
+        ? 'hover:border-blue-500/50'
         : 'hover:border-purple-500/50',
       isSelected
         ? 'border-blue-500 ring-2 ring-blue-500/30'
