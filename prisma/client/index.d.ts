@@ -2995,10 +2995,12 @@ export namespace Prisma {
 
   export type GameAvgAggregateOutputType = {
     id: number | null
+    rating: number | null
   }
 
   export type GameSumAggregateOutputType = {
     id: number | null
+    rating: number | null
   }
 
   export type GameMinAggregateOutputType = {
@@ -3009,6 +3011,7 @@ export namespace Prisma {
     releaseDate: Date | null
     developer: string | null
     publisher: string | null
+    rating: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3021,6 +3024,7 @@ export namespace Prisma {
     releaseDate: Date | null
     developer: string | null
     publisher: string | null
+    rating: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3034,6 +3038,7 @@ export namespace Prisma {
     developer: number
     publisher: number
     genres: number
+    rating: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3042,10 +3047,12 @@ export namespace Prisma {
 
   export type GameAvgAggregateInputType = {
     id?: true
+    rating?: true
   }
 
   export type GameSumAggregateInputType = {
     id?: true
+    rating?: true
   }
 
   export type GameMinAggregateInputType = {
@@ -3056,6 +3063,7 @@ export namespace Prisma {
     releaseDate?: true
     developer?: true
     publisher?: true
+    rating?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3068,6 +3076,7 @@ export namespace Prisma {
     releaseDate?: true
     developer?: true
     publisher?: true
+    rating?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3081,6 +3090,7 @@ export namespace Prisma {
     developer?: true
     publisher?: true
     genres?: true
+    rating?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3181,6 +3191,7 @@ export namespace Prisma {
     developer: string | null
     publisher: string | null
     genres: string[]
+    rating: number | null
     createdAt: Date
     updatedAt: Date
     _count: GameCountAggregateOutputType | null
@@ -3213,6 +3224,7 @@ export namespace Prisma {
     developer?: boolean
     publisher?: boolean
     genres?: boolean
+    rating?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deals?: boolean | Game$dealsArgs<ExtArgs>
@@ -3231,6 +3243,7 @@ export namespace Prisma {
     developer?: boolean
     publisher?: boolean
     genres?: boolean
+    rating?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["game"]>
@@ -3244,6 +3257,7 @@ export namespace Prisma {
     developer?: boolean
     publisher?: boolean
     genres?: boolean
+    rating?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["game"]>
@@ -3257,11 +3271,12 @@ export namespace Prisma {
     developer?: boolean
     publisher?: boolean
     genres?: boolean
+    rating?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "coverUrl" | "releaseDate" | "developer" | "publisher" | "genres" | "createdAt" | "updatedAt", ExtArgs["result"]["game"]>
+  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "coverUrl" | "releaseDate" | "developer" | "publisher" | "genres" | "rating" | "createdAt" | "updatedAt", ExtArgs["result"]["game"]>
   export type GameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | Game$dealsArgs<ExtArgs>
     platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
@@ -3289,6 +3304,7 @@ export namespace Prisma {
       developer: string | null
       publisher: string | null
       genres: string[]
+      rating: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["game"]>
@@ -3726,6 +3742,7 @@ export namespace Prisma {
     readonly developer: FieldRef<"Game", 'String'>
     readonly publisher: FieldRef<"Game", 'String'>
     readonly genres: FieldRef<"Game", 'String[]'>
+    readonly rating: FieldRef<"Game", 'Int'>
     readonly createdAt: FieldRef<"Game", 'DateTime'>
     readonly updatedAt: FieldRef<"Game", 'DateTime'>
   }
@@ -6489,7 +6506,6 @@ export namespace Prisma {
     userId: number | null
     gameId: number | null
     playtimeMinutes: number | null
-    rating: number | null
   }
 
   export type UserGameSumAggregateOutputType = {
@@ -6497,7 +6513,6 @@ export namespace Prisma {
     userId: number | null
     gameId: number | null
     playtimeMinutes: number | null
-    rating: number | null
   }
 
   export type UserGameMinAggregateOutputType = {
@@ -6509,7 +6524,6 @@ export namespace Prisma {
     lastPlayed: Date | null
     isInstalled: boolean | null
     notes: string | null
-    rating: number | null
   }
 
   export type UserGameMaxAggregateOutputType = {
@@ -6521,7 +6535,6 @@ export namespace Prisma {
     lastPlayed: Date | null
     isInstalled: boolean | null
     notes: string | null
-    rating: number | null
   }
 
   export type UserGameCountAggregateOutputType = {
@@ -6533,7 +6546,6 @@ export namespace Prisma {
     lastPlayed: number
     isInstalled: number
     notes: number
-    rating: number
     _all: number
   }
 
@@ -6543,7 +6555,6 @@ export namespace Prisma {
     userId?: true
     gameId?: true
     playtimeMinutes?: true
-    rating?: true
   }
 
   export type UserGameSumAggregateInputType = {
@@ -6551,7 +6562,6 @@ export namespace Prisma {
     userId?: true
     gameId?: true
     playtimeMinutes?: true
-    rating?: true
   }
 
   export type UserGameMinAggregateInputType = {
@@ -6563,7 +6573,6 @@ export namespace Prisma {
     lastPlayed?: true
     isInstalled?: true
     notes?: true
-    rating?: true
   }
 
   export type UserGameMaxAggregateInputType = {
@@ -6575,7 +6584,6 @@ export namespace Prisma {
     lastPlayed?: true
     isInstalled?: true
     notes?: true
-    rating?: true
   }
 
   export type UserGameCountAggregateInputType = {
@@ -6587,7 +6595,6 @@ export namespace Prisma {
     lastPlayed?: true
     isInstalled?: true
     notes?: true
-    rating?: true
     _all?: true
   }
 
@@ -6686,7 +6693,6 @@ export namespace Prisma {
     lastPlayed: Date | null
     isInstalled: boolean
     notes: string | null
-    rating: number | null
     _count: UserGameCountAggregateOutputType | null
     _avg: UserGameAvgAggregateOutputType | null
     _sum: UserGameSumAggregateOutputType | null
@@ -6717,7 +6723,6 @@ export namespace Prisma {
     lastPlayed?: boolean
     isInstalled?: boolean
     notes?: boolean
-    rating?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
@@ -6731,7 +6736,6 @@ export namespace Prisma {
     lastPlayed?: boolean
     isInstalled?: boolean
     notes?: boolean
-    rating?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
@@ -6745,7 +6749,6 @@ export namespace Prisma {
     lastPlayed?: boolean
     isInstalled?: boolean
     notes?: boolean
-    rating?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
@@ -6759,10 +6762,9 @@ export namespace Prisma {
     lastPlayed?: boolean
     isInstalled?: boolean
     notes?: boolean
-    rating?: boolean
   }
 
-  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "notes" | "rating", ExtArgs["result"]["userGame"]>
+  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "notes", ExtArgs["result"]["userGame"]>
   export type UserGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6791,7 +6793,6 @@ export namespace Prisma {
       lastPlayed: Date | null
       isInstalled: boolean
       notes: string | null
-      rating: number | null
     }, ExtArgs["result"]["userGame"]>
     composites: {}
   }
@@ -7225,7 +7226,6 @@ export namespace Prisma {
     readonly lastPlayed: FieldRef<"UserGame", 'DateTime'>
     readonly isInstalled: FieldRef<"UserGame", 'Boolean'>
     readonly notes: FieldRef<"UserGame", 'String'>
-    readonly rating: FieldRef<"UserGame", 'Int'>
   }
     
 
@@ -12272,6 +12272,7 @@ export namespace Prisma {
     developer: 'developer',
     publisher: 'publisher',
     genres: 'genres',
+    rating: 'rating',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12309,8 +12310,7 @@ export namespace Prisma {
     playtimeMinutes: 'playtimeMinutes',
     lastPlayed: 'lastPlayed',
     isInstalled: 'isInstalled',
-    notes: 'notes',
-    rating: 'rating'
+    notes: 'notes'
   };
 
   export type UserGameScalarFieldEnum = (typeof UserGameScalarFieldEnum)[keyof typeof UserGameScalarFieldEnum]
@@ -12545,6 +12545,7 @@ export namespace Prisma {
     developer?: StringNullableFilter<"Game"> | string | null
     publisher?: StringNullableFilter<"Game"> | string | null
     genres?: StringNullableListFilter<"Game">
+    rating?: IntNullableFilter<"Game"> | number | null
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
     deals?: DealListRelationFilter
@@ -12562,6 +12563,7 @@ export namespace Prisma {
     developer?: SortOrderInput | SortOrder
     publisher?: SortOrderInput | SortOrder
     genres?: SortOrder
+    rating?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deals?: DealOrderByRelationAggregateInput
@@ -12582,6 +12584,7 @@ export namespace Prisma {
     developer?: StringNullableFilter<"Game"> | string | null
     publisher?: StringNullableFilter<"Game"> | string | null
     genres?: StringNullableListFilter<"Game">
+    rating?: IntNullableFilter<"Game"> | number | null
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
     deals?: DealListRelationFilter
@@ -12599,6 +12602,7 @@ export namespace Prisma {
     developer?: SortOrderInput | SortOrder
     publisher?: SortOrderInput | SortOrder
     genres?: SortOrder
+    rating?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: GameCountOrderByAggregateInput
@@ -12620,6 +12624,7 @@ export namespace Prisma {
     developer?: StringNullableWithAggregatesFilter<"Game"> | string | null
     publisher?: StringNullableWithAggregatesFilter<"Game"> | string | null
     genres?: StringNullableListFilter<"Game">
+    rating?: IntNullableWithAggregatesFilter<"Game"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
   }
@@ -12758,7 +12763,6 @@ export namespace Prisma {
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
-    rating?: IntNullableFilter<"UserGame"> | number | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -12772,7 +12776,6 @@ export namespace Prisma {
     lastPlayed?: SortOrderInput | SortOrder
     isInstalled?: SortOrder
     notes?: SortOrderInput | SortOrder
-    rating?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
@@ -12790,7 +12793,6 @@ export namespace Prisma {
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
-    rating?: IntNullableFilter<"UserGame"> | number | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_gameId" | "userId_gameId">
@@ -12804,7 +12806,6 @@ export namespace Prisma {
     lastPlayed?: SortOrderInput | SortOrder
     isInstalled?: SortOrder
     notes?: SortOrderInput | SortOrder
-    rating?: SortOrderInput | SortOrder
     _count?: UserGameCountOrderByAggregateInput
     _avg?: UserGameAvgOrderByAggregateInput
     _max?: UserGameMaxOrderByAggregateInput
@@ -12824,7 +12825,6 @@ export namespace Prisma {
     lastPlayed?: DateTimeNullableWithAggregatesFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolWithAggregatesFilter<"UserGame"> | boolean
     notes?: StringNullableWithAggregatesFilter<"UserGame"> | string | null
-    rating?: IntNullableWithAggregatesFilter<"UserGame"> | number | null
   }
 
   export type DealWhereInput = {
@@ -13196,6 +13196,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealCreateNestedManyWithoutGameInput
@@ -13213,6 +13214,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
@@ -13229,6 +13231,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUpdateManyWithoutGameNestedInput
@@ -13246,6 +13249,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
@@ -13263,6 +13267,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13275,6 +13280,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13288,6 +13294,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13410,7 +13417,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
     game: GameCreateNestedOneWithoutUserGamesInput
     user: UserCreateNestedOneWithoutUserGamesInput
   }
@@ -13424,7 +13430,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
   }
 
   export type UserGameUpdateInput = {
@@ -13433,7 +13438,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
@@ -13447,7 +13451,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type UserGameCreateManyInput = {
@@ -13459,7 +13462,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
   }
 
   export type UserGameUpdateManyMutationInput = {
@@ -13468,7 +13470,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type UserGameUncheckedUpdateManyInput = {
@@ -13480,7 +13481,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type DealCreateInput = {
@@ -13951,6 +13951,17 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -13991,12 +14002,14 @@ export namespace Prisma {
     developer?: SortOrder
     publisher?: SortOrder
     genres?: SortOrder
+    rating?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type GameAvgOrderByAggregateInput = {
     id?: SortOrder
+    rating?: SortOrder
   }
 
   export type GameMaxOrderByAggregateInput = {
@@ -14007,6 +14020,7 @@ export namespace Prisma {
     releaseDate?: SortOrder
     developer?: SortOrder
     publisher?: SortOrder
+    rating?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14019,12 +14033,14 @@ export namespace Prisma {
     releaseDate?: SortOrder
     developer?: SortOrder
     publisher?: SortOrder
+    rating?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type GameSumOrderByAggregateInput = {
     id?: SortOrder
+    rating?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -14039,6 +14055,22 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -14143,17 +14175,6 @@ export namespace Prisma {
     platformId?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -14178,7 +14199,6 @@ export namespace Prisma {
     lastPlayed?: SortOrder
     isInstalled?: SortOrder
     notes?: SortOrder
-    rating?: SortOrder
   }
 
   export type UserGameAvgOrderByAggregateInput = {
@@ -14186,7 +14206,6 @@ export namespace Prisma {
     userId?: SortOrder
     gameId?: SortOrder
     playtimeMinutes?: SortOrder
-    rating?: SortOrder
   }
 
   export type UserGameMaxOrderByAggregateInput = {
@@ -14198,7 +14217,6 @@ export namespace Prisma {
     lastPlayed?: SortOrder
     isInstalled?: SortOrder
     notes?: SortOrder
-    rating?: SortOrder
   }
 
   export type UserGameMinOrderByAggregateInput = {
@@ -14210,7 +14228,6 @@ export namespace Prisma {
     lastPlayed?: SortOrder
     isInstalled?: SortOrder
     notes?: SortOrder
-    rating?: SortOrder
   }
 
   export type UserGameSumOrderByAggregateInput = {
@@ -14218,23 +14235,6 @@ export namespace Prisma {
     userId?: SortOrder
     gameId?: SortOrder
     playtimeMinutes?: SortOrder
-    rating?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -14683,6 +14683,14 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -14921,14 +14929,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -15234,25 +15234,6 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -15278,6 +15259,25 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -15331,7 +15331,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
     game: GameCreateNestedOneWithoutUserGamesInput
   }
 
@@ -15343,7 +15342,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
   }
 
   export type UserGameCreateOrConnectWithoutUserInput = {
@@ -15431,7 +15429,6 @@ export namespace Prisma {
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
-    rating?: IntNullableFilter<"UserGame"> | number | null
   }
 
   export type WishlistUpsertWithWhereUniqueWithoutUserInput = {
@@ -15532,7 +15529,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
     user: UserCreateNestedOneWithoutUserGamesInput
   }
 
@@ -15544,7 +15540,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
   }
 
   export type UserGameCreateOrConnectWithoutGameInput = {
@@ -15763,6 +15758,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealCreateNestedManyWithoutGameInput
@@ -15779,6 +15775,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
@@ -15846,6 +15843,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUpdateManyWithoutGameNestedInput
@@ -15862,6 +15860,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
@@ -15903,6 +15902,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealCreateNestedManyWithoutGameInput
@@ -15919,6 +15919,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
@@ -15976,6 +15977,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUpdateManyWithoutGameNestedInput
@@ -15992,6 +15994,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
@@ -16039,6 +16042,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
@@ -16055,6 +16059,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
@@ -16106,6 +16111,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
@@ -16122,6 +16128,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
@@ -16316,6 +16323,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealCreateNestedManyWithoutGameInput
@@ -16332,6 +16340,7 @@ export namespace Prisma {
     developer?: string | null
     publisher?: string | null
     genres?: GameCreategenresInput | string[]
+    rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
@@ -16389,6 +16398,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUpdateManyWithoutGameNestedInput
@@ -16405,6 +16415,7 @@ export namespace Prisma {
     developer?: NullableStringFieldUpdateOperationsInput | string | null
     publisher?: NullableStringFieldUpdateOperationsInput | string | null
     genres?: GameUpdategenresInput | string[]
+    rating?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
@@ -16458,7 +16469,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
   }
 
   export type WishlistCreateManyUserInput = {
@@ -16490,7 +16500,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
   }
 
@@ -16502,7 +16511,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type UserGameUncheckedUpdateManyWithoutUserInput = {
@@ -16513,7 +16521,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type WishlistUpdateWithoutUserInput = {
@@ -16564,7 +16571,6 @@ export namespace Prisma {
     lastPlayed?: Date | string | null
     isInstalled?: boolean
     notes?: string | null
-    rating?: number | null
   }
 
   export type WishlistCreateManyGameInput = {
@@ -16648,7 +16654,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
 
@@ -16660,7 +16665,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type UserGameUncheckedUpdateManyWithoutGameInput = {
@@ -16671,7 +16675,6 @@ export namespace Prisma {
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    rating?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type WishlistUpdateWithoutGameInput = {

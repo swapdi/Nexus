@@ -48,8 +48,8 @@
       // Im Auswahlmodus: Emit für Auswahl
       emit('click');
     } else {
-      // Im normalen Modus: Navigation zur Detailseite
-      navigateTo(`/game/${props.game.id}`);
+      // Im normalen Modus: Navigation zur Detailseite (mit UserGame ID)
+      navigateTo(`/game/${props.game.userGameId}`);
     }
   };
 </script>

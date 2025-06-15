@@ -138,6 +138,7 @@ exports.Prisma.GameScalarFieldEnum = {
   developer: 'developer',
   publisher: 'publisher',
   genres: 'genres',
+  rating: 'rating',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -166,8 +167,7 @@ exports.Prisma.UserGameScalarFieldEnum = {
   playtimeMinutes: 'playtimeMinutes',
   lastPlayed: 'lastPlayed',
   isInstalled: 'isInstalled',
-  notes: 'notes',
-  rating: 'rating'
+  notes: 'notes'
 };
 
 exports.Prisma.DealScalarFieldEnum = {

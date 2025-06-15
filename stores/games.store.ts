@@ -62,7 +62,8 @@ export const useGamesStore = defineStore('games', () => {
       .filter(game => game.playtimeMinutes > 0)
       .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes)
       .slice(0, 10);
-  }); // Actions
+  });
+  // Actions
   const loadGames = async () => {
     return await loading(
       'games-load',
@@ -70,7 +71,6 @@ export const useGamesStore = defineStore('games', () => {
       async () => {
         const { $client } = useNuxtApp();
         const notifyStore = useNotifyStore();
-
         try {
           error.value = null;
           const gamesData = await $client.games.getUserGames.query();
@@ -270,6 +270,11 @@ export const useGamesStore = defineStore('games', () => {
     return games.value.find(game => game.id === gameId);
   };
 
+  // Neue Funktion: Finde Spiel nach UserGame ID
+  const getGameByUserGameId = (userGameId: number) => {
+    return games.value.find(game => game.userGameId === userGameId);
+  };
+
   const getGameWithPlatforms = async (
     gameId: number
   ): Promise<GameWithPlatforms | null> => {
@@ -453,6 +458,7 @@ export const useGamesStore = defineStore('games', () => {
     importSteamLibrary,
     refreshData,
     getGameById,
+    getGameByUserGameId,
     getGameWithPlatforms,
     searchGames,
     filterGamesByPlatform,

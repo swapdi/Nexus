@@ -663,27 +663,36 @@ export namespace IGDBService {
           ...igdbGame.release_dates.map(rd => rd.date)
         );
         enrichedData.releaseDate = new Date(earliestDate * 1000);
-      }
-
-      // Rating (verwende aggregated_rating falls verfügbar, sonst total_rating)
+      } // Rating (verwende aggregated_rating falls verfügbar, sonst total_rating)
       if (
         igdbGame.aggregated_rating &&
         igdbGame.aggregated_rating_count &&
         igdbGame.aggregated_rating_count > 0
       ) {
         enrichedData.rating = Math.round(igdbGame.aggregated_rating / 10); // Konvertiere zu 1-10 Skala
+        console.log(
+          `[IGDB] Using aggregated_rating: ${igdbGame.aggregated_rating} -> ${enrichedData.rating}`
+        );
       } else if (
         igdbGame.total_rating &&
         igdbGame.total_rating_count &&
         igdbGame.total_rating_count > 0
       ) {
         enrichedData.rating = Math.round(igdbGame.total_rating / 10);
+        console.log(
+          `[IGDB] Using total_rating: ${igdbGame.total_rating} -> ${enrichedData.rating}`
+        );
       } else if (
         igdbGame.rating &&
         igdbGame.rating_count &&
         igdbGame.rating_count > 0
       ) {
         enrichedData.rating = Math.round(igdbGame.rating / 10);
+        console.log(
+          `[IGDB] Using user_rating: ${igdbGame.rating} -> ${enrichedData.rating}`
+        );
+      } else {
+        console.log(`[IGDB] No valid rating found for game`);
       }
 
       return enrichedData;

@@ -38,17 +38,27 @@ export const gamesRouter = router({
   getUserGames: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserGames(ctx.dbUser.id);
   }),
-
   // Einzelnes Spiel mit Plattformen abrufen
   getGameWithPlatforms: protectedProcedure
     .input(
       z.object({
-        gameId: z.number()
+        gameId: z.number() // UserGame ID
       })
     )
     .query(async ({ input, ctx }) => {
+      // getUserGameById erwartet UserGame ID
+      const userGame = await GamesService.getUserGameById(input.gameId);
+
+      if (!userGame) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Spiel nicht gefunden'
+        });
+      }
+
+      // getGameWithPlatforms mit Game ID und User ID aufrufen
       const game = await GamesService.getGameWithPlatforms(
-        input.gameId,
+        userGame.gameId,
         ctx.dbUser.id
       );
 
@@ -61,6 +71,49 @@ export const gamesRouter = router({
 
       return game;
     }),
+
+  // Notizen für ein Spiel aktualisieren
+  updateGameNotes: protectedProcedure
+    .input(
+      z.object({
+        userGameId: z.number(),
+        notes: z.string().nullable()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      // Prüfen ob das UserGame dem Benutzer gehört
+      const userGame = await GamesService.getUserGameById(input.userGameId);
+
+      if (!userGame) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Spiel nicht gefunden'
+        });
+      }
+
+      // Prüfen ob es dem aktuellen Benutzer gehört
+      if (userGame.userId !== ctx.dbUser.id) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Nicht berechtigt, dieses Spiel zu bearbeiten'
+        });
+      } // Notizen aktualisieren
+      const updatedUserGame = await GamesService.updateUserGame(
+        input.userGameId,
+        {
+          notes: input.notes
+        }
+      );
+
+      // Vollständige Spiel-Daten zurückgeben
+      const game = await GamesService.getGameWithPlatforms(
+        userGame.gameId,
+        ctx.dbUser.id
+      );
+
+      return game;
+    }),
+
   // Mehrere Spiele aus der Bibliothek entfernen
   removeGamesFromLibrary: protectedProcedure
     .input(
@@ -76,8 +129,6 @@ export const gamesRouter = router({
 
         // Alle ausgewählten Spiele aus der Benutzer-Bibliothek entfernen
         for (const gameId of input.gameIds) {
-          console.log(`Processing gameId: ${gameId} (type: ${typeof gameId})`);
-
           const userGame = await GamesService.getUserGameById(gameId);
 
           if (userGame) {
@@ -167,10 +218,8 @@ export const gamesRouter = router({
           errors: 0,
           enriched: 0,
           enrichmentErrors: 0
-        }; // Spiele importieren mit optimierter Batch-Verarbeitung
-        console.log('Starting optimized Steam import');
-        console.log(`Total games to import: ${data.response.games.length}`);
-
+        };
+        // Spiele importieren mit optimierter Batch-Verarbeitung
         // Aufteilen in Batches von 15 Spielen für bessere Performance
         const BATCH_SIZE = 15;
         const games = data.response.games;
@@ -185,7 +234,6 @@ export const gamesRouter = router({
           total: number,
           message: string
         ) => {
-          console.log(`Import Progress: ${current}/${total} - ${message}`);
           // Sende Progress-Update via SSE
           if (input.operationId) {
             sendProgressUpdate(operationId, current, total, message);
@@ -199,11 +247,6 @@ export const gamesRouter = router({
           const batchEnd = Math.min(batchStart + BATCH_SIZE, games.length);
           const batch = games.slice(batchStart, batchEnd);
 
-          console.log(
-            `Processing batch ${batchIndex + 1}/${totalBatches} (${
-              batch.length
-            } games)`
-          );
           // Detailliertes Progress-Update für jeden Batch
           const batchProgress =
             Math.round((batchStart / games.length) * 70) + 20; // 20-90% für Game-Import
@@ -219,11 +262,6 @@ export const gamesRouter = router({
           const batchPromises = batch.map(async (steamGame, gameIndex) => {
             try {
               const gameProgress = batchStart + gameIndex;
-              console.log(
-                `Processing: ${steamGame.name} (AppID: ${
-                  steamGame.appid
-                }) - Game ${gameProgress + 1}/${games.length}`
-              );
 
               // Schnelle Spiel-Import-Funktion ohne IGDB-Anreicherung
               const result = await GamesService.processSteamGameImport(
@@ -231,8 +269,6 @@ export const gamesRouter = router({
                 steamGame,
                 steamPlatform.id
               );
-
-              console.log(`Game "${steamGame.name}" - Result: ${result}`);
               return { steamGame, result, success: true };
             } catch (error) {
               console.error(
@@ -266,9 +302,7 @@ export const gamesRouter = router({
             await new Promise(resolve => setTimeout(resolve, 50)); // Verkürzte Pause für bessere Performance
           }
         } // IGDB-Anreicherung als separater, optionaler Schritt für neue Spiele
-        console.log(
-          'Starting optional IGDB enrichment for newly imported games...'
-        );
+
         updateProgress(
           games.length,
           games.length,
@@ -292,16 +326,9 @@ export const gamesRouter = router({
           take: 50 // Maximal 50 Spiele für IGDB-Anreicherung
         });
 
-        console.log(
-          `Found ${newGames.length} games for potential IGDB enrichment`
-        ); // Sequenzielle IGDB-Anreicherung mit Rate Limiting
         for (let i = 0; i < newGames.length; i++) {
           const game = newGames[i];
           try {
-            console.log(
-              `IGDB enrichment ${i + 1}/${newGames.length}: ${game.title}`
-            );
-
             // Progress-Update für IGDB-Anreicherung
             const enrichmentProgress =
               Math.round((i / newGames.length) * 10) + 90; // 90-100% für IGDB

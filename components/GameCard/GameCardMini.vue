@@ -100,9 +100,8 @@
       (event.target as HTMLImageElement).src = './gameplaceholder.jpg';
     }
   };
-
   const formatRating = (rating: number) => {
-    return (rating / 10).toFixed(1);
+    return rating.toFixed(1);
   };
   const formatPlayTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);

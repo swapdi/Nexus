@@ -17,7 +17,8 @@ type GameWithRelations = Game & {
 const prisma = new PrismaClient();
 
 export interface GameWithPlatforms {
-  id: number;
+  id: number; // Game ID (nicht UserGame ID)
+  userGameId: number; // UserGame ID für Benutzerdaten
   title: string;
   description?: string | null;
   coverUrl: string | null;
@@ -27,7 +28,7 @@ export interface GameWithPlatforms {
   genres: string[];
   playtimeMinutes: number;
   lastPlayed: Date | null;
-  rating: number | null;
+  rating: number | null; // IGDB global rating
   notes?: string | null;
   isInstalled?: boolean;
   platforms: string[];
@@ -74,8 +75,9 @@ export namespace GamesService {
         addedAt: 'desc'
       }
     });
-    return userGames.map(userGame => ({
-      id: userGame.id,
+    const result = userGames.map(userGame => ({
+      id: userGame.game.id, // Game ID
+      userGameId: userGame.id, // UserGame ID
       title: userGame.game.title,
       description: userGame.game.description,
       coverUrl: userGame.game.coverUrl,
@@ -85,12 +87,13 @@ export namespace GamesService {
       genres: userGame.game.genres,
       playtimeMinutes: userGame.playtimeMinutes || 0,
       lastPlayed: userGame.lastPlayed,
-      rating: userGame.rating,
+      rating: userGame.game.rating,
       notes: userGame.notes,
       isInstalled: userGame.isInstalled,
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     }));
+    return result;
   }
 
   export async function getUserGameById(
@@ -138,13 +141,11 @@ export namespace GamesService {
       }
     });
   }
-
   export async function createUserGame(
     userId: number,
     gameId: number,
     playtimeMinutes?: number,
     lastPlayed?: Date,
-    rating?: number,
     notes?: string
   ): Promise<UserGame> {
     return prisma.userGame.create({
@@ -153,7 +154,6 @@ export namespace GamesService {
         gameId: gameId,
         playtimeMinutes: playtimeMinutes,
         lastPlayed: lastPlayed,
-        rating: rating,
         notes: notes
       },
       include: {
@@ -170,14 +170,12 @@ export namespace GamesService {
       }
     });
   }
-
   export async function updateUserGame(
     userGameId: number,
     data: {
       playtimeMinutes?: number;
       lastPlayed?: Date;
-      rating?: number;
-      notes?: string;
+      notes?: string | null;
       isInstalled?: boolean;
     }
   ): Promise<UserGame> {
@@ -198,9 +196,7 @@ export namespace GamesService {
       }
     });
   }
-
   export async function deleteUserGame(userGameId: number): Promise<UserGame> {
-    console.log(`Deleting user game with ID: ${userGameId}`);
     return prisma.userGame.delete({
       where: { id: userGameId },
       include: {
@@ -348,7 +344,6 @@ export namespace GamesService {
       }
     });
   }
-
   export async function updateGame(
     gameId: number,
     data: {
@@ -359,6 +354,7 @@ export namespace GamesService {
       developer?: string;
       publisher?: string;
       genres?: string[];
+      rating?: number;
     }
   ): Promise<Game> {
     return prisma.game.update({
@@ -705,20 +701,14 @@ export namespace GamesService {
     forceUpdate: boolean = false
   ): Promise<boolean> {
     try {
-      console.log(`[IGDB] Starting enrichment for: "${gameName}"`);
-
       // Prüfe ob das Spiel bereits IGDB-Daten hat
       const game = await getGameById(gameId);
       if (!game) {
-        console.log(`[IGDB] Game not found in DB: ${gameName}`);
         return false;
       } // Überspringen falls bereits beschreibung und genres vorhanden sind (außer bei forceUpdate)
       if (!forceUpdate && game.description && game.genres.length > 0) {
-        console.log(`[IGDB] Game already has metadata, skipping: ${gameName}`);
         return false;
       }
-
-      console.log(`[IGDB] Fetching data for: "${gameName}" (ID: ${gameId})`);
 
       // IGDB-Daten abrufen
       const enrichedData = await IGDBService.enrichGameData(
@@ -727,11 +717,8 @@ export namespace GamesService {
       );
 
       if (!enrichedData || Object.keys(enrichedData).length === 0) {
-        console.log(`[IGDB] No data found for: "${gameName}"`);
         return false;
-      }
-
-      // Spiel mit neuen Daten aktualisieren
+      } // Spiel mit neuen Daten aktualisieren
       const updateData: {
         description?: string;
         coverUrl?: string;
@@ -739,6 +726,7 @@ export namespace GamesService {
         developer?: string;
         publisher?: string;
         genres?: string[];
+        rating?: number;
       } = {};
       if (enrichedData.description && (!game.description || forceUpdate)) {
         updateData.description = enrichedData.description;
@@ -767,15 +755,17 @@ export namespace GamesService {
         (game.genres.length === 0 || forceUpdate)
       ) {
         updateData.genres = enrichedData.genres;
+      } // Rating von IGDB hinzufügen
+      if (enrichedData.rating && (!game.rating || forceUpdate)) {
+        updateData.rating = enrichedData.rating;
+      } else if (enrichedData.rating && game.rating) {
+      } else {
+        // No rating from IGDB
       }
 
       // Nur aktualisieren wenn neue Daten vorhanden sind
       if (Object.keys(updateData).length > 0) {
         await updateGame(gameId, updateData);
-        console.log(
-          `Spiel "${gameName}" mit IGDB-Daten aktualisiert:`,
-          Object.keys(updateData)
-        );
         return true;
       }
 
@@ -857,13 +847,7 @@ export namespace GamesService {
       let enriched = false;
       if (wasNewGame) {
         // Neue Spiele IMMER mit Steam-first IGDB-Anreicherung
-        console.log(
-          `Mandatory Steam-first IGDB enrichment for new game: ${steamGame.name}`
-        );
         enriched = await enrichSteamGameWithIGDB(game.id, steamGame.name);
-        console.log(
-          `Steam-first IGDB enrichment result for ${steamGame.name}: ${enriched}`
-        );
 
         // Verzögerung um IGDB API zu schonen
         await new Promise(resolve => setTimeout(resolve, 250));
@@ -871,15 +855,8 @@ export namespace GamesService {
         // Bestehende Spiele nur anreichern wenn explizit aktiviert und unvollständige Metadaten
         const shouldEnrich =
           !game.description || game.genres.length === 0 || !game.coverUrl;
-
         if (shouldEnrich) {
-          console.log(
-            `Optional Steam-first IGDB enrichment for existing game with missing data: ${steamGame.name}`
-          );
           enriched = await enrichSteamGameWithIGDB(game.id, steamGame.name);
-          console.log(
-            `Steam-first IGDB enrichment result for ${steamGame.name}: ${enriched}`
-          );
 
           // Verzögerung um IGDB API zu schonen
           await new Promise(resolve => setTimeout(resolve, 250));
@@ -931,43 +908,36 @@ export namespace GamesService {
     forceUpdate: boolean = false
   ): Promise<boolean> {
     try {
-      console.log(`[IGDB Steam] Starting enrichment for: "${gameName}"`);
-
       // Spiel laden
       const game = await getGameById(gameId);
       if (!game) {
-        console.log(`[IGDB Steam] Game not found in DB: ${gameName}`);
         return false;
-      }
-
-      // Prüfe welche Daten fehlen (Steam liefert normalerweise nur Titel und Cover)
+      } // Prüfe welche Daten fehlen (Steam liefert normalerweise nur Titel und Cover)
       const missingData = {
         description: !game.description,
         genres: !game.genres || game.genres.length === 0,
         developer: !game.developer,
         publisher: !game.publisher,
-        releaseDate: !game.releaseDate
+        releaseDate: !game.releaseDate,
+        rating: !game.rating
       };
 
       // Überspringen falls bereits alle wichtigen Daten vorhanden sind (außer bei forceUpdate)
-      if (!forceUpdate && !missingData.description && !missingData.genres) {
-        console.log(
-          `[IGDB Steam] Game already has essential metadata, skipping: ${gameName}`
-        );
+      if (
+        !forceUpdate &&
+        !missingData.description &&
+        !missingData.genres &&
+        !missingData.rating
+      ) {
         return false;
       }
-
-      console.log(`[IGDB Steam] Missing data for "${gameName}":`, missingData);
 
       // IGDB-Daten abrufen
       const enrichedData = await IGDBService.enrichGameData(gameName, 'Steam');
 
       if (!enrichedData || Object.keys(enrichedData).length === 0) {
-        console.log(`[IGDB Steam] No data found for: "${gameName}"`);
         return false;
-      }
-
-      // Nur fehlende Daten ergänzen
+      } // Nur fehlende Daten ergänzen
       const updateData: {
         description?: string;
         coverUrl?: string;
@@ -975,6 +945,7 @@ export namespace GamesService {
         developer?: string;
         publisher?: string;
         genres?: string[];
+        rating?: number;
       } = {};
 
       // Beschreibung nur ergänzen wenn fehlt
@@ -1013,21 +984,19 @@ export namespace GamesService {
         (missingData.genres || forceUpdate)
       ) {
         updateData.genres = enrichedData.genres;
-      }
-
-      // Nur aktualisieren wenn neue Daten vorhanden sind
+      } // Rating nur ergänzen wenn fehlt
+      if (enrichedData.rating && (!game.rating || forceUpdate)) {
+        updateData.rating = enrichedData.rating;
+      } else if (enrichedData.rating && game.rating) {
+        // Game already has rating, skip IGDB rating
+      } else {
+        // No rating available from IGDB
+      } // Nur aktualisieren wenn neue Daten vorhanden sind
       if (Object.keys(updateData).length > 0) {
         await updateGame(gameId, updateData);
-        console.log(
-          `[IGDB Steam] Spiel "${gameName}" mit fehlenden IGDB-Daten ergänzt:`,
-          Object.keys(updateData)
-        );
         return true;
       }
 
-      console.log(
-        `[IGDB Steam] No missing data to supplement for: "${gameName}"`
-      );
       return false;
     } catch (error) {
       console.error(
@@ -1065,9 +1034,9 @@ export namespace GamesService {
     if (!userGame) {
       return null;
     }
-
     return {
-      id: userGame.id,
+      id: userGame.game.id, // Game ID
+      userGameId: userGame.id, // UserGame ID
       title: userGame.game.title,
       description: userGame.game.description,
       coverUrl: userGame.game.coverUrl,
@@ -1077,7 +1046,7 @@ export namespace GamesService {
       genres: userGame.game.genres,
       playtimeMinutes: userGame.playtimeMinutes || 0,
       lastPlayed: userGame.lastPlayed,
-      rating: userGame.rating,
+      rating: userGame.game.rating, // IGDB global rating
       notes: userGame.notes,
       isInstalled: userGame.isInstalled,
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
