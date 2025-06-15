@@ -262,7 +262,7 @@
                     <h1
                       class="text-5xl lg:text-6xl font-black mb-6 leading-tight">
                       <span
-                        class="bg-gradient-to-r from-purple-400 via-pink-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-300%">
+                        class="bg-gradient-to-r from-purple-400 via-pink-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-300">
                         {{ game.title }}
                       </span>
                     </h1>
@@ -543,7 +543,7 @@
     animation: gradient-x 6s ease infinite;
   }
 
-  .bg-300% {
+  .bg-300 {
     background-size: 300% 300%;
   }
 
