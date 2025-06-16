@@ -669,7 +669,7 @@ export namespace IGDBService {
         igdbGame.aggregated_rating_count &&
         igdbGame.aggregated_rating_count > 0
       ) {
-        enrichedData.rating = Math.round(igdbGame.aggregated_rating / 10); // Konvertiere zu 1-10 Skala
+        enrichedData.rating = igdbGame.aggregated_rating / 10; // Konvertiere zu 1-10 Skala mit Dezimalstellen
         console.log(
           `[IGDB] Using aggregated_rating: ${igdbGame.aggregated_rating} -> ${enrichedData.rating}`
         );
@@ -678,7 +678,7 @@ export namespace IGDBService {
         igdbGame.total_rating_count &&
         igdbGame.total_rating_count > 0
       ) {
-        enrichedData.rating = Math.round(igdbGame.total_rating / 10);
+        enrichedData.rating = igdbGame.total_rating / 10;
         console.log(
           `[IGDB] Using total_rating: ${igdbGame.total_rating} -> ${enrichedData.rating}`
         );
@@ -687,7 +687,7 @@ export namespace IGDBService {
         igdbGame.rating_count &&
         igdbGame.rating_count > 0
       ) {
-        enrichedData.rating = Math.round(igdbGame.rating / 10);
+        enrichedData.rating = igdbGame.rating / 10;
         console.log(
           `[IGDB] Using user_rating: ${igdbGame.rating} -> ${enrichedData.rating}`
         );

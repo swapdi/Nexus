@@ -31,7 +31,7 @@ model Game {
   developer     String?
   publisher     String?
   genres        String[]
-  rating        Int?           // IGDB Global Rating (1-10)
+  rating        Float?         // IGDB Global Rating (1-10 mit Dezimalstellen)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deals         Deal[]

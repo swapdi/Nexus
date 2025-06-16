@@ -301,7 +301,7 @@ export const gamesRouter = router({
           if (batchIndex < totalBatches - 1) {
             await new Promise(resolve => setTimeout(resolve, 50)); // Verkürzte Pause für bessere Performance
           }
-        } // IGDB-Anreicherung als separater, optionaler Schritt für neue Spiele
+        } // IGDB-Anreicherung als separater Schritt für alle neuen Spiele ohne Limit
 
         updateProgress(
           games.length,
@@ -322,9 +322,17 @@ export const gamesRouter = router({
               { description: '' },
               { genres: { equals: [] } }
             ]
-          },
-          take: 50 // Maximal 50 Spiele für IGDB-Anreicherung
+          }
+          // Kein Limit - alle Spiele ohne IGDB-Daten werden angereichert
         });
+        console.log(
+          `[Steam Import] Found ${newGames.length} games needing IGDB enrichment`
+        );
+        if (newGames.length > 0) {
+          console.log(
+            `[Steam Import] Starting IGDB enrichment for all ${newGames.length} games (no limit applied)`
+          );
+        }
 
         for (let i = 0; i < newGames.length; i++) {
           const game = newGames[i];
