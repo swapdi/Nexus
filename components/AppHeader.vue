@@ -65,37 +65,131 @@
           <UserAccount />
         </div>
       </div>
-
       <!-- Erweiterte Hintergrund-Details -->
       <div
         v-if="showBackgroundDetails && backgroundOperations.length > 0"
-        class="border-t border-gray-700/50 py-3 transition-all duration-300">
-        <div class="max-w-2xl mx-auto">
-          <div class="text-sm text-gray-400 mb-2">
-            Aktive Hintergrund-Operationen ({{ backgroundOperations.length }})
-          </div>
-          <div class="space-y-2">
-            <div
-              v-for="operation in backgroundOperations"
-              :key="operation.id"
-              class="flex items-center justify-between bg-gray-800/30 rounded-lg p-2">
-              <div class="flex items-center space-x-2 flex-1 min-w-0">
-                <Icon
-                  name="heroicons:arrow-path-20-solid"
-                  class="w-3 h-3 text-blue-400 animate-spin flex-shrink-0" />
-                <span class="text-xs text-gray-300 truncate">
-                  {{ operation.label }}
+        class="border-t border-gray-700/50 bg-gray-900/50 backdrop-blur-sm transition-all duration-300">
+        <div class="py-4 px-6">
+          <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="relative">
+                  <div
+                    class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <div
+                    class="absolute inset-0 w-3 h-3 bg-blue-500 rounded-full animate-ping opacity-30"></div>
+                </div>
+                <h3 class="text-lg font-semibold text-white">
+                  Hintergrund-Operationen
+                </h3>
+                <span
+                  class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs font-medium rounded-full">
+                  {{ backgroundOperations.length }} aktiv
                 </span>
               </div>
-              <div class="flex items-center space-x-2">
-                <div class="w-16 bg-gray-700 rounded-full h-1">
+              <div class="text-sm text-gray-400">
+                Gesamt-Fortschritt: {{ Math.round(backgroundProgress) }}%
+              </div>
+            </div>
+
+            <!-- Overall Progress Bar -->
+            <div class="mb-4">
+              <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div
+                  class="h-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 transition-all duration-500 ease-out"
+                  :style="{ width: `${backgroundProgress}%` }">
                   <div
-                    class="bg-blue-500 h-1 rounded-full transition-all duration-300"
-                    :style="{ width: `${operation.progress || 0}%` }"></div>
+                    class="h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
                 </div>
-                <span class="text-xs text-gray-500">
-                  {{ Math.round(operation.progress || 0) }}%
-                </span>
+              </div>
+            </div>
+
+            <!-- Operations List -->
+            <div class="space-y-3">
+              <div
+                v-for="operation in backgroundOperations"
+                :key="operation.id"
+                class="group relative bg-gray-800/40 hover:bg-gray-800/60 border border-gray-700/50 hover:border-gray-600/50 rounded-xl p-4 transition-all duration-200">
+                <!-- Operation Header -->
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div class="relative flex-shrink-0">
+                      <Icon
+                        :name="getOperationIcon(operation)"
+                        class="w-5 h-5 text-blue-400 animate-spin" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <h4 class="text-sm font-medium text-white truncate">
+                        {{ operation.label }}
+                      </h4>
+                      <p class="text-xs text-gray-400 mt-1">
+                        {{ getOperationTypeLabel(operation.type) }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="text-right flex-shrink-0">
+                    <div class="text-sm font-medium text-white">
+                      {{ Math.round(operation.progress || 0) }}%
+                    </div>
+                    <div class="text-xs text-gray-400">
+                      {{ formatElapsedTime(operation.startTime) }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-2">
+                  <div
+                    class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                    <div
+                      class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
+                      :style="{ width: `${operation.progress || 0}%` }">
+                      <div
+                        class="h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Additional Details -->
+                <div
+                  class="flex items-center justify-between text-xs text-gray-500">
+                  <div class="flex items-center space-x-4">
+                    <span v-if="operation.current && operation.total">
+                      {{ operation.current }} / {{ operation.total }}
+                    </span>
+                    <span
+                      class="inline-flex items-center px-2 py-1 rounded-full bg-gray-700/50">
+                      <span
+                        class="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
+                      Läuft
+                    </span>
+                  </div>
+                  <div class="text-gray-400">
+                    ID: {{ operation.id.substring(0, 8) }}...
+                  </div>
+                </div>
+
+                <!-- Hover Effect -->
+                <div
+                  class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+              </div>
+            </div>
+
+            <!-- Footer Info -->
+            <div class="mt-4 pt-3 border-t border-gray-700/30">
+              <div
+                class="flex items-center justify-between text-xs text-gray-500">
+                <div class="flex items-center space-x-4">
+                  <span>Operationen laufen im Hintergrund</span>
+                  <span>•</span>
+                  <span>UI bleibt verfügbar</span>
+                </div>
+                <button
+                  @click="showBackgroundDetails = false"
+                  class="text-gray-400 hover:text-gray-300 transition-colors">
+                  Einklappen
+                </button>
               </div>
             </div>
           </div>
@@ -125,7 +219,6 @@
   const currentBackgroundOperation = computed(() => {
     return backgroundOperations.value[0] || null;
   });
-
   const backgroundProgress = computed(() => {
     if (backgroundOperations.value.length === 0) return 0;
 
@@ -139,6 +232,43 @@
       withProgress.length
     );
   });
+
+  // Helper functions for operation details
+  const getOperationIcon = (operation: any) => {
+    const icons = {
+      data: 'heroicons:circle-stack-20-solid',
+      import: 'heroicons:arrow-down-tray-20-solid',
+      api: 'heroicons:cloud-20-solid',
+      process: 'heroicons:cog-6-tooth-20-solid'
+    };
+    return (
+      icons[operation.type as keyof typeof icons] ||
+      'heroicons:arrow-path-20-solid'
+    );
+  };
+
+  const getOperationTypeLabel = (type: string) => {
+    const labels = {
+      data: 'Daten laden',
+      import: 'Import',
+      api: 'API-Aufruf',
+      process: 'Verarbeitung'
+    };
+    return labels[type as keyof typeof labels] || 'Operation';
+  };
+
+  const formatElapsedTime = (startTime: number) => {
+    const elapsed = Date.now() - startTime;
+    const seconds = Math.floor(elapsed / 1000);
+
+    if (seconds < 60) {
+      return `${seconds}s`;
+    } else {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}m ${remainingSeconds}s`;
+    }
+  };
 </script>
 
 <style scoped>

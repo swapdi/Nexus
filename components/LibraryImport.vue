@@ -363,7 +363,8 @@
                   const percentage = Math.round(
                     (data.current / data.total) * 100
                   );
-                  updateProgress(percentage, 100, data.message);
+                  // Weitergabe der tatsächlichen current/total Werte statt Prozentsatz
+                  updateProgress(data.current, data.total, data.message);
                 }
               } catch (error) {
                 console.error('Fehler beim Parsen der SSE-Nachricht:', error);
@@ -374,9 +375,9 @@
               console.error('SSE Verbindungsfehler:', error);
             };
           };
-
           try {
-            updateProgress(0, 100, 'Verbinde mit Steam API...');
+            // Starte ohne harten total-Wert - wird durch Server-Updates gesetzt
+            updateProgress(0, 0, 'Verbinde mit Steam API...');
             connectToServerProgress();
 
             // Schneller Import ohne IGDB
@@ -386,7 +387,7 @@
                 operationId: operationId
               });
 
-            updateProgress(100, 100, 'Schneller Import abgeschlossen!');
+            updateProgress(0, 0, 'Schneller Import abgeschlossen!');
             await new Promise(resolve => setTimeout(resolve, 200));
 
             return steamResult;
@@ -472,21 +473,18 @@
                   const percentage = Math.round(
                     (data.current / data.total) * 100
                   );
-                  updateProgress(percentage, 100, data.message);
+                  // Weitergabe der tatsächlichen current/total Werte statt Prozentsatz
+                  updateProgress(data.current, data.total, data.message);
                 }
               } catch (error) {
                 console.error('Fehler beim Parsen der SSE-Nachricht:', error);
               }
             };
           };
-
           try {
             connectToServerProgress();
-            updateProgress(
-              0,
-              100,
-              'Hintergrund-Anreicherung wird gestartet...'
-            );
+            // Starte ohne harten total-Wert - wird durch Server-Updates gesetzt
+            updateProgress(0, 0, 'Hintergrund-Anreicherung wird gestartet...');
 
             const enrichmentResult =
               await $client.games.enrichGamesBackground.mutate({

@@ -128,11 +128,15 @@ export const useLoadingStore = defineStore('loading', () => {
       startOperation(id, label, type);
       const result = await operation((current, total, newLabel) => {
         updateProgress(id, undefined, current, newLabel);
-        if (!operations.value.get(id)?.total) {
-          const op = operations.value.get(id);
-          if (op) {
-            operations.value.set(id, { ...op, total });
-          }
+        // Aktualisiere immer total und current, um sicherzustellen dass sie korrekt sind
+        const op = operations.value.get(id);
+        if (op) {
+          operations.value.set(id, {
+            ...op,
+            total: total,
+            current: current,
+            progress: total > 0 ? Math.round((current / total) * 100) : 0
+          });
         }
       });
       return result;
@@ -157,11 +161,15 @@ export const useLoadingStore = defineStore('loading', () => {
       startOperation(id, label, 'process'); // Typ 'process' für Hintergrund-Operationen
       const result = await operation((current, total, newLabel) => {
         updateProgress(id, undefined, current, newLabel);
-        if (!operations.value.get(id)?.total) {
-          const op = operations.value.get(id);
-          if (op) {
-            operations.value.set(id, { ...op, total });
-          }
+        // Aktualisiere immer total und current, um sicherzustellen dass sie korrekt sind
+        const op = operations.value.get(id);
+        if (op) {
+          operations.value.set(id, {
+            ...op,
+            total: total,
+            current: current,
+            progress: total > 0 ? Math.round((current / total) * 100) : 0
+          });
         }
       });
       return result;

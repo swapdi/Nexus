@@ -78,7 +78,6 @@ Neues System für verbesserte Benutzererfahrung beim Steam-Import:
 - `server/api/progress/[operationId].get.ts` - SSE-Endpunkt für Progress-Updates
 - `components/LibraryImport.vue` - Frontend Progress-Integration mit Minimierungsfunktion
 - `components/AppHeader.vue` - Header-Fortschrittsbalken für Hintergrund-Operationen
-- `components/BackgroundProgressNotification.vue` - Hintergrund-Benachrichtigungskomponente
 - `server/trpc/routers/games.router.ts` - Backend Progress-Implementation mit schnellem Import
 - `stores/loading.store.ts` - Erweiterte Loading-States für Hintergrund-Operationen
 

@@ -37,13 +37,9 @@
           <NuxtPage />
         </div>
       </main>
-
       <!-- Footer -->
       <AppFooter />
     </div>
-
-    <!-- Hintergrund-Progress-Benachrichtigung -->
-    <BackgroundProgressNotification />
   </div>
 </template>
 

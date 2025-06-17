@@ -620,7 +620,7 @@ export const gamesRouter = router({
               { coverUrl: null }
             ]
           },
-          take: 50 // Limit für Hintergrund-Verarbeitung
+          take: 200 // Erhöhtes Limit für Hintergrund-Verarbeitung
         });
 
         const operationId =
@@ -647,12 +647,11 @@ export const gamesRouter = router({
           gamesNeedingEnrichment.length,
           'Hintergrund-Anreicherung wird gestartet...'
         );
-
         for (let i = 0; i < gamesNeedingEnrichment.length; i++) {
           const game = gamesNeedingEnrichment[i];
           try {
             updateProgress(
-              i,
+              i + 1,
               gamesNeedingEnrichment.length,
               `Anreicherung: ${game.title}`
             );
