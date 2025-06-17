@@ -133,7 +133,7 @@
     </div>
     <!-- Loading State -->
     <div
-      v-if="loadingStore.hasOperations"
+      v-if="loadingStore.hasForegroundOperations"
       class="bg-gray-800/50 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-700/50">
       <div class="animate-pulse flex space-x-4">
         <div

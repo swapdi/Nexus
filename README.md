@@ -63,11 +63,46 @@ Das Projekt implementiert ein fortschrittliches Progress-Tracking-System für la
 - **Batch-Processing:** Optimierte Import-Performance mit 15er-Batches
 - **Detaillierte Progress-Nachrichten:** Spezifische Fortschrittsmeldungen für jede Import-Phase
 
+#### Hintergrund-Anreicherung-System
+
+Neues System für verbesserte Benutzererfahrung beim Steam-Import:
+
+- **Minimierbare Import-Dialoge:** Steam-Import-Dialog kann während der Verarbeitung minimiert werden
+- **Header-Fortschrittsbalken:** Zentrale Anzeige von Hintergrund-Operationen im AppHeader
+- **Sofortige Spielanzeige:** Importierte Spiele werden sofort ohne IGDB-Daten angezeigt
+- **Asynchrone IGDB-Anreicherung:** IGDB-Metadaten werden im Hintergrund ergänzt, ohne den Benutzer zu blockieren
+- **Hintergrund-Benachrichtigungen:** Elegant positionierte Benachrichtigungen für laufende Hintergrund-Prozesse
+
 **Dateien:**
 
 - `server/api/progress/[operationId].get.ts` - SSE-Endpunkt für Progress-Updates
-- `components/LibraryImport.vue` - Frontend Progress-Integration
-- `server/trpc/routers/games.router.ts` - Backend Progress-Implementation
+- `components/LibraryImport.vue` - Frontend Progress-Integration mit Minimierungsfunktion
+- `components/AppHeader.vue` - Header-Fortschrittsbalken für Hintergrund-Operationen
+- `components/BackgroundProgressNotification.vue` - Hintergrund-Benachrichtigungskomponente
+- `server/trpc/routers/games.router.ts` - Backend Progress-Implementation mit schnellem Import
+- `stores/loading.store.ts` - Erweiterte Loading-States für Hintergrund-Operationen
+
+### 🎮 Steam Import & Hintergrundanreicherung
+
+Der Steam-Import wurde mit einem Hintergrundanreicherungssystem optimiert:
+
+**Import-Workflow:**
+
+1. **Schneller Initial-Import**: Steam-Spiele werden sofort mit Basis-Metadaten importiert
+2. **Hintergrundanreicherung**: IGDB-Daten werden asynchron geladen und hinzugefügt
+3. **Minimierbare UI**: Der Import-Dialog kann minimiert werden, während die Anreicherung läuft
+
+**UI-Verhalten:**
+
+- **Vordergrundoperationen**: Zeigen das Modal/LoadingOverlay und blockieren die UI
+- **Hintergrundoperationen**: Nur Header-Progressbar und Notifications, UI bleibt nutzbar
+- **Auto-Minimierung**: Import-Dialog minimiert sich automatisch bei reinen Hintergrundoperationen
+
+**Technische Details:**
+
+- Loading Store unterscheidet zwischen `hasForegroundOperations` und `hasBackgroundOperations`
+- Separate Mutations für schnellen Import (`importSteamLibraryFast`) und Hintergrundanreicherung (`enrichGamesFromIGDB`)
+- Progressbar im Header für laufende Hintergrundoperationen
 
 ## Projektstruktur (Überblick)
 

@@ -41,6 +41,9 @@
       <!-- Footer -->
       <AppFooter />
     </div>
+
+    <!-- Hintergrund-Progress-Benachrichtigung -->
+    <BackgroundProgressNotification />
   </div>
 </template>
 

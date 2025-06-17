@@ -394,7 +394,10 @@
           class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-gray-700/30">
           <!-- Linke Seite: Aktions-Button oder Selection-Modus -->
           <div
-            v-if="!loadingStore.hasOperations && gamesStore.games.length > 0"
+            v-if="
+              !loadingStore.hasForegroundOperations &&
+              gamesStore.games.length > 0
+            "
             class="flex items-center gap-3">
             <!-- Löschen Button (Normal Mode) -->
             <button
@@ -466,7 +469,10 @@
 
           <!-- Rechte Seite: View Mode Toggle und Game Count -->
           <div
-            v-if="!loadingStore.hasOperations && gamesStore.games.length > 0"
+            v-if="
+              !loadingStore.hasForegroundOperations &&
+              gamesStore.games.length > 0
+            "
             class="flex items-center gap-4">
             <!-- Game Count -->
             <span class="text-sm text-gray-500 whitespace-nowrap">
@@ -498,7 +504,9 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="!loadingStore.hasOperations" class="text-center py-16 px-6">
+    <div
+      v-else-if="!loadingStore.hasForegroundOperations"
+      class="text-center py-16 px-6">
       <div
         class="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-12 max-w-md mx-auto">
         <Icon
@@ -529,7 +537,7 @@
 
     <!-- Loading State -->
     <div
-      v-if="loadingStore.hasOperations"
+      v-if="loadingStore.hasForegroundOperations"
       class="flex flex-col items-center justify-center py-16 space-y-6">
       <div class="relative">
         <!-- Animated Ring -->

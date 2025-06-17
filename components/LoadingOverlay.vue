@@ -8,7 +8,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0">
       <div
-        v-if="loadingStore.hasOperations"
+        v-if="loadingStore.hasForegroundOperations"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
         <div
           class="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-md w-full mx-4 shadow-2xl">

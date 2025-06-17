@@ -141,16 +141,63 @@ export const useLoadingStore = defineStore('loading', () => {
     }
   };
 
+  // Spezielle Methode für Hintergrund-Operationen
+  const withBackgroundLoading = async <T>(
+    id: string,
+    label: string,
+    operation: (
+      updateProgress: (
+        current: number,
+        total: number,
+        newLabel?: string
+      ) => void
+    ) => Promise<T>
+  ): Promise<T> => {
+    try {
+      startOperation(id, label, 'process'); // Typ 'process' für Hintergrund-Operationen
+      const result = await operation((current, total, newLabel) => {
+        updateProgress(id, undefined, current, newLabel);
+        if (!operations.value.get(id)?.total) {
+          const op = operations.value.get(id);
+          if (op) {
+            operations.value.set(id, { ...op, total });
+          }
+        }
+      });
+      return result;
+    } finally {
+      finishOperation(id);
+    }
+  };
+
+  // Hilfsmethode um zu prüfen ob Hintergrund-Operationen laufen
+  const hasBackgroundOperations = computed(() => {
+    return Array.from(operations.value.values()).some(
+      op => op.type === 'process' && op.id.includes('background')
+    );
+  });
+
+  // Hilfsmethode um zu prüfen ob Vordergrund-Operationen laufen (nicht Hintergrund)
+  const hasForegroundOperations = computed(() => {
+    return Array.from(operations.value.values()).some(
+      op =>
+        op.type === 'import' ||
+        (op.type === 'process' && !op.id.includes('background')) ||
+        op.type === 'api' ||
+        op.type === 'data'
+    );
+  });
+
   return {
     // State
-    operations: readonly(operations),
-
-    // Getters
+    operations: readonly(operations), // Getters
     isLoading,
     hasOperations,
     operationsList,
     primaryOperation,
     totalProgress,
+    hasBackgroundOperations,
+    hasForegroundOperations,
 
     // Actions
     startOperation,
@@ -159,7 +206,8 @@ export const useLoadingStore = defineStore('loading', () => {
     clearAllOperations,
     getOperation,
     withLoading,
-    withProgressLoading
+    withProgressLoading,
+    withBackgroundLoading
   };
 });
 
@@ -187,9 +235,22 @@ export const useLoading = () => {
     type: LoadingOperation['type'] = 'process'
   ) => loadingStore.withProgressLoading(id, label, operation, type);
 
+  const backgroundLoading = <T>(
+    id: string,
+    label: string,
+    operation: (
+      updateProgress: (
+        current: number,
+        total: number,
+        newLabel?: string
+      ) => void
+    ) => Promise<T>
+  ) => loadingStore.withBackgroundLoading(id, label, operation);
+
   return {
     loading,
     progressLoading,
+    backgroundLoading,
     ...loadingStore
   };
 };

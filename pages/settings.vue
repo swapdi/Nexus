@@ -101,7 +101,7 @@
       </div>
       <!-- Loading State -->
       <div
-        v-if="loadingStore.hasOperations"
+        v-if="loadingStore.hasForegroundOperations"
         class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6">
         <div class="animate-pulse flex space-x-4">
           <div
