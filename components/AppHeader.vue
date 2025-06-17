@@ -150,7 +150,6 @@
                     </div>
                   </div>
                 </div>
-
                 <!-- Additional Details -->
                 <div
                   class="flex items-center justify-between text-xs text-gray-500">
@@ -165,31 +164,11 @@
                       Läuft
                     </span>
                   </div>
-                  <div class="text-gray-400">
-                    ID: {{ operation.id.substring(0, 8) }}...
-                  </div>
                 </div>
 
                 <!-- Hover Effect -->
                 <div
                   class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-              </div>
-            </div>
-
-            <!-- Footer Info -->
-            <div class="mt-4 pt-3 border-t border-gray-700/30">
-              <div
-                class="flex items-center justify-between text-xs text-gray-500">
-                <div class="flex items-center space-x-4">
-                  <span>Operationen laufen im Hintergrund</span>
-                  <span>•</span>
-                  <span>UI bleibt verfügbar</span>
-                </div>
-                <button
-                  @click="showBackgroundDetails = false"
-                  class="text-gray-400 hover:text-gray-300 transition-colors">
-                  Einklappen
-                </button>
               </div>
             </div>
           </div>
@@ -256,7 +235,6 @@
     };
     return labels[type as keyof typeof labels] || 'Operation';
   };
-
   const formatElapsedTime = (startTime: number) => {
     const elapsed = Date.now() - startTime;
     const seconds = Math.floor(elapsed / 1000);
@@ -276,7 +254,6 @@
   .group:hover .group-hover\:scale-110 {
     filter: drop-shadow(0 0 8px rgba(147, 51, 234, 0.4));
   }
-
   /* Smooth gradient animation */
   @keyframes gradient-shift {
     0%,

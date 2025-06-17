@@ -95,7 +95,6 @@ export const useLoadingStore = defineStore('loading', () => {
   const getOperation = (id: string): LoadingOperation | undefined => {
     return operations.value.get(id);
   };
-
   // Helper für häufige Patterns
   const withLoading = async <T>(
     id: string,
@@ -177,22 +176,24 @@ export const useLoadingStore = defineStore('loading', () => {
       finishOperation(id);
     }
   };
-
   // Hilfsmethode um zu prüfen ob Hintergrund-Operationen laufen
   const hasBackgroundOperations = computed(() => {
     return Array.from(operations.value.values()).some(
-      op => op.type === 'process' && op.id.includes('background')
+      op =>
+        op.type === 'process' &&
+        (op.id.includes('background') || op.id.includes('enrichment'))
     );
   });
-
   // Hilfsmethode um zu prüfen ob Vordergrund-Operationen laufen (nicht Hintergrund)
   const hasForegroundOperations = computed(() => {
     return Array.from(operations.value.values()).some(
       op =>
         op.type === 'import' ||
-        (op.type === 'process' && !op.id.includes('background')) ||
         op.type === 'api' ||
-        op.type === 'data'
+        op.type === 'data' ||
+        (op.type === 'process' &&
+          !op.id.includes('background') &&
+          !op.id.includes('enrichment'))
     );
   });
 
@@ -207,8 +208,7 @@ export const useLoadingStore = defineStore('loading', () => {
     hasBackgroundOperations,
     hasForegroundOperations,
 
-    // Actions
-    startOperation,
+    // Actions    startOperation,
     updateProgress,
     finishOperation,
     clearAllOperations,
