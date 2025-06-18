@@ -70,7 +70,7 @@ model PlatformGame {
   @@map("platform_games")
 }
 
-model UserGame {
+model UserGame {  
   id              Int       @id @default(autoincrement())
   userId          Int
   gameId          Int
@@ -78,6 +78,7 @@ model UserGame {
   playtimeMinutes Int?      @default(0)
   lastPlayed      DateTime?
   isInstalled     Boolean   @default(false)
+  isFavorite      Boolean   @default(false)
   notes           String?
   game            Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)

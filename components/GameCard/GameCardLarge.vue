@@ -52,6 +52,26 @@
         </div>
       </div>
 
+      <!-- Favorite Icon -->
+      <div v-if="!isSelectionMode" class="absolute bottom-2 left-2 z-10">
+        <button
+          @click.stop="toggleFavorite"
+          class="w-8 h-8 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite">
+          <Icon
+            :name="
+              game.isFavorite
+                ? 'heroicons:heart-20-solid'
+                : 'heroicons:heart-20-solid'
+            "
+            :class="[
+              'w-4 h-4 transition-all duration-200',
+              game.isFavorite
+                ? 'text-red-500 scale-110'
+                : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
+            ]" />
+        </button>
+      </div>
+
       <!-- Rating Badge -->
       <div
         v-if="game.rating"
@@ -119,16 +139,20 @@
     isSelectionMode: boolean;
     isSelected: boolean;
   }
-
   interface Emits {
     (e: 'click'): void;
+    (e: 'toggleFavorite', userGameId: number): void;
   }
 
-  defineProps<Props>();
+  const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 
   const handleClick = () => {
     emit('click');
+  };
+
+  const toggleFavorite = () => {
+    emit('toggleFavorite', props.game.userGameId);
   };
 
   const handleImageError = (event: Event) => {

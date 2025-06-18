@@ -110,7 +110,6 @@ export const gamesRouter = router({
         userGame.gameId,
         ctx.dbUser.id
       );
-
       return game;
     }),
 
@@ -165,12 +164,13 @@ export const gamesRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         // Steam ID aus verschiedenen Eingabeformaten extrahieren
-        const steamId = extractSteamId(input.steamInput);
+        const steamId = await extractSteamId(input.steamInput);
 
         if (!steamId) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'Ungültige Steam ID oder Profil-URL'
+            message:
+              'Ungültige Steam ID oder Profil-URL. Bitte verwenden Sie eine gültige Steam ID 64 oder Profil-URL.'
           });
         }
 
@@ -419,11 +419,12 @@ export const gamesRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const steamId = extractSteamId(input.steamInput);
+        const steamId = await extractSteamId(input.steamInput);
         if (!steamId) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'Ungültige Steam ID oder Profil-URL'
+            message:
+              'Ungültige Steam ID oder Profil-URL. Bitte verwenden Sie eine gültige Steam ID 64 oder Profil-URL.'
           });
         }
 
@@ -434,15 +435,20 @@ export const gamesRouter = router({
             message: 'Steam API Key nicht konfiguriert'
           });
         }
-
         const response = await fetch(
           `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamId}&format=json&include_appinfo=true&include_played_free_games=true`
         );
 
         if (!response.ok) {
+          console.error(
+            `Steam API Error: ${response.status} ${response.statusText}`
+          );
+          const errorText = await response.text();
+          console.error('Steam API Response:', errorText);
+
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'Fehler beim Abrufen der Steam-Daten'
+            message: `Fehler beim Abrufen der Steam-Daten (Status: ${response.status}). Möglicherweise ist das Profil privat oder die Steam ID ist ungültig.`
           });
         }
 
@@ -463,7 +469,6 @@ export const gamesRouter = router({
             siteUrl: 'https://store.steampowered.com'
           }
         );
-
         const importResults = {
           imported: 0,
           updated: 0,
@@ -488,7 +493,6 @@ export const gamesRouter = router({
             sendProgressUpdate(operationId, current, total, message);
           }
         };
-
         updateProgress(
           0,
           games.length,
@@ -510,7 +514,9 @@ export const gamesRouter = router({
             `Importiere Spiele ${batchStart + 1}-${batchEnd} von ${
               games.length
             }...`
-          ); // Parallele Verarbeitung ohne IGDB
+          );
+
+          // Parallele Verarbeitung ohne IGDB-Anreicherung
           const batchPromises = batch.map(async (steamGame: any) => {
             try {
               const result = await GamesService.processSteamGameImport(
@@ -528,9 +534,7 @@ export const gamesRouter = router({
             }
           });
 
-          const batchResults = await Promise.all(batchPromises);
-
-          // Ergebnisse sammeln
+          const batchResults = await Promise.all(batchPromises); // Ergebnisse sammeln
           for (const batchResult of batchResults) {
             if (batchResult.success) {
               if (batchResult.result === 'imported') {
@@ -545,16 +549,15 @@ export const gamesRouter = router({
             }
           }
 
-          // Kurze Pause zwischen Batches
+          // Kurze Pause zwischen Batches (etwas länger wegen IGDB-Calls)
           if (batchIndex < totalBatches - 1) {
-            await new Promise(resolve => setTimeout(resolve, 25));
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
         }
-
         updateProgress(
           games.length,
           games.length,
-          'Schneller Import abgeschlossen!'
+          'Import mit IGDB-Anreicherung abgeschlossen!'
         );
 
         // XP-Belohnung
@@ -562,7 +565,6 @@ export const gamesRouter = router({
           const xpReward = Math.min(importResults.imported * 10, 500);
           await GamesService.rewardUserXP(ctx.dbUser.id, xpReward);
         }
-
         return {
           success: true,
           totalGames: data.response.game_count,
@@ -571,7 +573,7 @@ export const gamesRouter = router({
           skipped: importResults.skipped,
           errors: importResults.errors,
           message:
-            'Spiele wurden sofort importiert. IGDB-Anreicherung läuft im Hintergrund.'
+            'Spiele wurden schnell importiert. IGDB-Anreicherung läuft im Hintergrund.'
         };
       } catch (error) {
         if (error instanceof TRPCError) {
@@ -603,9 +605,7 @@ export const gamesRouter = router({
             code: 'NOT_FOUND',
             message: 'Plattform nicht gefunden'
           });
-        }
-
-        // Finde alle Spiele ohne IGDB-Daten
+        } // Finde alle Steam-Spiele ohne IGDB-Daten (erweiterte Kriterien)
         const gamesNeedingEnrichment = await ctx.db.game.findMany({
           where: {
             platformGames: {
@@ -613,14 +613,37 @@ export const gamesRouter = router({
                 platformId: platform.id
               }
             },
-            OR: [
-              { description: null },
-              { description: '' },
-              { genres: { equals: [] } },
-              { coverUrl: null }
+            AND: [
+              {
+                OR: [
+                  { description: null },
+                  { description: '' },
+                  { genres: { equals: [] } },
+                  { developer: null },
+                  { publisher: null },
+                  { releaseDate: null }
+                ]
+              },
+              // Nur Spiele, die in den letzten 24 Stunden hinzugefügt wurden (für frische Imports)
+              {
+                OR: [
+                  {
+                    createdAt: {
+                      gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
+                    }
+                  },
+                  // ODER alle Spiele ohne grundlegende IGDB-Daten
+                  {
+                    AND: [{ description: null }, { developer: null }]
+                  }
+                ]
+              }
             ]
           },
-          take: 200 // Erhöhtes Limit für Hintergrund-Verarbeitung
+          take: 200, // Erhöhtes Limit für Hintergrund-Verarbeitung
+          orderBy: {
+            createdAt: 'desc' // Neueste zuerst
+          }
         });
 
         const operationId =
@@ -705,7 +728,7 @@ export const gamesRouter = router({
 });
 
 // Hilfsfunktion um Steam ID aus verschiedenen Formaten zu extrahieren
-function extractSteamId(input: string): string | null {
+async function extractSteamId(input: string): Promise<string | null> {
   // Steam ID 64 (17 Ziffern)
   const steamId64Match = input.match(/\b\d{17}\b/);
   if (steamId64Match) {
@@ -719,13 +742,71 @@ function extractSteamId(input: string): string | null {
   if (profileUrlMatch) {
     return profileUrlMatch[1];
   }
-
-  // Steam Custom URL (vereinfacht - in echter Implementierung müsste man die API verwenden)
+  // Steam Custom URL - verwende ResolveVanityURL API
   const customUrlMatch = input.match(/steamcommunity\.com\/id\/([^\/]+)/);
   if (customUrlMatch) {
-    // Hier müsste man ResolveVanityURL API verwenden
-    // Für jetzt returnen wir null und der Benutzer muss Steam ID 64 verwenden
+    const vanityUrl = customUrlMatch[1];
+    const steamApiKey = process.env.STEAM_API_KEY;
+
+    if (!steamApiKey) {
+      console.warn('Steam API Key nicht verfügbar für Custom URL-Auflösung');
+      return null;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${steamApiKey}&vanityurl=${vanityUrl}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response?.success === 1) {
+          return data.response.steamid;
+        } else {
+          console.warn(
+            `Custom URL '${vanityUrl}' konnte nicht aufgelöst werden:`,
+            data.response
+          );
+        }
+      } else {
+        console.warn(`ResolveVanityURL API Fehler: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Fehler beim Auflösen der Custom URL:', error);
+    }
+
     return null;
+  }
+  // Direkte Custom URL ohne Domain
+  if (/^[a-zA-Z0-9_]+$/.test(input) && input.length > 2) {
+    const steamApiKey = process.env.STEAM_API_KEY;
+
+    if (!steamApiKey) {
+      console.warn('Steam API Key nicht verfügbar für Custom URL-Auflösung');
+      return null;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${steamApiKey}&vanityurl=${input}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response?.success === 1) {
+          return data.response.steamid;
+        } else {
+          console.warn(
+            `Custom URL '${input}' konnte nicht aufgelöst werden:`,
+            data.response
+          );
+        }
+      } else {
+        console.warn(`ResolveVanityURL API Fehler: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Fehler beim Auflösen der Custom URL:', error);
+    }
   }
 
   return null;

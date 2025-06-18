@@ -31,6 +31,7 @@ export interface GameWithPlatforms {
   rating: number | null; // IGDB global rating
   notes?: string | null;
   isInstalled?: boolean;
+  isFavorite?: boolean;
   platforms: string[];
   addedAt: Date;
 }
@@ -90,6 +91,7 @@ export namespace GamesService {
       rating: userGame.game.rating,
       notes: userGame.notes,
       isInstalled: userGame.isInstalled,
+      isFavorite: userGame.isFavorite,
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     }));
@@ -177,6 +179,7 @@ export namespace GamesService {
       lastPlayed?: Date;
       notes?: string | null;
       isInstalled?: boolean;
+      isFavorite?: boolean;
     }
   ): Promise<UserGame> {
     return prisma.userGame.update({
@@ -1049,6 +1052,7 @@ export namespace GamesService {
       rating: userGame.game.rating, // IGDB global rating
       notes: userGame.notes,
       isInstalled: userGame.isInstalled,
+      isFavorite: userGame.isFavorite,
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     };

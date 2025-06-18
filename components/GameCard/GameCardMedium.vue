@@ -49,6 +49,26 @@
         </div>
       </div>
 
+      <!-- Favorite Icon -->
+      <div v-if="!isSelectionMode" class="absolute top-1 right-1 z-10">
+        <button
+          @click.stop="toggleFavorite"
+          class="w-6 h-6 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite">
+          <Icon
+            :name="
+              game.isFavorite
+                ? 'heroicons:heart-20-solid'
+                : 'heroicons:heart-20-solid'
+            "
+            :class="[
+              'w-3.5 h-3.5 transition-all duration-200',
+              game.isFavorite
+                ? 'text-red-500 scale-110'
+                : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
+            ]" />
+        </button>
+      </div>
+
       <!-- Rating Badge -->
       <div
         v-if="game.rating"
@@ -66,10 +86,12 @@
 
     <!-- Game Info -->
     <div class="p-2 flex flex-col flex-1">
-      <h3
-        class="font-medium text-white text-sm mb-1 line-clamp-2 group-hover:text-purple-300 transition-colors">
-        {{ game.title }}
-      </h3>
+      <div class="flex items-start justify-between gap-2 mb-1">
+        <h3
+          class="font-medium text-white text-sm line-clamp-2 group-hover:text-purple-300 transition-colors flex-1">
+          {{ game.title }}
+        </h3>
+      </div>
 
       <!-- Genres -->
       <div v-if="game.genres && game.genres.length > 0" class="mb-1">
@@ -116,13 +138,17 @@
 
   interface Emits {
     (e: 'click'): void;
+    (e: 'toggleFavorite', userGameId: number): void;
   }
-
-  defineProps<Props>();
+  const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 
   const handleClick = () => {
     emit('click');
+  };
+
+  const toggleFavorite = () => {
+    emit('toggleFavorite', props.game.userGameId);
   };
 
   const handleImageError = (event: Event) => {

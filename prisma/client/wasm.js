@@ -167,6 +167,7 @@ exports.Prisma.UserGameScalarFieldEnum = {
   playtimeMinutes: 'playtimeMinutes',
   lastPlayed: 'lastPlayed',
   isInstalled: 'isInstalled',
+  isFavorite: 'isFavorite',
   notes: 'notes'
 };
 

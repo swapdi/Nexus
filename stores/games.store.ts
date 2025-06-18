@@ -424,7 +424,62 @@ export const useGamesStore = defineStore('games', () => {
     if (games.value.length === 0) {
       await refreshData();
     }
-  }; // Reset store
+  }; // Toggle Favorite für ein Spiel
+  const toggleFavorite = async (userGameId: number) => {
+    const { $client } = useNuxtApp();
+    const notifyStore = useNotifyStore();
+
+    try {
+      // Vorerst nur lokale Aktualisierung für Frontend-Test
+      const gameIndex = games.value.findIndex(
+        game => game.userGameId === userGameId
+      );
+
+      if (gameIndex !== -1) {
+        const currentStatus = games.value[gameIndex].isFavorite;
+        games.value[gameIndex].isFavorite = !currentStatus;
+
+        // Erfolgs-Benachrichtigung
+        const message = !currentStatus
+          ? 'Zu Favoriten hinzugefügt'
+          : 'Aus Favoriten entfernt';
+        notifyStore.notify(message, 1);
+
+        return !currentStatus;
+      }
+
+      // TODO: API-Call implementieren sobald Backend bereit
+      /*
+      const result = await $client.games.toggleFavorite.mutate({
+        userGameId: userGameId
+      });
+
+      if (result.success) {
+        // Lokalen State aktualisieren
+        const gameIndex = games.value.findIndex(
+          game => game.userGameId === userGameId
+        );
+        if (gameIndex !== -1) {
+          games.value[gameIndex].isFavorite = result.isFavorite;
+        }
+
+        // Erfolgs-Benachrichtigung
+        const message = result.isFavorite
+          ? 'Zu Favoriten hinzugefügt'
+          : 'Aus Favoriten entfernt';
+        notifyStore.notify(message, 1);
+
+        return result.isFavorite;
+      }
+      */
+    } catch (err: any) {
+      console.error('Fehler beim Ändern des Favoriten-Status:', err);
+      notifyStore.notify('Fehler beim Ändern des Favoriten-Status', 3);
+      throw err;
+    }
+  };
+
+  // Reset store
   const reset = () => {
     games.value = [];
     stats.value = null;
@@ -470,14 +525,14 @@ export const useGamesStore = defineStore('games', () => {
     getGamesByPlaytime,
     getGamesByPlatformName,
     init,
-    reset,
-    // Neue Aktionen für Auswahlmodus
+    reset, // Neue Aktionen für Auswahlmodus
     toggleSelectionMode,
     enterSelectionMode,
     exitSelectionMode,
     toggleGameSelection,
     selectAllFilteredGames,
     deselectAllGames,
-    removeSelectedGames
+    removeSelectedGames,
+    toggleFavorite
   };
 });

@@ -196,10 +196,11 @@ export const useLoadingStore = defineStore('loading', () => {
           !op.id.includes('enrichment'))
     );
   });
-
   return {
     // State
-    operations: readonly(operations), // Getters
+    operations: readonly(operations),
+
+    // Getters
     isLoading,
     hasOperations,
     operationsList,
@@ -208,7 +209,8 @@ export const useLoadingStore = defineStore('loading', () => {
     hasBackgroundOperations,
     hasForegroundOperations,
 
-    // Actions    startOperation,
+    // Actions
+    startOperation,
     updateProgress,
     finishOperation,
     clearAllOperations,

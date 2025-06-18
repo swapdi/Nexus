@@ -31,6 +31,7 @@ model Game {
   developer     String?
   publisher     String?
   genres        String[]
+  rating        Float? // IGDB Global Rating (1-10 mit Dezimalstellen)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deals         Deal[]
@@ -77,8 +78,8 @@ model UserGame {
   playtimeMinutes Int?      @default(0)
   lastPlayed      DateTime?
   isInstalled     Boolean   @default(false)
+  isFavorite      Boolean   @default(false)
   notes           String?
-  rating          Int?
   game            Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

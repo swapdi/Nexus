@@ -6523,6 +6523,7 @@ export namespace Prisma {
     playtimeMinutes: number | null
     lastPlayed: Date | null
     isInstalled: boolean | null
+    isFavorite: boolean | null
     notes: string | null
   }
 
@@ -6534,6 +6535,7 @@ export namespace Prisma {
     playtimeMinutes: number | null
     lastPlayed: Date | null
     isInstalled: boolean | null
+    isFavorite: boolean | null
     notes: string | null
   }
 
@@ -6545,6 +6547,7 @@ export namespace Prisma {
     playtimeMinutes: number
     lastPlayed: number
     isInstalled: number
+    isFavorite: number
     notes: number
     _all: number
   }
@@ -6572,6 +6575,7 @@ export namespace Prisma {
     playtimeMinutes?: true
     lastPlayed?: true
     isInstalled?: true
+    isFavorite?: true
     notes?: true
   }
 
@@ -6583,6 +6587,7 @@ export namespace Prisma {
     playtimeMinutes?: true
     lastPlayed?: true
     isInstalled?: true
+    isFavorite?: true
     notes?: true
   }
 
@@ -6594,6 +6599,7 @@ export namespace Prisma {
     playtimeMinutes?: true
     lastPlayed?: true
     isInstalled?: true
+    isFavorite?: true
     notes?: true
     _all?: true
   }
@@ -6692,6 +6698,7 @@ export namespace Prisma {
     playtimeMinutes: number | null
     lastPlayed: Date | null
     isInstalled: boolean
+    isFavorite: boolean
     notes: string | null
     _count: UserGameCountAggregateOutputType | null
     _avg: UserGameAvgAggregateOutputType | null
@@ -6722,6 +6729,7 @@ export namespace Prisma {
     playtimeMinutes?: boolean
     lastPlayed?: boolean
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6735,6 +6743,7 @@ export namespace Prisma {
     playtimeMinutes?: boolean
     lastPlayed?: boolean
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6748,6 +6757,7 @@ export namespace Prisma {
     playtimeMinutes?: boolean
     lastPlayed?: boolean
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6761,10 +6771,11 @@ export namespace Prisma {
     playtimeMinutes?: boolean
     lastPlayed?: boolean
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: boolean
   }
 
-  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "notes", ExtArgs["result"]["userGame"]>
+  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "isFavorite" | "notes", ExtArgs["result"]["userGame"]>
   export type UserGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6792,6 +6803,7 @@ export namespace Prisma {
       playtimeMinutes: number | null
       lastPlayed: Date | null
       isInstalled: boolean
+      isFavorite: boolean
       notes: string | null
     }, ExtArgs["result"]["userGame"]>
     composites: {}
@@ -7225,6 +7237,7 @@ export namespace Prisma {
     readonly playtimeMinutes: FieldRef<"UserGame", 'Int'>
     readonly lastPlayed: FieldRef<"UserGame", 'DateTime'>
     readonly isInstalled: FieldRef<"UserGame", 'Boolean'>
+    readonly isFavorite: FieldRef<"UserGame", 'Boolean'>
     readonly notes: FieldRef<"UserGame", 'String'>
   }
     
@@ -12310,6 +12323,7 @@ export namespace Prisma {
     playtimeMinutes: 'playtimeMinutes',
     lastPlayed: 'lastPlayed',
     isInstalled: 'isInstalled',
+    isFavorite: 'isFavorite',
     notes: 'notes'
   };
 
@@ -12762,6 +12776,7 @@ export namespace Prisma {
     playtimeMinutes?: IntNullableFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolFilter<"UserGame"> | boolean
+    isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -12775,6 +12790,7 @@ export namespace Prisma {
     playtimeMinutes?: SortOrderInput | SortOrder
     lastPlayed?: SortOrderInput | SortOrder
     isInstalled?: SortOrder
+    isFavorite?: SortOrder
     notes?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
@@ -12792,6 +12808,7 @@ export namespace Prisma {
     playtimeMinutes?: IntNullableFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolFilter<"UserGame"> | boolean
+    isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -12805,6 +12822,7 @@ export namespace Prisma {
     playtimeMinutes?: SortOrderInput | SortOrder
     lastPlayed?: SortOrderInput | SortOrder
     isInstalled?: SortOrder
+    isFavorite?: SortOrder
     notes?: SortOrderInput | SortOrder
     _count?: UserGameCountOrderByAggregateInput
     _avg?: UserGameAvgOrderByAggregateInput
@@ -12824,6 +12842,7 @@ export namespace Prisma {
     playtimeMinutes?: IntNullableWithAggregatesFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableWithAggregatesFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolWithAggregatesFilter<"UserGame"> | boolean
+    isFavorite?: BoolWithAggregatesFilter<"UserGame"> | boolean
     notes?: StringNullableWithAggregatesFilter<"UserGame"> | string | null
   }
 
@@ -13416,6 +13435,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
     game: GameCreateNestedOneWithoutUserGamesInput
     user: UserCreateNestedOneWithoutUserGamesInput
@@ -13429,6 +13449,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
   }
 
@@ -13437,6 +13458,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
@@ -13450,6 +13472,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13461,6 +13484,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
   }
 
@@ -13469,6 +13493,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13480,6 +13505,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -14209,6 +14235,7 @@ export namespace Prisma {
     playtimeMinutes?: SortOrder
     lastPlayed?: SortOrder
     isInstalled?: SortOrder
+    isFavorite?: SortOrder
     notes?: SortOrder
   }
 
@@ -14227,6 +14254,7 @@ export namespace Prisma {
     playtimeMinutes?: SortOrder
     lastPlayed?: SortOrder
     isInstalled?: SortOrder
+    isFavorite?: SortOrder
     notes?: SortOrder
   }
 
@@ -14238,6 +14266,7 @@ export namespace Prisma {
     playtimeMinutes?: SortOrder
     lastPlayed?: SortOrder
     isInstalled?: SortOrder
+    isFavorite?: SortOrder
     notes?: SortOrder
   }
 
@@ -15330,6 +15359,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
     game: GameCreateNestedOneWithoutUserGamesInput
   }
@@ -15341,6 +15371,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
   }
 
@@ -15428,6 +15459,7 @@ export namespace Prisma {
     playtimeMinutes?: IntNullableFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
     isInstalled?: BoolFilter<"UserGame"> | boolean
+    isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
   }
 
@@ -15528,6 +15560,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
     user: UserCreateNestedOneWithoutUserGamesInput
   }
@@ -15539,6 +15572,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
   }
 
@@ -16468,6 +16502,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
   }
 
@@ -16499,6 +16534,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
   }
@@ -16510,6 +16546,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -16520,6 +16557,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -16570,6 +16608,7 @@ export namespace Prisma {
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
     isInstalled?: boolean
+    isFavorite?: boolean
     notes?: string | null
   }
 
@@ -16653,6 +16692,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
@@ -16664,6 +16704,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -16674,6 +16715,7 @@ export namespace Prisma {
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 

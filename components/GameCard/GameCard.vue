@@ -5,7 +5,8 @@
     :game="game"
     :isSelectionMode="isSelectionMode"
     :isSelected="isSelected"
-    @click="handleClick" />
+    @click="handleClick"
+    @toggleFavorite="handleToggleFavorite" />
 </template>
 
 <script setup lang="ts">
@@ -24,6 +25,7 @@
 
   interface Emits {
     (e: 'click'): void;
+    (e: 'toggleFavorite', userGameId: number): void;
   }
 
   const props = defineProps<Props>();
@@ -51,5 +53,9 @@
       // Im normalen Modus: Navigation zur Detailseite (mit UserGame ID)
       navigateTo(`/game/${props.game.userGameId}`);
     }
+  };
+
+  const handleToggleFavorite = (userGameId: number) => {
+    emit('toggleFavorite', userGameId);
   };
 </script>

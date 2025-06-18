@@ -34,12 +34,187 @@
   const searchQuery = ref('');
   const selectedPlatform = ref('all');
   const sortBy = ref('lastPlayed');
-
   // Modal state
-  const showConfirmModal = ref(false);
+  const showConfirmModal = ref(false); // Steam Import State
+  const showSteamImport = ref(false);
+  const steamInput = ref('');
+  const importResult = ref<{
+    success: boolean;
+    imported?: number;
+    updated?: number;
+    skipped?: number;
+    message?: string;
+  } | null>(null);
+
+  // Import Progress Dialog State
+  const showImportProgress = ref(false);
+  const importProgress = ref({
+    current: 0,
+    total: 0,
+    message: 'Import wird vorbereitet...',
+    isComplete: false
+  });
+
+  // Ein-/Ausklappen der Bibliothek-Sektion
+  const isLibrarySectionExpanded = ref(true);
+
   // Nach Import aktualisieren
   const onImportCompleted = () => {
     gamesStore.refreshData();
+  }; // Steam Import Function
+  const importSteamLibrary = async () => {
+    if (!steamInput.value.trim()) return;
+
+    importResult.value = null;
+
+    // Progress Dialog öffnen
+    showImportProgress.value = true;
+    importProgress.value = {
+      current: 0,
+      total: 0,
+      message: 'Import wird vorbereitet...',
+      isComplete: false
+    };
+
+    try {
+      const { $client } = useNuxtApp();
+      const notifyStore = useNotifyStore();
+
+      // Server Progress Composable für Live-Updates
+      const { connectToProgress, disconnect } = useServerProgress();
+
+      // Generiere eindeutige Operation-ID für Progress-Tracking
+      const operationId = `steam-import-${Date.now()}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+
+      // Progress-Updates abonnieren
+      connectToProgress(operationId, update => {
+        importProgress.value = {
+          current: update.current,
+          total: update.total,
+          message: update.message,
+          isComplete: false
+        };
+      });
+
+      // Schneller Import ohne IGDB-Anreicherung
+      const result = await $client.games.importSteamLibraryFast.mutate({
+        steamInput: steamInput.value.trim(),
+        operationId: operationId
+      });
+
+      // Progress als abgeschlossen markieren
+      importProgress.value.isComplete = true;
+      importProgress.value.message = 'Import erfolgreich abgeschlossen!';
+
+      // SSE-Verbindung schließen
+      disconnect();
+
+      importResult.value = result;
+
+      if (result.success) {
+        // Kurz warten, damit der Nutzer das "Abgeschlossen" sehen kann
+        setTimeout(() => {
+          showImportProgress.value = false;
+        }, 1500);
+
+        // Erfolgs-Benachrichtigung
+        let notificationMessage = 'Steam-Import abgeschlossen! ';
+        if (result.imported && result.imported > 0) {
+          notificationMessage += `${result.imported} neue Spiele importiert. `;
+        }
+        if (result.updated && result.updated > 0) {
+          notificationMessage += `${result.updated} Spiele aktualisiert. `;
+        }
+        if (!result.imported && !result.updated && result.skipped) {
+          notificationMessage =
+            'Steam-Import abgeschlossen - alle Spiele sind bereits in Ihrer Bibliothek.';
+        }
+        notifyStore.notify(notificationMessage.trim(), 1);
+
+        // Form zurücksetzen
+        showSteamImport.value = false;
+        steamInput.value = '';
+
+        // Spieleliste aktualisieren
+        onImportCompleted(); // IGDB-Anreicherung im Hintergrund starten (separater Hintergrundprozess)
+        setTimeout(async () => {
+          try {
+            const loadingStore = useLoadingStore();
+            const enrichmentOperationId = `igdb-enrichment-${Date.now()}`;
+
+            // Loading Operation für IGDB-Anreicherung registrieren
+            loadingStore.startOperation(
+              enrichmentOperationId,
+              'IGDB-Spielinformationen werden angereichert...',
+              'process'
+            );
+
+            // Server Progress für IGDB-Anreicherung abonnieren
+            const {
+              connectToProgress: connectEnrichment,
+              disconnect: disconnectEnrichment
+            } = useServerProgress();
+
+            connectEnrichment(enrichmentOperationId, update => {
+              // Progress im Loading Store aktualisieren
+              const progressPercent =
+                update.total > 0 ? (update.current / update.total) * 100 : 0;
+              loadingStore.updateProgress(
+                enrichmentOperationId,
+                progressPercent,
+                update.current,
+                update.message
+              );
+            });
+
+            await $client.games.enrichGamesBackground.mutate({
+              platformSlug: 'steam',
+              operationId: enrichmentOperationId
+            });
+
+            // Anreicherung abgeschlossen - Loading Operation beenden
+            loadingStore.finishOperation(enrichmentOperationId);
+            disconnectEnrichment();
+          } catch (enrichError) {
+            console.error('IGDB-Anreicherung Fehler:', enrichError);
+            // Loading Operation auch bei Fehlern beenden
+            const loadingStore = useLoadingStore();
+            loadingStore.finishOperation(`igdb-enrichment-${Date.now()}`);
+          }
+        }, 500); // Kurz warten, damit Import-Dialog geschlossen ist
+
+        // Zusätzliche Benachrichtigung über laufende Anreicherung
+        setTimeout(() => {
+          notifyStore.notify(
+            'IGDB-Anreicherung läuft im Hintergrund - Spielinformationen werden automatisch ergänzt.',
+            1
+          );
+        }, 3000);
+      } else {
+        // Bei Fehlern Dialog schließen
+        setTimeout(() => {
+          showImportProgress.value = false;
+        }, 2000);
+      }
+    } catch (error: any) {
+      console.error('Steam Import Error:', error);
+
+      // Progress Dialog schließen
+      showImportProgress.value = false;
+
+      importResult.value = {
+        success: false,
+        message: error.message || 'Ein unerwarteter Fehler ist aufgetreten'
+      };
+
+      const notifyStore = useNotifyStore();
+      notifyStore.notify(
+        'Steam-Import fehlgeschlagen. Ein unerwarteter Fehler ist aufgetreten',
+        3
+      );
+    }
   };
 
   // Computed für Auswahlmodus-UI
@@ -144,6 +319,15 @@
     // Der Auswahlmodus wird automatisch im Store beendet
   };
 
+  // Favoriten-Handler
+  const handleToggleFavorite = async (userGameId: number) => {
+    try {
+      await gamesStore.toggleFavorite(userGameId);
+    } catch (error) {
+      console.error('Fehler beim Ändern des Favoriten-Status:', error);
+    }
+  };
+
   // Formatierungsfunktionen
   const formatPlayTime = (minutes: number): string => {
     if (minutes === 0) return '0 Min';
@@ -179,11 +363,22 @@
   const topPlatform = computed(() => {
     return platformStats.value[0] || { name: 'Keine', count: 0 };
   });
-
   const recentActivity = computed(() => {
-    const recentGames = gamesStore.recentlyPlayed.slice(0, 5);
+    const recentGames = recentlyPlayedGames.value.slice(0, 5);
     if (recentGames.length === 0) return 'Keine Aktivität';
     return `${recentGames.length} Spiele kürzlich gespielt`;
+  });
+
+  // Kürzlich gespielte Spiele (innerhalb der letzten 2 Wochen)
+  const recentlyPlayedGames = computed(() => {
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14); // 2 Wochen = 14 Tage
+
+    return gamesStore.games.filter(game => {
+      if (!game.lastPlayed) return false;
+      const lastPlayedDate = new Date(game.lastPlayed);
+      return lastPlayedDate >= twoWeeksAgo;
+    });
   });
 
   // Stars für Rating
@@ -206,192 +401,502 @@
     if (diffDays < 365) return `Vor ${Math.ceil(diffDays / 30)} Monaten`;
     return `Vor ${Math.ceil(diffDays / 365)} Jahren`;
   };
+
+  // Rating-Statistiken (nur bewertete Spiele)
+  const ratedGames = computed(() => {
+    return gamesStore.games.filter(g => g.rating && g.rating > 0);
+  });
+  const favoriteGames = computed(() => {
+    return gamesStore.games.filter(g => g.isFavorite);
+  });
+
+  const averageRating = computed(() => {
+    const rated = ratedGames.value;
+    if (rated.length === 0) return 'N/A';
+    const sum = rated.reduce((acc, game) => acc + (game.rating || 0), 0);
+    return (sum / rated.length).toFixed(1);
+  });
 </script>
 
 <template>
   <div class="space-y-6">
-    <!-- Import-Bereich -->
-    <LibraryImport @import-completed="onImportCompleted" />
-
-    <!-- Header mit Statistiken -->
+    <!-- Ein-/Ausklappbarer Bereich: Meine Spielebibliothek -->
     <div
-      class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8 relative overflow-hidden">
-      <!-- Glassmorphism Background Pattern -->
+      class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-700/50 relative overflow-hidden">
+      <!-- Background Pattern -->
       <div
         class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5"></div>
       <div
         class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
       <div
         class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+
       <div class="relative z-10">
-        <h1
-          class="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-8">
-          Meine Spielebibliothek
-        </h1>
-
-        <!-- Allgemeine Statistiken -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <!-- Gesamte Spiele -->
-          <div
-            class="bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl p-6 border border-purple-500/30 relative overflow-hidden group hover:scale-105 transition-all duration-300">
-            <div
-              class="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="flex items-center justify-between mb-2">
-                <Icon
-                  name="heroicons:squares-2x2-20-solid"
-                  class="w-8 h-8 text-purple-400" />
-                <div class="text-4xl font-bold text-white">
-                  {{ totalGames }}
-                </div>
-              </div>
-              <div class="text-purple-300 text-sm font-medium">
-                Spiele in Bibliothek
-              </div>
-              <div class="text-purple-200/60 text-xs mt-1">
-                Über {{ platformStats.length }} Plattformen verteilt
-              </div>
+        <!-- Header mit Toggle-Button -->
+        <div
+          @click="isLibrarySectionExpanded = !isLibrarySectionExpanded"
+          class="p-6 cursor-pointer hover:bg-white/5 transition-colors rounded-t-2xl">
+          <div class="flex items-center justify-between">
+            <div class="text-center flex-1">
+              <h1
+                class="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                Meine Spielebibliothek
+              </h1>
+              <p class="text-gray-400 text-sm">
+                Verwalte deine Spiele, importiere neue Bibliotheken und finde
+                deine Lieblingsspiele
+              </p>
+            </div>
+            <div class="ml-4">
+              <Icon
+                name="heroicons:chevron-down-20-solid"
+                class="w-6 h-6 text-gray-400 transition-transform duration-300"
+                :class="{ 'rotate-180': !isLibrarySectionExpanded }" />
             </div>
           </div>
+        </div>
 
-          <!-- Gesamte Spielzeit -->
-          <div
-            class="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl p-6 border border-blue-500/30 relative overflow-hidden group hover:scale-105 transition-all duration-300">
+        <!-- Ausklappbarer Inhalt -->
+        <div
+          class="transition-all duration-500 ease-in-out"
+          :class="
+            isLibrarySectionExpanded
+              ? 'max-h-[2000px] opacity-100'
+              : 'max-h-0 opacity-0 overflow-hidden'
+          ">
+          <div class="px-6 pb-6 space-y-6">
+            <!-- Import-Bereich -->
             <div
-              class="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="flex items-center justify-between mb-2">
+              class="bg-gray-800/30 rounded-xl p-4 border border-gray-700/50">
+              <h3
+                class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
                 <Icon
-                  name="heroicons:clock-20-solid"
-                  class="w-8 h-8 text-blue-400" />
-                <div class="text-4xl font-bold text-white">
-                  {{ totalPlayTime }}h
+                  name="heroicons:arrow-down-tray-20-solid"
+                  class="w-4 h-4 text-purple-400" />
+                Bibliothek Import
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Steam -->
+                <div
+                  class="relative bg-gray-700/20 rounded-xl border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 overflow-hidden group">
+                  <div
+                    class="p-4 transition-all duration-300"
+                    :class="showSteamImport ? 'min-h-[100px]' : 'h-20'">
+                    <!-- Nicht-erweiterte Ansicht -->
+                    <div
+                      v-if="!showSteamImport"
+                      class="h-full flex items-center justify-center">
+                      <button
+                        @click.stop="showSteamImport = !showSteamImport"
+                        class="w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-lg"
+                        title="Steam Import">
+                        <Icon
+                          name="simple-icons:steam"
+                          class="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                      </button>
+                    </div>
+
+                    <!-- Erweiterte Ansicht -->
+                    <div v-else class="space-y-3">
+                      <!-- Header mit Steam Icon und Titel -->
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <Icon
+                            name="simple-icons:steam"
+                            class="w-6 h-6 text-white" />
+                        </div>
+                        <div class="flex-1">
+                          <h4 class="text-sm font-semibold text-white">
+                            Steam Import
+                          </h4>
+                          <p class="text-xs text-gray-400">
+                            Importiere deine Steam-Bibliothek
+                          </p>
+                        </div>
+                        <button
+                          @click.stop="showSteamImport = false"
+                          class="w-6 h-6 rounded-full bg-gray-600 hover:bg-gray-500 flex items-center justify-center transition-colors">
+                          <Icon
+                            name="heroicons:x-mark-16-solid"
+                            class="w-3 h-3 text-gray-300" />
+                        </button>
+                      </div>
+
+                      <!-- Input und Import Button -->
+                      <div class="space-y-2">
+                        <input
+                          v-model="steamInput"
+                          type="text"
+                          placeholder="Steam ID oder Profil-URL eingeben..."
+                          class="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          :disabled="loadingStore.hasForegroundOperations"
+                          @keypress.enter="
+                            steamInput.trim() &&
+                              !loadingStore.hasForegroundOperations &&
+                              importSteamLibrary()
+                          " />
+
+                        <button
+                          @click.stop="importSteamLibrary"
+                          :disabled="
+                            !steamInput.trim() ||
+                            loadingStore.hasForegroundOperations
+                          "
+                          class="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2">
+                          <Icon
+                            :name="
+                              loadingStore.hasForegroundOperations
+                                ? 'heroicons:arrow-path-16-solid'
+                                : 'heroicons:arrow-down-tray-16-solid'
+                            "
+                            :class="[
+                              'w-4 h-4',
+                              loadingStore.hasForegroundOperations
+                                ? 'animate-spin'
+                                : ''
+                            ]" />
+                          {{
+                            loadingStore.hasForegroundOperations
+                              ? 'Importiere...'
+                              : 'Bibliothek importieren'
+                          }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Epic Games (Coming Soon) -->
+                <div
+                  class="relative bg-gray-700/20 rounded-xl border border-gray-600/30 opacity-60 cursor-not-allowed overflow-hidden">
+                  <div class="p-4 h-20 flex items-center justify-center">
+                    <div class="text-center">
+                      <div
+                        class="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-1">
+                        <Icon
+                          name="simple-icons:epicgames"
+                          class="w-6 h-6 text-white" />
+                      </div>
+                      <span class="text-xs text-gray-500 font-medium"
+                        >Bald verfügbar</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <!-- GOG (Coming Soon) -->
+                <div
+                  class="relative bg-gray-700/20 rounded-xl border border-gray-600/30 opacity-60 cursor-not-allowed overflow-hidden">
+                  <div class="p-4 h-20 flex items-center justify-center">
+                    <div class="text-center">
+                      <div
+                        class="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-1">
+                        <Icon
+                          name="simple-icons:gogdotcom"
+                          class="w-6 h-6 text-white" />
+                      </div>
+                      <span class="text-xs text-gray-500 font-medium"
+                        >Bald verfügbar</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="text-blue-300 text-sm font-medium">
-                Gesamte Spielzeit
-              </div>
-              <div class="text-blue-200/60 text-xs mt-1">
-                {{ gamesStore.recentlyPlayed.length }} kürzlich gespielt
+              <!-- Import Result -->
+              <div
+                v-if="importResult && !showSteamImport"
+                class="mt-4 p-3 rounded-xl border text-sm"
+                :class="
+                  importResult.success
+                    ? 'bg-green-900/20 border-green-500/30 text-green-300'
+                    : 'bg-red-900/20 border-red-500/30 text-red-300'
+                ">
+                <div class="flex items-center gap-2 mb-1">
+                  <Icon
+                    :name="
+                      importResult.success
+                        ? 'heroicons:check-circle-20-solid'
+                        : 'heroicons:exclamation-triangle-20-solid'
+                    "
+                    class="w-4 h-4" />
+                  <span class="font-medium">{{
+                    importResult.success
+                      ? 'Import erfolgreich!'
+                      : 'Import fehlgeschlagen'
+                  }}</span>
+                </div>
+                <div
+                  v-if="
+                    importResult.success &&
+                    (importResult.imported || importResult.updated)
+                  "
+                  class="pl-6 space-y-1 text-sm">
+                  <div
+                    v-if="importResult.imported"
+                    class="flex items-center gap-2">
+                    <Icon
+                      name="heroicons:plus-circle-16-solid"
+                      class="w-3 h-3" />
+                    {{ importResult.imported }} neue Spiele importiert
+                  </div>
+                  <div
+                    v-if="importResult.updated"
+                    class="flex items-center gap-2">
+                    <Icon
+                      name="heroicons:arrow-path-16-solid"
+                      class="w-3 h-3" />
+                    {{ importResult.updated }} Spiele aktualisiert
+                  </div>
+                </div>
+                <div
+                  v-else-if="!importResult.success && importResult.message"
+                  class="pl-6 text-sm">
+                  {{ importResult.message }}
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Top Plattform -->
-          <div
-            class="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-xl p-6 border border-green-500/30 relative overflow-hidden group hover:scale-105 transition-all duration-300">
+            <!-- Stats-Bereich (verbessertes Design) -->
             <div
-              class="absolute inset-0 bg-gradient-to-br from-green-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative z-10">
-              <div class="flex items-center justify-between mb-2">
+              class="bg-gray-800/30 rounded-xl p-4 border border-gray-700/50">
+              <h3
+                class="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
                 <Icon
-                  name="heroicons:trophy-20-solid"
-                  class="w-8 h-8 text-green-400" />
-                <div class="text-4xl font-bold text-white">
-                  {{ topPlatform.count }}
+                  name="heroicons:chart-bar-20-solid"
+                  class="w-4 h-4 text-purple-400" />
+                Bibliothek-Statistiken
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Gesamte Spiele -->
+                <div class="relative group">
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div
+                    class="relative bg-gray-700/40 rounded-xl p-4 border border-gray-600/30 hover:border-blue-400/50 transition-all duration-300 text-center">
+                    <div class="flex items-center justify-center mb-3">
+                      <div
+                        class="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg">
+                        <Icon
+                          name="heroicons:squares-2x2-20-solid"
+                          class="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div class="text-2xl font-bold text-white mb-1">
+                      {{ totalGames }}
+                    </div>
+                    <div class="text-gray-400 text-sm font-medium">
+                      Spiele in Bibliothek
+                    </div>
+                    <div
+                      class="mt-2 h-1 bg-gray-600 rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-full"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Gesamte Spielzeit -->
+                <div class="relative group">
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div
+                    class="relative bg-gray-700/40 rounded-xl p-4 border border-gray-600/30 hover:border-purple-400/50 transition-all duration-300 text-center">
+                    <div class="flex items-center justify-center mb-3">
+                      <div
+                        class="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-lg">
+                        <Icon
+                          name="heroicons:clock-20-solid"
+                          class="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div class="text-2xl font-bold text-white mb-1">
+                      {{ totalPlayTime }}h
+                    </div>
+                    <div class="text-gray-400 text-sm font-medium">
+                      Gesamte Spielzeit
+                    </div>
+                    <div
+                      class="mt-2 h-1 bg-gray-600 rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-gradient-to-r from-purple-500 to-pink-400 rounded-full"
+                        :style="{
+                          width:
+                            Math.min(100, (totalPlayTime / 1000) * 100) + '%'
+                        }"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Top Plattform -->
+                <div class="relative group">
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div
+                    class="relative bg-gray-700/40 rounded-xl p-4 border border-gray-600/30 hover:border-amber-400/50 transition-all duration-300 text-center">
+                    <div class="flex items-center justify-center mb-3">
+                      <div
+                        class="p-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg">
+                        <Icon
+                          name="heroicons:trophy-20-solid"
+                          class="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div class="text-2xl font-bold text-white mb-1">
+                      {{ topPlatform.count }}
+                    </div>
+                    <div class="text-gray-400 text-sm font-medium">
+                      {{ topPlatform.name || 'Keine Plattform' }}
+                    </div>
+                    <div
+                      class="mt-2 h-1 bg-gray-600 rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-gradient-to-r from-amber-500 to-orange-400 rounded-full"
+                        :style="{
+                          width:
+                            totalGames > 0
+                              ? (topPlatform.count / totalGames) * 100 + '%'
+                              : '0%'
+                        }"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="text-green-300 text-sm font-medium">
-                Top Plattform
-              </div>
-              <div class="text-green-200/60 text-xs mt-1">
-                {{ topPlatform.name }}
+
+              <!-- Zusätzliche Stats-Reihe -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <!-- Kürzlich gespielt -->
+                <div
+                  class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/20 text-center">
+                  <Icon
+                    name="heroicons:play-20-solid"
+                    class="w-4 h-4 text-green-400 mx-auto mb-1" />
+                  <div class="text-sm font-semibold text-white">
+                    {{ recentlyPlayedGames.length }}
+                  </div>
+                  <div class="text-gray-400 text-xs">Kürzlich gespielt</div>
+                </div>
+                <!-- Lieblingsspiele (Rating > 3) -->
+                <div
+                  class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/20 text-center">
+                  <Icon
+                    name="heroicons:heart-20-solid"
+                    class="w-4 h-4 text-red-400 mx-auto mb-1" />
+                  <div class="text-sm font-semibold text-white">
+                    {{ favoriteGames.length }}
+                  </div>
+                  <div class="text-gray-400 text-xs">Lieblingsspiele</div>
+                </div>
+
+                <!-- Verschiedene Plattformen -->
+                <div
+                  class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/20 text-center">
+                  <Icon
+                    name="heroicons:computer-desktop-20-solid"
+                    class="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                  <div class="text-sm font-semibold text-white">
+                    {{ platformStats.length }}
+                  </div>
+                  <div class="text-gray-400 text-xs">Plattformen</div>
+                </div>
+                <!-- Durchschnittliches Rating -->
+                <div
+                  class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/20 text-center">
+                  <Icon
+                    name="heroicons:star-20-solid"
+                    class="w-4 h-4 text-yellow-400 mx-auto mb-1" />
+                  <div class="text-sm font-semibold text-white">
+                    {{ averageRating }}
+                  </div>
+                  <div class="text-gray-400 text-xs">Ø Rating</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- Filter Bar -->
+
+    <!-- Separater Filter-Bereich -->
     <div
-      class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-      <div class="space-y-4">
-        <!-- Haupt-Filter -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4">
+      <h3
+        class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+        <Icon
+          name="heroicons:funnel-20-solid"
+          class="w-4 h-4 text-purple-400" />
+        Filter & Aktionen
+      </h3>
+      <div class="space-y-3">
+        <!-- Filter Felder -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <!-- Suche -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              Spiele suchen
-            </label>
-            <div class="relative">
-              <Icon
-                name="heroicons:magnifying-glass-20-solid"
-                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Spielname, Genre oder Plattform eingeben..."
-                class="w-full pl-10 pr-10 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-              <button
-                v-if="searchQuery.trim()"
-                @click="searchQuery = ''"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
-                <Icon name="heroicons:x-mark-20-solid" class="w-4 h-4" />
-              </button>
-            </div>
+          <div class="relative">
+            <Icon
+              name="heroicons:magnifying-glass-20-solid"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Spiele suchen..."
+              class="w-full pl-10 pr-8 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+            <button
+              v-if="searchQuery.trim()"
+              @click="searchQuery = ''"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+              <Icon name="heroicons:x-mark-20-solid" class="w-3 h-3" />
+            </button>
           </div>
 
           <!-- Plattform Filter -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              Plattform
-            </label>
-            <div class="relative">
-              <Icon
-                name="heroicons:computer-desktop-20-solid"
-                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <select
-                v-model="selectedPlatform"
-                class="w-full pl-10 pr-8 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none cursor-pointer">
-                <option
-                  v-for="platform in platforms"
-                  :key="platform.value"
-                  :value="platform.value">
-                  {{ platform.label }}
-                  {{
-                    platform.value !== 'all'
-                      ? `(${
-                          gamesStore.getGamesByPlatformName(platform.value)
-                            .length
-                        })`
-                      : ''
-                  }}
-                </option>
-              </select>
-              <Icon
-                name="heroicons:chevron-down-20-solid"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
+          <div class="relative">
+            <Icon
+              name="heroicons:computer-desktop-20-solid"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <select
+              v-model="selectedPlatform"
+              class="w-full pl-10 pr-8 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none cursor-pointer">
+              <option
+                v-for="platform in platforms"
+                :key="platform.value"
+                :value="platform.value">
+                {{ platform.label }}
+                {{
+                  platform.value !== 'all'
+                    ? `(${
+                        gamesStore.getGamesByPlatformName(platform.value).length
+                      })`
+                    : ''
+                }}
+              </option>
+            </select>
+            <Icon
+              name="heroicons:chevron-down-20-solid"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
           <!-- Sortierung -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              Sortieren nach
-            </label>
-            <div class="relative">
-              <Icon
-                name="heroicons:arrows-up-down-20-solid"
-                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <select
-                v-model="sortBy"
-                class="w-full pl-10 pr-8 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none cursor-pointer">
-                <option value="lastPlayed">Zuletzt gespielt</option>
-                <option value="title">Titel (A-Z)</option>
-                <option value="playTime">Spielzeit</option>
-                <option value="rating">Bewertung</option>
-                <option value="addedAt">Hinzugefügt</option>
-              </select>
-              <Icon
-                name="heroicons:chevron-down-20-solid"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
+          <div class="relative">
+            <Icon
+              name="heroicons:arrows-up-down-20-solid"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <select
+              v-model="sortBy"
+              class="w-full pl-10 pr-8 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none cursor-pointer">
+              <option value="lastPlayed">Zuletzt gespielt</option>
+              <option value="title">Titel (A-Z)</option>
+              <option value="playTime">Spielzeit</option>
+              <option value="rating">Bewertung</option>
+              <option value="addedAt">Hinzugefügt</option>
+            </select>
+            <Icon
+              name="heroicons:chevron-down-20-solid"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
-        <!-- Aktionsbereich mit optimiertem Layout -->
+        <!-- Aktionsbereich -->
         <div
-          class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-gray-700/30">
+          class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-gray-700/30">
           <!-- Linke Seite: Aktions-Button oder Selection-Modus -->
           <div
             v-if="
@@ -403,7 +908,7 @@
             <button
               v-if="!gamesStore.isSelectionMode"
               @click="handleSelectionToggle"
-              class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-all duration-300 flex items-center gap-2">
+              class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-all duration-300 flex items-center gap-2 text-sm">
               <Icon name="heroicons:trash-20-solid" class="w-4 h-4" />
               <span class="hidden sm:inline font-medium">Löschen</span>
             </button>
@@ -411,17 +916,17 @@
             <!-- Selection Controls (Selection Mode) -->
             <div
               v-else
-              class="flex items-center gap-3 px-4 py-2.5 bg-gray-800 border border-gray-600 rounded-lg">
+              class="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg">
               <!-- Schließen Button -->
               <button
                 @click="handleSelectionToggle"
-                class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-600 hover:bg-gray-500 text-gray-300 hover:text-white transition-all duration-200">
-                <Icon name="heroicons:x-mark-16-solid" class="w-3.5 h-3.5" />
+                class="flex items-center justify-center w-5 h-5 rounded-full bg-gray-600 hover:bg-gray-500 text-gray-300 hover:text-white transition-all duration-200">
+                <Icon name="heroicons:x-mark-16-solid" class="w-3 h-3" />
               </button>
 
               <!-- Auswahl Info -->
               <span class="text-xs text-gray-300">
-                {{ selectedGamesCount }} von {{ filteredGames.length }}
+                {{ selectedGamesCount }}/{{ filteredGames.length }}
               </span>
 
               <!-- Alle/Keine Buttons -->
@@ -445,7 +950,7 @@
                   selectedGamesCount === 0 || gamesStore.isRemovingGames
                 "
                 :class="[
-                  'px-3 py-1 text-xs rounded flex items-center gap-1 transition-all duration-200',
+                  'px-2 py-1 text-xs rounded flex items-center gap-1 transition-all duration-200',
                   selectedGamesCount === 0 || gamesStore.isRemovingGames
                     ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                     : 'bg-red-600 hover:bg-red-500 text-white'
@@ -473,9 +978,9 @@
               !loadingStore.hasForegroundOperations &&
               gamesStore.games.length > 0
             "
-            class="flex items-center gap-4">
+            class="flex items-center gap-3">
             <!-- Game Count -->
-            <span class="text-sm text-gray-500 whitespace-nowrap">
+            <span class="text-xs text-gray-500 whitespace-nowrap">
               {{ filteredGames.length }} von {{ totalGames }}
             </span>
             <!-- View Mode Toggle (nur im normalen Modus) -->
@@ -499,7 +1004,8 @@
             gamesStore.isSelectionMode
               ? gamesStore.toggleGameSelection(game.id)
               : undefined
-          " />
+          "
+          @toggleFavorite="handleToggleFavorite" />
       </div>
     </div>
 
@@ -568,6 +1074,105 @@
       confirm-variant="danger"
       @confirm="handleConfirmRemoval"
       @cancel="showConfirmModal = false" />
+
+    <!-- Steam Import Progress Dialog -->
+    <div
+      v-if="showImportProgress"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div
+        class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 shadow-2xl max-w-md w-full">
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-700/50">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Icon name="simple-icons:steam" class="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">Steam Import</h3>
+              <p class="text-sm text-gray-400">
+                Ihre Steam-Bibliothek wird importiert...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Content -->
+        <div class="p-6 space-y-4">
+          <!-- Progress Bar -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-300">Fortschritt</span>
+              <span class="text-gray-400">
+                {{
+                  importProgress.total > 0
+                    ? `${importProgress.current} / ${importProgress.total}`
+                    : 'Wird vorbereitet...'
+                }}
+              </span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div
+                class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300 ease-out"
+                :style="{
+                  width:
+                    importProgress.total > 0
+                      ? `${
+                          (importProgress.current / importProgress.total) * 100
+                        }%`
+                      : '10%'
+                }"
+                :class="{
+                  'animate-pulse': importProgress.total === 0
+                }"></div>
+            </div>
+          </div>
+
+          <!-- Status Message -->
+          <div class="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg">
+            <Icon
+              :name="
+                importProgress.isComplete
+                  ? 'heroicons:check-circle-20-solid'
+                  : 'heroicons:arrow-path-20-solid'
+              "
+              :class="[
+                'w-5 h-5 flex-shrink-0',
+                importProgress.isComplete
+                  ? 'text-green-400'
+                  : 'text-blue-400 animate-spin'
+              ]" />
+            <span class="text-sm text-gray-300 leading-relaxed">
+              {{ importProgress.message }}
+            </span>
+          </div>
+
+          <!-- Success/Completion Info -->
+          <div
+            v-if="importProgress.isComplete"
+            class="flex items-center gap-2 p-3 bg-green-900/20 border border-green-500/30 rounded-lg">
+            <Icon
+              name="heroicons:information-circle-20-solid"
+              class="w-4 h-4 text-green-400 flex-shrink-0" />
+            <span class="text-sm text-green-300">
+              IGDB-Anreicherung startet automatisch im Hintergrund. Fortschritt
+              wird im Header angezeigt.
+            </span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 pt-0">
+          <div class="text-xs text-gray-500 text-center">
+            {{
+              importProgress.isComplete
+                ? 'Dialog schließt automatisch...'
+                : 'Bitte warten Sie, bis der Import abgeschlossen ist.'
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
