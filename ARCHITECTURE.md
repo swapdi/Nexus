@@ -1,6 +1,23 @@
-# Architektur-Überarbeitung: Strikte TRPC → Services → Datenbank Struktur
+# Nexus Architektur-Dokumentation
 
-## Durchgeführte Änderungen
+## Architektur-Überblick
+
+Die Nexus-Anwendung folgt einer klaren und modularen Architekturstruktur mit definierten Verantwortlichkeiten für jede Schicht:
+
+```
+UI (Vue Komponenten) → Pinia Stores → TRPC Client → TRPC Router → Services → Composables → DB/API
+```
+
+Jede Schicht hat eine spezifische Verantwortung:
+
+- **UI**: Präsentation und Benutzerinteraktion
+- **Pinia Stores**: Zustandsverwaltung und UI-Logik
+- **TRPC Router**: API-Endpunkte und Validierung
+- **Services**: Datenoperationen und externe API-Aufrufe
+- **Composables**: Wiederverwendbare Geschäftslogik
+- **DB/API**: Datenbankzugriff und externe APIs
+
+## Durchgeführte Überarbeitungen
 
 ### 1. User/Auth Service Konsolidierung ✅
 
@@ -17,20 +34,42 @@
 - `user.router.ts` - Einheitlicher TRPC Router für User-Management
 - `user.store.ts` - Umbenennung von account.store.ts für Konsistenz
 
-### 2. Architektur-Schichten ✅
+### 2. Composables Integration ✅
 
-Die Anwendung folgt jetzt strikt dieser Architektur:
+#### Vorher:
 
-```
-Pinia Stores → TRPC Client → TRPC Router → Services → Prisma/DB
-```
+- Geschäftslogik war in Services vermischt mit DB/API-Aufrufen
+- Redundante Implementierungen für ähnliche Funktionalitäten
+- Keine klare Trennung zwischen Datenoperationen und Geschäftslogik
+
+#### Nachher:
+
+- Alle komplexe Geschäftslogik in wiederverwendbare Composables extrahiert
+- Services konzentrieren sich auf Datenbankoperationen und API-Aufrufe
+- Klar definierte Schnittstellen zwischen Services und Composables
+
+### 3. Konsolidierung redundanter Composables ✅
+
+#### Vorher:
+
+- `useSteamAPI.ts` und `useSteamImport.ts` - Doppelte Steam-API-Funktionalität
+- `useGameEnrichment.ts` und `useIGDBEnrichment.ts` - Überlappende IGDB-Funktionalität
+- `DealAggregatorService` als separater Service
+
+#### Nachher:
+
+- `useSteamImport.ts` - Vereint alle Steam-API und Import-Funktionalität
+- `useGameEnrichment.ts` - Vereint alle IGDB und Anreicherungs-Funktionalität
+- `DealsService` mit integrierter Deal-Aggregations-Funktionalität
+
+### 4. Hauptkomponenten der aktuellen Architektur
 
 #### Services:
 
 - `user.service.ts` - User-Management, Authentifizierung, Statistiken
-- `games.service.ts` - Spiele-Bibliothek, Steam-Import, Metadaten
-- `deals.service.ts` - Deal-Management, Deal-Aggregation von externen APIs, Filterung
-- `igdb.service.ts` - IGDB API Integration
+- `games.service.ts` - Spiele-Bibliothek, delegiert an `IGDBService` und nutzt Composables
+- `igdb.service.ts` - IGDB API Integration, nutzt `useGameEnrichment`
+- `deals.service.ts` - Deal-Management, Deal-Aggregation, nutzt `useDealAggregation`
 - `util.service.ts` - Utility-Funktionen
 
 #### TRPC Router:
@@ -47,75 +86,92 @@ Pinia Stores → TRPC Client → TRPC Router → Services → Prisma/DB
 - `loading.store.ts` - Loading-States
 - `notify.store.ts` - Benachrichtigungen
 
-### 3. Gelöschte/Obsolete Dateien ✅
+#### Composables:
+
+- `useGameEnrichment.ts` - Spieledaten-Anreicherung mit IGDB
+- `useSteamImport.ts` - Steam-Bibliotheksimport und API-Interaktion
+- `useDealAggregation.ts` - Angebots-Aggregation und -Verarbeitung
+- `useGameUtils.ts` - Hilfsfunktionen für Spieledaten
+- `useUserStats.ts` - Benutzerbibliotheksstatistiken
+- `useViewMode.ts` - UI-Ansichtsmodi
+- `useServerProgress.ts` - Server-seitige Operationsfortschritte
+
+### 5. Gelöschte/Obsolete Dateien ✅
 
 - `auth.service.ts` - In user.service.ts konsolidiert
 - `auth.router.ts` - Durch user.router.ts ersetzt
 - `types.service.ts` - Nicht mehr benötigt, Typen in user.service.ts
 - `account.store.ts` - Umbenannt zu user.store.ts
+- `deal-aggregator.service.ts` - In deals.service.ts konsolidiert
+- `useSteamAPI.ts` - In useSteamImport.ts konsolidiert
+- `useIGDBEnrichment.ts` - In useGameEnrichment.ts konsolidiert
 
-### 4. Aktualisierte Referenzen ✅
+### 6. Vorteile der überarbeiteten Architektur
 
-- Middleware: `authContext.ts` nutzt jetzt `UserService`
-- Vue-Komponenten: `useAccountStore` → `useUserStore`
-- Alle direkten Prisma-Zugriffe entfernt aus Stores/Routern
+#### Verbesserte Trennung der Verantwortlichkeiten:
 
-### 5. Vorteile der neuen Architektur
+- **Composables**: Enthalten reine Geschäftslogik ohne DB/API-Aufrufe
+- **Services**: Konzentrieren sich auf Datenbankoperationen und API-Aufrufe
+- **Router**: Implementieren Input-Validierung und Zugriffskontrollen
+- **Stores**: Handhaben nur UI-Zustand und TRPC-Aufrufe
 
-#### Konsistenz:
+#### Verbesserte Wartbarkeit:
 
-- Einheitliche Namenskonvention (user statt auth/account)
-- Klare Trennung der Verantwortlichkeiten
-- Konsistente API-Struktur
+- Wiederverwendbare Geschäftslogik in Composables
+- Klare, einheitliche Struktur für alle Komponenten
+- Reduzierte Codeduplizierung
 
-#### Wartbarkeit:
+#### Verbesserte Testbarkeit:
 
-- Zentrale Services für Datenbankzugriffe
-- TRPC Router sind nur noch dünne Wrapper
-- Pinia Stores handhaben nur State-Management
-
-#### Skalierbarkeit:
-
-- Einfaches Hinzufügen neuer Endpunkte
-- Services können unabhängig getestet werden
-- Klare Datenflüsse
+- Geschäftslogik in Composables ist unabhängig testbar
+- Services können mit Mock-Composables getestet werden
+- Klare Grenzen zwischen den Schichten erleichtern Unit-Tests
 
 #### Type Safety:
 
-- Vollständige TypeScript-Typen durch TRPC
+- Vollständige TypeScript-Typen durch alle Schichten
 - Konsistente Interface-Definitionen
 - Compile-Zeit Validierung
 
-### 6. Deals Service Konsolidierung ✅
+### 7. Datenfluss-Beispiele
 
-#### Vorher:
+#### Beispiel: Steam-Spieleimport
 
-- `deals.service.ts` - Basis Deal-Management (CRUD)
-- `deal-aggregator.service.ts` - Deal-Aggregation von externen APIs
+1. UI-Komponente ruft Store-Methode auf
+2. Store ruft TRPC-Client auf
+3. TRPC-Router validiert Anfrage und ruft GamesService.importSteamGames auf
+4. GamesService verwendet useSteamImport.extractSteamId zur Validierung
+5. GamesService verwendet useSteamImport.fetchSteamLibrary für API-Aufruf
+6. GamesService speichert Spiele in der Datenbank
+7. GamesService ruft IGDBService für Metadaten auf
+8. IGDBService verwendet useGameEnrichment für Anreicherungslogik
 
-#### Nachher:
+#### Beispiel: Deal-Aggregation
 
-- `deals.service.ts` - Konsolidierter Service für alle Deal-Funktionen:
-  - CRUD-Operationen für Deals
-  - Deal-Aggregation und Mock-Daten
-  - Externe Deal-Verarbeitung
-  - Deal-Filterung und Sortierung
-  - Bereinigung alter Deals
-
-## Nächste Schritte (Optional)
-
-1. **Testing**: Unit-Tests für Services hinzufügen
-2. **Caching**: Redis/Memory-Caching für Services implementieren
-3. **Validation**: Zod-Schemas in Services für Input-Validierung
-4. **Error Handling**: Einheitliche Error-Handling-Strategie
-5. **Documentation**: OpenAPI/Swagger für TRPC-Endpunkte
+1. UI-Komponente ruft Store-Methode auf
+2. Store ruft TRPC-Client auf
+3. TRPC-Router validiert Anfrage und ruft DealsService.aggregateDeals auf
+4. DealsService verwendet useDealAggregation.fetchExternalDeals
+5. DealsService speichert aggregierte Deals in der Datenbank
+6. DealsService gibt gefilterte Deals zurück
 
 ## Validierung
 
 Die Anwendung folgt jetzt strikt der gewünschten Architektur:
 
+- ✅ UI interagiert nur mit Stores
 - ✅ Stores machen nur TRPC-Aufrufe
 - ✅ TRPC Router delegieren an Services
-- ✅ Services handhaben Datenbankzugriffe
+- ✅ Services handhaben Datenbankzugriffe und nutzen Composables für Geschäftslogik
+- ✅ Composables enthalten keine direkten DB/API-Aufrufe
 - ✅ Keine direkten Prisma-Aufrufe in Stores/Routern
-- ✅ Einheitliche User/Auth-Struktur
+- ✅ Einheitliche Benennungskonventionen und Strukturen
+
+## Nächste Schritte (Optional)
+
+1. **Testing**: Unit-Tests für Services und Composables hinzufügen
+2. **Caching**: Redis/Memory-Caching für Services implementieren
+3. **Validation**: Zod-Schemas in Services für Input-Validierung
+4. **Error Handling**: Einheitliche Error-Handling-Strategie
+5. **Documentation**: OpenAPI/Swagger für TRPC-Endpunkte
+6. **Performance Monitoring**: Telemetrie für kritische Pfade

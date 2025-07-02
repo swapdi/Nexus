@@ -5,9 +5,11 @@
   const editableDisplayName = ref('');
   const isLoadingNameChange = ref(false);
 
-  const fullUser = computed(() => userStore.fullUser);
-  const user = computed(() => fullUser.value?.dbUser);
-  const account = computed(() => fullUser.value?.account);
+  // Benutzer aus dem Store
+  const user = computed(() => userStore.user);
+
+  // Account aus der Supabase-Authentifizierung
+  const account = useSupabaseUser();
 
   // Profile information
   const userEmail = computed(() => account.value?.email);
@@ -41,6 +43,21 @@
     { immediate: true }
   );
 
+  // Stelle sicher, dass die Benutzerdaten geladen sind
+  onMounted(async () => {
+    try {
+      if (!userStore.user) {
+        await userStore.init();
+      }
+    } catch (error) {
+      console.error('Fehler beim Laden der Benutzerdaten:', error);
+      notifyStore.notify(
+        'Fehler beim Laden der Benutzerdaten.',
+        NotificationType.Error
+      );
+    }
+  });
+
   definePageMeta({
     middleware: ['auth'],
     layout: 'authenticated'
@@ -68,8 +85,9 @@
 
     isLoadingNameChange.value = true;
     try {
-      // TODO: Implement updateUser method in account store
-      // await userStore.updateUser({ display_name: editableDisplayName.value.trim() });
+      await userStore.updateProfile({
+        display_name: editableDisplayName.value.trim()
+      });
       notifyStore.notify(
         'Display name updated successfully!',
         NotificationType.Success

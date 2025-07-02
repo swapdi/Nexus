@@ -1,3 +1,4 @@
+import { useUserStats } from '~/composables/useUserStats'; // Import des Composables
 import { PrismaClient, type User } from '~/prisma/client';
 
 const prisma = new PrismaClient();
@@ -306,21 +307,9 @@ export namespace UserService {
       throw new Error('Benutzer nicht gefunden');
     }
 
-    // Gesamtspielzeit in Stunden berechnen
-    const totalPlaytimeMinutes = user.userGames.reduce(
-      (sum, game) => sum + (game.playtimeMinutes || 0),
-      0
-    );
-    const totalPlaytimeHours = Math.floor(totalPlaytimeMinutes / 60);
-
-    return {
-      totalGames: user.userGames.length,
-      totalPlaytimeHours,
-      totalAchievements: user.userAchievements.length,
-      currentLevel: user.level,
-      currentXP: user.xp,
-      credits: user.credits
-    };
+    // Statistiken über Composable berechnen
+    const { calculateUserStats } = useUserStats();
+    return calculateUserStats(user);
   }
 
   /**
@@ -335,12 +324,13 @@ export namespace UserService {
       throw new Error('Benutzer nicht gefunden');
     }
 
-    const newXP = user.xp + xp;
-    const newLevel = Math.floor(newXP / 1000) + 1; // Beispiel: 1000 XP pro Level
+    // Level-Berechnung über Composable
+    const { calculateLevelFromXP } = useUserStats();
+    const levelResult = calculateLevelFromXP(user.xp, xp, user.level);
 
     return updateUser(user_id, {
-      xp: newXP,
-      level: newLevel
+      xp: levelResult.newXP,
+      level: levelResult.newLevel
     });
   }
 
@@ -359,12 +349,16 @@ export namespace UserService {
       throw new Error('Benutzer nicht gefunden');
     }
 
-    if (user.credits + credits < 0) {
-      throw new Error('Nicht genügend Credits verfügbar');
+    // Credits-Validierung über Composable
+    const { validateCreditsTransaction } = useUserStats();
+    const validation = validateCreditsTransaction(user.credits, credits);
+
+    if (!validation.isValid) {
+      throw new Error(validation.error || 'Ungültige Credits-Transaktion');
     }
 
     return updateUser(user_id, {
-      credits: user.credits + credits
+      credits: validation.newCreditsAmount
     });
   }
 }

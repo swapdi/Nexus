@@ -1,3 +1,6 @@
+import { useGameEnrichment } from '~/composables/useGameEnrichment';
+import { useGameUtils } from '~/composables/useGameUtils';
+import { useSteamImport } from '~/composables/useSteamImport';
 import {
   PrismaClient,
   type Game,
@@ -55,6 +58,10 @@ export interface ImportResult {
 }
 
 export namespace GamesService {
+  // ============================================================================
+  // USER GAMES OPERATIONS
+  // ============================================================================
+
   export async function getUserGames(
     userId: number
   ): Promise<GameWithPlatforms[]> {
@@ -77,7 +84,8 @@ export namespace GamesService {
         addedAt: 'desc'
       }
     });
-    const result = userGames.map(userGame => ({
+
+    return userGames.map(userGame => ({
       id: userGame.game.id, // Game ID
       userGameId: userGame.id, // UserGame ID
       title: userGame.game.title,
@@ -96,7 +104,6 @@ export namespace GamesService {
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     }));
-    return result;
   }
 
   export async function getUserGameById(
@@ -144,6 +151,7 @@ export namespace GamesService {
       }
     });
   }
+
   export async function createUserGame(
     userId: number,
     gameId: number,
@@ -173,6 +181,7 @@ export namespace GamesService {
       }
     });
   }
+
   export async function updateUserGame(
     userGameId: number,
     data: {
@@ -200,6 +209,7 @@ export namespace GamesService {
       }
     });
   }
+
   export async function deleteUserGame(userGameId: number): Promise<UserGame> {
     return prisma.userGame.delete({
       where: { id: userGameId },
@@ -272,6 +282,7 @@ export namespace GamesService {
 
     return platformGame?.game || null;
   }
+
   export async function createGame(
     title: string,
     data: {
@@ -281,6 +292,7 @@ export namespace GamesService {
       developer?: string;
       publisher?: string;
       genres?: string[];
+      rating?: number;
     }
   ): Promise<Game> {
     return prisma.game.create({
@@ -291,7 +303,8 @@ export namespace GamesService {
         releaseDate: data.releaseDate,
         developer: data.developer,
         publisher: data.publisher,
-        genres: data.genres || []
+        genres: data.genres || [],
+        rating: data.rating
       },
       include: {
         platformGames: {
@@ -314,9 +327,6 @@ export namespace GamesService {
     });
   }
 
-  /**
-   * Suche Spiele nach Titel
-   */
   export async function searchGamesByTitle(title: string): Promise<Game[]> {
     return prisma.game.findMany({
       where: {
@@ -348,6 +358,7 @@ export namespace GamesService {
       }
     });
   }
+
   export async function updateGame(
     gameId: number,
     data: {
@@ -536,6 +547,7 @@ export namespace GamesService {
       developer?: string;
       publisher?: string;
       genres?: string[];
+      rating?: number;
     },
     platformGameUrl?: string
   ): Promise<Game> {
@@ -548,6 +560,7 @@ export namespace GamesService {
         developer: gameData.developer,
         publisher: gameData.publisher,
         genres: gameData.genres || [],
+        rating: gameData.rating,
         platformGames: {
           create: {
             platformId: platformId,
@@ -606,17 +619,9 @@ export namespace GamesService {
       })
     ]);
 
-    // Plattform-Statistiken berechnen
-    const platformStats = userGames.reduce((acc, userGame) => {
-      userGame.game.platformGames.forEach(pg => {
-        const platformName = pg.platform.name;
-        if (!acc[platformName]) {
-          acc[platformName] = 0;
-        }
-        acc[platformName]++;
-      });
-      return acc;
-    }, {} as Record<string, number>);
+    // Verwende GameUtils Composable für Statistik-Berechnungen
+    const { calculatePlatformStats } = useGameUtils();
+    const platformStats = calculatePlatformStats(userGames);
 
     return {
       totalGames,
@@ -628,9 +633,164 @@ export namespace GamesService {
   }
 
   // ============================================================================
-  // IMPORT & SYNC OPERATIONS
+  // GAME ENRICHMENT
   // ============================================================================
 
+  /**
+   * Spiel mit IGDB-Daten anreichern
+   * Grund: Delegiert komplexe Anreicherungslogik an useGameEnrichment Composable
+   */
+  export async function enrichGameWithIGDB(
+    gameId: number,
+    gameName: string,
+    platformName?: string,
+    forceUpdate: boolean = false
+  ): Promise<boolean> {
+    try {
+      // Prüfe ob das Spiel bereits IGDB-Daten hat
+      const game = await getGameById(gameId);
+      if (!game) {
+        return false;
+      }
+
+      // Verwende Composable für Anreicherungslogik
+      const {
+        shouldEnrichGame,
+        determineFieldsToUpdate,
+        validateEnrichedData
+      } = useGameEnrichment();
+
+      // Prüfen ob Anreicherung nötig ist
+      if (!shouldEnrichGame(game, { forceUpdate, skipIfComplete: true })) {
+        return false;
+      }
+
+      // IGDB-Daten über IGDBService abrufen
+      const enrichedData = await IGDBService.enrichGameData(
+        gameName,
+        platformName
+      );
+
+      if (!enrichedData || Object.keys(enrichedData).length === 0) {
+        return false;
+      }
+
+      // Validiere die angereicherten Daten
+      const validation = validateEnrichedData(enrichedData);
+      if (!validation.isValid) {
+        console.warn(
+          `Ungültige IGDB-Daten für "${gameName}":`,
+          validation.issues
+        );
+        return false;
+      }
+
+      // Bestimme welche Felder aktualisiert werden sollen über Composable
+      const { updateData, updatedFields } = determineFieldsToUpdate(
+        game,
+        enrichedData,
+        forceUpdate
+      );
+
+      // Nur aktualisieren wenn neue Daten vorhanden sind
+      if (Object.keys(updateData).length > 0) {
+        await updateGame(gameId, updateData);
+        console.log(
+          `IGDB-Anreicherung für "${gameName}" erfolgreich. Aktualisierte Felder:`,
+          updatedFields
+        );
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error(
+        `Fehler beim Anreichern von "${gameName}" mit IGDB-Daten:`,
+        error
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Spezielle IGDB-Anreicherung für Steam-Spiele - ergänzt nur fehlende Daten
+   */
+  export async function enrichSteamGameWithIGDB(
+    gameId: number,
+    gameName: string,
+    forceUpdate: boolean = false
+  ): Promise<boolean> {
+    try {
+      // Spiel laden
+      const game = await getGameById(gameId);
+      if (!game) {
+        return false;
+      }
+
+      // Verwende Composable für Anreicherungslogik
+      const { shouldEnrichGame, determineFieldsToUpdate } = useGameEnrichment();
+
+      // Prüfe welche Daten fehlen (Steam liefert normalerweise nur Titel und Cover)
+      const missingData = {
+        description: !game.description,
+        genres: !game.genres || game.genres.length === 0,
+        developer: !game.developer,
+        publisher: !game.publisher,
+        releaseDate: !game.releaseDate,
+        rating: !game.rating
+      };
+
+      // Überspringen falls bereits alle wichtigen Daten vorhanden sind (außer bei forceUpdate)
+      if (
+        !forceUpdate &&
+        !missingData.description &&
+        !missingData.genres &&
+        !missingData.rating
+      ) {
+        return false;
+      }
+
+      // IGDB-Daten über IGDBService abrufen
+      const enrichedData = await IGDBService.enrichGameData(gameName, 'Steam');
+
+      if (!enrichedData || Object.keys(enrichedData).length === 0) {
+        return false;
+      }
+
+      // Bestimme welche Felder aktualisiert werden sollen (nur fehlende Daten)
+      const { updateData } = determineFieldsToUpdate(
+        game,
+        enrichedData,
+        false // Nie forcieren - nur fehlende Daten ergänzen
+      );
+
+      // Nur aktualisieren wenn neue Daten vorhanden sind
+      if (Object.keys(updateData).length > 0) {
+        await updateGame(gameId, updateData);
+        console.log(
+          `[IGDB Steam] Anreicherung für "${gameName}" erfolgreich. Ergänzte Felder:`,
+          Object.keys(updateData)
+        );
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error(
+        `[IGDB Steam] Fehler beim Ergänzen von "${gameName}" mit IGDB-Daten:`,
+        error
+      );
+      return false;
+    }
+  }
+
+  // ============================================================================
+  // STEAM IMPORT OPERATIONS
+  // ============================================================================
+
+  /**
+   * Steam-Spiel verarbeiten und importieren
+   */
   export async function processSteamGameImport(
     userId: number,
     steamGame: {
@@ -642,6 +802,8 @@ export namespace GamesService {
     steamPlatformId: number
   ): Promise<'imported' | 'updated' | 'skipped'> {
     try {
+      const { getSteamCoverUrl, getSteamStoreUrl } = useSteamImport();
+
       // Prüfen ob Spiel bereits existiert
       let game = await getGameByPlatformId(
         steamPlatformId,
@@ -650,8 +812,8 @@ export namespace GamesService {
 
       // Spiel erstellen falls es nicht existiert
       if (!game) {
-        const coverUrl = `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamGame.appid}/library_600x900.jpg`;
-        const storeUrl = `https://store.steampowered.com/app/${steamGame.appid}/`;
+        const coverUrl = getSteamCoverUrl(steamGame.appid);
+        const storeUrl = getSteamStoreUrl(steamGame.appid);
 
         game = await createGameWithPlatform(
           steamGame.name,
@@ -697,92 +859,10 @@ export namespace GamesService {
       throw error;
     }
   }
-  // Spiel mit IGDB-Daten anreichern
-  export async function enrichGameWithIGDB(
-    gameId: number,
-    gameName: string,
-    platformName?: string,
-    forceUpdate: boolean = false
-  ): Promise<boolean> {
-    try {
-      // Prüfe ob das Spiel bereits IGDB-Daten hat
-      const game = await getGameById(gameId);
-      if (!game) {
-        return false;
-      } // Überspringen falls bereits beschreibung und genres vorhanden sind (außer bei forceUpdate)
-      if (!forceUpdate && game.description && game.genres.length > 0) {
-        return false;
-      }
 
-      // IGDB-Daten abrufen
-      const enrichedData = await IGDBService.enrichGameData(
-        gameName,
-        platformName
-      );
-
-      if (!enrichedData || Object.keys(enrichedData).length === 0) {
-        return false;
-      } // Spiel mit neuen Daten aktualisieren
-      const updateData: {
-        description?: string;
-        coverUrl?: string;
-        releaseDate?: Date;
-        developer?: string;
-        publisher?: string;
-        genres?: string[];
-        rating?: number;
-      } = {};
-      if (enrichedData.description && (!game.description || forceUpdate)) {
-        updateData.description = enrichedData.description;
-      }
-
-      // IGDB Cover-URLs nur verwenden wenn kein Cover vorhanden ist oder forceUpdate aktiviert
-      if (enrichedData.coverUrl && (!game.coverUrl || forceUpdate)) {
-        updateData.coverUrl = enrichedData.coverUrl;
-      }
-
-      if (enrichedData.releaseDate && (!game.releaseDate || forceUpdate)) {
-        updateData.releaseDate = enrichedData.releaseDate;
-      }
-
-      if (enrichedData.developer && (!game.developer || forceUpdate)) {
-        updateData.developer = enrichedData.developer;
-      }
-
-      if (enrichedData.publisher && (!game.publisher || forceUpdate)) {
-        updateData.publisher = enrichedData.publisher;
-      }
-
-      if (
-        enrichedData.genres &&
-        enrichedData.genres.length > 0 &&
-        (game.genres.length === 0 || forceUpdate)
-      ) {
-        updateData.genres = enrichedData.genres;
-      } // Rating von IGDB hinzufügen
-      if (enrichedData.rating && (!game.rating || forceUpdate)) {
-        updateData.rating = enrichedData.rating;
-      } else if (enrichedData.rating && game.rating) {
-      } else {
-        // No rating from IGDB
-      }
-
-      // Nur aktualisieren wenn neue Daten vorhanden sind
-      if (Object.keys(updateData).length > 0) {
-        await updateGame(gameId, updateData);
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      console.error(
-        `Fehler beim Anreichern von "${gameName}" mit IGDB-Daten:`,
-        error
-      );
-      return false;
-    }
-  }
-  // Erweiterte Steam-Import-Funktion mit automatischer IGDB-Anreicherung
+  /**
+   * Erweiterte Steam-Import-Funktion mit automatischer IGDB-Anreicherung
+   */
   export async function processSteamGameImportWithEnrichment(
     userId: number,
     steamGame: {
@@ -798,6 +878,8 @@ export namespace GamesService {
     enriched: boolean;
   }> {
     try {
+      const { getSteamCoverUrl, getSteamStoreUrl } = useSteamImport();
+
       // Prüfe ob Spiel bereits existiert
       let game = await getGameByPlatformId(
         steamPlatformId,
@@ -807,14 +889,14 @@ export namespace GamesService {
 
       // Spiel erstellen falls es nicht existiert - mit Steam-Metadaten
       if (!game) {
-        const coverUrl = `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamGame.appid}/library_600x900.jpg`;
-        const storeUrl = `https://store.steampowered.com/app/${steamGame.appid}/`;
+        const coverUrl = getSteamCoverUrl(steamGame.appid);
+        const storeUrl = getSteamStoreUrl(steamGame.appid);
 
         game = await createGameWithPlatform(
           steamGame.name,
           steamPlatformId,
           steamGame.appid.toString(),
-          { coverUrl: coverUrl }, // Steam Cover-URL als Basis
+          { coverUrl: coverUrl },
           storeUrl
         );
         wasNewGame = true;
@@ -847,7 +929,9 @@ export namespace GamesService {
           });
           importResult = 'updated';
         }
-      } // IGDB-Anreicherung - IMMER für neue Spiele, nur für bestehende wenn aktiviert
+      }
+
+      // IGDB-Anreicherung - IMMER für neue Spiele, nur für bestehende wenn aktiviert
       let enriched = false;
       if (wasNewGame) {
         // Neue Spiele IMMER mit Steam-first IGDB-Anreicherung
@@ -874,6 +958,132 @@ export namespace GamesService {
         error
       );
       throw error;
+    }
+  }
+
+  /**
+   * Steam-Bibliothek vollständig importieren
+   */
+  export async function importSteamLibrary(
+    userId: number,
+    steamInput: string,
+    operationId?: string
+  ): Promise<ImportResult> {
+    try {
+      const { extractSteamId, fetchSteamLibrary } = useSteamImport();
+
+      // Steam ID extrahieren
+      const steamId = await extractSteamId(steamInput);
+      if (!steamId) {
+        throw new Error('Ungültige Steam ID oder URL');
+      }
+
+      // Steam-Bibliothek abrufen
+      const games = await fetchSteamLibrary(steamId);
+
+      // Steam-Plattform finden oder erstellen
+      const steamPlatform = await findOrCreatePlatform('Steam', 'steam', {
+        siteUrl: 'https://store.steampowered.com'
+      });
+
+      // Verwende SteamImport Composable für Batch-Verarbeitung
+      const { processGamesBatch } = useSteamImport();
+
+      const result = await processGamesBatch(games, {
+        userId,
+        platformId: steamPlatform.id,
+        withIGDBEnrichment: true,
+        operationId
+      });
+
+      return {
+        success: true,
+        totalGames: games.length,
+        imported: result.imported,
+        updated: result.updated,
+        skipped: result.skipped,
+        errors: result.errors,
+        enriched: result.enriched,
+        enrichmentErrors: result.enrichmentErrors,
+        message: `Steam-Import erfolgreich: ${result.imported} importiert, ${
+          result.updated
+        } aktualisiert, ${result.skipped} übersprungen${
+          result.enriched ? `, ${result.enriched} angereichert` : ''
+        }`
+      };
+    } catch (error) {
+      console.error('Fehler beim Steam-Import:', error);
+      return {
+        success: false,
+        totalGames: 0,
+        imported: 0,
+        updated: 0,
+        skipped: 0,
+        errors: 1,
+        message: `Steam-Import fehlgeschlagen: ${
+          error instanceof Error ? error.message : 'Unbekannter Fehler'
+        }`
+      };
+    }
+  }
+
+  /**
+   * Steam-Bibliothek schnell importieren (ohne IGDB-Anreicherung)
+   */
+  export async function importSteamLibraryFast(
+    userId: number,
+    steamInput: string,
+    operationId?: string
+  ): Promise<ImportResult> {
+    try {
+      const { extractSteamId, fetchSteamLibrary } = useSteamImport();
+
+      // Steam ID extrahieren
+      const steamId = await extractSteamId(steamInput);
+      if (!steamId) {
+        throw new Error('Ungültige Steam ID oder URL');
+      }
+
+      // Steam-Bibliothek abrufen
+      const games = await fetchSteamLibrary(steamId);
+
+      // Steam-Plattform finden oder erstellen
+      const steamPlatform = await findOrCreatePlatform('Steam', 'steam', {
+        siteUrl: 'https://store.steampowered.com'
+      });
+
+      // Verwende SteamImport Composable für Batch-Verarbeitung
+      const { processGamesBatch } = useSteamImport();
+
+      const result = await processGamesBatch(games, {
+        userId,
+        platformId: steamPlatform.id,
+        withIGDBEnrichment: false, // Keine Anreicherung
+        operationId
+      });
+
+      return {
+        success: true,
+        totalGames: games.length,
+        imported: result.imported,
+        updated: result.updated,
+        skipped: result.skipped,
+        errors: result.errors,
+        message: `Steam-Import (schnell) erfolgreich: ${result.imported} importiert, ${result.updated} aktualisiert, ${result.skipped} übersprungen`
+      };
+    } catch (error) {
+      console.error('Fehler beim Steam-Import (schnell):', error);
+      return {
+        success: false,
+        totalGames: 0,
+        imported: 0,
+        updated: 0,
+        skipped: 0,
+        errors: 1,
+        message: `Steam-Import (schnell) fehlgeschlagen: ${
+          error instanceof Error ? error.message : 'Unbekannter Fehler'
+        }`
+      };
     }
   }
 
@@ -905,111 +1115,9 @@ export namespace GamesService {
     });
   }
 
-  // Spezielle IGDB-Anreicherung für Steam-Spiele - ergänzt nur fehlende Daten
-  export async function enrichSteamGameWithIGDB(
-    gameId: number,
-    gameName: string,
-    forceUpdate: boolean = false
-  ): Promise<boolean> {
-    try {
-      // Spiel laden
-      const game = await getGameById(gameId);
-      if (!game) {
-        return false;
-      } // Prüfe welche Daten fehlen (Steam liefert normalerweise nur Titel und Cover)
-      const missingData = {
-        description: !game.description,
-        genres: !game.genres || game.genres.length === 0,
-        developer: !game.developer,
-        publisher: !game.publisher,
-        releaseDate: !game.releaseDate,
-        rating: !game.rating
-      };
-
-      // Überspringen falls bereits alle wichtigen Daten vorhanden sind (außer bei forceUpdate)
-      if (
-        !forceUpdate &&
-        !missingData.description &&
-        !missingData.genres &&
-        !missingData.rating
-      ) {
-        return false;
-      }
-
-      // IGDB-Daten abrufen
-      const enrichedData = await IGDBService.enrichGameData(gameName, 'Steam');
-
-      if (!enrichedData || Object.keys(enrichedData).length === 0) {
-        return false;
-      } // Nur fehlende Daten ergänzen
-      const updateData: {
-        description?: string;
-        coverUrl?: string;
-        releaseDate?: Date;
-        developer?: string;
-        publisher?: string;
-        genres?: string[];
-        rating?: number;
-      } = {};
-
-      // Beschreibung nur ergänzen wenn fehlt
-      if (
-        enrichedData.description &&
-        (missingData.description || forceUpdate)
-      ) {
-        updateData.description = enrichedData.description;
-      } // Cover nur ergänzen wenn kein Cover vorhanden ist (Steam-Cover haben Priorität)
-      if (enrichedData.coverUrl && (!game.coverUrl || forceUpdate)) {
-        updateData.coverUrl = enrichedData.coverUrl;
-      }
-
-      // Release-Datum nur ergänzen wenn fehlt
-      if (
-        enrichedData.releaseDate &&
-        (missingData.releaseDate || forceUpdate)
-      ) {
-        updateData.releaseDate = enrichedData.releaseDate;
-      }
-
-      // Developer nur ergänzen wenn fehlt
-      if (enrichedData.developer && (missingData.developer || forceUpdate)) {
-        updateData.developer = enrichedData.developer;
-      }
-
-      // Publisher nur ergänzen wenn fehlt
-      if (enrichedData.publisher && (missingData.publisher || forceUpdate)) {
-        updateData.publisher = enrichedData.publisher;
-      }
-
-      // Genres nur ergänzen wenn fehlen
-      if (
-        enrichedData.genres &&
-        enrichedData.genres.length > 0 &&
-        (missingData.genres || forceUpdate)
-      ) {
-        updateData.genres = enrichedData.genres;
-      } // Rating nur ergänzen wenn fehlt
-      if (enrichedData.rating && (!game.rating || forceUpdate)) {
-        updateData.rating = enrichedData.rating;
-      } else if (enrichedData.rating && game.rating) {
-        // Game already has rating, skip IGDB rating
-      } else {
-        // No rating available from IGDB
-      } // Nur aktualisieren wenn neue Daten vorhanden sind
-      if (Object.keys(updateData).length > 0) {
-        await updateGame(gameId, updateData);
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      console.error(
-        `[IGDB Steam] Fehler beim Ergänzen von "${gameName}" mit IGDB-Daten:`,
-        error
-      );
-      return false;
-    }
-  }
+  // ============================================================================
+  // UTILITY FUNCTIONS
+  // ============================================================================
 
   export async function getGameWithPlatforms(
     gameId: number,
@@ -1038,6 +1146,7 @@ export namespace GamesService {
     if (!userGame) {
       return null;
     }
+
     return {
       id: userGame.game.id, // Game ID
       userGameId: userGame.id, // UserGame ID
@@ -1057,439 +1166,5 @@ export namespace GamesService {
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     };
-  }
-
-  // Steam-Bibliothek importieren (vollständig mit IGDB-Anreicherung)
-  export async function importSteamLibrary(
-    userId: number,
-    steamInput: string,
-    operationId?: string
-  ): Promise<ImportResult> {
-    try {
-      const steamId = await extractSteamId(steamInput);
-      if (!steamId) {
-        throw new Error('Ungültige Steam ID oder Profil-URL');
-      }
-
-      const steamApiKey = process.env.STEAM_API_KEY;
-      if (!steamApiKey) {
-        throw new Error('Steam API Key nicht konfiguriert');
-      }
-
-      // Steam Web API aufrufen
-      const response = await fetch(
-        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamId}&format=json&include_appinfo=true&include_played_free_games=true`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Steam API Fehler: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!data.response?.games) {
-        throw new Error('Keine Spiele gefunden oder Profil ist privat');
-      }
-
-      // Steam-Plattform finden oder erstellen
-      const steamPlatform = await findOrCreatePlatform('Steam', 'steam', {
-        siteUrl: 'https://store.steampowered.com'
-      });
-
-      const importResults = {
-        imported: 0,
-        updated: 0,
-        skipped: 0,
-        errors: 0,
-        enriched: 0,
-        enrichmentErrors: 0
-      };
-
-      const games = data.response.games;
-      const BATCH_SIZE = 15;
-      const totalBatches = Math.ceil(games.length / BATCH_SIZE);
-
-      // Spiele importieren mit IGDB-Anreicherung
-      for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-        const batchStart = batchIndex * BATCH_SIZE;
-        const batchEnd = Math.min(batchStart + BATCH_SIZE, games.length);
-        const batch = games.slice(batchStart, batchEnd);
-
-        const batchPromises = batch.map(async (steamGame: any) => {
-          try {
-            const result = await processSteamGameImport(
-              userId,
-              steamGame,
-              steamPlatform.id
-            );
-            return { steamGame, result, success: true };
-          } catch (error) {
-            console.error(
-              `Fehler beim Importieren von ${steamGame.name}:`,
-              error
-            );
-            return { steamGame, result: 'error', success: false, error };
-          }
-        });
-
-        const batchResults = await Promise.all(batchPromises);
-
-        for (const batchResult of batchResults) {
-          if (batchResult.success) {
-            if (batchResult.result === 'imported') {
-              importResults.imported++;
-            } else if (batchResult.result === 'updated') {
-              importResults.updated++;
-            } else {
-              importResults.skipped++;
-            }
-          } else {
-            importResults.errors++;
-          }
-        }
-
-        if (batchIndex < totalBatches - 1) {
-          await new Promise(resolve => setTimeout(resolve, 50));
-        }
-      }
-
-      // IGDB-Anreicherung für neue Spiele
-      const newGames = await prisma.game.findMany({
-        where: {
-          platformGames: {
-            some: {
-              platformId: steamPlatform.id
-            }
-          },
-          OR: [
-            { description: null },
-            { description: '' },
-            { genres: { equals: [] } }
-          ]
-        }
-      });
-
-      for (let i = 0; i < newGames.length; i++) {
-        const game = newGames[i];
-        try {
-          const enriched = await enrichSteamGameWithIGDB(
-            game.id,
-            game.title,
-            false
-          );
-          if (enriched) {
-            importResults.enriched++;
-          } else {
-            importResults.enrichmentErrors++;
-          }
-
-          if (i < newGames.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 250));
-          }
-        } catch (error) {
-          console.error(`IGDB enrichment failed for: ${game.title}`, error);
-          importResults.enrichmentErrors++;
-        }
-      }
-
-      // XP-Belohnung
-      if (importResults.imported > 0) {
-        const xpReward = Math.min(importResults.imported * 10, 500);
-        await rewardUserXP(userId, xpReward);
-      }
-
-      return {
-        success: true,
-        totalGames: data.response.game_count,
-        imported: importResults.imported,
-        updated: importResults.updated,
-        skipped: importResults.skipped,
-        errors: importResults.errors,
-        enriched: importResults.enriched,
-        enrichmentErrors: importResults.enrichmentErrors
-      };
-    } catch (error) {
-      console.error('Steam Import Error:', error);
-      throw error;
-    }
-  }
-
-  // Steam-Bibliothek schnell importieren (ohne IGDB-Anreicherung)
-  export async function importSteamLibraryFast(
-    userId: number,
-    steamInput: string,
-    operationId?: string
-  ): Promise<ImportResult> {
-    try {
-      const steamId = await extractSteamId(steamInput);
-      if (!steamId) {
-        throw new Error('Ungültige Steam ID oder Profil-URL');
-      }
-
-      const steamApiKey = process.env.STEAM_API_KEY;
-      if (!steamApiKey) {
-        throw new Error('Steam API Key nicht konfiguriert');
-      }
-
-      const response = await fetch(
-        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamId}&format=json&include_appinfo=true&include_played_free_games=true`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Steam API Fehler: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!data.response?.games) {
-        throw new Error('Keine Spiele gefunden oder Profil ist privat');
-      }
-
-      const steamPlatform = await findOrCreatePlatform('Steam', 'steam', {
-        siteUrl: 'https://store.steampowered.com'
-      });
-
-      const importResults = {
-        imported: 0,
-        updated: 0,
-        skipped: 0,
-        errors: 0
-      };
-
-      const games = data.response.games;
-      const BATCH_SIZE = 25;
-      const totalBatches = Math.ceil(games.length / BATCH_SIZE);
-
-      for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-        const batchStart = batchIndex * BATCH_SIZE;
-        const batchEnd = Math.min(batchStart + BATCH_SIZE, games.length);
-        const batch = games.slice(batchStart, batchEnd);
-
-        const batchPromises = batch.map(async (steamGame: any) => {
-          try {
-            const result = await processSteamGameImport(
-              userId,
-              steamGame,
-              steamPlatform.id
-            );
-            return { result, success: true };
-          } catch (error) {
-            console.error(
-              `Fehler beim Importieren von ${steamGame.name}:`,
-              error
-            );
-            return { result: 'error', success: false };
-          }
-        });
-
-        const batchResults = await Promise.all(batchPromises);
-
-        for (const batchResult of batchResults) {
-          if (batchResult.success) {
-            if (batchResult.result === 'imported') {
-              importResults.imported++;
-            } else if (batchResult.result === 'updated') {
-              importResults.updated++;
-            } else {
-              importResults.skipped++;
-            }
-          } else {
-            importResults.errors++;
-          }
-        }
-
-        if (batchIndex < totalBatches - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      }
-
-      // XP-Belohnung
-      if (importResults.imported > 0) {
-        const xpReward = Math.min(importResults.imported * 10, 500);
-        await rewardUserXP(userId, xpReward);
-      }
-
-      return {
-        success: true,
-        totalGames: data.response.game_count,
-        imported: importResults.imported,
-        updated: importResults.updated,
-        skipped: importResults.skipped,
-        errors: importResults.errors,
-        message:
-          'Spiele wurden schnell importiert. IGDB-Anreicherung läuft im Hintergrund.'
-      };
-    } catch (error) {
-      console.error('Steam Fast Import Error:', error);
-      throw error;
-    }
-  }
-
-  // Hintergrund-IGDB-Anreicherung für importierte Spiele
-  export async function enrichGamesBackground(
-    platformSlug: string = 'steam',
-    operationId?: string
-  ): Promise<{
-    success: boolean;
-    enriched: number;
-    errors: number;
-    total: number;
-  }> {
-    try {
-      const platform = await prisma.platform.findUnique({
-        where: { slug: platformSlug }
-      });
-
-      if (!platform) {
-        throw new Error('Plattform nicht gefunden');
-      }
-
-      const gamesNeedingEnrichment = await prisma.game.findMany({
-        where: {
-          platformGames: {
-            some: {
-              platformId: platform.id
-            }
-          },
-          AND: [
-            {
-              OR: [
-                { description: null },
-                { description: '' },
-                { genres: { equals: [] } },
-                { developer: null },
-                { publisher: null },
-                { releaseDate: null }
-              ]
-            },
-            {
-              OR: [
-                {
-                  createdAt: {
-                    gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-                  }
-                },
-                {
-                  AND: [{ description: null }, { developer: null }]
-                }
-              ]
-            }
-          ]
-        },
-        take: 200,
-        orderBy: {
-          createdAt: 'desc'
-        }
-      });
-
-      let enriched = 0;
-      let errors = 0;
-
-      for (let i = 0; i < gamesNeedingEnrichment.length; i++) {
-        const game = gamesNeedingEnrichment[i];
-        try {
-          const success = await enrichSteamGameWithIGDB(
-            game.id,
-            game.title,
-            false
-          );
-
-          if (success) {
-            enriched++;
-          } else {
-            errors++;
-          }
-
-          await new Promise(resolve => setTimeout(resolve, 300));
-        } catch (error) {
-          console.error(
-            `Anreicherung fehlgeschlagen für ${game.title}:`,
-            error
-          );
-          errors++;
-        }
-      }
-
-      return {
-        success: true,
-        enriched,
-        errors,
-        total: gamesNeedingEnrichment.length
-      };
-    } catch (error) {
-      console.error('Background Enrichment Error:', error);
-      throw error;
-    }
-  }
-
-  // Hilfsfunktion um Steam ID aus verschiedenen Formaten zu extrahieren
-  async function extractSteamId(input: string): Promise<string | null> {
-    // Steam ID 64 (17 Ziffern)
-    const steamId64Match = input.match(/\b\d{17}\b/);
-    if (steamId64Match) {
-      return steamId64Match[0];
-    }
-
-    // Steam Profil URL
-    const profileUrlMatch = input.match(
-      /steamcommunity\.com\/profiles\/(\d{17})/
-    );
-    if (profileUrlMatch) {
-      return profileUrlMatch[1];
-    }
-
-    // Steam Custom URL - verwende ResolveVanityURL API
-    const customUrlMatch = input.match(/steamcommunity\.com\/id\/([^\/]+)/);
-    if (customUrlMatch) {
-      const vanityUrl = customUrlMatch[1];
-      const steamApiKey = process.env.STEAM_API_KEY;
-
-      if (!steamApiKey) {
-        console.warn('Steam API Key nicht verfügbar für Custom URL-Auflösung');
-        return null;
-      }
-
-      try {
-        const response = await fetch(
-          `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${steamApiKey}&vanityurl=${vanityUrl}`
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.response?.success === 1) {
-            return data.response.steamid;
-          }
-        }
-      } catch (error) {
-        console.error('Fehler beim Auflösen der Custom URL:', error);
-      }
-
-      return null;
-    }
-
-    // Direkte Custom URL ohne Domain
-    if (/^[a-zA-Z0-9_]+$/.test(input) && input.length > 2) {
-      const steamApiKey = process.env.STEAM_API_KEY;
-
-      if (!steamApiKey) {
-        console.warn('Steam API Key nicht verfügbar für Custom URL-Auflösung');
-        return null;
-      }
-
-      try {
-        const response = await fetch(
-          `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${steamApiKey}&vanityurl=${input}`
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.response?.success === 1) {
-            return data.response.steamid;
-          }
-        }
-      } catch (error) {
-        console.error('Fehler beim Auflösen der Custom URL:', error);
-      }
-    }
-
-    return null;
   }
 }

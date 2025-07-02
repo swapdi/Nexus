@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import auth from '~/middleware/auth';
   import type { User } from '~/prisma/client';
   const userStore = useUserStore();
   const user = ref<User | null>(null);
@@ -8,8 +7,12 @@
     middleware: ['auth']
   });
   onMounted(async () => {
-    userStore.init();
-    user.value = userStore.user;
+    try {
+      await userStore.init();
+      user.value = userStore.user;
+    } catch (error) {
+      console.error('Fehler beim Initialisieren des Benutzers:', error);
+    }
   });
 
   const handleSidebarHover = (isHovered: boolean) => {

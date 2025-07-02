@@ -420,6 +420,7 @@ export namespace DealsService {
 
   /**
    * Sammle Deals von allen verfügbaren Quellen (Deal Aggregation)
+   * HINWEIS: Komplexe Aggregations-Logik ist jetzt im useDealAggregation Composable verfügbar
    */
   export async function aggregateAllDeals(): Promise<{
     imported: number;
@@ -428,6 +429,9 @@ export namespace DealsService {
   }> {
     console.log('Starting deal aggregation...');
 
+    const { generateMockDeals, validateDealData, cleanDealData } =
+      useDealAggregation();
+
     const results = {
       imported: 0,
       updated: 0,
@@ -435,12 +439,24 @@ export namespace DealsService {
     };
 
     try {
-      // Für MVP: Mock-Deals sammeln
-      const mockDeals = await getMockDeals();
+      // Für MVP: Mock-Deals sammeln (komplexe Logik im Composable)
+      const mockDeals = generateMockDeals();
 
       for (const externalDeal of mockDeals) {
         try {
-          const result = await processExternalDeal(externalDeal);
+          // Daten-Validierung über Composable
+          const validation = validateDealData(externalDeal);
+          if (!validation.isValid) {
+            results.errors.push(
+              `Invalid deal data: ${validation.errors.join(', ')}`
+            );
+            continue;
+          }
+
+          // Daten-Bereinigung über Composable
+          const cleanedDeal = cleanDealData(externalDeal);
+
+          const result = await processExternalDeal(cleanedDeal);
           if (result.created) {
             results.imported++;
           } else {
@@ -565,91 +581,6 @@ export namespace DealsService {
       console.error('Error finding/creating game from deal:', error);
       throw error;
     }
-  }
-
-  /**
-   * Mock-Deals für MVP (später durch echte APIs ersetzen)
-   */
-  async function getMockDeals(): Promise<ExternalDeal[]> {
-    // Grund: Realistische Mock-Daten für besseres MVP-Testing
-    return [
-      {
-        title: 'Cyberpunk 2077',
-        storeName: 'Steam',
-        originalPrice: 59.99,
-        price: 29.99,
-        discountPercent: 50,
-        url: 'https://store.steampowered.com/app/1091500/',
-        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 Tage
-        isFreebie: false,
-        source: 'steam'
-      },
-      {
-        title: 'Control',
-        storeName: 'Epic Games Store',
-        originalPrice: 39.99,
-        price: 0,
-        discountPercent: 100,
-        url: 'https://store.epicgames.com/en-US/p/control',
-        validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 Tage
-        isFreebie: true,
-        source: 'epic'
-      },
-      {
-        title: 'The Witcher 3: Wild Hunt',
-        storeName: 'GOG',
-        originalPrice: 49.99,
-        price: 9.99,
-        discountPercent: 80,
-        url: 'https://www.gog.com/game/the_witcher_3_wild_hunt',
-        validUntil: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 Tage
-        isFreebie: false,
-        source: 'gog'
-      },
-      {
-        title: 'Hades',
-        storeName: 'Steam',
-        originalPrice: 24.99,
-        price: 12.49,
-        discountPercent: 50,
-        url: 'https://store.steampowered.com/app/1145360/',
-        validUntil: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 Tage
-        isFreebie: false,
-        source: 'steam'
-      },
-      {
-        title: 'Hollow Knight',
-        storeName: 'Steam',
-        originalPrice: 14.99,
-        price: 7.49,
-        discountPercent: 50,
-        url: 'https://store.steampowered.com/app/367520/',
-        validUntil: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 Tage
-        isFreebie: false,
-        source: 'steam'
-      },
-      {
-        title: 'Stardew Valley',
-        storeName: 'GOG',
-        originalPrice: 13.99,
-        price: 6.99,
-        discountPercent: 50,
-        url: 'https://www.gog.com/game/stardew_valley',
-        validUntil: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), // 8 Tage
-        isFreebie: false,
-        source: 'gog'
-      },
-      {
-        title: 'Fall Guys',
-        storeName: 'Steam',
-        originalPrice: 19.99,
-        price: 0,
-        discountPercent: 100,
-        url: 'https://store.steampowered.com/app/1097150/',
-        isFreebie: true,
-        source: 'steam'
-      }
-    ];
   }
 
   /**
