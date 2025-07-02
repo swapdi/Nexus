@@ -55,7 +55,6 @@ export const useViewMode = () => {
     watch(globalViewMode, newMode => {
       if (process.client) {
         localStorage.setItem('nexus-view-mode', newMode);
-        console.log('ViewMode saved to localStorage:', newMode);
       }
     });
 
@@ -63,7 +62,6 @@ export const useViewMode = () => {
   }
 
   const setViewMode = (mode: ViewMode) => {
-    console.log('Setting view mode to:', mode);
     globalViewMode.value = mode;
   };
 

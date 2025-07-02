@@ -1,4 +1,7 @@
-import { useGameEnrichment } from '~/composables/useGameEnrichment';
+import {
+  useGameEnrichment,
+  type BatchEnrichmentResult
+} from '~/composables/useGameEnrichment';
 import { useGameUtils } from '~/composables/useGameUtils';
 import { useSteamImport } from '~/composables/useSteamImport';
 import {
@@ -695,10 +698,6 @@ export namespace GamesService {
       // Nur aktualisieren wenn neue Daten vorhanden sind
       if (Object.keys(updateData).length > 0) {
         await updateGame(gameId, updateData);
-        console.log(
-          `IGDB-Anreicherung für "${gameName}" erfolgreich. Aktualisierte Felder:`,
-          updatedFields
-        );
         return true;
       }
 
@@ -767,10 +766,6 @@ export namespace GamesService {
       // Nur aktualisieren wenn neue Daten vorhanden sind
       if (Object.keys(updateData).length > 0) {
         await updateGame(gameId, updateData);
-        console.log(
-          `[IGDB Steam] Anreicherung für "${gameName}" erfolgreich. Ergänzte Felder:`,
-          Object.keys(updateData)
-        );
         return true;
       }
 
@@ -1166,5 +1161,129 @@ export namespace GamesService {
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     };
+  }
+
+  // ============================================================================
+  // BACKGROUND ENRICHMENT
+  // ============================================================================
+
+  /**
+   * Hintergrund-Anreicherung für importierte Spiele
+   * Führt eine IGDB-Anreicherung für alle Spiele einer bestimmten Plattform durch
+   */
+  export async function enrichGamesBackground(
+    platformSlug: string = 'steam',
+    operationId?: string
+  ): Promise<BatchEnrichmentResult> {
+    try {
+      // Finde Plattform anhand des Slugs
+      const platform = await prisma.platform.findUnique({
+        where: { slug: platformSlug }
+      });
+
+      if (!platform) {
+        throw new Error(`Plattform mit Slug '${platformSlug}' nicht gefunden`);
+      }
+
+      // Hole alle Spiele dieser Plattform
+      const platformGames = await prisma.platformGame.findMany({
+        where: { platformId: platform.id },
+        include: { game: true }
+      });
+
+      if (platformGames.length === 0) {
+        return {
+          total: 0,
+          enriched: 0,
+          skipped: 0,
+          errors: 0,
+          message: `Keine Spiele für Plattform '${platform.name}' gefunden`
+        };
+      }
+
+      // Server-Progress-Tracking (für zukünftige Implementierung)
+      // TODO: Implementiere Server-seitiges Progress-Tracking
+      let progressCallback:
+        | ((current: number, total: number) => void)
+        | undefined;
+
+      if (operationId) {
+        // Platzhalter für Progress-Tracking - kann später erweitert werden
+        progressCallback = (current: number, total: number) => {
+          // console.log(`Progress: ${current}/${total}`);
+        };
+      }
+
+      // Statistiken initialisieren
+      let enriched = 0;
+      let skipped = 0;
+      let errors = 0;
+
+      // Alle Spiele durchgehen
+      for (let i = 0; i < platformGames.length; i++) {
+        const pg = platformGames[i];
+
+        try {
+          // Nur anreichern, wenn Daten fehlen
+          const needsEnrichment =
+            !pg.game.description ||
+            !pg.game.releaseDate ||
+            !pg.game.genres ||
+            pg.game.genres.length === 0;
+
+          if (needsEnrichment) {
+            // Je nach Plattform die richtige Anreicherungsmethode verwenden
+            let success = false;
+
+            if (platformSlug === 'steam') {
+              success = await enrichSteamGameWithIGDB(
+                pg.game.id,
+                pg.game.title
+              );
+            } else {
+              success = await enrichGameWithIGDB(
+                pg.game.id,
+                pg.game.title,
+                platform.name
+              );
+            }
+
+            if (success) {
+              enriched++;
+            } else {
+              skipped++;
+            }
+          } else {
+            skipped++;
+          }
+
+          // Verzögerung einbauen, um die IGDB API zu schonen
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (error) {
+          console.error(
+            `Fehler bei Anreicherung von Spiel ${pg.game.title}:`,
+            error
+          );
+          errors++;
+        }
+
+        // Fortschritt aktualisieren
+        if (progressCallback) {
+          progressCallback(i + 1, platformGames.length);
+        }
+      }
+
+      // Ergebnis zurückgeben
+      return {
+        total: platformGames.length,
+        enriched,
+        skipped,
+        errors,
+        message: `Anreicherung abgeschlossen: ${enriched} angereichert, ${skipped} übersprungen, ${errors} fehlgeschlagen`
+      };
+    } catch (error) {
+      console.error('Fehler bei Hintergrund-Anreicherung:', error);
+      throw error;
+    }
   }
 }

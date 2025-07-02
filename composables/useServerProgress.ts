@@ -1,5 +1,5 @@
 // Composable für Server-Sent Events Progress-Tracking
-import { ref, readonly, onUnmounted } from 'vue';
+import { onUnmounted, readonly, ref } from 'vue';
 
 interface ProgressUpdate {
   current: number;
@@ -26,7 +26,6 @@ export const useServerProgress = () => {
     eventSource = new EventSource(`/api/progress/${operationId}`);
 
     eventSource.onopen = () => {
-      console.log(`SSE verbunden für Operation: ${operationId}`);
       isConnected.value = true;
     };
 
@@ -35,7 +34,6 @@ export const useServerProgress = () => {
         const data = JSON.parse(event.data);
 
         if (data.type === 'connected') {
-          console.log('SSE-Verbindung bestätigt');
           return;
         }
 
@@ -48,9 +46,6 @@ export const useServerProgress = () => {
           };
 
           currentProgress.value = update;
-          console.log(
-            `Progress Update: ${update.current}/${update.total} - ${update.message}`
-          );
 
           // Callback ausführen falls vorhanden
           if (onUpdate) {
@@ -59,7 +54,6 @@ export const useServerProgress = () => {
         }
 
         if (data.type === 'complete') {
-          console.log('Import abgeschlossen');
           disconnect();
         }
       } catch (error) {
@@ -74,7 +68,6 @@ export const useServerProgress = () => {
       // Automatisch nach 2 Sekunden wiederherstellen versuchen
       setTimeout(() => {
         if (eventSource?.readyState === EventSource.CLOSED) {
-          console.log('Versuche SSE-Verbindung wiederherzustellen...');
           connectToProgress(operationId, onUpdate);
         }
       }, 2000);

@@ -155,9 +155,6 @@ export const useSteamImport = () => {
         );
       }
 
-      console.log(
-        `Steam-Bibliothek geladen: ${data.response.game_count} Spiele`
-      );
       return data.response.games;
     } catch (error) {
       console.error('Fehler beim Laden der Steam-Bibliothek:', error);
@@ -371,11 +368,8 @@ export const useSteamImport = () => {
    */
   const createProgressCallback = (operationId?: string) => {
     return (current: number, total: number, message: string) => {
-      if (operationId && process.server) {
-        // Server-side progress update
-        // Hier könnte SSE oder WebSocket Integration erfolgen
-        console.log(`[${operationId}] ${current}/${total}: ${message}`);
-      }
+      // Funktion bleibt für zukünftige Implementierung erhalten,
+      // aber ohne direkte Console-Ausgabe
     };
   };
 

@@ -23,7 +23,8 @@ export interface BatchEnrichmentResult {
   enriched: number;
   skipped: number;
   errors: number;
-  errorDetails: string[];
+  errorDetails?: string[];
+  message?: string;
 }
 
 export interface GameEnrichmentData {
@@ -238,7 +239,8 @@ export const useGameEnrichment = () => {
       enriched: 0,
       skipped: 0,
       errors: 0,
-      errorDetails: []
+      errorDetails: [],
+      message: ''
     };
 
     // Spiele in Batches verarbeiten
@@ -281,6 +283,9 @@ export const useGameEnrichment = () => {
         } catch (error) {
           result.errors++;
           const errorMsg = `Fehler bei Anreicherung von "${game.title}": ${error}`;
+          if (!result.errorDetails) {
+            result.errorDetails = [];
+          }
           result.errorDetails.push(errorMsg);
           console.error(errorMsg);
 
@@ -478,27 +483,17 @@ export const useGameEnrichment = () => {
     platformName?: string
   ): Promise<IGDBGame | null> => {
     try {
-      console.log(`[IGDB] Starting search for: "${gameName}"`);
-
       // Generiere alle Such-Varianten
       const searchVariants = generateSearchVariants(gameName);
-      console.log(
-        `[IGDB] Generated ${searchVariants.length} search variants:`,
-        searchVariants
-      );
 
       let allResults: IGDBSearchResult[] = [];
       let bestResults: IGDBSearchResult[] = [];
 
       // Durchsuche alle Varianten
       for (const variant of searchVariants) {
-        console.log(`[IGDB] Searching for variant: "${variant}"`);
         const results = await searchFunction(variant, 5);
 
         if (results.length > 0) {
-          console.log(
-            `[IGDB] Found ${results.length} results for "${variant}"`
-          );
           allResults.push(...results);
           // Prüfe sofort, ob wir eine sehr gute Übereinstimmung haben
           for (const result of results) {
@@ -506,19 +501,9 @@ export const useGameEnrichment = () => {
               variant.toLowerCase(),
               result.name.toLowerCase()
             );
-            console.log(
-              `[IGDB] Variant "${variant}" vs "${
-                result.name
-              }" (score: ${score.toFixed(3)})`
-            );
 
             // Bei sehr hoher Übereinstimmung sofort verwenden
             if (score >= 0.9) {
-              console.log(
-                `[IGDB] Excellent match found immediately: "${
-                  result.name
-                }" (score: ${score.toFixed(3)})`
-              );
               return await getDetailsFunction(result.id);
             }
 
@@ -526,16 +511,11 @@ export const useGameEnrichment = () => {
               bestResults.push(result);
             }
           }
-        } else {
-          console.log(`[IGDB] No results for variant: "${variant}"`);
         }
       }
 
       // Falls keine Ergebnisse gefunden wurden, versuche partielle Suche
       if (allResults.length === 0) {
-        console.log(
-          `[IGDB] No exact matches found, trying partial search for: "${gameName}"`
-        );
         const partialResults = await performPartialSearch(
           gameName,
           searchFunction
@@ -543,9 +523,6 @@ export const useGameEnrichment = () => {
         allResults.push(...partialResults);
 
         if (allResults.length === 0) {
-          console.log(
-            `[IGDB] No search results found for any variant or partial search of: "${gameName}"`
-          );
           return null;
         }
       }
@@ -555,8 +532,6 @@ export const useGameEnrichment = () => {
         (result, index, self) =>
           index === self.findIndex(r => r.id === result.id)
       );
-
-      console.log(`[IGDB] Total unique results found: ${uniqueResults.length}`);
 
       // Verwende beste Ergebnisse falls vorhanden, sonst alle
       const resultsToCheck =
@@ -595,28 +570,11 @@ export const useGameEnrichment = () => {
         }
       }
 
-      console.log(
-        `[IGDB] Best match: "${
-          bestMatch.name
-        }" vs variant "${bestVariant}" (score: ${bestScore.toFixed(3)})`
-      );
-
       // Lowered threshold for better matching with improved similarity scoring
       const threshold = 0.3;
       if (bestScore < threshold) {
-        console.log(
-          `[IGDB] Best score ${bestScore.toFixed(
-            3
-          )} below threshold ${threshold}, rejecting match`
-        );
         return null;
       }
-
-      console.log(
-        `[IGDB] Selected best match: "${
-          bestMatch.name
-        }" (score: ${bestScore.toFixed(3)})`
-      );
 
       // Detaillierte Informationen für die beste Übereinstimmung abrufen
       return await getDetailsFunction(bestMatch.id);
@@ -644,18 +602,11 @@ export const useGameEnrichment = () => {
 
       if (words.length === 0) return [];
 
-      console.log(
-        `[IGDB] Trying partial search with words: [${words.join(', ')}]`
-      );
-
       const results: IGDBSearchResult[] = [];
 
       // Suche nach einzelnen wichtigen Wörtern
       for (const word of words) {
         const wordResults = await searchFunction(word, 10);
-        console.log(
-          `[IGDB] Partial search for "${word}" found ${wordResults.length} results`
-        );
         results.push(...wordResults);
       }
 
@@ -677,9 +628,6 @@ export const useGameEnrichment = () => {
         );
       });
 
-      console.log(
-        `[IGDB] Partial search found ${relevantResults.length} relevant results`
-      );
       return relevantResults.slice(0, 15); // Maximal 15 Ergebnisse
     } catch (error) {
       console.error('[IGDB] Error in partial search:', error);
@@ -752,29 +700,18 @@ export const useGameEnrichment = () => {
       igdbGame.aggregated_rating_count > 0
     ) {
       enrichedData.rating = igdbGame.aggregated_rating / 10; // Konvertiere zu 1-10 Skala mit Dezimalstellen
-      console.log(
-        `[IGDB] Using aggregated_rating: ${igdbGame.aggregated_rating} -> ${enrichedData.rating}`
-      );
     } else if (
       igdbGame.total_rating &&
       igdbGame.total_rating_count &&
       igdbGame.total_rating_count > 0
     ) {
       enrichedData.rating = igdbGame.total_rating / 10;
-      console.log(
-        `[IGDB] Using total_rating: ${igdbGame.total_rating} -> ${enrichedData.rating}`
-      );
     } else if (
       igdbGame.rating &&
       igdbGame.rating_count &&
       igdbGame.rating_count > 0
     ) {
       enrichedData.rating = igdbGame.rating / 10;
-      console.log(
-        `[IGDB] Using user_rating: ${igdbGame.rating} -> ${enrichedData.rating}`
-      );
-    } else {
-      console.log(`[IGDB] No valid rating found for game`);
     }
 
     return enrichedData;
