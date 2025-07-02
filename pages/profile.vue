@@ -116,21 +116,6 @@
 <template>
   <!-- Main Container with proper padding -->
   <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-4">
-    <!-- Header Section -->
-    <div
-      class="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-800/20 via-blue-800/20 to-indigo-800/20 backdrop-blur-sm border border-purple-500/20 shadow-2xl">
-      <div
-        class="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10"></div>
-      <div class="relative p-6 sm:p-8">
-        <h1
-          class="text-3xl sm:text-4xl font-bold text-white mb-3 tracking-tight bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-          Gaming Profile
-        </h1>
-        <p class="text-gray-300 text-sm sm:text-base">
-          Deine Gaming-Reise, Erfolge und Sammlung
-        </p>
-      </div>
-    </div>
     <!-- Loading State -->
     <div
       v-if="loadingStore.hasForegroundOperations"

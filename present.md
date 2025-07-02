@@ -16,7 +16,13 @@ graph TB
 
     subgraph "Backend"
         API[TRPC API<br/>Auth Middleware]
-        Services[Business Services<br/>Games • Auth • Deals • User & Currency]
+
+        subgraph "Business Services"
+            GamesService[Games Service<br/>Library Management<br/>IGDB Integration]
+            AuthService[Auth Service<br/>User Authentication<br/>Session Management]
+            DealsService[Deals Service<br/>Deal Aggregation<br/>Price Tracking]
+            UserService[User Service<br/>Profile Management<br/>Currency System]
+        end
     end
 
     subgraph "Supabase"
@@ -30,21 +36,33 @@ graph TB
         Deals[Deal Sources <br/> GGDeals • IsThereAnyDeal]
     end
 
-    FE --> Backend
-    API --> Services
-    Services --> Supabase
-    Services --> Libraries
-    Services --> IGDB
-    Services --> Deals
+    FE --> API
+    API --> GamesService
+    API --> AuthService
+    API --> DealsService
+    API --> UserService
+
+    GamesService --> DB
+    GamesService --> Libraries
+    GamesService --> IGDB
+
+    AuthService --> Auth
+    AuthService --> DB
+
+    DealsService --> DB
+    DealsService --> Deals
+
+    UserService --> DB
 
     classDef frontend fill:#8B5CF6,stroke:#7C3AED,stroke-width:2px,color:#fff
     classDef backend fill:#10B981,stroke:#059669,stroke-width:2px,color:#fff
+    classDef services fill:#059669,stroke:#047857,stroke-width:2px,color:#fff
     classDef database fill:#3B82F6,stroke:#2563EB,stroke-width:2px,color:#fff
     classDef external fill:#F59E0B,stroke:#D97706,stroke-width:2px,color:#fff
-    classDef exAPI fill:#F59E0B,stroke:#D97706,stroke-width:2px,color:#fff
 
     class FE frontend
-    class API,Services backend
+    class API backend
+    class GamesService,AuthService,DealsService,UserService services
     class DB,Auth database
     class Libraries,IGDB,Deals external
 ```
