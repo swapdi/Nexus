@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
 import { DealsService } from '~/lib/services/deals.service';
-import { DealAggregatorService } from '~/lib/services/deal-aggregator.service';
+import { publicProcedure, router } from '../trpc';
 
 const dealFiltersSchema = z.object({
   storeName: z.string().optional(),
@@ -237,7 +236,7 @@ export const dealsRouter = router({
    */
   aggregateDeals: publicProcedure.mutation(async () => {
     try {
-      const results = await DealAggregatorService.aggregateAllDeals();
+      const results = await DealsService.aggregateAllDeals();
       return {
         success: true,
         results

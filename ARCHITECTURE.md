@@ -29,8 +29,7 @@ Pinia Stores → TRPC Client → TRPC Router → Services → Prisma/DB
 
 - `user.service.ts` - User-Management, Authentifizierung, Statistiken
 - `games.service.ts` - Spiele-Bibliothek, Steam-Import, Metadaten
-- `deals.service.ts` - Deal-Management, Filterung
-- `deal-aggregator.service.ts` - Deal-Aggregation von externen APIs
+- `deals.service.ts` - Deal-Management, Deal-Aggregation von externen APIs, Filterung
 - `igdb.service.ts` - IGDB API Integration
 - `util.service.ts` - Utility-Funktionen
 
@@ -86,6 +85,22 @@ Pinia Stores → TRPC Client → TRPC Router → Services → Prisma/DB
 - Vollständige TypeScript-Typen durch TRPC
 - Konsistente Interface-Definitionen
 - Compile-Zeit Validierung
+
+### 6. Deals Service Konsolidierung ✅
+
+#### Vorher:
+
+- `deals.service.ts` - Basis Deal-Management (CRUD)
+- `deal-aggregator.service.ts` - Deal-Aggregation von externen APIs
+
+#### Nachher:
+
+- `deals.service.ts` - Konsolidierter Service für alle Deal-Funktionen:
+  - CRUD-Operationen für Deals
+  - Deal-Aggregation und Mock-Daten
+  - Externe Deal-Verarbeitung
+  - Deal-Filterung und Sortierung
+  - Bereinigung alter Deals
 
 ## Nächste Schritte (Optional)
 

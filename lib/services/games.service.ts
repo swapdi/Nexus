@@ -1,11 +1,11 @@
 import {
   PrismaClient,
   type Game,
-  type UserGame,
   type Platform,
-  type PlatformGame
+  type PlatformGame,
+  type UserGame
 } from '~/prisma/client';
-import { IGDBService, type EnrichedGameData } from './igdb.service';
+import { IGDBService } from './igdb.service';
 
 // Extended Game type with relations
 type GameWithRelations = Game & {
@@ -51,6 +51,7 @@ export interface ImportResult {
   errors: number;
   enriched?: number; // Anzahl der Spiele mit IGDB-Daten angereichert
   enrichmentErrors?: number; // Anzahl der IGDB-Anreicherungsfehler
+  message?: string; // Optionale Nachricht
 }
 
 export namespace GamesService {
@@ -1056,5 +1057,439 @@ export namespace GamesService {
       platforms: userGame.game.platformGames.map(pg => pg.platform.name),
       addedAt: userGame.addedAt
     };
+  }
+
+  // Steam-Bibliothek importieren (vollständig mit IGDB-Anreicherung)
+  export async function importSteamLibrary(
+    userId: number,
+    steamInput: string,
+    operationId?: string
+  ): Promise<ImportResult> {
+    try {
+      const steamId = await extractSteamId(steamInput);
+      if (!steamId) {
+        throw new Error('Ungültige Steam ID oder Profil-URL');
+      }
+
+      const steamApiKey = process.env.STEAM_API_KEY;
+      if (!steamApiKey) {
+        throw new Error('Steam API Key nicht konfiguriert');
+      }
+
+      // Steam Web API aufrufen
+      const response = await fetch(
+        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamId}&format=json&include_appinfo=true&include_played_free_games=true`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Steam API Fehler: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.response?.games) {
+        throw new Error('Keine Spiele gefunden oder Profil ist privat');
+      }
+
+      // Steam-Plattform finden oder erstellen
+      const steamPlatform = await findOrCreatePlatform('Steam', 'steam', {
+        siteUrl: 'https://store.steampowered.com'
+      });
+
+      const importResults = {
+        imported: 0,
+        updated: 0,
+        skipped: 0,
+        errors: 0,
+        enriched: 0,
+        enrichmentErrors: 0
+      };
+
+      const games = data.response.games;
+      const BATCH_SIZE = 15;
+      const totalBatches = Math.ceil(games.length / BATCH_SIZE);
+
+      // Spiele importieren mit IGDB-Anreicherung
+      for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+        const batchStart = batchIndex * BATCH_SIZE;
+        const batchEnd = Math.min(batchStart + BATCH_SIZE, games.length);
+        const batch = games.slice(batchStart, batchEnd);
+
+        const batchPromises = batch.map(async (steamGame: any) => {
+          try {
+            const result = await processSteamGameImport(
+              userId,
+              steamGame,
+              steamPlatform.id
+            );
+            return { steamGame, result, success: true };
+          } catch (error) {
+            console.error(
+              `Fehler beim Importieren von ${steamGame.name}:`,
+              error
+            );
+            return { steamGame, result: 'error', success: false, error };
+          }
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+
+        for (const batchResult of batchResults) {
+          if (batchResult.success) {
+            if (batchResult.result === 'imported') {
+              importResults.imported++;
+            } else if (batchResult.result === 'updated') {
+              importResults.updated++;
+            } else {
+              importResults.skipped++;
+            }
+          } else {
+            importResults.errors++;
+          }
+        }
+
+        if (batchIndex < totalBatches - 1) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+      }
+
+      // IGDB-Anreicherung für neue Spiele
+      const newGames = await prisma.game.findMany({
+        where: {
+          platformGames: {
+            some: {
+              platformId: steamPlatform.id
+            }
+          },
+          OR: [
+            { description: null },
+            { description: '' },
+            { genres: { equals: [] } }
+          ]
+        }
+      });
+
+      for (let i = 0; i < newGames.length; i++) {
+        const game = newGames[i];
+        try {
+          const enriched = await enrichSteamGameWithIGDB(
+            game.id,
+            game.title,
+            false
+          );
+          if (enriched) {
+            importResults.enriched++;
+          } else {
+            importResults.enrichmentErrors++;
+          }
+
+          if (i < newGames.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 250));
+          }
+        } catch (error) {
+          console.error(`IGDB enrichment failed for: ${game.title}`, error);
+          importResults.enrichmentErrors++;
+        }
+      }
+
+      // XP-Belohnung
+      if (importResults.imported > 0) {
+        const xpReward = Math.min(importResults.imported * 10, 500);
+        await rewardUserXP(userId, xpReward);
+      }
+
+      return {
+        success: true,
+        totalGames: data.response.game_count,
+        imported: importResults.imported,
+        updated: importResults.updated,
+        skipped: importResults.skipped,
+        errors: importResults.errors,
+        enriched: importResults.enriched,
+        enrichmentErrors: importResults.enrichmentErrors
+      };
+    } catch (error) {
+      console.error('Steam Import Error:', error);
+      throw error;
+    }
+  }
+
+  // Steam-Bibliothek schnell importieren (ohne IGDB-Anreicherung)
+  export async function importSteamLibraryFast(
+    userId: number,
+    steamInput: string,
+    operationId?: string
+  ): Promise<ImportResult> {
+    try {
+      const steamId = await extractSteamId(steamInput);
+      if (!steamId) {
+        throw new Error('Ungültige Steam ID oder Profil-URL');
+      }
+
+      const steamApiKey = process.env.STEAM_API_KEY;
+      if (!steamApiKey) {
+        throw new Error('Steam API Key nicht konfiguriert');
+      }
+
+      const response = await fetch(
+        `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamId}&format=json&include_appinfo=true&include_played_free_games=true`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Steam API Fehler: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.response?.games) {
+        throw new Error('Keine Spiele gefunden oder Profil ist privat');
+      }
+
+      const steamPlatform = await findOrCreatePlatform('Steam', 'steam', {
+        siteUrl: 'https://store.steampowered.com'
+      });
+
+      const importResults = {
+        imported: 0,
+        updated: 0,
+        skipped: 0,
+        errors: 0
+      };
+
+      const games = data.response.games;
+      const BATCH_SIZE = 25;
+      const totalBatches = Math.ceil(games.length / BATCH_SIZE);
+
+      for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+        const batchStart = batchIndex * BATCH_SIZE;
+        const batchEnd = Math.min(batchStart + BATCH_SIZE, games.length);
+        const batch = games.slice(batchStart, batchEnd);
+
+        const batchPromises = batch.map(async (steamGame: any) => {
+          try {
+            const result = await processSteamGameImport(
+              userId,
+              steamGame,
+              steamPlatform.id
+            );
+            return { result, success: true };
+          } catch (error) {
+            console.error(
+              `Fehler beim Importieren von ${steamGame.name}:`,
+              error
+            );
+            return { result: 'error', success: false };
+          }
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+
+        for (const batchResult of batchResults) {
+          if (batchResult.success) {
+            if (batchResult.result === 'imported') {
+              importResults.imported++;
+            } else if (batchResult.result === 'updated') {
+              importResults.updated++;
+            } else {
+              importResults.skipped++;
+            }
+          } else {
+            importResults.errors++;
+          }
+        }
+
+        if (batchIndex < totalBatches - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+
+      // XP-Belohnung
+      if (importResults.imported > 0) {
+        const xpReward = Math.min(importResults.imported * 10, 500);
+        await rewardUserXP(userId, xpReward);
+      }
+
+      return {
+        success: true,
+        totalGames: data.response.game_count,
+        imported: importResults.imported,
+        updated: importResults.updated,
+        skipped: importResults.skipped,
+        errors: importResults.errors,
+        message:
+          'Spiele wurden schnell importiert. IGDB-Anreicherung läuft im Hintergrund.'
+      };
+    } catch (error) {
+      console.error('Steam Fast Import Error:', error);
+      throw error;
+    }
+  }
+
+  // Hintergrund-IGDB-Anreicherung für importierte Spiele
+  export async function enrichGamesBackground(
+    platformSlug: string = 'steam',
+    operationId?: string
+  ): Promise<{
+    success: boolean;
+    enriched: number;
+    errors: number;
+    total: number;
+  }> {
+    try {
+      const platform = await prisma.platform.findUnique({
+        where: { slug: platformSlug }
+      });
+
+      if (!platform) {
+        throw new Error('Plattform nicht gefunden');
+      }
+
+      const gamesNeedingEnrichment = await prisma.game.findMany({
+        where: {
+          platformGames: {
+            some: {
+              platformId: platform.id
+            }
+          },
+          AND: [
+            {
+              OR: [
+                { description: null },
+                { description: '' },
+                { genres: { equals: [] } },
+                { developer: null },
+                { publisher: null },
+                { releaseDate: null }
+              ]
+            },
+            {
+              OR: [
+                {
+                  createdAt: {
+                    gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
+                  }
+                },
+                {
+                  AND: [{ description: null }, { developer: null }]
+                }
+              ]
+            }
+          ]
+        },
+        take: 200,
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      let enriched = 0;
+      let errors = 0;
+
+      for (let i = 0; i < gamesNeedingEnrichment.length; i++) {
+        const game = gamesNeedingEnrichment[i];
+        try {
+          const success = await enrichSteamGameWithIGDB(
+            game.id,
+            game.title,
+            false
+          );
+
+          if (success) {
+            enriched++;
+          } else {
+            errors++;
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (error) {
+          console.error(
+            `Anreicherung fehlgeschlagen für ${game.title}:`,
+            error
+          );
+          errors++;
+        }
+      }
+
+      return {
+        success: true,
+        enriched,
+        errors,
+        total: gamesNeedingEnrichment.length
+      };
+    } catch (error) {
+      console.error('Background Enrichment Error:', error);
+      throw error;
+    }
+  }
+
+  // Hilfsfunktion um Steam ID aus verschiedenen Formaten zu extrahieren
+  async function extractSteamId(input: string): Promise<string | null> {
+    // Steam ID 64 (17 Ziffern)
+    const steamId64Match = input.match(/\b\d{17}\b/);
+    if (steamId64Match) {
+      return steamId64Match[0];
+    }
+
+    // Steam Profil URL
+    const profileUrlMatch = input.match(
+      /steamcommunity\.com\/profiles\/(\d{17})/
+    );
+    if (profileUrlMatch) {
+      return profileUrlMatch[1];
+    }
+
+    // Steam Custom URL - verwende ResolveVanityURL API
+    const customUrlMatch = input.match(/steamcommunity\.com\/id\/([^\/]+)/);
+    if (customUrlMatch) {
+      const vanityUrl = customUrlMatch[1];
+      const steamApiKey = process.env.STEAM_API_KEY;
+
+      if (!steamApiKey) {
+        console.warn('Steam API Key nicht verfügbar für Custom URL-Auflösung');
+        return null;
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${steamApiKey}&vanityurl=${vanityUrl}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.response?.success === 1) {
+            return data.response.steamid;
+          }
+        }
+      } catch (error) {
+        console.error('Fehler beim Auflösen der Custom URL:', error);
+      }
+
+      return null;
+    }
+
+    // Direkte Custom URL ohne Domain
+    if (/^[a-zA-Z0-9_]+$/.test(input) && input.length > 2) {
+      const steamApiKey = process.env.STEAM_API_KEY;
+
+      if (!steamApiKey) {
+        console.warn('Steam API Key nicht verfügbar für Custom URL-Auflösung');
+        return null;
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${steamApiKey}&vanityurl=${input}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.response?.success === 1) {
+            return data.response.steamid;
+          }
+        }
+      } catch (error) {
+        console.error('Fehler beim Auflösen der Custom URL:', error);
+      }
+    }
+
+    return null;
   }
 }
