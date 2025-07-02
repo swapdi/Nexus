@@ -5,8 +5,8 @@
     layout: 'authenticated'
   });
 
-  const accountStore = useAccountStore();
-  const user = computed(() => accountStore.user);
+  const userStore = useUserStore();
+  const user = computed(() => userStore.user);
 
   // Dashboard Stats (Mock-Daten)
   const stats = ref({

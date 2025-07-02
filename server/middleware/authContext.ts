@@ -1,6 +1,6 @@
-import { defineEventHandler } from 'h3';
 import { serverSupabaseUser } from '#supabase/server';
-import { AuthService } from '~/lib/services/auth.service';
+import { defineEventHandler } from 'h3';
+import { UserService } from '~/lib/services/user.service';
 
 export default defineEventHandler(async event => {
   if (!event.path.startsWith('/api/trpc')) {
@@ -10,9 +10,9 @@ export default defineEventHandler(async event => {
     const user = await serverSupabaseUser(event);
     if (user) {
       event.context.user = user;
-      let dbUser = await AuthService.getUserBySupabaseId(user.id);
+      let dbUser = await UserService.getUserBySupabaseId(user.id);
       if (!dbUser && user) {
-        dbUser = await AuthService.createUser(
+        dbUser = await UserService.createUser(
           user.id,
           user.user_metadata.full_name
             ? user.user_metadata.full_name

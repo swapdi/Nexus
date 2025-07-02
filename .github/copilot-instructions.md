@@ -10,8 +10,6 @@
 
 ### 🧱 Codestruktur & Modularität
 
-- **Erstelle niemals eine Datei, die länger als 500 Codezeilen ist.** Wenn eine Datei diese Grenze erreicht, führen Sie eine Refaktorierung durch, indem Sie sie in Module oder Hilfsdateien aufteilen.
-
 - **Organisieren Sie Code in klar getrennte Module**, gruppiert nach Funktion oder Verantwortung.
 
 - **Verwenden Sie klare, konsistente Imports** (bevorzugen Sie relative Imports innerhalb von Paketen).

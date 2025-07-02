@@ -93,7 +93,7 @@
 
   watchEffect(async () => {
     if (user.value) {
-      // Ggf. accountStore.init() hier, falls es nach Registrierung & Auto-Login relevant ist
+      // Ggf. userStore.init() hier, falls es nach Registrierung & Auto-Login relevant ist
       // Direkt nach SignUp ist der User oft noch nicht voll "aktiv" (E-Mail Bestätigung)
       // Aber Supabase setzt user.value oft schon.
       // navigateTo('/dashboard', { replace: true }); // Weiterleitung erfolgt erst nach E-Mail Bestätigung wirklich sinnvoll

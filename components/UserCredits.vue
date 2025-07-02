@@ -27,11 +27,11 @@
 </template>
 
 <script setup lang="ts">
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
 
   // Grund: Credits formatieren für bessere Lesbarkeit (z.B. 1.234 statt 1234)
   const formattedCredits = computed(() => {
-    const credits = accountStore.user?.credits || 0;
+    const credits = userStore.user?.credits || 0;
     return credits.toLocaleString('de-DE');
   });
 </script>

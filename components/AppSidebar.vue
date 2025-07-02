@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  const accountStore = useAccountStore();
-  const user = computed(() => accountStore.user);
+  const userStore = useUserStore();
+  const user = computed(() => userStore.user);
 
   const emit = defineEmits<{
     hoverChange: [isHovered: boolean];

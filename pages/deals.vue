@@ -5,7 +5,7 @@
     DealSortOptions
   } from '~/lib/services/deals.service';
 
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
   // Using the store auto-import from Nuxt
   const dealsStore = useDealsStore();
 
@@ -24,7 +24,7 @@
 
   // Initialize data
   onMounted(async () => {
-    await accountStore.init();
+    await userStore.init();
     await dealsStore.fetchDeals();
     await dealsStore.fetchAvailableStores();
     await dealsStore.fetchDealStats();

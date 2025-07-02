@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import ConfirmModal from '~/components/ConfirmModal.vue';
 
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const loadingStore = useLoadingStore();
   // View Mode Management
@@ -21,7 +21,7 @@
   );
 
   onMounted(async () => {
-    await accountStore.init();
+    await userStore.init();
     await gamesStore.init();
   });
 

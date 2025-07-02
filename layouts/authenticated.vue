@@ -1,15 +1,15 @@
 <script setup lang="ts">
   import auth from '~/middleware/auth';
   import type { User } from '~/prisma/client';
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
   const user = ref<User | null>(null);
   const sidebarHovered = ref(false);
   definePageMeta({
     middleware: ['auth']
   });
   onMounted(async () => {
-    accountStore.init();
-    user.value = accountStore.user;
+    userStore.init();
+    user.value = userStore.user;
   });
 
   const handleSidebarHover = (isHovered: boolean) => {

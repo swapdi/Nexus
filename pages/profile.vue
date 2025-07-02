@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
   const loadingStore = useLoadingStore();
   const supabaseUser = useSupabaseUser();
 
   // Initialize user data
   onMounted(async () => {
-    await accountStore.init();
+    await userStore.init();
   });
 
   // User data access
-  const user = computed(() => accountStore.user);
+  const user = computed(() => userStore.user);
 
   // User display information
   const userDisplayName = computed(

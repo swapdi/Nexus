@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
   const notifyStore = useNotifyStore();
   const loadingStore = useLoadingStore();
   const editableDisplayName = ref('');
   const isLoadingNameChange = ref(false);
 
-  const fullUser = computed(() => accountStore.fullUser);
+  const fullUser = computed(() => userStore.fullUser);
   const user = computed(() => fullUser.value?.dbUser);
   const account = computed(() => fullUser.value?.account);
 
@@ -69,7 +69,7 @@
     isLoadingNameChange.value = true;
     try {
       // TODO: Implement updateUser method in account store
-      // await accountStore.updateUser({ display_name: editableDisplayName.value.trim() });
+      // await userStore.updateUser({ display_name: editableDisplayName.value.trim() });
       notifyStore.notify(
         'Display name updated successfully!',
         NotificationType.Success

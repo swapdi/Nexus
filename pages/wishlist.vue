@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
 
   onMounted(async () => {
-    await accountStore.init();
+    await userStore.init();
   });
 
   definePageMeta({

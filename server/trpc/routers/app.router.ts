@@ -1,10 +1,10 @@
 import { router } from '~/server/trpc/trpc';
-import { authRouter } from './auth.router';
-import { gamesRouter } from './games.router';
 import { dealsRouter } from './deals.router';
+import { gamesRouter } from './games.router';
+import { userRouter } from './user.router';
 
 export const appRouter = router({
-  auth: authRouter,
+  user: userRouter,
   games: gamesRouter,
   deals: dealsRouter
 });

@@ -1,11 +1,11 @@
 <script setup lang="ts">
   const supabase = useSupabaseClient();
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
 
   async function signout() {
     await supabase.auth.signOut();
-    if (accountStore) {
-      accountStore.signout();
+    if (userStore) {
+      userStore.signout();
     }
     navigateTo('/', { replace: true });
   }

@@ -2,7 +2,7 @@
   const user = useSupabaseUser();
   const supabase = useSupabaseClient();
 
-  const accountStore = useAccountStore();
+  const userStore = useUserStore();
   const notifyStore = useNotifyStore();
 
   const loading = ref(false);
@@ -48,7 +48,7 @@
   });
   watchEffect(async () => {
     if (user.value) {
-      await accountStore.init();
+      await userStore.init();
       navigateTo('/dashboard', { replace: true });
     }
   });
