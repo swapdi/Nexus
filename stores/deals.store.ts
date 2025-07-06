@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { useLoading } from '~/stores/loading.store';
-import type { any } from 'zod/v4';
+import { computed, ref } from 'vue';
 import type {
-  DealWithRelations,
   DealFilters,
-  DealSortOptions
+  DealSortOptions,
+  DealWithRelations
 } from '~/lib/services/deals.service';
+import { useLoading } from '~/stores/loading.store';
 
 export const useDealsStore = defineStore('deals', () => {
   // Loading store integration

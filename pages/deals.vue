@@ -1,8 +1,7 @@
 <script setup lang="ts">
   import type {
-    DealWithRelations,
-    DealFilters,
-    DealSortOptions
+    DealSortOptions,
+    DealWithRelations
   } from '~/lib/services/deals.service';
 
   const userStore = useUserStore();
@@ -56,7 +55,8 @@
 
   // Filtered and sorted deals
   const filteredDeals = computed(() => {
-    let filtered = dealsStore.searchDeals(searchQuery.value); // Apply local filters
+    let filtered = dealsStore.searchDeals(searchQuery.value);
+
     filtered = filtered.filter(deal => {
       const matchesStore =
         selectedStore.value === 'all' || deal.storeName === selectedStore.value;
@@ -64,10 +64,7 @@
         selectedGenre.value === 'all' ||
         deal.game.genres.includes(selectedGenre.value);
       const matchesFree = !showOnlyFree.value || deal.isFreebie;
-
-      // Check if user owns this game - this would need to be implemented in the deal service
-      // For now, we'll assume none are owned since we don't have this relationship
-      const matchesOwned = !hideOwned.value;
+      const matchesOwned = !hideOwned.value || !isGameOwned(deal);
 
       return matchesStore && matchesGenre && matchesFree && matchesOwned;
     });
@@ -107,22 +104,15 @@
   // Statistics
   const statistics = computed(() => {
     const stats = dealsStore.dealStats;
-    if (!stats) {
-      return {
-        totalDeals: dealsStore.deals.length,
-        freeGames: dealsStore.freebies.length,
-        averageDiscount: 0,
-        maxDiscount: Math.max(
-          ...dealsStore.deals.map(d => d.discountPercent || 0)
-        )
-      };
-    }
     return {
-      totalDeals: stats.totalDeals,
-      freeGames: stats.freebies,
-      averageDiscount: Math.round(stats.averageDiscount),
+      totalDeals: stats?.totalDeals || dealsStore.deals.length,
+      freeGames: stats?.freebies || dealsStore.freebies.length,
+      averageDiscount: stats?.averageDiscount
+        ? Math.round(stats.averageDiscount)
+        : 0,
       maxDiscount: Math.max(
-        ...dealsStore.deals.map(d => d.discountPercent || 0)
+        ...dealsStore.deals.map(d => d.discountPercent || 0),
+        0
       )
     };
   });
@@ -138,17 +128,30 @@
 
   // Helper functions
   const getCoverUrl = (deal: DealWithRelations): string => {
-    if (deal.game.coverUrl) return deal.game.coverUrl;
-    return '/gameplaceholder.jpg';
+    return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
 
   const getGenreDisplay = (deal: DealWithRelations): string => {
     return deal.game.genres.slice(0, 2).join(', ') || 'Unbekannt';
   };
 
+  const getTimeRemainingColor = (date: Date | null): string => {
+    if (!date) return 'text-green-400';
+    const remaining = dealsStore.getTimeRemaining(date.toISOString());
+    if (!remaining || remaining === 'Abgelaufen') return 'text-red-400';
+    if (remaining.includes('Stunde') || remaining.includes('Minute'))
+      return 'text-red-400';
+    if (remaining.includes('1 Tag')) return 'text-yellow-400';
+    return 'text-green-400';
+  };
+
+  const formatDate = (date: Date | null): string => {
+    if (!date) return 'Unbegrenzt';
+    return dealsStore.getTimeRemaining(date.toISOString()) || 'Abgelaufen';
+  };
+
   const isGameOwned = (deal: DealWithRelations): boolean => {
     // TODO: Implement ownership check against user's library
-    // This would require checking if the user owns this game in their library
     return false;
   };
 
@@ -162,63 +165,37 @@
     await dealsStore.refreshDeals();
   };
 
-  // Deal Aggregation testing
+  // Deal Aggregation (to be implemented)
   const isAggregating = ref(false);
   const aggregationMessage = ref<string | null>(null);
 
-  const testDealAggregation = async () => {
+  const aggregateDeals = async () => {
     isAggregating.value = true;
     aggregationMessage.value = null;
 
     try {
-      console.log('🚀 Starting deal aggregation...');
-      // This is a mock implementation for now - in a real scenario
-      // this would call the TRPC endpoint
+      // TODO: Implement actual deal aggregation via TRPC
+      // await $client.deals.aggregateDeals.mutate();
 
-      // Simulate aggregation delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      aggregationMessage.value = `Deal-Aggregation noch nicht implementiert.`;
 
-      aggregationMessage.value = `Mock-Deal-Aggregation abgeschlossen! 5 neue, 3 aktualisiert.`;
-
-      // Auto-hide message after 5 seconds
+      // Auto-hide message after 3 seconds
       setTimeout(() => {
         aggregationMessage.value = null;
-      }, 5000);
-
-      // Refresh deals to show any new data
-      await dealsStore.refreshDeals();
+      }, 3000);
     } catch (error: unknown) {
-      console.error('💥 Deal aggregation failed:', error);
+      console.error('Deal aggregation failed:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Unbekannter Fehler';
       aggregationMessage.value = `Fehler beim Sammeln der Deals: ${errorMessage}`;
 
-      // Auto-hide error message after 7 seconds
+      // Auto-hide error message after 5 seconds
       setTimeout(() => {
         aggregationMessage.value = null;
-      }, 7000);
+      }, 5000);
     } finally {
       isAggregating.value = false;
     }
-  };
-
-  // Format functions
-  const formatPrice = (price: number | null) => {
-    return dealsStore.formatPrice(price);
-  };
-  const formatDate = (date: Date | null) => {
-    if (!date) return 'Unbegrenzt';
-    return dealsStore.getTimeRemaining(date.toISOString()) || 'Abgelaufen';
-  };
-
-  const getTimeRemaining = (date: Date | null) => {
-    if (!date) return 'text-green-400';
-    const remaining = dealsStore.getTimeRemaining(date.toISOString());
-    if (!remaining || remaining === 'Abgelaufen') return 'text-red-400';
-    if (remaining.includes('Stunde') || remaining.includes('Minute'))
-      return 'text-red-400';
-    if (remaining.includes('1 Tag')) return 'text-yellow-400';
-    return 'text-green-400';
   };
 </script>
 
@@ -245,9 +222,9 @@
             Aktualisieren
           </button>
 
-          <!-- Test Deal Aggregation Button -->
+          <!-- Aggregate Deals Button -->
           <button
-            @click="testDealAggregation"
+            @click="aggregateDeals"
             :disabled="isAggregating"
             class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2">
             <Icon
@@ -487,7 +464,7 @@
                 <span class="text-gray-400">Preis:</span>
                 <div class="text-right">
                   <div class="text-green-400 font-bold">
-                    {{ formatPrice(deal.price) }}
+                    {{ dealsStore.formatPrice(deal.price) }}
                   </div>
                   <div
                     v-if="
@@ -495,7 +472,7 @@
                       deal.originalPrice > (deal.price || 0)
                     "
                     class="text-gray-500 line-through text-xs">
-                    {{ formatPrice(deal.originalPrice) }}
+                    {{ dealsStore.formatPrice(deal.originalPrice) }}
                   </div>
                 </div>
               </div>
@@ -510,7 +487,7 @@
               class="flex justify-between items-center">
               <span class="text-gray-400">Gültig:</span>
               <span
-                :class="getTimeRemaining(deal.validUntil)"
+                :class="getTimeRemainingColor(deal.validUntil)"
                 class="font-medium">
                 {{ formatDate(deal.validUntil) }}
               </span>

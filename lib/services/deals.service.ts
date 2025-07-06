@@ -1,4 +1,5 @@
 import { PrismaClient, type Prisma } from '~/prisma/client';
+import type { Region } from './cheapshark.service';
 const prisma = new PrismaClient();
 
 export type DealWithRelations = Prisma.DealGetPayload<{
@@ -419,8 +420,84 @@ export namespace DealsService {
   }
 
   /**
+   * Suche nach Deals für ein spezifisches Spiel über externe APIs
+   */
+  export async function searchGameDeals(
+    gameTitle: string
+  ): Promise<ExternalDeal[]> {
+    try {
+      const { CheapSharkService } = await import('./cheapshark.service');
+
+      console.log(`Searching for deals for game: ${gameTitle}`);
+
+      // Suche nach dem Spiel
+      const games = await CheapSharkService.searchGames(gameTitle, 5);
+
+      if (games.length === 0) {
+        console.log(`No games found for title: ${gameTitle}`);
+        return [];
+      }
+
+      const allDeals: ExternalDeal[] = [];
+
+      // Hole Deals für die gefundenen Spiele
+      for (const game of games.slice(0, 3)) {
+        // Nur die ersten 3 Ergebnisse
+        try {
+          const gameDeals = await CheapSharkService.getGameDeals(game.gameID);
+
+          if (gameDeals && gameDeals.deals.length > 0) {
+            // Hole Store-Informationen
+            const stores = await CheapSharkService.getStores();
+            const storeMap = new Map(
+              stores.map(store => [store.storeID, store.storeName])
+            );
+
+            for (const deal of gameDeals.deals) {
+              const storeName =
+                storeMap.get(deal.storeID) || `Store ${deal.storeID}`;
+              const price = parseFloat(deal.price);
+              const retailPrice = parseFloat(deal.retailPrice);
+              const savings = parseFloat(deal.savings);
+
+              const externalDeal: ExternalDeal = {
+                title: gameDeals.info.title,
+                storeName,
+                price: price > 0 ? price : undefined,
+                originalPrice: retailPrice > price ? retailPrice : undefined,
+                discountPercent: savings > 0 ? Math.round(savings) : undefined,
+                url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+                validUntil: undefined,
+                isFreebie: price === 0,
+                source: 'manual',
+                externalId: deal.dealID
+              };
+
+              allDeals.push(externalDeal);
+            }
+          }
+
+          // Kurze Pause zwischen Anfragen
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (error) {
+          console.error(
+            `Error fetching deals for game ${game.external}:`,
+            error
+          );
+          continue;
+        }
+      }
+
+      console.log(`Found ${allDeals.length} deals for ${gameTitle}`);
+      return allDeals;
+    } catch (error) {
+      console.error('Error searching for game deals:', error);
+      throw new Error('Failed to search for game deals');
+    }
+  }
+
+  /**
    * Sammle Deals von allen verfügbaren Quellen (Deal Aggregation)
-   * HINWEIS: Komplexe Aggregations-Logik ist jetzt im useDealAggregation Composable verfügbar
    */
   export async function aggregateAllDeals(): Promise<{
     imported: number;
@@ -429,9 +506,6 @@ export namespace DealsService {
   }> {
     console.log('Starting deal aggregation...');
 
-    const { generateMockDeals, validateDealData, cleanDealData } =
-      useDealAggregation();
-
     const results = {
       imported: 0,
       updated: 0,
@@ -439,24 +513,23 @@ export namespace DealsService {
     };
 
     try {
-      // Für MVP: Mock-Deals sammeln (komplexe Logik im Composable)
-      const mockDeals = generateMockDeals();
+      // Importiere CheapShark Service
+      const { CheapSharkService } = await import('./cheapshark.service');
 
-      for (const externalDeal of mockDeals) {
+      // Hole Deals von CheapShark
+      const externalDeals = await CheapSharkService.aggregateDeals({
+        maxDeals: 100,
+        storeIDs: ['1', '25', '7', '3'], // Steam, Epic, GOG, GreenManGaming
+        minSavings: 20,
+        maxPrice: 60
+      });
+
+      console.log(`Found ${externalDeals.length} deals from CheapShark`);
+
+      // Verarbeite jeden Deal
+      for (const externalDeal of externalDeals) {
         try {
-          // Daten-Validierung über Composable
-          const validation = validateDealData(externalDeal);
-          if (!validation.isValid) {
-            results.errors.push(
-              `Invalid deal data: ${validation.errors.join(', ')}`
-            );
-            continue;
-          }
-
-          // Daten-Bereinigung über Composable
-          const cleanedDeal = cleanDealData(externalDeal);
-
-          const result = await processExternalDeal(cleanedDeal);
+          const result = await processExternalDeal(externalDeal);
           if (result.created) {
             results.imported++;
           } else {
@@ -610,6 +683,172 @@ export namespace DealsService {
       } catch (error) {
         console.error(`Failed to process test deal: ${error}`);
       }
+    }
+  }
+
+  /**
+   * Aggregiere Deals aus externen Quellen mit regionaler Unterstützung
+   */
+  export async function aggregateRegionalDeals(
+    region: Region = 'GLOBAL',
+    options: {
+      maxDeals?: number;
+      minSavings?: number;
+      maxPrice?: number;
+      storeIDs?: string[];
+    } = {}
+  ): Promise<{
+    processed: number;
+    errors: number;
+    newDeals: number;
+    updatedDeals: number;
+    region: Region;
+  }> {
+    const {
+      maxDeals = 50,
+      minSavings = 25,
+      maxPrice = 100,
+      storeIDs = []
+    } = options;
+
+    console.log(`Starting regional deal aggregation for region: ${region}`);
+
+    let processed = 0;
+    let errors = 0;
+    let newDeals = 0;
+    let updatedDeals = 0;
+
+    try {
+      // Verwende dynamischen Import um zirkuläre Abhängigkeiten zu vermeiden
+      const { CheapSharkService: CheapShark } = await import(
+        './cheapshark.service'
+      );
+
+      // Hole regionale Deals von CheapShark
+      const deals = await CheapShark.getRegionalDeals(region, {
+        pageSize: Math.min(maxDeals, 60),
+        sortBy: 'Savings',
+        desc: true,
+        upperPrice: maxPrice,
+        steamRating: 70 // Nur Spiele mit guter Bewertung
+      });
+
+      console.log(`Found ${deals.length} regional deals from CheapShark`);
+
+      for (const deal of deals) {
+        try {
+          const savings = parseFloat(deal.savings);
+
+          // Nur Deals mit mindestens X% Ersparnis
+          if (savings >= minSavings) {
+            // Verwende dynamischen Import um zirkuläre Abhängigkeiten zu vermeiden
+            const { CheapSharkService: CheapShark } = await import(
+              './cheapshark.service'
+            );
+            const externalDeal = CheapShark.convertToExternalDeal(
+              deal,
+              'CheapShark'
+            );
+            const result = await processExternalDeal(externalDeal);
+
+            if (result.created) {
+              newDeals++;
+            } else {
+              updatedDeals++;
+            }
+          }
+
+          processed++;
+        } catch (error) {
+          console.error(`Error processing deal ${deal.title}:`, error);
+          errors++;
+        }
+      }
+
+      console.log(`Regional deal aggregation completed for ${region}:`, {
+        processed,
+        errors,
+        newDeals,
+        updatedDeals
+      });
+
+      return {
+        processed,
+        errors,
+        newDeals,
+        updatedDeals,
+        region
+      };
+    } catch (error) {
+      console.error('Error during regional deal aggregation:', error);
+      throw new Error(`Failed to aggregate regional deals for ${region}`);
+    }
+  }
+
+  /**
+   * Hole regionale Deals aus der Datenbank
+   */
+  export async function getRegionalDeals(
+    region: Region = 'GLOBAL',
+    filters: DealFilters = {},
+    sortBy: DealSortOptions = 'recent'
+  ): Promise<DealWithRelations[]> {
+    try {
+      // Bestimme Store-Filter basierend auf Region
+      const regionalStores = getRegionalStores(region);
+      const storeFilter = filters.storeName
+        ? [filters.storeName]
+        : regionalStores;
+
+      const deals = await getDeals(
+        {
+          ...filters,
+          storeName: storeFilter.length > 0 ? storeFilter[0] : undefined // Vereinfachung für Demo
+        },
+        sortBy
+      );
+
+      // Filtere zusätzlich nach regionalen Stores
+      return deals.filter(
+        deal => storeFilter.length === 0 || storeFilter.includes(deal.storeName)
+      );
+    } catch (error) {
+      console.error('Error fetching regional deals:', error);
+      throw new Error('Failed to fetch regional deals');
+    }
+  }
+
+  /**
+   * Hilfsfunktion: Hole Store-Namen basierend auf Region
+   */
+  function getRegionalStores(region: Region): string[] {
+    switch (region) {
+      case 'US':
+        return [
+          'Steam',
+          'Epic Games Store',
+          'Humble Store',
+          'Fanatical',
+          'GamersGate'
+        ];
+      case 'EU':
+        return [
+          'Steam',
+          'Gamesplanet',
+          'Gamesload',
+          'Green Man Gaming',
+          'Humble Store'
+        ];
+      case 'GLOBAL':
+      default:
+        return [
+          'Steam',
+          'Epic Games Store',
+          'Humble Store',
+          'Fanatical',
+          'Green Man Gaming',
+          'GamersGate'
+        ];
     }
   }
 }

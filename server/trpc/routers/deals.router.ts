@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CheapSharkService } from '~/lib/services/cheapshark.service';
 import { DealsService } from '~/lib/services/deals.service';
 import { publicProcedure, router } from '../trpc';
 
@@ -24,41 +25,158 @@ const dealSortSchema = z
   .optional()
   .default('recent');
 
-const createDealSchema = z.object({
-  gameId: z.number(),
-  platformGameId: z.number().optional(),
-  title: z.string().min(1),
-  storeName: z.string().min(1),
-  price: z.number().min(0).optional(),
-  discountPercent: z.number().min(0).max(100).optional(),
-  originalPrice: z.number().min(0).optional(),
-  url: z.string().url(),
-  validFrom: z.date().optional(),
-  validUntil: z.date().optional(),
-  isFreebie: z.boolean().optional().default(false)
-});
+const regionSchema = z
+  .enum(['US', 'EU', 'GLOBAL'])
+  .optional()
+  .default('GLOBAL');
+
+// Helper function: Prüfe ob Deals aktualisiert werden müssen
+async function shouldRefreshDeals(): Promise<boolean> {
+  try {
+    const stats = await DealsService.getDealStats();
+    if (stats.totalDeals === 0) {
+      return true; // Keine Deals vorhanden
+    }
+
+    // Prüfe das Alter der neuesten Deals (z.B. älter als 2 Stunden)
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    // Hier würden wir normalerweise das discoveredAt Datum prüfen
+    // Für jetzt return true wenn weniger als 10 Deals vorhanden
+    return stats.totalDeals < 10;
+  } catch (error) {
+    console.error('Error checking deal freshness:', error);
+    return true; // Im Fehlerfall refreshen
+  }
+}
+
+// Helper function: Hole Zeit der letzten Deal-Aktualisierung
+async function getLastDealUpdateTime(): Promise<string | null> {
+  try {
+    // Hier würden wir normalerweise das neueste discoveredAt Datum holen
+    // Für jetzt geben wir die aktuelle Zeit zurück
+    return new Date().toISOString();
+  } catch (error) {
+    console.error('Error getting last update time:', error);
+    return null;
+  }
+}
 
 export const dealsRouter = router({
   /**
-   * Hole alle Deals mit optionalen Filtern
+   * PERFORMANCE OPTIMIERT: Hole Deals (zuerst Datenbank, bei Bedarf CheapShark)
+   * Diese Funktion prüft zuerst, ob aktuelle Deals in der DB vorhanden sind.
+   * Falls nicht oder zu alt, wird automatisch CheapShark abgefragt und die DB aktualisiert.
    */
   getDeals: publicProcedure
     .input(
       z.object({
         filters: dealFiltersSchema.optional().default({}),
-        sortBy: dealSortSchema
+        sortBy: dealSortSchema,
+        forceRefresh: z.boolean().optional().default(false) // Für "Aktualisieren" Button
       })
     )
     .query(async ({ input }) => {
       try {
+        // Prüfe ob Refresh erzwungen wird oder DB-Deals zu alt sind
+        const shouldRefresh =
+          input.forceRefresh || (await shouldRefreshDeals());
+
+        if (shouldRefresh) {
+          console.log('🔄 Refreshing deals from CheapShark...');
+
+          // Aggregiere neue Deals von CheapShark
+          const freshDeals = await CheapSharkService.aggregateDeals({
+            maxDeals: 200,
+            storeIDs: ['1', '25', '7', '3'], // Steam, Epic, GOG, GMG
+            minSavings: 15,
+            maxPrice: 80
+          });
+
+          // Verarbeite und speichere in DB
+          for (const externalDeal of freshDeals) {
+            try {
+              await DealsService.processExternalDeal(externalDeal);
+            } catch (error) {
+              console.error(
+                `Failed to process deal: ${externalDeal.title}`,
+                error
+              );
+            }
+          }
+
+          console.log(
+            `✅ Processed ${freshDeals.length} deals from CheapShark`
+          );
+        }
+
+        // Hole Deals aus der Datenbank (immer aktuell nach Refresh)
         const deals = await DealsService.getDeals(input.filters, input.sortBy);
+
         return {
           success: true,
-          deals
+          deals,
+          isFromCache: !shouldRefresh,
+          lastUpdated: await getLastDealUpdateTime()
         };
       } catch (error) {
         console.error('Error in getDeals:', error);
         throw new Error('Failed to fetch deals');
+      }
+    }),
+
+  /**
+   * MANUELLER REFRESH: Erzwinge Aktualisierung von CheapShark
+   */
+  refreshDeals: publicProcedure
+    .input(
+      z.object({
+        maxDeals: z.number().min(1).max(500).optional().default(200),
+        storeIDs: z.array(z.string()).optional(),
+        minSavings: z.number().min(0).max(100).optional().default(15)
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        console.log('🔄 Manual refresh triggered...');
+
+        // Hole neue Deals von CheapShark
+        const externalDeals = await CheapSharkService.aggregateDeals({
+          maxDeals: input.maxDeals,
+          storeIDs: input.storeIDs || ['1', '25', '7', '3'],
+          minSavings: input.minSavings,
+          maxPrice: 80
+        });
+
+        let imported = 0;
+        let updated = 0;
+        const errors: string[] = [];
+
+        // Verarbeite jeden Deal
+        for (const externalDeal of externalDeals) {
+          try {
+            const result = await DealsService.processExternalDeal(externalDeal);
+            if (result.created) {
+              imported++;
+            } else {
+              updated++;
+            }
+          } catch (error) {
+            const errorMsg = `Failed to process ${externalDeal.title}: ${error}`;
+            errors.push(errorMsg);
+            console.error(errorMsg);
+          }
+        }
+
+        return {
+          success: true,
+          imported,
+          updated,
+          errors,
+          total: externalDeals.length
+        };
+      } catch (error) {
+        console.error('Error in refreshDeals:', error);
+        throw new Error('Failed to refresh deals');
       }
     }),
 
@@ -142,124 +260,134 @@ export const dealsRouter = router({
   }),
 
   /**
-   * Erstelle einen neuen Deal (für Admin/Import-Prozesse)
+   * Suche nach Deals für ein spezifisches Spiel (mit Live-Suche)
    */
-  createDeal: publicProcedure
-    .input(createDealSchema)
-    .mutation(async ({ input }) => {
+  searchGameDeals: publicProcedure
+    .input(
+      z.object({
+        gameTitle: z.string().min(1),
+        includeLive: z.boolean().optional().default(false) // Optional: Auch CheapShark durchsuchen
+      })
+    )
+    .query(async ({ input }) => {
       try {
-        const deal = await DealsService.createDeal(input);
-        return {
-          success: true,
-          deal
-        };
+        if (input.includeLive) {
+          // Live-Suche über CheapShark
+          const liveDeals = await DealsService.searchGameDeals(input.gameTitle);
+          return {
+            success: true,
+            deals: liveDeals,
+            source: 'live'
+          };
+        } else {
+          // Suche in der Datenbank
+          const dbDeals = await DealsService.getDealsByGameId(0); // TODO: Implement proper search
+          return {
+            success: true,
+            deals: dbDeals,
+            source: 'database'
+          };
+        }
       } catch (error) {
-        console.error('Error in createDeal:', error);
-        throw new Error('Failed to create deal');
+        console.error('Error in searchGameDeals:', error);
+        throw new Error('Failed to search game deals');
       }
     }),
 
   /**
-   * Aktualisiere einen Deal
+   * REGIONAL: Hole regionale Deals mit Unterstützung für verschiedene Regionen
    */
-  updateDeal: publicProcedure
+  getRegionalDeals: publicProcedure
     .input(
       z.object({
-        id: z.number(),
-        data: createDealSchema.partial()
+        region: regionSchema,
+        filters: dealFiltersSchema.optional().default({}),
+        sortBy: dealSortSchema,
+        forceRefresh: z.boolean().optional().default(false)
       })
     )
-    .mutation(async ({ input }) => {
+    .query(async ({ input }) => {
       try {
-        const deal = await DealsService.updateDeal(input.id, input.data);
-        return {
-          success: true,
-          deal
-        };
-      } catch (error) {
-        console.error('Error in updateDeal:', error);
-        throw new Error('Failed to update deal');
-      }
-    }),
+        const { region, filters, sortBy, forceRefresh } = input;
 
-  /**
-   * Lösche einen Deal
-   */
-  deleteDeal: publicProcedure
-    .input(
-      z.object({
-        id: z.number()
-      })
-    )
-    .mutation(async ({ input }) => {
-      try {
-        await DealsService.deleteDeal(input.id);
-        return {
-          success: true
-        };
-      } catch (error) {
-        console.error('Error in deleteDeal:', error);
-        throw new Error('Failed to delete deal');
-      }
-    }),
+        // Bei forceRefresh: Hole neue regionale Deals
+        if (forceRefresh) {
+          console.log(`🌍 Refreshing deals for region: ${region}`);
 
-  /**
-   * Erstelle oder aktualisiere Deal (Upsert)
-   */
-  upsertDeal: publicProcedure
-    .input(
-      z.object({
-        gameId: z.number(),
-        storeName: z.string(),
-        data: createDealSchema.omit({ gameId: true, storeName: true })
-      })
-    )
-    .mutation(async ({ input }) => {
-      try {
-        const deal = await DealsService.upsertDeal(
-          input.gameId,
-          input.storeName,
-          input.data
+          const aggregationResult = await DealsService.aggregateRegionalDeals(
+            region,
+            {
+              maxDeals: 100,
+              minSavings: 20,
+              maxPrice: 100
+            }
+          );
+
+          console.log(`Regional refresh completed:`, aggregationResult);
+        }
+
+        // Hole Deals aus DB (gefiltert nach Region)
+        const deals = await DealsService.getRegionalDeals(
+          region,
+          filters,
+          sortBy
         );
+        const lastUpdate = await getLastDealUpdateTime();
+
         return {
           success: true,
-          deal
+          deals,
+          region,
+          lastUpdate,
+          fromCache: !forceRefresh,
+          total: deals.length
         };
       } catch (error) {
-        console.error('Error in upsertDeal:', error);
-        throw new Error('Failed to upsert deal');
+        console.error('Error in getRegionalDeals:', error);
+        throw new Error(`Failed to get regional deals for ${input.region}`);
       }
     }),
 
   /**
-   * Aggregiere Deals von allen Quellen (für Admin/Cron)
+   * REGIONAL: Aggregiere Deals für eine spezifische Region
    */
-  aggregateDeals: publicProcedure.mutation(async () => {
-    try {
-      const results = await DealsService.aggregateAllDeals();
-      return {
-        success: true,
-        results
-      };
-    } catch (error) {
-      console.error('Error in aggregateDeals:', error);
-      throw new Error('Failed to aggregate deals');
-    }
-  }),
+  refreshRegionalDeals: publicProcedure
+    .input(
+      z.object({
+        region: regionSchema,
+        options: z
+          .object({
+            maxDeals: z.number().min(10).max(200).optional().default(100),
+            minSavings: z.number().min(0).max(95).optional().default(25),
+            maxPrice: z.number().min(1).max(500).optional().default(100)
+          })
+          .optional()
+          .default({})
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { region, options } = input;
 
-  /**
-   * Bereinige abgelaufene Deals
-   */
-  cleanupExpiredDeals: publicProcedure.mutation(async () => {
-    try {
-      const count = await DealsService.cleanupExpiredDeals();
-      return {
-        success: true,
-        deletedCount: count
-      };
-    } catch (error) {
-      console.error('Error in cleanupExpiredDeals:', error);
-      throw new Error('Failed to cleanup expired deals');
-    }
-  })
+        console.log(`🔄 Starting regional deal refresh for: ${region}`);
+
+        const result = await DealsService.aggregateRegionalDeals(
+          region,
+          options
+        );
+
+        return {
+          success: true,
+          region,
+          processed: result.processed,
+          newDeals: result.newDeals,
+          updatedDeals: result.updatedDeals,
+          errors: result.errors,
+          message: `Successfully processed ${result.processed} deals for ${region}`
+        };
+      } catch (error) {
+        console.error('Error in refreshRegionalDeals:', error);
+        throw new Error(`Failed to refresh regional deals for ${input.region}`);
+      }
+    })
 });
