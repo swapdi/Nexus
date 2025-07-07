@@ -1,133 +1,132 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\components\GameCard\GameCardLarge.vue -->
 <template>
-  <div
-    :class="[
-      'bg-gray-800/50 backdrop-blur-sm rounded-xl border overflow-hidden transition-all duration-300 group relative flex flex-col h-full cursor-pointer',
-      isSelectionMode
-        ? 'hover:border-blue-500/50'
-        : 'hover:border-purple-500/50',
-      isSelected
-        ? 'border-blue-500 ring-2 ring-blue-500/30'
-        : 'border-gray-700/50'
-    ]"
-    @click="handleClick">
-    <!-- Auswahlindikator -->
-    <div v-if="isSelectionMode" class="absolute top-3 right-3 z-20">
-      <div
-        :class="[
-          'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200',
-          isSelected
-            ? 'bg-blue-500 border-blue-500'
-            : 'bg-gray-800/80 border-gray-400 backdrop-blur-sm'
-        ]">
-        <Icon
-          v-if="isSelected"
-          name="heroicons:check-20-solid"
-          class="w-4 h-4 text-white" />
-      </div>
+  <!-- Genres -->
+  <div v-if="getGameGenres(game).length > 0" class="flex flex-wrap gap-1 mb-3">
+    <span
+      v-for="genre in getGameGenres(game).slice(0, 3)"
+      :key="genre"
+      class="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-md">
+      {{ genre }}
+    </span>
+    <span
+      v-if="getGameGenres(game).length > 3"
+      class="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-md">
+      +{{ getGameGenres(game).length - 3 }}
+    </span>
+  </div>
+  <!-- Auswahlindikator -->
+  <div v-if="isSelectionMode" class="absolute top-3 right-3 z-20">
+    <div
+      :class="[
+        'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200',
+        isSelected
+          ? 'bg-blue-500 border-blue-500'
+          : 'bg-gray-800/80 border-gray-400 backdrop-blur-sm'
+      ]">
+      <Icon
+        v-if="isSelected"
+        name="heroicons:check-20-solid"
+        class="w-4 h-4 text-white" />
     </div>
+  </div>
 
-    <!-- Cover Image -->
-    <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
-      <img
-        :src="game.coverUrl || './gameplaceholder.jpg'"
-        :alt="game.title"
-        :class="[
-          'w-full h-full object-cover transition-transform duration-300',
-          isSelectionMode
-            ? isSelected
-              ? 'scale-105'
-              : 'group-hover:scale-105'
+  <!-- Cover Image -->
+  <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
+    <img
+      :src="getGameCoverUrl(game)"
+      :alt="getGameName(game)"
+      :class="[
+        'w-full h-full object-cover transition-transform duration-300',
+        isSelectionMode
+          ? isSelected
+            ? 'scale-105'
             : 'group-hover:scale-105'
-        ]"
-        loading="lazy"
-        @error="handleImageError" />
-      <!-- Platform Logos -->
-      <div class="absolute top-2 left-2 flex flex-wrap gap-1">
-        <div
-          v-for="platform in game.platforms"
-          :key="platform"
-          class="bg-black/80 backdrop-blur-sm rounded-md px-2 py-1.5 flex items-center justify-center min-w-[32px] min-h-[24px]">
-          <PlatformLogo :platform="platform" size="md" />
-        </div>
-      </div>
-
-      <!-- Favorite Icon -->
-      <div v-if="!isSelectionMode" class="absolute bottom-2 left-2 z-10">
-        <button
-          @click.stop="toggleFavorite"
-          class="w-8 h-8 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite">
-          <Icon
-            :name="
-              game.isFavorite
-                ? 'heroicons:heart-20-solid'
-                : 'heroicons:heart-20-solid'
-            "
-            :class="[
-              'w-4 h-4 transition-all duration-200',
-              game.isFavorite
-                ? 'text-red-500 scale-110'
-                : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
-            ]" />
-        </button>
-      </div>
-
-      <!-- Rating Badge -->
+          : 'group-hover:scale-105'
+      ]"
+      loading="lazy"
+      @error="handleImageError" />
+    <!-- Platform Logos -->
+    <div class="absolute top-2 left-2 flex flex-wrap gap-1">
       <div
-        v-if="game.rating"
-        class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md">
-        <div class="flex items-center gap-1">
-          <Icon
-            name="heroicons:star-16-solid"
-            class="w-3 h-3 text-yellow-400" />
-          <span class="text-xs text-white font-medium">{{
-            formatRating(game.rating)
-          }}</span>
-        </div>
+        v-for="platform in game.platforms"
+        :key="platform"
+        class="bg-black/80 backdrop-blur-sm rounded-md px-2 py-1.5 flex items-center justify-center min-w-[32px] min-h-[24px]">
+        <PlatformLogo :platform="platform" size="md" />
       </div>
     </div>
 
-    <!-- Game Info -->
-    <div class="p-4 flex flex-col flex-1">
-      <h3
-        class="font-semibold text-white text-lg mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
-        {{ game.title }}
-      </h3>
+    <!-- Favorite Icon -->
+    <div v-if="!isSelectionMode" class="absolute bottom-2 left-2 z-10">
+      <button
+        @click.stop="toggleFavorite"
+        class="w-8 h-8 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite">
+        <Icon
+          :name="
+            game.isFavorite
+              ? 'heroicons:heart-20-solid'
+              : 'heroicons:heart-20-solid'
+          "
+          :class="[
+            'w-4 h-4 transition-all duration-200',
+            game.isFavorite
+              ? 'text-red-500 scale-110'
+              : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
+          ]" />
+      </button>
+    </div>
 
-      <!-- Genres -->
-      <div
-        v-if="game.genres && game.genres.length > 0"
-        class="flex flex-wrap gap-1 mb-3">
-        <span
-          v-for="genre in game.genres.slice(0, 2)"
-          :key="genre"
-          class="px-2 py-1 bg-purple-600/20 text-purple-300 text-xs rounded-md border border-purple-500/30">
-          {{ genre }}
-        </span>
-        <span
-          v-if="game.genres.length > 2"
-          class="px-2 py-1 bg-gray-600/30 text-gray-400 text-xs rounded-md">
-          +{{ game.genres.length - 2 }}
-        </span>
+    <!-- Rating Badge -->
+    <div
+      v-if="getGameRating(game)"
+      class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md">
+      <div class="flex items-center gap-1">
+        <Icon name="heroicons:star-16-solid" class="w-3 h-3 text-yellow-400" />
+        <span class="text-xs text-white font-medium">{{
+          formatGameRating(game)
+        }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Info -->
+  <div class="p-4 flex flex-col flex-1">
+    <h3
+      class="font-semibold text-white text-lg mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
+      {{ getGameName(game) }}
+    </h3>
+
+    <!-- Genres -->
+    <div
+      v-if="game.genres && game.genres.length > 0"
+      class="flex flex-wrap gap-1 mb-3">
+      <span
+        v-for="genre in game.genres.slice(0, 2)"
+        :key="genre"
+        class="px-2 py-1 bg-purple-600/20 text-purple-300 text-xs rounded-md border border-purple-500/30">
+        {{ genre }}
+      </span>
+      <span
+        v-if="game.genres.length > 2"
+        class="px-2 py-1 bg-gray-600/30 text-gray-400 text-xs rounded-md">
+        +{{ game.genres.length - 2 }}
+      </span>
+    </div>
+
+    <!-- Spacer to push stats to bottom -->
+    <div class="flex-1"></div>
+
+    <!-- Stats - jetzt am unteren Rand -->
+    <div
+      class="flex items-center justify-between text-xs text-gray-400 mt-auto">
+      <!-- Spielzeit -->
+      <div v-if="game.playtimeMinutes" class="flex items-center gap-1">
+        <Icon name="heroicons:clock-16-solid" class="w-3 h-3" />
+        <span>{{ formatPlayTime(game.playtimeMinutes) }}</span>
       </div>
 
-      <!-- Spacer to push stats to bottom -->
-      <div class="flex-1"></div>
-
-      <!-- Stats - jetzt am unteren Rand -->
-      <div
-        class="flex items-center justify-between text-xs text-gray-400 mt-auto">
-        <!-- Spielzeit -->
-        <div v-if="game.playtimeMinutes" class="flex items-center gap-1">
-          <Icon name="heroicons:clock-16-solid" class="w-3 h-3" />
-          <span>{{ formatPlayTime(game.playtimeMinutes) }}</span>
-        </div>
-
-        <!-- Zuletzt gespielt -->
-        <div v-if="game.lastPlayed" class="flex items-center gap-1">
-          <Icon name="heroicons:calendar-16-solid" class="w-3 h-3" />
-          <span>{{ formatLastPlayed(game.lastPlayed) }}</span>
-        </div>
+      <!-- Zuletzt gespielt -->
+      <div v-if="game.lastPlayed" class="flex items-center gap-1">
+        <Icon name="heroicons:calendar-16-solid" class="w-3 h-3" />
+        <span>{{ formatLastPlayed(game.lastPlayed) }}</span>
       </div>
     </div>
   </div>
@@ -146,6 +145,15 @@
 
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
+
+  // Game Utils für Legacy-Support
+  const {
+    getGameName,
+    getGameCoverUrl,
+    getGameRating,
+    formatGameRating,
+    getGameGenres
+  } = useGameUtils();
 
   const handleClick = () => {
     emit('click');

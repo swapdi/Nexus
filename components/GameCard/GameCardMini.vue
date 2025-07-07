@@ -30,8 +30,8 @@
     <!-- Cover Image -->
     <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
       <img
-        :src="game.coverUrl || './gameplaceholder.jpg'"
-        :alt="game.title"
+        :src="getGameCoverUrl(game)"
+        :alt="getGameName(game)"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
@@ -66,10 +66,10 @@
 
       <!-- Rating Badge -->
       <div
-        v-if="game.rating"
+        v-if="getGameRating(game)"
         class="absolute bottom-1 right-1 bg-black/80 backdrop-blur-sm px-1 py-0.5 rounded text-xs">
         <span class="text-yellow-400 font-medium">{{
-          formatRating(game.rating)
+          formatGameRating(game)
         }}</span>
       </div>
     </div>
@@ -78,7 +78,7 @@
     <div class="p-1.5 flex flex-col flex-1">
       <h3
         class="font-medium text-white text-xs mb-0.5 line-clamp-2 group-hover:text-purple-300 transition-colors leading-tight">
-        {{ game.title }}
+        {{ getGameName(game) }}
       </h3>
 
       <!-- Spacer to push stats to bottom -->
@@ -110,6 +110,10 @@
 
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
+
+  // Game Utils für Legacy-Support
+  const { getGameName, getGameCoverUrl, getGameRating, formatGameRating } =
+    useGameUtils();
 
   const handleClick = () => {
     emit('click');

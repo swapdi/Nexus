@@ -1,5 +1,4 @@
 import { TRPCError } from '@trpc/server';
-import { useGameEnrichment } from '~/composables/useGameEnrichment';
 
 // IGDB API Interfaces
 export interface IGDBGame {
@@ -56,16 +55,18 @@ export interface IGDBSearchResult {
   }>;
 }
 
-export interface EnrichedGameData {
-  description?: string;
+export interface IGDBGameData {
+  id: number;
+  name: string;
+  summary?: string;
   coverUrl?: string;
   screenshotUrls?: string[];
   genres?: string[];
-  developer?: string;
-  publisher?: string;
-  releaseDate?: Date;
-  rating?: number;
-  igdbId?: number;
+  developers?: string[];
+  publishers?: string[];
+  firstReleaseDate?: Date;
+  totalRating?: number;
+  platforms?: string[];
 }
 
 export namespace IGDBService {
@@ -249,42 +250,182 @@ export namespace IGDBService {
 
   /**
    * Spiel nach Namen suchen und beste Übereinstimmung finden
-   * Nutzt useGameEnrichment Composable für komplexe Matching-Logik
    */
   export const findBestMatch = async (
     gameName: string,
     platformName?: string
   ): Promise<IGDBGame | null> => {
-    const { findBestGameMatch } = useGameEnrichment();
+    try {
+      // Suche nach Spielen
+      const searchResults = await searchGames(gameName, 10);
 
-    return await findBestGameMatch(
-      gameName,
-      searchGames,
-      getGameDetails,
-      platformName
-    );
+      if (searchResults.length === 0) {
+        return null;
+      }
+
+      // Finde beste Übereinstimmung basierend auf Name
+      const normalizedSearchName = gameName.toLowerCase().trim();
+
+      let bestMatch = searchResults[0];
+      let bestScore = 0;
+
+      for (const result of searchResults) {
+        const normalizedResultName = result.name.toLowerCase().trim();
+
+        // Exakte Übereinstimmung
+        if (normalizedResultName === normalizedSearchName) {
+          bestMatch = result;
+          break;
+        }
+
+        // Ähnlichkeit berechnen (einfache Implementierung)
+        const similarity = calculateSimilarity(
+          normalizedSearchName,
+          normalizedResultName
+        );
+
+        if (similarity > bestScore) {
+          bestScore = similarity;
+          bestMatch = result;
+        }
+      }
+
+      // Hole detaillierte Informationen für das beste Match
+      return await getGameDetails(bestMatch.id);
+    } catch (error) {
+      console.error('Fehler beim Suchen des besten Matches:', error);
+      return null;
+    }
   };
 
   /**
-   * Spielinformationen zu strukturierten Daten konvertieren
-   * Nutzt useGameEnrichment Composable für Datenkonvertierung
+   * Einfache Ähnlichkeitsberechnung zwischen zwei Strings
    */
-  export const enrichGameData = async (
+  const calculateSimilarity = (str1: string, str2: string): number => {
+    if (str1 === str2) return 1;
+
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+
+    if (longer.length === 0) return 1;
+
+    const editDistance = getEditDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+  };
+
+  /**
+   * Levenshtein-Distanz zwischen zwei Strings
+   */
+  const getEditDistance = (str1: string, str2: string): number => {
+    const matrix: number[][] = [];
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  };
+
+  /**
+   * IGDB Game zu standardisiertem Game-Format konvertieren
+   */
+  export const convertIGDBGame = (igdbGame: IGDBGame): IGDBGameData => {
+    // Entwickler extrahieren
+    const developers =
+      igdbGame.involved_companies
+        ?.filter(company => company.developer)
+        .map(company => company.company.name) || [];
+
+    // Publisher extrahieren
+    const publishers =
+      igdbGame.involved_companies
+        ?.filter(company => company.publisher)
+        .map(company => company.company.name) || [];
+
+    // Genres extrahieren
+    const genres = igdbGame.genres?.map(genre => genre.name) || [];
+
+    // Plattformen extrahieren
+    const platforms = igdbGame.platforms?.map(platform => platform.name) || [];
+
+    // Screenshots zu URLs konvertieren
+    const screenshotUrls =
+      igdbGame.screenshots
+        ?.map(screenshot => getImageUrl(screenshot.url, 'screenshot_big'))
+        .filter(url => url) || [];
+
+    // Cover-URL konvertieren
+    const coverUrl = igdbGame.cover
+      ? getImageUrl(igdbGame.cover.url, 'cover_big')
+      : undefined;
+
+    // Veröffentlichungsdatum konvertieren
+    const firstReleaseDate = igdbGame.first_release_date
+      ? new Date(igdbGame.first_release_date * 1000)
+      : undefined;
+
+    // Bewertung - bevorzuge total_rating, dann aggregated_rating
+    const totalRating = igdbGame.total_rating || igdbGame.aggregated_rating;
+
+    return {
+      id: igdbGame.id,
+      name: igdbGame.name,
+      summary: igdbGame.summary,
+      coverUrl,
+      screenshotUrls,
+      genres,
+      developers,
+      publishers,
+      firstReleaseDate,
+      totalRating,
+      platforms
+    };
+  };
+
+  /**
+   * Spiel bei IGDB suchen und als standardisierte Daten zurückgeben
+   */
+  export const searchAndConvertGame = async (
     gameName: string,
     platformName?: string
-  ): Promise<EnrichedGameData> => {
+  ): Promise<IGDBGameData | null> => {
     try {
+      // Suche nach dem besten Match bei IGDB
       const igdbGame = await findBestMatch(gameName, platformName);
 
       if (!igdbGame) {
-        return {};
+        console.log(`[IGDB] Kein Match gefunden für: ${gameName}`);
+        return null;
       }
 
-      const { convertToEnrichedData } = useGameEnrichment();
-      return convertToEnrichedData(igdbGame);
+      // Konvertiere IGDB-Daten zu standardisiertem Format
+      const gameData = convertIGDBGame(igdbGame);
+
+      console.log(
+        `[IGDB] Spiel gefunden: ${gameData.name} (ID: ${gameData.id})`
+      );
+      return gameData;
     } catch (error) {
-      console.error('Fehler beim Anreichern der Spieledaten:', error);
-      return {};
+      console.error('Fehler beim Suchen/Konvertieren des Spiels:', error);
+      return null;
     }
   };
 }

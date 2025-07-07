@@ -1,6 +1,9 @@
 <script setup lang="ts">
   const userStore = useUserStore();
 
+  // Game Utils für Legacy-Support
+  const { getGameName } = useGameUtils();
+
   onMounted(async () => {
     await userStore.init();
   });
@@ -119,7 +122,7 @@
   // Gefilterte Wishlist
   const filteredWishlist = computed(() => {
     let filtered = wishlistItems.value.filter(item => {
-      const matchesSearch = item.title
+      const matchesSearch = getGameName(item)
         .toLowerCase()
         .includes(searchQuery.value.toLowerCase());
       const matchesGenre =
@@ -132,7 +135,7 @@
 
     // Sortierung
     if (sortBy.value === 'title') {
-      filtered.sort((a, b) => a.title.localeCompare(b.title));
+      filtered.sort((a, b) => getGameName(a).localeCompare(getGameName(b)));
     } else if (sortBy.value === 'addedAt') {
       filtered.sort(
         (a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
@@ -320,7 +323,7 @@
           <div class="w-24 h-32 flex-shrink-0 relative overflow-hidden">
             <img
               :src="item.coverUrl"
-              :alt="item.title"
+              :alt="getGameName(item)"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
             <!-- Sale Badge -->
@@ -336,7 +339,7 @@
             <div class="flex justify-between items-start mb-2">
               <h3
                 class="font-semibold text-white text-lg line-clamp-2 group-hover:text-pink-300 transition-colors">
-                {{ item.title }}
+                {{ getGameName(item) }}
               </h3>
               <button
                 @click="removeFromWishlist(item.id)"

@@ -30,8 +30,8 @@
     <div
       class="flex-shrink-0 w-12 h-16 bg-gray-700/50 rounded overflow-hidden relative">
       <img
-        :src="game.coverUrl || './gameplaceholder.jpg'"
-        :alt="game.title"
+        :src="getGameCoverUrl(game)"
+        :alt="getGameName(game)"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
@@ -41,23 +41,21 @@
     <div class="flex-1 min-w-0">
       <h3
         class="font-semibold text-white text-base line-clamp-1 group-hover:text-purple-300 transition-colors mb-1">
-        {{ game.title }}
+        {{ getGameName(game) }}
       </h3>
 
       <!-- Genres direkt unter dem Titel -->
-      <div
-        v-if="game.genres && game.genres.length > 0"
-        class="flex flex-wrap gap-1">
+      <div v-if="getGameGenres(game).length > 0" class="flex flex-wrap gap-1">
         <span
-          v-for="genre in game.genres.slice(0, 2)"
+          v-for="genre in getGameGenres(game).slice(0, 2)"
           :key="genre"
           class="px-2 py-0.5 bg-purple-600/20 text-purple-300 text-xs rounded border border-purple-500/30">
           {{ genre }}
         </span>
         <span
-          v-if="game.genres.length > 2"
+          v-if="getGameGenres(game).length > 2"
           class="px-2 py-0.5 bg-gray-600/30 text-gray-400 text-xs rounded">
-          +{{ game.genres.length - 2 }}
+          +{{ getGameGenres(game).length - 2 }}
         </span>
       </div>
     </div>
@@ -138,6 +136,9 @@
 
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
+
+  // Game Utils für Legacy-Support
+  const { getGameName, getGameCoverUrl, getGameGenres } = useGameUtils();
 
   const handleClick = () => {
     emit('click');

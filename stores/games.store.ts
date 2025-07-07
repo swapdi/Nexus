@@ -1,20 +1,16 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
+import type { UserGameWithDetails } from '~/lib/services/games.service';
 import { useLoading } from '~/stores/loading.store';
-import type {
-  GameWithPlatforms,
-  UserGameStats,
-  ImportResult
-} from '~/lib/services/games.service';
 
 export const useGamesStore = defineStore('games', () => {
   // Loading store integration
   const { loading, progressLoading } = useLoading();
 
   // State
-  const games = ref<GameWithPlatforms[]>([]);
-  const stats = ref<UserGameStats | null>(null);
-  const lastImportResult = ref<ImportResult | null>(null);
+  const games = ref<UserGameWithDetails[]>([]);
+  const stats = ref<any | null>(null); // TODO: Define proper stats type
+  const lastImportResult = ref<any | null>(null); // TODO: Define proper import result type
   const error = ref<string | null>(null);
   // Neue State für Auswahlmodus
   const isSelectionMode = ref(false);
@@ -25,24 +21,16 @@ export const useGamesStore = defineStore('games', () => {
   const totalGames = computed(() => games.value.length);
 
   const gamesByPlatform = computed(() => {
-    const platformGroups: Record<string, GameWithPlatforms[]> = {};
-    games.value.forEach(game => {
-      game.platforms.forEach(platform => {
-        if (!platformGroups[platform]) {
-          platformGroups[platform] = [];
-        }
-        platformGroups[platform].push(game);
-      });
-    });
+    // Da die Game-Tabelle kein platforms-Feld hat, müssen wir die Plattform-Informationen
+    // aus den PlatformGame-Relationen oder externen Daten beziehen
+    // Für jetzt verwenden wir einen leeren Platzhalter
+    const platformGroups: Record<string, UserGameWithDetails[]> = {};
     return platformGroups;
   });
 
   const availablePlatforms = computed(() => {
-    const platforms = new Set<string>();
-    games.value.forEach(game => {
-      game.platforms.forEach(platform => platforms.add(platform));
-    });
-    return Array.from(platforms).sort();
+    // Platzhalter - wird implementiert wenn Plattform-Informationen verfügbar sind
+    return [];
   });
 
   const recentlyPlayed = computed(() => {
@@ -59,8 +47,8 @@ export const useGamesStore = defineStore('games', () => {
 
   const mostPlayed = computed(() => {
     return games.value
-      .filter(game => game.playtimeMinutes > 0)
-      .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes)
+      .filter(game => game.playtimeMinutes && game.playtimeMinutes > 0)
+      .sort((a, b) => (b.playtimeMinutes || 0) - (a.playtimeMinutes || 0))
       .slice(0, 10);
   });
   // Actions
@@ -109,7 +97,8 @@ export const useGamesStore = defineStore('games', () => {
   };
   const importSteamLibrary = async (
     steamInput: string
-  ): Promise<ImportResult | null> => {
+  ): Promise<any | null> => {
+    // TODO: Define proper steam import return type
     return await loading(
       'steam-import',
       'Steam-Bibliothek importieren...',
@@ -187,7 +176,7 @@ export const useGamesStore = defineStore('games', () => {
     }
   };
 
-  const selectAllFilteredGames = (filteredGames: GameWithPlatforms[]) => {
+  const selectAllFilteredGames = (filteredGames: UserGameWithDetails[]) => {
     filteredGames.forEach(game => selectedGameIds.value.add(game.id));
   };
 
@@ -214,7 +203,7 @@ export const useGamesStore = defineStore('games', () => {
           updateProgress(0, gameIdsArray.length, 'Bereite Entfernung vor...');
 
           const result = await $client.games.removeGamesFromLibrary.mutate({
-            gameIds: gameIdsArray
+            userGameIds: gameIdsArray
           });
 
           if (result.success) {
@@ -272,12 +261,12 @@ export const useGamesStore = defineStore('games', () => {
 
   // Neue Funktion: Finde Spiel nach UserGame ID
   const getGameByUserGameId = (userGameId: number) => {
-    return games.value.find(game => game.userGameId === userGameId);
+    return games.value.find(game => game.id === userGameId);
   };
 
   const getGameWithPlatforms = async (
-    gameId: number
-  ): Promise<GameWithPlatforms | null> => {
+    userGameId: number
+  ): Promise<UserGameWithDetails | null> => {
     return await loading(
       'game-details',
       'Lade Spiel-Details...',
@@ -288,7 +277,7 @@ export const useGamesStore = defineStore('games', () => {
         try {
           error.value = null;
           const gameData = await $client.games.getGameWithPlatforms.query({
-            gameId: gameId
+            userGameId: userGameId
           });
           return gameData;
         } catch (err: any) {
@@ -309,25 +298,23 @@ export const useGamesStore = defineStore('games', () => {
     const searchTerm = query.toLowerCase().trim();
     return games.value.filter(
       game =>
-        game.title.toLowerCase().includes(searchTerm) ||
-        game.genres.some(genre => genre.toLowerCase().includes(searchTerm)) ||
-        game.platforms.some(platform =>
-          platform.toLowerCase().includes(searchTerm)
-        )
+        game.game.name.toLowerCase().includes(searchTerm) ||
+        game.game.genres.some(genre => genre.toLowerCase().includes(searchTerm))
     );
   };
 
   const filterGamesByPlatform = (platform: string) => {
     if (platform === 'all') return games.value;
-    return games.value.filter(game => game.platforms.includes(platform));
+    // Plattform-Filtering wird implementiert wenn Plattform-Daten verfügbar sind
+    return games.value;
   };
 
-  const sortGames = (games: GameWithPlatforms[], sortBy: string) => {
+  const sortGames = (games: UserGameWithDetails[], sortBy: string) => {
     const gamesCopy = [...games];
 
     switch (sortBy) {
       case 'title':
-        return gamesCopy.sort((a, b) => a.title.localeCompare(b.title));
+        return gamesCopy.sort((a, b) => a.game.name.localeCompare(b.game.name));
       case 'lastPlayed':
         return gamesCopy.sort((a, b) => {
           if (!a.lastPlayed && !b.lastPlayed) return 0;
@@ -338,9 +325,13 @@ export const useGamesStore = defineStore('games', () => {
           );
         });
       case 'playTime':
-        return gamesCopy.sort((a, b) => b.playtimeMinutes - a.playtimeMinutes);
+        return gamesCopy.sort(
+          (a, b) => (b.playtimeMinutes || 0) - (a.playtimeMinutes || 0)
+        );
       case 'rating':
-        return gamesCopy.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        return gamesCopy.sort(
+          (a, b) => (b.game.totalRating || 0) - (a.game.totalRating || 0)
+        );
       case 'addedAt':
         return gamesCopy.sort(
           (a, b) =>
@@ -365,43 +356,46 @@ export const useGamesStore = defineStore('games', () => {
   // Neue Hilfsfunktionen basierend auf games.service
   const getGamesByGenre = (genre: string) => {
     return games.value.filter(game =>
-      game.genres.some(g => g.toLowerCase().includes(genre.toLowerCase()))
+      game.game.genres.some(g => g.toLowerCase().includes(genre.toLowerCase()))
     );
   };
 
   const getTopRatedGames = (limit: number = 10) => {
     return games.value
-      .filter(game => game.rating && game.rating > 0)
-      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .filter(game => game.game.totalRating && game.game.totalRating > 0)
+      .sort((a, b) => (b.game.totalRating || 0) - (a.game.totalRating || 0))
       .slice(0, limit);
   };
 
   const getUnratedGames = () => {
-    return games.value.filter(game => !game.rating || game.rating === 0);
+    return games.value.filter(
+      game => !game.game.totalRating || game.game.totalRating === 0
+    );
   };
 
   const getGamesByPlaytime = (minHours: number = 0) => {
     const minMinutes = minHours * 60;
-    return games.value.filter(game => game.playtimeMinutes >= minMinutes);
+    return games.value.filter(
+      game => (game.playtimeMinutes || 0) >= minMinutes
+    );
   };
 
   const getGamesByPlatformName = (platformName: string) => {
-    return games.value.filter(game =>
-      game.platforms.some(p => p.toLowerCase() === platformName.toLowerCase())
-    );
+    // Plattform-Filtering wird implementiert wenn Plattform-Daten verfügbar sind
+    return games.value;
   };
 
   const getAvailableGenres = computed(() => {
     const genres = new Set<string>();
     games.value.forEach(game => {
-      game.genres.forEach(genre => genres.add(genre));
+      game.game.genres.forEach(genre => genres.add(genre));
     });
     return Array.from(genres).sort();
   });
 
   const totalPlaytimeHours = computed(() => {
     const totalMinutes = games.value.reduce(
-      (sum, game) => sum + game.playtimeMinutes,
+      (sum, game) => sum + (game.playtimeMinutes || 0),
       0
     );
     return Math.floor(totalMinutes / 60);
@@ -409,11 +403,11 @@ export const useGamesStore = defineStore('games', () => {
 
   const averageRating = computed(() => {
     const ratedGames = games.value.filter(
-      game => game.rating && game.rating > 0
+      game => game.game.totalRating && game.game.totalRating > 0
     );
     if (ratedGames.length === 0) return 0;
     const sum = ratedGames.reduce(
-      (total, game) => total + (game.rating || 0),
+      (total, game) => total + (game.game.totalRating || 0),
       0
     );
     return Math.round((sum / ratedGames.length) * 10) / 10;
@@ -430,35 +424,13 @@ export const useGamesStore = defineStore('games', () => {
     const notifyStore = useNotifyStore();
 
     try {
-      // Vorerst nur lokale Aktualisierung für Frontend-Test
-      const gameIndex = games.value.findIndex(
-        game => game.userGameId === userGameId
-      );
-
-      if (gameIndex !== -1) {
-        const currentStatus = games.value[gameIndex].isFavorite;
-        games.value[gameIndex].isFavorite = !currentStatus;
-
-        // Erfolgs-Benachrichtigung
-        const message = !currentStatus
-          ? 'Zu Favoriten hinzugefügt'
-          : 'Aus Favoriten entfernt';
-        notifyStore.notify(message, 1);
-
-        return !currentStatus;
-      }
-
-      // TODO: API-Call implementieren sobald Backend bereit
-      /*
       const result = await $client.games.toggleFavorite.mutate({
         userGameId: userGameId
       });
 
       if (result.success) {
         // Lokalen State aktualisieren
-        const gameIndex = games.value.findIndex(
-          game => game.userGameId === userGameId
-        );
+        const gameIndex = games.value.findIndex(game => game.id === userGameId);
         if (gameIndex !== -1) {
           games.value[gameIndex].isFavorite = result.isFavorite;
         }
@@ -471,7 +443,6 @@ export const useGamesStore = defineStore('games', () => {
 
         return result.isFavorite;
       }
-      */
     } catch (err: any) {
       console.error('Fehler beim Ändern des Favoriten-Status:', err);
       notifyStore.notify('Fehler beim Ändern des Favoriten-Status', 3);

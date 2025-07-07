@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue';
-  import type { GameWithPlatforms } from '~/lib/services/games.service';
+  import { computed, onMounted, ref } from 'vue';
+  import type { UserGameWithDetails } from '~/lib/services/games.service';
   // Route Parameter (eigentlich userGameId, nicht gameId)
   const route = useRoute();
   const userGameId = computed(() => parseInt(route.params.id as string));
@@ -8,7 +8,7 @@
   // Stores
   const gamesStore = useGamesStore();
   // State
-  const game = ref<GameWithPlatforms | null>(null);
+  const game = ref<UserGameWithDetails | null>(null);
   const isLoading = ref(true);
   const error = ref<string | null>(null);
 
@@ -73,7 +73,7 @@
   };
 
   const formatRating = (rating: number) => {
-    // Zeige IGDB-Rating als x.x/10 an
+    // Zeige IGDB totalRating als x.x/100 an
     return rating.toFixed(1);
   };
 
@@ -127,7 +127,7 @@
       const notifyStore = useNotifyStore();
 
       const updatedGame = await $client.games.updateGameNotes.mutate({
-        userGameId: game.value.userGameId,
+        userGameId: game.value.id,
         notes: notesText.value.trim() || null
       });
 
@@ -275,8 +275,8 @@
                     <div
                       class="aspect-[3/4] bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl overflow-hidden relative shadow-2xl transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-purple-500/20">
                       <img
-                        :src="game.coverUrl || '/gameplaceholder.jpg'"
-                        :alt="game.title"
+                        :src="game.game.coverUrl || '/gameplaceholder.jpg'"
+                        :alt="game.game.name"
                         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                         loading="lazy" />
 
@@ -286,12 +286,7 @@
 
                       <!-- Platform badges with glow effect -->
                       <div class="absolute top-4 left-4 flex flex-wrap gap-2">
-                        <div
-                          v-for="platform in game.platforms"
-                          :key="platform"
-                          class="bg-black/90 backdrop-blur-md rounded-lg px-3 py-2 border border-purple-500/30 shadow-lg hover:border-purple-400/50 transition-all duration-300 hover:scale-110">
-                          <PlatformLogo :platform="platform" size="lg" />
-                        </div>
+                        <!-- Platzhalter für Plattformen - implementiert wenn verfügbar -->
                       </div>
                     </div>
 
@@ -309,16 +304,16 @@
                       class="text-5xl lg:text-6xl font-black mb-6 leading-tight">
                       <span
                         class="bg-gradient-to-r from-purple-400 via-pink-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-300">
-                        {{ game.title }}
+                        {{ game.game.name }}
                       </span>
                     </h1>
 
                     <!-- Enhanced genres with glow -->
                     <div
-                      v-if="game.genres && game.genres.length > 0"
+                      v-if="game.game.genres && game.game.genres.length > 0"
                       class="flex flex-wrap gap-3 mb-8">
                       <span
-                        v-for="genre in game.genres"
+                        v-for="genre in game.game.genres"
                         :key="genre"
                         class="px-4 py-2 bg-gradient-to-r from-purple-600/30 to-purple-700/30 text-purple-200 text-sm rounded-full border border-purple-500/40 font-semibold backdrop-blur-sm hover:from-purple-500/40 hover:to-purple-600/40 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20">
                         {{ genre }}
@@ -346,7 +341,7 @@
                         <div class="flex-1 flex flex-col justify-center">
                           <div
                             class="text-2xl font-bold text-white leading-tight">
-                            {{ formatPlayTime(game.playtimeMinutes) }}
+                            {{ formatPlayTime(game.playtimeMinutes || 0) }}
                           </div>
                           <div class="text-xs text-blue-200/60 mt-0.5">
                             Gesamte Spielzeit
@@ -431,14 +426,14 @@
                           <div
                             class="text-2xl font-bold text-white leading-tight">
                             {{
-                              game.rating
-                                ? `${formatRating(game.rating)}/10`
+                              game.game.totalRating
+                                ? `${formatRating(game.game.totalRating)}/100`
                                 : '—'
                             }}
                           </div>
                           <div class="text-xs text-yellow-200/60 mt-0.5">
                             {{
-                              game.rating
+                              game.game.totalRating
                                 ? 'IGDB Community Rating'
                                 : 'Nicht bewertet'
                             }}
@@ -475,35 +470,43 @@
                 <div class="space-y-4">
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- Developer -->
-                    <div v-if="game.developer" class="space-y-1">
+                    <div
+                      v-if="
+                        game.game.developers && game.game.developers.length > 0
+                      "
+                      class="space-y-1">
                       <div
                         class="text-xs text-gray-400/60 font-medium uppercase tracking-wider">
                         Entwickler
                       </div>
                       <div class="text-white font-medium text-sm leading-tight">
-                        {{ game.developer }}
+                        {{ game.game.developers.join(', ') }}
                       </div>
                     </div>
 
                     <!-- Publisher -->
-                    <div v-if="game.publisher" class="space-y-1">
+                    <div
+                      v-if="
+                        game.game.publishers && game.game.publishers.length > 0
+                      "
+                      class="space-y-1">
                       <div
                         class="text-xs text-gray-400/60 font-medium uppercase tracking-wider">
                         Publisher
                       </div>
                       <div class="text-white font-medium text-sm leading-tight">
-                        {{ game.publisher }}
+                        {{ game.game.publishers.join(', ') }}
                       </div>
                     </div>
 
                     <!-- Release Date -->
-                    <div v-if="game.releaseDate" class="space-y-1">
+                    <div v-if="game.game.firstReleaseDate" class="space-y-1">
                       <div
                         class="text-xs text-gray-400/60 font-medium uppercase tracking-wider">
                         Veröffentlichung
                       </div>
                       <div class="text-white font-medium text-sm leading-tight">
-                        {{ formatDate(game.releaseDate) }}
+                        {{ formatDate(game.game.firstReleaseDate) }}
                       </div>
                     </div>
 
@@ -514,24 +517,23 @@
                         Plattformen
                       </div>
                       <div class="flex flex-wrap gap-1">
+                        <!-- Platzhalter für Plattformen - werden implementiert wenn verfügbar -->
                         <span
-                          v-for="platform in game.platforms"
-                          :key="platform"
-                          class="px-2 py-0.5 bg-gray-800/50 text-gray-200 text-xs rounded border border-gray-700/40 font-medium backdrop-blur-sm hover:border-gray-600/60 transition-all duration-300">
-                          {{ platform }}
+                          class="px-2 py-0.5 bg-gray-800/50 text-gray-200 text-xs rounded border border-gray-700/40 font-medium backdrop-blur-sm">
+                          Steam
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <!-- Right Column: Description -->
-                <div v-if="game.description" class="space-y-1">
+                <div v-if="game.game.summary" class="space-y-1">
                   <div
                     class="text-xs text-gray-400/60 font-medium uppercase tracking-wider">
                     Beschreibung
                   </div>
                   <div class="text-gray-300/80 leading-relaxed text-sm">
-                    {{ game.description }}
+                    {{ game.game.summary }}
                   </div>
                 </div>
               </div>

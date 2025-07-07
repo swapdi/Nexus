@@ -23,17 +23,58 @@ model User {
 }
 
 model Game {
-  id            Int            @id @default(autoincrement())
-  title         String
-  description   String?
-  coverUrl      String?
-  releaseDate   DateTime?
-  developer     String?
-  publisher     String?
-  genres        String[]
-  rating        Float? // IGDB Global Rating (1-10 mit Dezimalstellen)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id Int @id @default(autoincrement())
+
+  // IGDB Core Fields
+  igdbId           Int?      @unique // IGDB Game ID
+  name             String // IGDB: name
+  slug             String?   @unique // IGDB: slug
+  summary          String? // IGDB: summary
+  storyline        String? // IGDB: storyline
+  firstReleaseDate DateTime? // IGDB: first_release_date
+
+  // Visual Assets
+  coverUrl    String? // IGDB: cover (processed URL)
+  screenshots String[] // IGDB: screenshots (processed URLs)
+
+  // Rating & Metadata
+  totalRating           Float? // IGDB: total_rating (0-100)
+  totalRatingCount      Int? // IGDB: total_rating_count
+  aggregatedRating      Float? // IGDB: aggregated_rating (critic scores)
+  aggregatedRatingCount Int? // IGDB: aggregated_rating_count
+
+  // Categories & Classification
+  genres    String[] // IGDB: genres (names)
+  themes    String[] // IGDB: themes (names)
+  gameModes String[] // IGDB: game_modes (names)
+  keywords  String[] // IGDB: keywords (names)
+
+  // Companies & Development
+  developers String[] // IGDB: involved_companies (developers)
+  publishers String[] // IGDB: involved_companies (publishers)
+
+  // External References
+  websites      Json? // IGDB: websites (structured data)
+  externalGames Json? // IGDB: external_games (Steam, Epic etc.)
+
+  // Age Ratings
+  ageRatings Json? // IGDB: age_ratings (structured PEGI, ESRB etc.)
+
+  // System Fields
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastSyncedAt DateTime? // Wann zuletzt von IGDB synchronisiert
+
+  // Legacy Fields (deprecated, für Migration)
+  title       String? // DEPRECATED: use name
+  description String? // DEPRECATED: use summary
+  developer   String? // DEPRECATED: use developers
+  publisher   String? // DEPRECATED: use publishers
+  releaseDate DateTime? // DEPRECATED: use firstReleaseDate
+  rating      Float? // DEPRECATED: use totalRating
+  steamAppId  String? // Legacy Steam App ID
+
+  // Relations
   deals         Deal[]
   platformGames PlatformGame[]
   userGames     UserGame[]
@@ -103,6 +144,8 @@ model Deal {
   isFreebie       Boolean       @default(false)
   discoveredAt    DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  externalId      String?
+  source          String?
   game            Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
   platformGame    PlatformGame? @relation(fields: [platformGameId], references: [id])
 

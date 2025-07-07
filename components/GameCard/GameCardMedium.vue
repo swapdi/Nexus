@@ -34,8 +34,8 @@
     <!-- Cover Image -->
     <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
       <img
-        :src="game.coverUrl || './gameplaceholder.jpg'"
-        :alt="game.title"
+        :src="getGameCoverUrl(game)"
+        :alt="getGameName(game)"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
@@ -71,14 +71,14 @@
 
       <!-- Rating Badge -->
       <div
-        v-if="game.rating"
+        v-if="getGameRating(game)"
         class="absolute bottom-1 right-1 bg-black/70 backdrop-blur-sm px-1.5 py-0.5 rounded">
         <div class="flex items-center gap-0.5">
           <Icon
             name="heroicons:star-16-solid"
             class="w-2.5 h-2.5 text-yellow-400" />
           <span class="text-xs text-white font-medium">{{
-            formatRating(game.rating)
+            formatGameRating(game)
           }}</span>
         </div>
       </div>
@@ -89,23 +89,23 @@
       <div class="flex items-start justify-between gap-2 mb-1">
         <h3
           class="font-medium text-white text-sm line-clamp-2 group-hover:text-purple-300 transition-colors flex-1">
-          {{ game.title }}
+          {{ getGameName(game) }}
         </h3>
       </div>
 
       <!-- Genres -->
-      <div v-if="game.genres && game.genres.length > 0" class="mb-1">
+      <div v-if="getGameGenres(game).length > 0" class="mb-1">
         <div class="flex flex-wrap gap-1">
           <span
-            v-for="genre in game.genres.slice(0, 2)"
+            v-for="genre in getGameGenres(game).slice(0, 2)"
             :key="genre"
             class="px-1.5 py-0.5 bg-purple-600/20 text-purple-300 text-xs rounded border border-purple-500/30">
             {{ genre }}
           </span>
           <span
-            v-if="game.genres.length > 2"
+            v-if="getGameGenres(game).length > 2"
             class="px-1.5 py-0.5 bg-gray-600/30 text-gray-400 text-xs rounded">
-            +{{ game.genres.length - 2 }}
+            +{{ getGameGenres(game).length - 2 }}
           </span>
         </div>
       </div>
@@ -142,6 +142,15 @@
   }
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
+
+  // Game Utils für Legacy-Support
+  const {
+    getGameName,
+    getGameCoverUrl,
+    getGameRating,
+    formatGameRating,
+    getGameGenres
+  } = useGameUtils();
 
   const handleClick = () => {
     emit('click');

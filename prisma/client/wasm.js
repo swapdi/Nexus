@@ -131,16 +131,37 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.GameScalarFieldEnum = {
   id: 'id',
+  igdbId: 'igdbId',
+  name: 'name',
+  slug: 'slug',
+  summary: 'summary',
+  storyline: 'storyline',
+  firstReleaseDate: 'firstReleaseDate',
+  coverUrl: 'coverUrl',
+  screenshots: 'screenshots',
+  totalRating: 'totalRating',
+  totalRatingCount: 'totalRatingCount',
+  aggregatedRating: 'aggregatedRating',
+  aggregatedRatingCount: 'aggregatedRatingCount',
+  genres: 'genres',
+  themes: 'themes',
+  gameModes: 'gameModes',
+  keywords: 'keywords',
+  developers: 'developers',
+  publishers: 'publishers',
+  websites: 'websites',
+  externalGames: 'externalGames',
+  ageRatings: 'ageRatings',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastSyncedAt: 'lastSyncedAt',
   title: 'title',
   description: 'description',
-  coverUrl: 'coverUrl',
-  releaseDate: 'releaseDate',
   developer: 'developer',
   publisher: 'publisher',
-  genres: 'genres',
+  releaseDate: 'releaseDate',
   rating: 'rating',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  steamAppId: 'steamAppId'
 };
 
 exports.Prisma.PlatformScalarFieldEnum = {
@@ -185,7 +206,9 @@ exports.Prisma.DealScalarFieldEnum = {
   validUntil: 'validUntil',
   isFreebie: 'isFreebie',
   discoveredAt: 'discoveredAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  externalId: 'externalId',
+  source: 'source'
 };
 
 exports.Prisma.AchievementScalarFieldEnum = {
@@ -218,6 +241,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -226,6 +254,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 
 

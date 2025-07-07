@@ -176,7 +176,7 @@ export const useDealsStore = defineStore('deals', () => {
       return deals.value.filter(
         (deal: DealWithRelations) =>
           deal.title.toLowerCase().includes(term) ||
-          deal.game.title.toLowerCase().includes(term) ||
+          deal.game.name.toLowerCase().includes(term) ||
           deal.storeName.toLowerCase().includes(term) ||
           deal.game.genres.some((genre: string) =>
             genre.toLowerCase().includes(term)

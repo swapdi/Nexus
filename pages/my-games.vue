@@ -4,6 +4,9 @@
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const loadingStore = useLoadingStore();
+
+  // Game Utils für Legacy-Support
+  const { getGameName, gameMatchesSearch } = useGameUtils();
   // View Mode Management
   const { currentViewMode, getCurrentConfig } = useViewMode();
   // Debug: Watch für currentViewMode
@@ -246,14 +249,7 @@
     // Suchfilter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase();
-      games = games.filter(
-        game =>
-          game.title.toLowerCase().includes(query) ||
-          game.genres.some(genre => genre.toLowerCase().includes(query)) ||
-          game.platforms.some(platform =>
-            platform.toLowerCase().includes(query)
-          )
-      );
+      games = games.filter(game => gameMatchesSearch(game, query));
     }
 
     // Plattformfilter
@@ -267,11 +263,11 @@
     games.sort((a, b) => {
       switch (sortBy.value) {
         case 'title':
-          return a.title.localeCompare(b.title);
+          return getGameName(a).localeCompare(getGameName(b));
         case 'playTime':
           return (b.playtimeMinutes || 0) - (a.playtimeMinutes || 0);
         case 'rating':
-          return (b.rating || 0) - (a.rating || 0);
+          return (b.totalRating || 0) - (a.totalRating || 0);
         case 'addedAt':
           return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
         case 'lastPlayed':

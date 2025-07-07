@@ -12,12 +12,12 @@ export const gamesRouter = router({
   getGameWithPlatforms: protectedProcedure
     .input(
       z.object({
-        gameId: z.number() // UserGame ID
+        userGameId: z.number() // UserGame ID
       })
     )
     .query(async ({ input, ctx }) => {
       // getUserGameById erwartet UserGame ID
-      const userGame = await GamesService.getUserGameById(input.gameId);
+      const userGame = await GamesService.getUserGameById(input.userGameId);
 
       if (!userGame) {
         throw new TRPCError({
@@ -26,20 +26,15 @@ export const gamesRouter = router({
         });
       }
 
-      // getGameWithPlatforms mit Game ID und User ID aufrufen
-      const game = await GamesService.getGameWithPlatforms(
-        userGame.gameId,
-        ctx.dbUser.id
-      );
-
-      if (!game) {
+      // Prüfen ob das UserGame dem aktuellen Benutzer gehört
+      if (userGame.userId !== ctx.dbUser.id) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Spiel nicht gefunden'
+          code: 'FORBIDDEN',
+          message: 'Nicht berechtigt, dieses Spiel zu sehen'
         });
       }
 
-      return game;
+      return userGame;
     }),
 
   // Notizen für ein Spiel aktualisieren
@@ -71,23 +66,19 @@ export const gamesRouter = router({
       const updatedUserGame = await GamesService.updateUserGame(
         input.userGameId,
         {
-          notes: input.notes
+          notes: input.notes ?? undefined
         }
       );
 
       // Vollständige Spiel-Daten zurückgeben
-      const game = await GamesService.getGameWithPlatforms(
-        userGame.gameId,
-        ctx.dbUser.id
-      );
-      return game;
+      return updatedUserGame;
     }),
 
   // Mehrere Spiele aus der Bibliothek entfernen
   removeGamesFromLibrary: protectedProcedure
     .input(
       z.object({
-        gameIds: z
+        userGameIds: z
           .array(z.number())
           .min(1, 'Mindestens ein Spiel muss ausgewählt werden')
       })
@@ -97,12 +88,12 @@ export const gamesRouter = router({
         const removedGames = [];
 
         // Alle ausgewählten Spiele aus der Benutzer-Bibliothek entfernen
-        for (const gameId of input.gameIds) {
-          const userGame = await GamesService.getUserGameById(gameId);
+        for (const userGameId of input.userGameIds) {
+          const userGame = await GamesService.getUserGameById(userGameId);
 
-          if (userGame) {
+          if (userGame && userGame.userId === ctx.dbUser.id) {
             await GamesService.deleteUserGame(userGame.id);
-            removedGames.push(gameId);
+            removedGames.push(userGameId);
           }
         }
 
@@ -208,5 +199,44 @@ export const gamesRouter = router({
           message: 'Fehler bei der Hintergrund-Anreicherung'
         });
       }
+    }),
+  // Favoriten-Status für ein Spiel umschalten
+  toggleFavorite: protectedProcedure
+    .input(
+      z.object({
+        userGameId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      // Prüfen ob das UserGame dem Benutzer gehört
+      const userGame = await GamesService.getUserGameById(input.userGameId);
+
+      if (!userGame) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Spiel nicht gefunden'
+        });
+      }
+
+      // Prüfen ob es dem aktuellen Benutzer gehört
+      if (userGame.userId !== ctx.dbUser.id) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Nicht berechtigt, dieses Spiel zu bearbeiten'
+        });
+      }
+
+      // Favoriten-Status umschalten
+      const updatedUserGame = await GamesService.updateUserGame(
+        input.userGameId,
+        {
+          isFavorite: !userGame.isFavorite
+        }
+      );
+
+      return {
+        success: true,
+        isFavorite: updatedUserGame.isFavorite
+      };
     })
 });

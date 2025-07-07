@@ -2995,104 +2995,214 @@ export namespace Prisma {
 
   export type GameAvgAggregateOutputType = {
     id: number | null
+    igdbId: number | null
+    totalRating: number | null
+    totalRatingCount: number | null
+    aggregatedRating: number | null
+    aggregatedRatingCount: number | null
     rating: number | null
   }
 
   export type GameSumAggregateOutputType = {
     id: number | null
+    igdbId: number | null
+    totalRating: number | null
+    totalRatingCount: number | null
+    aggregatedRating: number | null
+    aggregatedRatingCount: number | null
     rating: number | null
   }
 
   export type GameMinAggregateOutputType = {
     id: number | null
-    title: string | null
-    description: string | null
+    igdbId: number | null
+    name: string | null
+    slug: string | null
+    summary: string | null
+    storyline: string | null
+    firstReleaseDate: Date | null
     coverUrl: string | null
-    releaseDate: Date | null
-    developer: string | null
-    publisher: string | null
-    rating: number | null
+    totalRating: number | null
+    totalRatingCount: number | null
+    aggregatedRating: number | null
+    aggregatedRatingCount: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    lastSyncedAt: Date | null
+    title: string | null
+    description: string | null
+    developer: string | null
+    publisher: string | null
+    releaseDate: Date | null
+    rating: number | null
+    steamAppId: string | null
   }
 
   export type GameMaxAggregateOutputType = {
     id: number | null
-    title: string | null
-    description: string | null
+    igdbId: number | null
+    name: string | null
+    slug: string | null
+    summary: string | null
+    storyline: string | null
+    firstReleaseDate: Date | null
     coverUrl: string | null
-    releaseDate: Date | null
-    developer: string | null
-    publisher: string | null
-    rating: number | null
+    totalRating: number | null
+    totalRatingCount: number | null
+    aggregatedRating: number | null
+    aggregatedRatingCount: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    lastSyncedAt: Date | null
+    title: string | null
+    description: string | null
+    developer: string | null
+    publisher: string | null
+    releaseDate: Date | null
+    rating: number | null
+    steamAppId: string | null
   }
 
   export type GameCountAggregateOutputType = {
     id: number
-    title: number
-    description: number
+    igdbId: number
+    name: number
+    slug: number
+    summary: number
+    storyline: number
+    firstReleaseDate: number
     coverUrl: number
-    releaseDate: number
-    developer: number
-    publisher: number
+    screenshots: number
+    totalRating: number
+    totalRatingCount: number
+    aggregatedRating: number
+    aggregatedRatingCount: number
     genres: number
-    rating: number
+    themes: number
+    gameModes: number
+    keywords: number
+    developers: number
+    publishers: number
+    websites: number
+    externalGames: number
+    ageRatings: number
     createdAt: number
     updatedAt: number
+    lastSyncedAt: number
+    title: number
+    description: number
+    developer: number
+    publisher: number
+    releaseDate: number
+    rating: number
+    steamAppId: number
     _all: number
   }
 
 
   export type GameAvgAggregateInputType = {
     id?: true
+    igdbId?: true
+    totalRating?: true
+    totalRatingCount?: true
+    aggregatedRating?: true
+    aggregatedRatingCount?: true
     rating?: true
   }
 
   export type GameSumAggregateInputType = {
     id?: true
+    igdbId?: true
+    totalRating?: true
+    totalRatingCount?: true
+    aggregatedRating?: true
+    aggregatedRatingCount?: true
     rating?: true
   }
 
   export type GameMinAggregateInputType = {
     id?: true
-    title?: true
-    description?: true
+    igdbId?: true
+    name?: true
+    slug?: true
+    summary?: true
+    storyline?: true
+    firstReleaseDate?: true
     coverUrl?: true
-    releaseDate?: true
-    developer?: true
-    publisher?: true
-    rating?: true
+    totalRating?: true
+    totalRatingCount?: true
+    aggregatedRating?: true
+    aggregatedRatingCount?: true
     createdAt?: true
     updatedAt?: true
+    lastSyncedAt?: true
+    title?: true
+    description?: true
+    developer?: true
+    publisher?: true
+    releaseDate?: true
+    rating?: true
+    steamAppId?: true
   }
 
   export type GameMaxAggregateInputType = {
     id?: true
-    title?: true
-    description?: true
+    igdbId?: true
+    name?: true
+    slug?: true
+    summary?: true
+    storyline?: true
+    firstReleaseDate?: true
     coverUrl?: true
-    releaseDate?: true
-    developer?: true
-    publisher?: true
-    rating?: true
+    totalRating?: true
+    totalRatingCount?: true
+    aggregatedRating?: true
+    aggregatedRatingCount?: true
     createdAt?: true
     updatedAt?: true
+    lastSyncedAt?: true
+    title?: true
+    description?: true
+    developer?: true
+    publisher?: true
+    releaseDate?: true
+    rating?: true
+    steamAppId?: true
   }
 
   export type GameCountAggregateInputType = {
     id?: true
-    title?: true
-    description?: true
+    igdbId?: true
+    name?: true
+    slug?: true
+    summary?: true
+    storyline?: true
+    firstReleaseDate?: true
     coverUrl?: true
-    releaseDate?: true
-    developer?: true
-    publisher?: true
+    screenshots?: true
+    totalRating?: true
+    totalRatingCount?: true
+    aggregatedRating?: true
+    aggregatedRatingCount?: true
     genres?: true
-    rating?: true
+    themes?: true
+    gameModes?: true
+    keywords?: true
+    developers?: true
+    publishers?: true
+    websites?: true
+    externalGames?: true
+    ageRatings?: true
     createdAt?: true
     updatedAt?: true
+    lastSyncedAt?: true
+    title?: true
+    description?: true
+    developer?: true
+    publisher?: true
+    releaseDate?: true
+    rating?: true
+    steamAppId?: true
     _all?: true
   }
 
@@ -3184,16 +3294,37 @@ export namespace Prisma {
 
   export type GameGroupByOutputType = {
     id: number
-    title: string
-    description: string | null
+    igdbId: number | null
+    name: string
+    slug: string | null
+    summary: string | null
+    storyline: string | null
+    firstReleaseDate: Date | null
     coverUrl: string | null
-    releaseDate: Date | null
-    developer: string | null
-    publisher: string | null
+    screenshots: string[]
+    totalRating: number | null
+    totalRatingCount: number | null
+    aggregatedRating: number | null
+    aggregatedRatingCount: number | null
     genres: string[]
-    rating: number | null
+    themes: string[]
+    gameModes: string[]
+    keywords: string[]
+    developers: string[]
+    publishers: string[]
+    websites: JsonValue | null
+    externalGames: JsonValue | null
+    ageRatings: JsonValue | null
     createdAt: Date
     updatedAt: Date
+    lastSyncedAt: Date | null
+    title: string | null
+    description: string | null
+    developer: string | null
+    publisher: string | null
+    releaseDate: Date | null
+    rating: number | null
+    steamAppId: string | null
     _count: GameCountAggregateOutputType | null
     _avg: GameAvgAggregateOutputType | null
     _sum: GameSumAggregateOutputType | null
@@ -3217,16 +3348,37 @@ export namespace Prisma {
 
   export type GameSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    title?: boolean
-    description?: boolean
+    igdbId?: boolean
+    name?: boolean
+    slug?: boolean
+    summary?: boolean
+    storyline?: boolean
+    firstReleaseDate?: boolean
     coverUrl?: boolean
-    releaseDate?: boolean
-    developer?: boolean
-    publisher?: boolean
+    screenshots?: boolean
+    totalRating?: boolean
+    totalRatingCount?: boolean
+    aggregatedRating?: boolean
+    aggregatedRatingCount?: boolean
     genres?: boolean
-    rating?: boolean
+    themes?: boolean
+    gameModes?: boolean
+    keywords?: boolean
+    developers?: boolean
+    publishers?: boolean
+    websites?: boolean
+    externalGames?: boolean
+    ageRatings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lastSyncedAt?: boolean
+    title?: boolean
+    description?: boolean
+    developer?: boolean
+    publisher?: boolean
+    releaseDate?: boolean
+    rating?: boolean
+    steamAppId?: boolean
     deals?: boolean | Game$dealsArgs<ExtArgs>
     platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
     userGames?: boolean | Game$userGamesArgs<ExtArgs>
@@ -3236,47 +3388,110 @@ export namespace Prisma {
 
   export type GameSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    title?: boolean
-    description?: boolean
+    igdbId?: boolean
+    name?: boolean
+    slug?: boolean
+    summary?: boolean
+    storyline?: boolean
+    firstReleaseDate?: boolean
     coverUrl?: boolean
-    releaseDate?: boolean
-    developer?: boolean
-    publisher?: boolean
+    screenshots?: boolean
+    totalRating?: boolean
+    totalRatingCount?: boolean
+    aggregatedRating?: boolean
+    aggregatedRatingCount?: boolean
     genres?: boolean
-    rating?: boolean
+    themes?: boolean
+    gameModes?: boolean
+    keywords?: boolean
+    developers?: boolean
+    publishers?: boolean
+    websites?: boolean
+    externalGames?: boolean
+    ageRatings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lastSyncedAt?: boolean
+    title?: boolean
+    description?: boolean
+    developer?: boolean
+    publisher?: boolean
+    releaseDate?: boolean
+    rating?: boolean
+    steamAppId?: boolean
   }, ExtArgs["result"]["game"]>
 
   export type GameSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    title?: boolean
-    description?: boolean
+    igdbId?: boolean
+    name?: boolean
+    slug?: boolean
+    summary?: boolean
+    storyline?: boolean
+    firstReleaseDate?: boolean
     coverUrl?: boolean
-    releaseDate?: boolean
-    developer?: boolean
-    publisher?: boolean
+    screenshots?: boolean
+    totalRating?: boolean
+    totalRatingCount?: boolean
+    aggregatedRating?: boolean
+    aggregatedRatingCount?: boolean
     genres?: boolean
-    rating?: boolean
+    themes?: boolean
+    gameModes?: boolean
+    keywords?: boolean
+    developers?: boolean
+    publishers?: boolean
+    websites?: boolean
+    externalGames?: boolean
+    ageRatings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lastSyncedAt?: boolean
+    title?: boolean
+    description?: boolean
+    developer?: boolean
+    publisher?: boolean
+    releaseDate?: boolean
+    rating?: boolean
+    steamAppId?: boolean
   }, ExtArgs["result"]["game"]>
 
   export type GameSelectScalar = {
     id?: boolean
-    title?: boolean
-    description?: boolean
+    igdbId?: boolean
+    name?: boolean
+    slug?: boolean
+    summary?: boolean
+    storyline?: boolean
+    firstReleaseDate?: boolean
     coverUrl?: boolean
-    releaseDate?: boolean
-    developer?: boolean
-    publisher?: boolean
+    screenshots?: boolean
+    totalRating?: boolean
+    totalRatingCount?: boolean
+    aggregatedRating?: boolean
+    aggregatedRatingCount?: boolean
     genres?: boolean
-    rating?: boolean
+    themes?: boolean
+    gameModes?: boolean
+    keywords?: boolean
+    developers?: boolean
+    publishers?: boolean
+    websites?: boolean
+    externalGames?: boolean
+    ageRatings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lastSyncedAt?: boolean
+    title?: boolean
+    description?: boolean
+    developer?: boolean
+    publisher?: boolean
+    releaseDate?: boolean
+    rating?: boolean
+    steamAppId?: boolean
   }
 
-  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "coverUrl" | "releaseDate" | "developer" | "publisher" | "genres" | "rating" | "createdAt" | "updatedAt", ExtArgs["result"]["game"]>
+  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt" | "title" | "description" | "developer" | "publisher" | "releaseDate" | "rating" | "steamAppId", ExtArgs["result"]["game"]>
   export type GameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | Game$dealsArgs<ExtArgs>
     platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
@@ -3297,16 +3512,37 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      title: string
-      description: string | null
+      igdbId: number | null
+      name: string
+      slug: string | null
+      summary: string | null
+      storyline: string | null
+      firstReleaseDate: Date | null
       coverUrl: string | null
-      releaseDate: Date | null
-      developer: string | null
-      publisher: string | null
+      screenshots: string[]
+      totalRating: number | null
+      totalRatingCount: number | null
+      aggregatedRating: number | null
+      aggregatedRatingCount: number | null
       genres: string[]
-      rating: number | null
+      themes: string[]
+      gameModes: string[]
+      keywords: string[]
+      developers: string[]
+      publishers: string[]
+      websites: Prisma.JsonValue | null
+      externalGames: Prisma.JsonValue | null
+      ageRatings: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
+      lastSyncedAt: Date | null
+      title: string | null
+      description: string | null
+      developer: string | null
+      publisher: string | null
+      releaseDate: Date | null
+      rating: number | null
+      steamAppId: string | null
     }, ExtArgs["result"]["game"]>
     composites: {}
   }
@@ -3735,16 +3971,37 @@ export namespace Prisma {
    */
   interface GameFieldRefs {
     readonly id: FieldRef<"Game", 'Int'>
-    readonly title: FieldRef<"Game", 'String'>
-    readonly description: FieldRef<"Game", 'String'>
+    readonly igdbId: FieldRef<"Game", 'Int'>
+    readonly name: FieldRef<"Game", 'String'>
+    readonly slug: FieldRef<"Game", 'String'>
+    readonly summary: FieldRef<"Game", 'String'>
+    readonly storyline: FieldRef<"Game", 'String'>
+    readonly firstReleaseDate: FieldRef<"Game", 'DateTime'>
     readonly coverUrl: FieldRef<"Game", 'String'>
-    readonly releaseDate: FieldRef<"Game", 'DateTime'>
-    readonly developer: FieldRef<"Game", 'String'>
-    readonly publisher: FieldRef<"Game", 'String'>
+    readonly screenshots: FieldRef<"Game", 'String[]'>
+    readonly totalRating: FieldRef<"Game", 'Float'>
+    readonly totalRatingCount: FieldRef<"Game", 'Int'>
+    readonly aggregatedRating: FieldRef<"Game", 'Float'>
+    readonly aggregatedRatingCount: FieldRef<"Game", 'Int'>
     readonly genres: FieldRef<"Game", 'String[]'>
-    readonly rating: FieldRef<"Game", 'Float'>
+    readonly themes: FieldRef<"Game", 'String[]'>
+    readonly gameModes: FieldRef<"Game", 'String[]'>
+    readonly keywords: FieldRef<"Game", 'String[]'>
+    readonly developers: FieldRef<"Game", 'String[]'>
+    readonly publishers: FieldRef<"Game", 'String[]'>
+    readonly websites: FieldRef<"Game", 'Json'>
+    readonly externalGames: FieldRef<"Game", 'Json'>
+    readonly ageRatings: FieldRef<"Game", 'Json'>
     readonly createdAt: FieldRef<"Game", 'DateTime'>
     readonly updatedAt: FieldRef<"Game", 'DateTime'>
+    readonly lastSyncedAt: FieldRef<"Game", 'DateTime'>
+    readonly title: FieldRef<"Game", 'String'>
+    readonly description: FieldRef<"Game", 'String'>
+    readonly developer: FieldRef<"Game", 'String'>
+    readonly publisher: FieldRef<"Game", 'String'>
+    readonly releaseDate: FieldRef<"Game", 'DateTime'>
+    readonly rating: FieldRef<"Game", 'Float'>
+    readonly steamAppId: FieldRef<"Game", 'String'>
   }
     
 
@@ -7698,6 +7955,8 @@ export namespace Prisma {
     isFreebie: boolean | null
     discoveredAt: Date | null
     updatedAt: Date | null
+    externalId: string | null
+    source: string | null
   }
 
   export type DealMaxAggregateOutputType = {
@@ -7715,6 +7974,8 @@ export namespace Prisma {
     isFreebie: boolean | null
     discoveredAt: Date | null
     updatedAt: Date | null
+    externalId: string | null
+    source: string | null
   }
 
   export type DealCountAggregateOutputType = {
@@ -7732,6 +7993,8 @@ export namespace Prisma {
     isFreebie: number
     discoveredAt: number
     updatedAt: number
+    externalId: number
+    source: number
     _all: number
   }
 
@@ -7769,6 +8032,8 @@ export namespace Prisma {
     isFreebie?: true
     discoveredAt?: true
     updatedAt?: true
+    externalId?: true
+    source?: true
   }
 
   export type DealMaxAggregateInputType = {
@@ -7786,6 +8051,8 @@ export namespace Prisma {
     isFreebie?: true
     discoveredAt?: true
     updatedAt?: true
+    externalId?: true
+    source?: true
   }
 
   export type DealCountAggregateInputType = {
@@ -7803,6 +8070,8 @@ export namespace Prisma {
     isFreebie?: true
     discoveredAt?: true
     updatedAt?: true
+    externalId?: true
+    source?: true
     _all?: true
   }
 
@@ -7907,6 +8176,8 @@ export namespace Prisma {
     isFreebie: boolean
     discoveredAt: Date
     updatedAt: Date
+    externalId: string | null
+    source: string | null
     _count: DealCountAggregateOutputType | null
     _avg: DealAvgAggregateOutputType | null
     _sum: DealSumAggregateOutputType | null
@@ -7943,6 +8214,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: boolean
     updatedAt?: boolean
+    externalId?: boolean
+    source?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
@@ -7962,6 +8235,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: boolean
     updatedAt?: boolean
+    externalId?: boolean
+    source?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
@@ -7981,6 +8256,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: boolean
     updatedAt?: boolean
+    externalId?: boolean
+    source?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
@@ -8000,9 +8277,11 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: boolean
     updatedAt?: boolean
+    externalId?: boolean
+    source?: boolean
   }
 
-  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformGameId" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt", ExtArgs["result"]["deal"]>
+  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformGameId" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source", ExtArgs["result"]["deal"]>
   export type DealInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
     platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
@@ -8037,6 +8316,8 @@ export namespace Prisma {
       isFreebie: boolean
       discoveredAt: Date
       updatedAt: Date
+      externalId: string | null
+      source: string | null
     }, ExtArgs["result"]["deal"]>
     composites: {}
   }
@@ -8476,6 +8757,8 @@ export namespace Prisma {
     readonly isFreebie: FieldRef<"Deal", 'Boolean'>
     readonly discoveredAt: FieldRef<"Deal", 'DateTime'>
     readonly updatedAt: FieldRef<"Deal", 'DateTime'>
+    readonly externalId: FieldRef<"Deal", 'String'>
+    readonly source: FieldRef<"Deal", 'String'>
   }
     
 
@@ -12278,16 +12561,37 @@ export namespace Prisma {
 
   export const GameScalarFieldEnum: {
     id: 'id',
+    igdbId: 'igdbId',
+    name: 'name',
+    slug: 'slug',
+    summary: 'summary',
+    storyline: 'storyline',
+    firstReleaseDate: 'firstReleaseDate',
+    coverUrl: 'coverUrl',
+    screenshots: 'screenshots',
+    totalRating: 'totalRating',
+    totalRatingCount: 'totalRatingCount',
+    aggregatedRating: 'aggregatedRating',
+    aggregatedRatingCount: 'aggregatedRatingCount',
+    genres: 'genres',
+    themes: 'themes',
+    gameModes: 'gameModes',
+    keywords: 'keywords',
+    developers: 'developers',
+    publishers: 'publishers',
+    websites: 'websites',
+    externalGames: 'externalGames',
+    ageRatings: 'ageRatings',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    lastSyncedAt: 'lastSyncedAt',
     title: 'title',
     description: 'description',
-    coverUrl: 'coverUrl',
-    releaseDate: 'releaseDate',
     developer: 'developer',
     publisher: 'publisher',
-    genres: 'genres',
+    releaseDate: 'releaseDate',
     rating: 'rating',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    steamAppId: 'steamAppId'
   };
 
   export type GameScalarFieldEnum = (typeof GameScalarFieldEnum)[keyof typeof GameScalarFieldEnum]
@@ -12344,7 +12648,9 @@ export namespace Prisma {
     validUntil: 'validUntil',
     isFreebie: 'isFreebie',
     discoveredAt: 'discoveredAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    externalId: 'externalId',
+    source: 'source'
   };
 
   export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
@@ -12392,6 +12698,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -12406,6 +12720,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -12466,6 +12789,20 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -12552,16 +12889,37 @@ export namespace Prisma {
     OR?: GameWhereInput[]
     NOT?: GameWhereInput | GameWhereInput[]
     id?: IntFilter<"Game"> | number
-    title?: StringFilter<"Game"> | string
-    description?: StringNullableFilter<"Game"> | string | null
+    igdbId?: IntNullableFilter<"Game"> | number | null
+    name?: StringFilter<"Game"> | string
+    slug?: StringNullableFilter<"Game"> | string | null
+    summary?: StringNullableFilter<"Game"> | string | null
+    storyline?: StringNullableFilter<"Game"> | string | null
+    firstReleaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
     coverUrl?: StringNullableFilter<"Game"> | string | null
-    releaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
-    developer?: StringNullableFilter<"Game"> | string | null
-    publisher?: StringNullableFilter<"Game"> | string | null
+    screenshots?: StringNullableListFilter<"Game">
+    totalRating?: FloatNullableFilter<"Game"> | number | null
+    totalRatingCount?: IntNullableFilter<"Game"> | number | null
+    aggregatedRating?: FloatNullableFilter<"Game"> | number | null
+    aggregatedRatingCount?: IntNullableFilter<"Game"> | number | null
     genres?: StringNullableListFilter<"Game">
-    rating?: FloatNullableFilter<"Game"> | number | null
+    themes?: StringNullableListFilter<"Game">
+    gameModes?: StringNullableListFilter<"Game">
+    keywords?: StringNullableListFilter<"Game">
+    developers?: StringNullableListFilter<"Game">
+    publishers?: StringNullableListFilter<"Game">
+    websites?: JsonNullableFilter<"Game">
+    externalGames?: JsonNullableFilter<"Game">
+    ageRatings?: JsonNullableFilter<"Game">
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
+    lastSyncedAt?: DateTimeNullableFilter<"Game"> | Date | string | null
+    title?: StringNullableFilter<"Game"> | string | null
+    description?: StringNullableFilter<"Game"> | string | null
+    developer?: StringNullableFilter<"Game"> | string | null
+    publisher?: StringNullableFilter<"Game"> | string | null
+    releaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
+    rating?: FloatNullableFilter<"Game"> | number | null
+    steamAppId?: StringNullableFilter<"Game"> | string | null
     deals?: DealListRelationFilter
     platformGames?: PlatformGameListRelationFilter
     userGames?: UserGameListRelationFilter
@@ -12570,16 +12928,37 @@ export namespace Prisma {
 
   export type GameOrderByWithRelationInput = {
     id?: SortOrder
-    title?: SortOrder
-    description?: SortOrderInput | SortOrder
+    igdbId?: SortOrderInput | SortOrder
+    name?: SortOrder
+    slug?: SortOrderInput | SortOrder
+    summary?: SortOrderInput | SortOrder
+    storyline?: SortOrderInput | SortOrder
+    firstReleaseDate?: SortOrderInput | SortOrder
     coverUrl?: SortOrderInput | SortOrder
-    releaseDate?: SortOrderInput | SortOrder
-    developer?: SortOrderInput | SortOrder
-    publisher?: SortOrderInput | SortOrder
+    screenshots?: SortOrder
+    totalRating?: SortOrderInput | SortOrder
+    totalRatingCount?: SortOrderInput | SortOrder
+    aggregatedRating?: SortOrderInput | SortOrder
+    aggregatedRatingCount?: SortOrderInput | SortOrder
     genres?: SortOrder
-    rating?: SortOrderInput | SortOrder
+    themes?: SortOrder
+    gameModes?: SortOrder
+    keywords?: SortOrder
+    developers?: SortOrder
+    publishers?: SortOrder
+    websites?: SortOrderInput | SortOrder
+    externalGames?: SortOrderInput | SortOrder
+    ageRatings?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
+    title?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    developer?: SortOrderInput | SortOrder
+    publisher?: SortOrderInput | SortOrder
+    releaseDate?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
+    steamAppId?: SortOrderInput | SortOrder
     deals?: DealOrderByRelationAggregateInput
     platformGames?: PlatformGameOrderByRelationAggregateInput
     userGames?: UserGameOrderByRelationAggregateInput
@@ -12588,37 +12967,79 @@ export namespace Prisma {
 
   export type GameWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    igdbId?: number
+    slug?: string
     AND?: GameWhereInput | GameWhereInput[]
     OR?: GameWhereInput[]
     NOT?: GameWhereInput | GameWhereInput[]
-    title?: StringFilter<"Game"> | string
-    description?: StringNullableFilter<"Game"> | string | null
+    name?: StringFilter<"Game"> | string
+    summary?: StringNullableFilter<"Game"> | string | null
+    storyline?: StringNullableFilter<"Game"> | string | null
+    firstReleaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
     coverUrl?: StringNullableFilter<"Game"> | string | null
-    releaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
-    developer?: StringNullableFilter<"Game"> | string | null
-    publisher?: StringNullableFilter<"Game"> | string | null
+    screenshots?: StringNullableListFilter<"Game">
+    totalRating?: FloatNullableFilter<"Game"> | number | null
+    totalRatingCount?: IntNullableFilter<"Game"> | number | null
+    aggregatedRating?: FloatNullableFilter<"Game"> | number | null
+    aggregatedRatingCount?: IntNullableFilter<"Game"> | number | null
     genres?: StringNullableListFilter<"Game">
-    rating?: FloatNullableFilter<"Game"> | number | null
+    themes?: StringNullableListFilter<"Game">
+    gameModes?: StringNullableListFilter<"Game">
+    keywords?: StringNullableListFilter<"Game">
+    developers?: StringNullableListFilter<"Game">
+    publishers?: StringNullableListFilter<"Game">
+    websites?: JsonNullableFilter<"Game">
+    externalGames?: JsonNullableFilter<"Game">
+    ageRatings?: JsonNullableFilter<"Game">
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
+    lastSyncedAt?: DateTimeNullableFilter<"Game"> | Date | string | null
+    title?: StringNullableFilter<"Game"> | string | null
+    description?: StringNullableFilter<"Game"> | string | null
+    developer?: StringNullableFilter<"Game"> | string | null
+    publisher?: StringNullableFilter<"Game"> | string | null
+    releaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
+    rating?: FloatNullableFilter<"Game"> | number | null
+    steamAppId?: StringNullableFilter<"Game"> | string | null
     deals?: DealListRelationFilter
     platformGames?: PlatformGameListRelationFilter
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
-  }, "id">
+  }, "id" | "igdbId" | "slug">
 
   export type GameOrderByWithAggregationInput = {
     id?: SortOrder
-    title?: SortOrder
-    description?: SortOrderInput | SortOrder
+    igdbId?: SortOrderInput | SortOrder
+    name?: SortOrder
+    slug?: SortOrderInput | SortOrder
+    summary?: SortOrderInput | SortOrder
+    storyline?: SortOrderInput | SortOrder
+    firstReleaseDate?: SortOrderInput | SortOrder
     coverUrl?: SortOrderInput | SortOrder
-    releaseDate?: SortOrderInput | SortOrder
-    developer?: SortOrderInput | SortOrder
-    publisher?: SortOrderInput | SortOrder
+    screenshots?: SortOrder
+    totalRating?: SortOrderInput | SortOrder
+    totalRatingCount?: SortOrderInput | SortOrder
+    aggregatedRating?: SortOrderInput | SortOrder
+    aggregatedRatingCount?: SortOrderInput | SortOrder
     genres?: SortOrder
-    rating?: SortOrderInput | SortOrder
+    themes?: SortOrder
+    gameModes?: SortOrder
+    keywords?: SortOrder
+    developers?: SortOrder
+    publishers?: SortOrder
+    websites?: SortOrderInput | SortOrder
+    externalGames?: SortOrderInput | SortOrder
+    ageRatings?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
+    title?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    developer?: SortOrderInput | SortOrder
+    publisher?: SortOrderInput | SortOrder
+    releaseDate?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
+    steamAppId?: SortOrderInput | SortOrder
     _count?: GameCountOrderByAggregateInput
     _avg?: GameAvgOrderByAggregateInput
     _max?: GameMaxOrderByAggregateInput
@@ -12631,16 +13052,37 @@ export namespace Prisma {
     OR?: GameScalarWhereWithAggregatesInput[]
     NOT?: GameScalarWhereWithAggregatesInput | GameScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Game"> | number
-    title?: StringWithAggregatesFilter<"Game"> | string
-    description?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    igdbId?: IntNullableWithAggregatesFilter<"Game"> | number | null
+    name?: StringWithAggregatesFilter<"Game"> | string
+    slug?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    summary?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    storyline?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    firstReleaseDate?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
     coverUrl?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    releaseDate?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
-    developer?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    publisher?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    screenshots?: StringNullableListFilter<"Game">
+    totalRating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
+    totalRatingCount?: IntNullableWithAggregatesFilter<"Game"> | number | null
+    aggregatedRating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
+    aggregatedRatingCount?: IntNullableWithAggregatesFilter<"Game"> | number | null
     genres?: StringNullableListFilter<"Game">
-    rating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
+    themes?: StringNullableListFilter<"Game">
+    gameModes?: StringNullableListFilter<"Game">
+    keywords?: StringNullableListFilter<"Game">
+    developers?: StringNullableListFilter<"Game">
+    publishers?: StringNullableListFilter<"Game">
+    websites?: JsonNullableWithAggregatesFilter<"Game">
+    externalGames?: JsonNullableWithAggregatesFilter<"Game">
+    ageRatings?: JsonNullableWithAggregatesFilter<"Game">
     createdAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
+    lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
+    title?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    description?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    developer?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    publisher?: StringNullableWithAggregatesFilter<"Game"> | string | null
+    releaseDate?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
+    rating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
+    steamAppId?: StringNullableWithAggregatesFilter<"Game"> | string | null
   }
 
   export type PlatformWhereInput = {
@@ -12864,6 +13306,8 @@ export namespace Prisma {
     isFreebie?: BoolFilter<"Deal"> | boolean
     discoveredAt?: DateTimeFilter<"Deal"> | Date | string
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
+    externalId?: StringNullableFilter<"Deal"> | string | null
+    source?: StringNullableFilter<"Deal"> | string | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     platformGame?: XOR<PlatformGameNullableScalarRelationFilter, PlatformGameWhereInput> | null
   }
@@ -12883,6 +13327,8 @@ export namespace Prisma {
     isFreebie?: SortOrder
     discoveredAt?: SortOrder
     updatedAt?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    source?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
     platformGame?: PlatformGameOrderByWithRelationInput
   }
@@ -12905,6 +13351,8 @@ export namespace Prisma {
     isFreebie?: BoolFilter<"Deal"> | boolean
     discoveredAt?: DateTimeFilter<"Deal"> | Date | string
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
+    externalId?: StringNullableFilter<"Deal"> | string | null
+    source?: StringNullableFilter<"Deal"> | string | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     platformGame?: XOR<PlatformGameNullableScalarRelationFilter, PlatformGameWhereInput> | null
   }, "id">
@@ -12924,6 +13372,8 @@ export namespace Prisma {
     isFreebie?: SortOrder
     discoveredAt?: SortOrder
     updatedAt?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    source?: SortOrderInput | SortOrder
     _count?: DealCountOrderByAggregateInput
     _avg?: DealAvgOrderByAggregateInput
     _max?: DealMaxOrderByAggregateInput
@@ -12949,6 +13399,8 @@ export namespace Prisma {
     isFreebie?: BoolWithAggregatesFilter<"Deal"> | boolean
     discoveredAt?: DateTimeWithAggregatesFilter<"Deal"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Deal"> | Date | string
+    externalId?: StringNullableWithAggregatesFilter<"Deal"> | string | null
+    source?: StringNullableWithAggregatesFilter<"Deal"> | string | null
   }
 
   export type AchievementWhereInput = {
@@ -13208,16 +13660,37 @@ export namespace Prisma {
   }
 
   export type GameCreateInput = {
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
@@ -13226,16 +13699,37 @@ export namespace Prisma {
 
   export type GameUncheckedCreateInput = {
     id?: number
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
@@ -13243,16 +13737,37 @@ export namespace Prisma {
   }
 
   export type GameUpdateInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
@@ -13261,16 +13776,37 @@ export namespace Prisma {
 
   export type GameUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
@@ -13279,43 +13815,106 @@ export namespace Prisma {
 
   export type GameCreateManyInput = {
     id?: number
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
   }
 
   export type GameUpdateManyMutationInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type GameUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PlatformCreateInput = {
@@ -13521,6 +14120,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
     game: GameCreateNestedOneWithoutDealsInput
     platformGame?: PlatformGameCreateNestedOneWithoutDealsInput
   }
@@ -13540,6 +14141,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
   }
 
   export type DealUpdateInput = {
@@ -13554,6 +14157,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneRequiredWithoutDealsNestedInput
     platformGame?: PlatformGameUpdateOneWithoutDealsNestedInput
   }
@@ -13573,6 +14178,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DealCreateManyInput = {
@@ -13590,6 +14197,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
   }
 
   export type DealUpdateManyMutationInput = {
@@ -13604,6 +14213,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DealUncheckedUpdateManyInput = {
@@ -13621,6 +14232,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AchievementCreateInput = {
@@ -13958,6 +14571,17 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -13986,6 +14610,29 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -14021,52 +14668,123 @@ export namespace Prisma {
 
   export type GameCountOrderByAggregateInput = {
     id?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
+    igdbId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    summary?: SortOrder
+    storyline?: SortOrder
+    firstReleaseDate?: SortOrder
     coverUrl?: SortOrder
-    releaseDate?: SortOrder
-    developer?: SortOrder
-    publisher?: SortOrder
+    screenshots?: SortOrder
+    totalRating?: SortOrder
+    totalRatingCount?: SortOrder
+    aggregatedRating?: SortOrder
+    aggregatedRatingCount?: SortOrder
     genres?: SortOrder
-    rating?: SortOrder
+    themes?: SortOrder
+    gameModes?: SortOrder
+    keywords?: SortOrder
+    developers?: SortOrder
+    publishers?: SortOrder
+    websites?: SortOrder
+    externalGames?: SortOrder
+    ageRatings?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lastSyncedAt?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    developer?: SortOrder
+    publisher?: SortOrder
+    releaseDate?: SortOrder
+    rating?: SortOrder
+    steamAppId?: SortOrder
   }
 
   export type GameAvgOrderByAggregateInput = {
     id?: SortOrder
+    igdbId?: SortOrder
+    totalRating?: SortOrder
+    totalRatingCount?: SortOrder
+    aggregatedRating?: SortOrder
+    aggregatedRatingCount?: SortOrder
     rating?: SortOrder
   }
 
   export type GameMaxOrderByAggregateInput = {
     id?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
+    igdbId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    summary?: SortOrder
+    storyline?: SortOrder
+    firstReleaseDate?: SortOrder
     coverUrl?: SortOrder
-    releaseDate?: SortOrder
-    developer?: SortOrder
-    publisher?: SortOrder
-    rating?: SortOrder
+    totalRating?: SortOrder
+    totalRatingCount?: SortOrder
+    aggregatedRating?: SortOrder
+    aggregatedRatingCount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lastSyncedAt?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    developer?: SortOrder
+    publisher?: SortOrder
+    releaseDate?: SortOrder
+    rating?: SortOrder
+    steamAppId?: SortOrder
   }
 
   export type GameMinOrderByAggregateInput = {
     id?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
+    igdbId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    summary?: SortOrder
+    storyline?: SortOrder
+    firstReleaseDate?: SortOrder
     coverUrl?: SortOrder
-    releaseDate?: SortOrder
-    developer?: SortOrder
-    publisher?: SortOrder
-    rating?: SortOrder
+    totalRating?: SortOrder
+    totalRatingCount?: SortOrder
+    aggregatedRating?: SortOrder
+    aggregatedRatingCount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lastSyncedAt?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    developer?: SortOrder
+    publisher?: SortOrder
+    releaseDate?: SortOrder
+    rating?: SortOrder
+    steamAppId?: SortOrder
   }
 
   export type GameSumOrderByAggregateInput = {
     id?: SortOrder
+    igdbId?: SortOrder
+    totalRating?: SortOrder
+    totalRatingCount?: SortOrder
+    aggregatedRating?: SortOrder
+    aggregatedRatingCount?: SortOrder
     rating?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -14097,6 +14815,32 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -14201,17 +14945,6 @@ export namespace Prisma {
     platformId?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -14277,22 +15010,6 @@ export namespace Prisma {
     playtimeMinutes?: SortOrder
   }
 
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -14321,6 +15038,8 @@ export namespace Prisma {
     isFreebie?: SortOrder
     discoveredAt?: SortOrder
     updatedAt?: SortOrder
+    externalId?: SortOrder
+    source?: SortOrder
   }
 
   export type DealAvgOrderByAggregateInput = {
@@ -14347,6 +15066,8 @@ export namespace Prisma {
     isFreebie?: SortOrder
     discoveredAt?: SortOrder
     updatedAt?: SortOrder
+    externalId?: SortOrder
+    source?: SortOrder
   }
 
   export type DealMinOrderByAggregateInput = {
@@ -14364,6 +15085,8 @@ export namespace Prisma {
     isFreebie?: SortOrder
     discoveredAt?: SortOrder
     updatedAt?: SortOrder
+    externalId?: SortOrder
+    source?: SortOrder
   }
 
   export type DealSumOrderByAggregateInput = {
@@ -14643,7 +15366,31 @@ export namespace Prisma {
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
+  export type GameCreatescreenshotsInput = {
+    set: string[]
+  }
+
   export type GameCreategenresInput = {
+    set: string[]
+  }
+
+  export type GameCreatethemesInput = {
+    set: string[]
+  }
+
+  export type GameCreategameModesInput = {
+    set: string[]
+  }
+
+  export type GameCreatekeywordsInput = {
+    set: string[]
+  }
+
+  export type GameCreatedevelopersInput = {
+    set: string[]
+  }
+
+  export type GameCreatepublishersInput = {
     set: string[]
   }
 
@@ -14703,11 +15450,19 @@ export namespace Prisma {
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
   }
 
-  export type GameUpdategenresInput = {
+  export type GameUpdatescreenshotsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -14718,6 +15473,36 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type GameUpdategenresInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GameUpdatethemesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GameUpdategameModesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GameUpdatekeywordsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GameUpdatedevelopersInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GameUpdatepublishersInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -14958,14 +15743,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -15260,6 +16037,22 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -15289,6 +16082,29 @@ export namespace Prisma {
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -15307,22 +16123,6 @@ export namespace Prisma {
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -15501,6 +16301,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
     platformGame?: PlatformGameCreateNestedOneWithoutDealsInput
   }
 
@@ -15518,6 +16320,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
   }
 
   export type DealCreateOrConnectWithoutGameInput = {
@@ -15641,6 +16445,8 @@ export namespace Prisma {
     isFreebie?: BoolFilter<"Deal"> | boolean
     discoveredAt?: DateTimeFilter<"Deal"> | Date | string
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
+    externalId?: StringNullableFilter<"Deal"> | string | null
+    source?: StringNullableFilter<"Deal"> | string | null
   }
 
   export type PlatformGameUpsertWithWhereUniqueWithoutGameInput = {
@@ -15755,6 +16561,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
     game: GameCreateNestedOneWithoutDealsInput
   }
 
@@ -15772,6 +16580,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
   }
 
   export type DealCreateOrConnectWithoutPlatformGameInput = {
@@ -15785,16 +16595,37 @@ export namespace Prisma {
   }
 
   export type GameCreateWithoutPlatformGamesInput = {
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
@@ -15802,16 +16633,37 @@ export namespace Prisma {
 
   export type GameUncheckedCreateWithoutPlatformGamesInput = {
     id?: number
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
@@ -15870,16 +16722,37 @@ export namespace Prisma {
   }
 
   export type GameUpdateWithoutPlatformGamesInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
@@ -15887,16 +16760,37 @@ export namespace Prisma {
 
   export type GameUncheckedUpdateWithoutPlatformGamesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
@@ -15929,16 +16823,37 @@ export namespace Prisma {
   }
 
   export type GameCreateWithoutUserGamesInput = {
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
@@ -15946,16 +16861,37 @@ export namespace Prisma {
 
   export type GameUncheckedCreateWithoutUserGamesInput = {
     id?: number
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
@@ -16004,16 +16940,37 @@ export namespace Prisma {
   }
 
   export type GameUpdateWithoutUserGamesInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
@@ -16021,16 +16978,37 @@ export namespace Prisma {
 
   export type GameUncheckedUpdateWithoutUserGamesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
@@ -16069,16 +17047,37 @@ export namespace Prisma {
   }
 
   export type GameCreateWithoutDealsInput = {
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
@@ -16086,16 +17085,37 @@ export namespace Prisma {
 
   export type GameUncheckedCreateWithoutDealsInput = {
     id?: number
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
@@ -16138,16 +17158,37 @@ export namespace Prisma {
   }
 
   export type GameUpdateWithoutDealsInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
@@ -16155,16 +17196,37 @@ export namespace Prisma {
 
   export type GameUncheckedUpdateWithoutDealsInput = {
     id?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
@@ -16350,16 +17412,37 @@ export namespace Prisma {
   }
 
   export type GameCreateWithoutWishlistedByInput = {
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
@@ -16367,16 +17450,37 @@ export namespace Prisma {
 
   export type GameUncheckedCreateWithoutWishlistedByInput = {
     id?: number
-    title: string
-    description?: string | null
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
     coverUrl?: string | null
-    releaseDate?: Date | string | null
-    developer?: string | null
-    publisher?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    totalRating?: number | null
+    totalRatingCount?: number | null
+    aggregatedRating?: number | null
+    aggregatedRatingCount?: number | null
     genres?: GameCreategenresInput | string[]
-    rating?: number | null
+    themes?: GameCreatethemesInput | string[]
+    gameModes?: GameCreategameModesInput | string[]
+    keywords?: GameCreatekeywordsInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    title?: string | null
+    description?: string | null
+    developer?: string | null
+    publisher?: string | null
+    releaseDate?: Date | string | null
+    rating?: number | null
+    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
@@ -16425,16 +17529,37 @@ export namespace Prisma {
   }
 
   export type GameUpdateWithoutWishlistedByInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
@@ -16442,16 +17567,37 @@ export namespace Prisma {
 
   export type GameUncheckedUpdateWithoutWishlistedByInput = {
     id?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     genres?: GameUpdategenresInput | string[]
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    themes?: GameUpdatethemesInput | string[]
+    gameModes?: GameUpdategameModesInput | string[]
+    keywords?: GameUpdatekeywordsInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    externalGames?: NullableJsonNullValueInput | InputJsonValue
+    ageRatings?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
@@ -16592,6 +17738,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
   }
 
   export type PlatformGameCreateManyGameInput = {
@@ -16630,6 +17778,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
     platformGame?: PlatformGameUpdateOneWithoutDealsNestedInput
   }
 
@@ -16647,6 +17797,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DealUncheckedUpdateManyWithoutGameInput = {
@@ -16663,6 +17815,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PlatformGameUpdateWithoutGameInput = {
@@ -16779,6 +17933,8 @@ export namespace Prisma {
     isFreebie?: boolean
     discoveredAt?: Date | string
     updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
   }
 
   export type DealUpdateWithoutPlatformGameInput = {
@@ -16793,6 +17949,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneRequiredWithoutDealsNestedInput
   }
 
@@ -16810,6 +17968,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DealUncheckedUpdateManyWithoutPlatformGameInput = {
@@ -16826,6 +17986,8 @@ export namespace Prisma {
     isFreebie?: BoolFieldUpdateOperationsInput | boolean
     discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserAchievementCreateManyAchievementInput = {

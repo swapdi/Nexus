@@ -3,6 +3,32 @@
  * Grund: Datenverarbeitung und Berechnungen aus Services extrahiert
  */
 
+// ============================================================================
+// TYPES
+// ============================================================================
+
+export interface GameData {
+  // IGDB Fields
+  id?: number;
+  name: string;
+  summary?: string;
+  developers?: string[];
+  publishers?: string[];
+  firstReleaseDate?: Date | string;
+  totalRating?: number;
+  coverUrl?: string;
+  screenshots?: string[];
+  genres?: string[];
+  themes?: string[];
+  gameModes?: string[];
+  keywords?: string[];
+
+  // Common Fields
+  platforms?: string[];
+  isFavorite?: boolean;
+  playtimeMinutes?: number;
+}
+
 export interface GameStats {
   totalGames: number;
   totalPlaytimeHours: number;
@@ -22,7 +48,7 @@ export interface PlatformStats {
   totalPlaytime: number;
   averagePlaytime: number;
   topGames: Array<{
-    title: string;
+    name: string;
     playtime: number;
   }>;
 }
@@ -46,6 +72,133 @@ export const useGameUtils = () => {
     }
 
     return `${hours}h ${remainingMinutes}m`;
+  };
+
+  // ============================================================================
+  // IGDB GAME DATA FUNCTIONS
+  // ============================================================================
+
+  /**
+   * Hole den Spielnamen
+   */
+  const getGameName = (game: GameData): string => {
+    return game.name || 'Unbekanntes Spiel';
+  };
+
+  /**
+   * Hole die Spielbeschreibung
+   */
+  const getGameDescription = (game: GameData): string | null => {
+    return game.summary || null;
+  };
+
+  /**
+   * Hole den Hauptentwickler
+   */
+  const getGameDeveloper = (game: GameData): string | null => {
+    if (game.developers && game.developers.length > 0) {
+      return game.developers[0];
+    }
+    return null;
+  };
+
+  /**
+   * Hole alle Entwickler als Array
+   */
+  const getGameDevelopers = (game: GameData): string[] => {
+    return game.developers || [];
+  };
+
+  /**
+   * Hole den Hauptpublisher
+   */
+  const getGamePublisher = (game: GameData): string | null => {
+    if (game.publishers && game.publishers.length > 0) {
+      return game.publishers[0];
+    }
+    return null;
+  };
+
+  /**
+   * Hole alle Publisher als Array
+   */
+  const getGamePublishers = (game: GameData): string[] => {
+    return game.publishers || [];
+  };
+
+  /**
+   * Hole das Veröffentlichungsdatum
+   */
+  const getGameReleaseDate = (game: GameData): Date | null => {
+    const date = game.firstReleaseDate;
+    if (!date) return null;
+    return date instanceof Date ? date : new Date(date);
+  };
+
+  /**
+   * Hole die Bewertung
+   */
+  const getGameRating = (game: GameData): number | null => {
+    return game.totalRating || null;
+  };
+
+  /**
+   * Hole das Cover-Bild (mit Fallback)
+   */
+  const getGameCoverUrl = (game: GameData): string => {
+    return game.coverUrl || './gameplaceholder.jpg';
+  };
+
+  /**
+   * Hole die Genres als Array
+   */
+  const getGameGenres = (game: GameData): string[] => {
+    return game.genres || [];
+  };
+
+  /**
+   * Formatiere die Bewertung für die Anzeige
+   */
+  const formatGameRating = (game: GameData): string => {
+    const rating = getGameRating(game);
+    if (!rating) return 'N/A';
+    return rating.toFixed(1);
+  };
+
+  /**
+   * Formatiere Genres als String
+   */
+  const formatGameGenres = (game: GameData, maxGenres: number = 3): string => {
+    const genres = getGameGenres(game);
+    if (genres.length === 0) return 'Unbekannt';
+
+    if (genres.length <= maxGenres) {
+      return genres.join(', ');
+    }
+
+    return `${genres.slice(0, maxGenres).join(', ')} +${
+      genres.length - maxGenres
+    }`;
+  };
+
+  /**
+   * Prüfe ob ein Spiel dem Suchbegriff entspricht
+   */
+  const gameMatchesSearch = (game: GameData, searchTerm: string): boolean => {
+    const term = searchTerm.toLowerCase();
+    const name = getGameName(game).toLowerCase();
+    const description = getGameDescription(game)?.toLowerCase() || '';
+    const developer = getGameDeveloper(game)?.toLowerCase() || '';
+    const genres = getGameGenres(game)
+      .map(g => g.toLowerCase())
+      .join(' ');
+
+    return (
+      name.includes(term) ||
+      description.includes(term) ||
+      developer.includes(term) ||
+      genres.includes(term)
+    );
   };
 
   /**
@@ -142,9 +295,9 @@ export const useGameUtils = () => {
    */
   const findSimilarGames = (
     targetGame: { genres: string[] },
-    allGames: Array<{ id: number; title: string; genres: string[] }>,
+    allGames: Array<{ id: number; name: string; genres: string[] }>,
     limit: number = 5
-  ): Array<{ id: number; title: string; similarity: number }> => {
+  ): Array<{ id: number; name: string; similarity: number }> => {
     const targetGenres = new Set(targetGame.genres);
 
     const similarities = allGames
@@ -159,7 +312,7 @@ export const useGameUtils = () => {
 
         return {
           id: game.id,
-          title: game.title,
+          name: game.name,
           similarity
         };
       })
@@ -224,20 +377,20 @@ export const useGameUtils = () => {
    */
   const sortGames = <
     T extends {
-      title: string;
+      name: string;
       playtimeMinutes?: number;
       lastPlayed?: Date | null;
       addedAt?: Date;
     }
   >(
     games: T[],
-    sortBy: 'title' | 'playtime' | 'recent' | 'added'
+    sortBy: 'name' | 'playtime' | 'recent' | 'added'
   ): T[] => {
     const sorted = [...games];
 
     switch (sortBy) {
-      case 'title':
-        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+      case 'name':
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
 
       case 'playtime':
         return sorted.sort(
@@ -268,11 +421,11 @@ export const useGameUtils = () => {
    */
   const generateGamesSummary = (
     games: Array<{
-      title: string;
+      name: string;
       genres: string[];
       platforms: string[];
       playtimeMinutes: number;
-      rating: number | null;
+      totalRating: number | null;
       lastPlayed: Date | null;
     }>
   ): GameStats => {
@@ -284,11 +437,11 @@ export const useGameUtils = () => {
     const totalPlaytimeHours =
       Math.round((totalPlaytimeMinutes / 60) * 10) / 10;
 
-    const ratedGames = games.filter(game => game.rating !== null);
+    const ratedGames = games.filter(game => game.totalRating !== null);
     const averageRating =
       ratedGames.length > 0
         ? Math.round(
-            ratedGames.reduce((sum, game) => sum + (game.rating || 0), 0) /
+            ratedGames.reduce((sum, game) => sum + (game.totalRating || 0), 0) /
               ratedGames.length
           )
         : 0;
@@ -353,6 +506,20 @@ export const useGameUtils = () => {
     calculateTimeSinceLastPlayed,
     sortGames,
     generateGamesSummary,
-    calculatePlatformStats
+    calculatePlatformStats,
+    // IGDB Game Data Funktionen
+    getGameName,
+    getGameDescription,
+    getGameDeveloper,
+    getGameDevelopers,
+    getGamePublisher,
+    getGamePublishers,
+    getGameReleaseDate,
+    getGameRating,
+    getGameCoverUrl,
+    getGameGenres,
+    formatGameRating,
+    formatGameGenres,
+    gameMatchesSearch
   };
 };
