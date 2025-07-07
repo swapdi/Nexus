@@ -155,12 +155,6 @@ exports.Prisma.GameScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   lastSyncedAt: 'lastSyncedAt',
-  title: 'title',
-  description: 'description',
-  developer: 'developer',
-  publisher: 'publisher',
-  releaseDate: 'releaseDate',
-  rating: 'rating',
   steamAppId: 'steamAppId'
 };
 

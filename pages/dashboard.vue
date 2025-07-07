@@ -24,7 +24,7 @@
   const recentGames = ref([
     {
       id: 1,
-      title: 'Cyberpunk 2077',
+      name: 'Cyberpunk 2077',
       coverUrl: 'https://via.placeholder.com/200x280',
       platform: 'Steam',
       lastPlayed: '2 Stunden',
@@ -32,7 +32,7 @@
     },
     {
       id: 2,
-      title: 'Elden Ring',
+      name: 'Elden Ring',
       coverUrl: 'https://via.placeholder.com/200x280',
       platform: 'Steam',
       lastPlayed: '1 Tag',
@@ -40,7 +40,7 @@
     },
     {
       id: 3,
-      title: 'Red Dead Redemption 2',
+      name: 'Red Dead Redemption 2',
       coverUrl: 'https://via.placeholder.com/200x280',
       platform: 'Epic Games',
       lastPlayed: '3 Tage',
@@ -48,7 +48,7 @@
     },
     {
       id: 4,
-      title: 'The Witcher 3',
+      name: 'The Witcher 3',
       coverUrl: 'https://via.placeholder.com/200x280',
       platform: 'GOG',
       lastPlayed: '1 Woche',
@@ -91,7 +91,7 @@
   const featuredDeals = ref([
     {
       id: 1,
-      title: "Baldur's Gate 3",
+      name: "Baldur's Gate 3",
       originalPrice: 59.99,
       discountPrice: 47.99,
       discount: 20,
@@ -101,7 +101,7 @@
     },
     {
       id: 2,
-      title: 'Hades',
+      name: 'Hades',
       originalPrice: 24.99,
       discountPrice: 12.49,
       discount: 50,
@@ -111,7 +111,7 @@
     },
     {
       id: 3,
-      title: 'Disco Elysium',
+      name: 'Disco Elysium',
       originalPrice: 39.99,
       discountPrice: 19.99,
       discount: 50,
@@ -409,7 +409,7 @@
               <div class="aspect-[3/4] relative overflow-hidden">
                 <img
                   :src="game.coverUrl"
-                  :alt="game.title"
+                  :alt="game.name"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div
                   class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -430,7 +430,7 @@
               <!-- Game Info -->
               <div class="p-3">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
-                  {{ game.title }}
+                  {{ game.name }}
                 </h3>
                 <div class="flex items-center justify-between text-xs">
                   <span class="text-gray-400">{{ game.platform }}</span>
@@ -466,13 +466,13 @@
                 class="w-12 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
                 <img
                   :src="deal.coverUrl"
-                  :alt="deal.title"
+                  :alt="deal.name"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               </div>
 
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
-                  {{ deal.title }}
+                  {{ deal.name }}
                 </h3>
                 <div class="flex items-center space-x-2 mb-1">
                   <span class="text-lg font-bold text-green-400"

@@ -25,7 +25,7 @@ export interface FullUser extends User {
     addedAt: Date;
     game: {
       id: number;
-      title: string;
+      name: string;
       coverUrl: string | null;
     };
   }>;
@@ -35,7 +35,7 @@ export interface FullUser extends User {
     addedAt: Date;
     game: {
       id: number;
-      title: string;
+      name: string;
       coverUrl: string | null;
     };
   }>;
@@ -86,7 +86,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -97,7 +97,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -134,7 +134,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -145,7 +145,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -191,7 +191,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -202,7 +202,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -243,7 +243,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }
@@ -254,7 +254,7 @@ export namespace UserService {
             game: {
               select: {
                 id: true,
-                title: true,
+                name: true,
                 coverUrl: true
               }
             }

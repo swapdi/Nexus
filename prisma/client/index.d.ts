@@ -3000,7 +3000,6 @@ export namespace Prisma {
     totalRatingCount: number | null
     aggregatedRating: number | null
     aggregatedRatingCount: number | null
-    rating: number | null
   }
 
   export type GameSumAggregateOutputType = {
@@ -3010,7 +3009,6 @@ export namespace Prisma {
     totalRatingCount: number | null
     aggregatedRating: number | null
     aggregatedRatingCount: number | null
-    rating: number | null
   }
 
   export type GameMinAggregateOutputType = {
@@ -3029,12 +3027,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     lastSyncedAt: Date | null
-    title: string | null
-    description: string | null
-    developer: string | null
-    publisher: string | null
-    releaseDate: Date | null
-    rating: number | null
     steamAppId: string | null
   }
 
@@ -3054,12 +3046,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     lastSyncedAt: Date | null
-    title: string | null
-    description: string | null
-    developer: string | null
-    publisher: string | null
-    releaseDate: Date | null
-    rating: number | null
     steamAppId: string | null
   }
 
@@ -3089,12 +3075,6 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     lastSyncedAt: number
-    title: number
-    description: number
-    developer: number
-    publisher: number
-    releaseDate: number
-    rating: number
     steamAppId: number
     _all: number
   }
@@ -3107,7 +3087,6 @@ export namespace Prisma {
     totalRatingCount?: true
     aggregatedRating?: true
     aggregatedRatingCount?: true
-    rating?: true
   }
 
   export type GameSumAggregateInputType = {
@@ -3117,7 +3096,6 @@ export namespace Prisma {
     totalRatingCount?: true
     aggregatedRating?: true
     aggregatedRatingCount?: true
-    rating?: true
   }
 
   export type GameMinAggregateInputType = {
@@ -3136,12 +3114,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastSyncedAt?: true
-    title?: true
-    description?: true
-    developer?: true
-    publisher?: true
-    releaseDate?: true
-    rating?: true
     steamAppId?: true
   }
 
@@ -3161,12 +3133,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastSyncedAt?: true
-    title?: true
-    description?: true
-    developer?: true
-    publisher?: true
-    releaseDate?: true
-    rating?: true
     steamAppId?: true
   }
 
@@ -3196,12 +3162,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastSyncedAt?: true
-    title?: true
-    description?: true
-    developer?: true
-    publisher?: true
-    releaseDate?: true
-    rating?: true
     steamAppId?: true
     _all?: true
   }
@@ -3318,12 +3278,6 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     lastSyncedAt: Date | null
-    title: string | null
-    description: string | null
-    developer: string | null
-    publisher: string | null
-    releaseDate: Date | null
-    rating: number | null
     steamAppId: string | null
     _count: GameCountAggregateOutputType | null
     _avg: GameAvgAggregateOutputType | null
@@ -3372,12 +3326,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    title?: boolean
-    description?: boolean
-    developer?: boolean
-    publisher?: boolean
-    releaseDate?: boolean
-    rating?: boolean
     steamAppId?: boolean
     deals?: boolean | Game$dealsArgs<ExtArgs>
     platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
@@ -3412,12 +3360,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    title?: boolean
-    description?: boolean
-    developer?: boolean
-    publisher?: boolean
-    releaseDate?: boolean
-    rating?: boolean
     steamAppId?: boolean
   }, ExtArgs["result"]["game"]>
 
@@ -3447,12 +3389,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    title?: boolean
-    description?: boolean
-    developer?: boolean
-    publisher?: boolean
-    releaseDate?: boolean
-    rating?: boolean
     steamAppId?: boolean
   }, ExtArgs["result"]["game"]>
 
@@ -3482,16 +3418,10 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    title?: boolean
-    description?: boolean
-    developer?: boolean
-    publisher?: boolean
-    releaseDate?: boolean
-    rating?: boolean
     steamAppId?: boolean
   }
 
-  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt" | "title" | "description" | "developer" | "publisher" | "releaseDate" | "rating" | "steamAppId", ExtArgs["result"]["game"]>
+  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt" | "steamAppId", ExtArgs["result"]["game"]>
   export type GameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | Game$dealsArgs<ExtArgs>
     platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
@@ -3536,12 +3466,6 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       lastSyncedAt: Date | null
-      title: string | null
-      description: string | null
-      developer: string | null
-      publisher: string | null
-      releaseDate: Date | null
-      rating: number | null
       steamAppId: string | null
     }, ExtArgs["result"]["game"]>
     composites: {}
@@ -3995,12 +3919,6 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Game", 'DateTime'>
     readonly updatedAt: FieldRef<"Game", 'DateTime'>
     readonly lastSyncedAt: FieldRef<"Game", 'DateTime'>
-    readonly title: FieldRef<"Game", 'String'>
-    readonly description: FieldRef<"Game", 'String'>
-    readonly developer: FieldRef<"Game", 'String'>
-    readonly publisher: FieldRef<"Game", 'String'>
-    readonly releaseDate: FieldRef<"Game", 'DateTime'>
-    readonly rating: FieldRef<"Game", 'Float'>
     readonly steamAppId: FieldRef<"Game", 'String'>
   }
     
@@ -12585,12 +12503,6 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     lastSyncedAt: 'lastSyncedAt',
-    title: 'title',
-    description: 'description',
-    developer: 'developer',
-    publisher: 'publisher',
-    releaseDate: 'releaseDate',
-    rating: 'rating',
     steamAppId: 'steamAppId'
   };
 
@@ -12913,12 +12825,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableFilter<"Game"> | Date | string | null
-    title?: StringNullableFilter<"Game"> | string | null
-    description?: StringNullableFilter<"Game"> | string | null
-    developer?: StringNullableFilter<"Game"> | string | null
-    publisher?: StringNullableFilter<"Game"> | string | null
-    releaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
-    rating?: FloatNullableFilter<"Game"> | number | null
     steamAppId?: StringNullableFilter<"Game"> | string | null
     deals?: DealListRelationFilter
     platformGames?: PlatformGameListRelationFilter
@@ -12952,12 +12858,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrderInput | SortOrder
-    title?: SortOrderInput | SortOrder
-    description?: SortOrderInput | SortOrder
-    developer?: SortOrderInput | SortOrder
-    publisher?: SortOrderInput | SortOrder
-    releaseDate?: SortOrderInput | SortOrder
-    rating?: SortOrderInput | SortOrder
     steamAppId?: SortOrderInput | SortOrder
     deals?: DealOrderByRelationAggregateInput
     platformGames?: PlatformGameOrderByRelationAggregateInput
@@ -12994,12 +12894,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableFilter<"Game"> | Date | string | null
-    title?: StringNullableFilter<"Game"> | string | null
-    description?: StringNullableFilter<"Game"> | string | null
-    developer?: StringNullableFilter<"Game"> | string | null
-    publisher?: StringNullableFilter<"Game"> | string | null
-    releaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
-    rating?: FloatNullableFilter<"Game"> | number | null
     steamAppId?: StringNullableFilter<"Game"> | string | null
     deals?: DealListRelationFilter
     platformGames?: PlatformGameListRelationFilter
@@ -13033,12 +12927,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrderInput | SortOrder
-    title?: SortOrderInput | SortOrder
-    description?: SortOrderInput | SortOrder
-    developer?: SortOrderInput | SortOrder
-    publisher?: SortOrderInput | SortOrder
-    releaseDate?: SortOrderInput | SortOrder
-    rating?: SortOrderInput | SortOrder
     steamAppId?: SortOrderInput | SortOrder
     _count?: GameCountOrderByAggregateInput
     _avg?: GameAvgOrderByAggregateInput
@@ -13076,12 +12964,6 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
-    title?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    description?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    developer?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    publisher?: StringNullableWithAggregatesFilter<"Game"> | string | null
-    releaseDate?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
-    rating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
     steamAppId?: StringNullableWithAggregatesFilter<"Game"> | string | null
   }
 
@@ -13684,12 +13566,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
@@ -13723,12 +13599,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
@@ -13761,12 +13631,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
@@ -13800,12 +13664,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
@@ -13839,12 +13697,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
   }
 
@@ -13873,12 +13725,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13908,12 +13754,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -14692,12 +14532,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
-    developer?: SortOrder
-    publisher?: SortOrder
-    releaseDate?: SortOrder
-    rating?: SortOrder
     steamAppId?: SortOrder
   }
 
@@ -14708,7 +14542,6 @@ export namespace Prisma {
     totalRatingCount?: SortOrder
     aggregatedRating?: SortOrder
     aggregatedRatingCount?: SortOrder
-    rating?: SortOrder
   }
 
   export type GameMaxOrderByAggregateInput = {
@@ -14727,12 +14560,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
-    developer?: SortOrder
-    publisher?: SortOrder
-    releaseDate?: SortOrder
-    rating?: SortOrder
     steamAppId?: SortOrder
   }
 
@@ -14752,12 +14579,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
-    developer?: SortOrder
-    publisher?: SortOrder
-    releaseDate?: SortOrder
-    rating?: SortOrder
     steamAppId?: SortOrder
   }
 
@@ -14768,7 +14589,6 @@ export namespace Prisma {
     totalRatingCount?: SortOrder
     aggregatedRating?: SortOrder
     aggregatedRatingCount?: SortOrder
-    rating?: SortOrder
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -16619,12 +16439,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
@@ -16657,12 +16471,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
@@ -16746,12 +16554,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
@@ -16784,12 +16586,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
@@ -16847,12 +16643,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
@@ -16885,12 +16675,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
@@ -16964,12 +16748,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
@@ -17002,12 +16780,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
@@ -17071,12 +16843,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
@@ -17109,12 +16875,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
@@ -17182,12 +16942,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
@@ -17220,12 +16974,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
@@ -17436,12 +17184,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameCreateNestedManyWithoutGameInput
@@ -17474,12 +17216,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    title?: string | null
-    description?: string | null
-    developer?: string | null
-    publisher?: string | null
-    releaseDate?: Date | string | null
-    rating?: number | null
     steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
@@ -17553,12 +17289,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
@@ -17591,12 +17321,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    developer?: NullableStringFieldUpdateOperationsInput | string | null
-    publisher?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
