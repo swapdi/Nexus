@@ -220,6 +220,61 @@ export namespace GamesService {
     });
   }
 
+  /**
+   * Erstelle oder aktualisiere ein Spiel mit IGDB-Daten
+   * Für Batch-Import von IGDB-Spielen optimiert
+   */
+  export async function createOrUpdateGameFromIGDB(
+    igdbData: IGDBGameData
+  ): Promise<GameImportResult> {
+    try {
+      // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
+      const existingGame = await getGameByIGDBId(igdbData.id);
+
+      if (existingGame) {
+        // Aktualisiere bestehendes Spiel
+        const updatedGame = await prisma.game.update({
+          where: { id: existingGame.id },
+          data: {
+            name: igdbData.name,
+            summary: igdbData.summary,
+            firstReleaseDate: igdbData.firstReleaseDate,
+            totalRating: igdbData.totalRating,
+            coverUrl: igdbData.coverUrl,
+            screenshots: igdbData.screenshotUrls || [],
+            genres: igdbData.genres || [],
+            developers: igdbData.developers || [],
+            publishers: igdbData.publishers || [],
+            lastSyncedAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        return {
+          success: true,
+          game: updatedGame,
+          isNew: false,
+          message: 'Spiel aktualisiert'
+        };
+      }
+
+      // Erstelle neues Spiel
+      const newGame = await createGameFromIGDBData(igdbData);
+
+      return {
+        success: true,
+        game: newGame,
+        isNew: true,
+        message: 'Spiel erstellt'
+      };
+    } catch (error) {
+      console.error('Fehler beim Erstellen/Aktualisieren des Spiels:', error);
+      const message =
+        error instanceof Error ? error.message : 'Unbekannter Fehler';
+      throw new Error(`Spiel konnte nicht importiert werden: ${message}`);
+    }
+  }
+
   // ============================================================================
   // USER GAMES OPERATIONEN
   // ============================================================================

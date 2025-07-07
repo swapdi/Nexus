@@ -26,7 +26,7 @@ model Game {
   id                    Int            @id @default(autoincrement())
   igdbId                Int?           @unique
   name                  String
-  slug                  String?        @unique
+  slug                  String?
   summary               String?
   storyline             String?
   firstReleaseDate      DateTime?

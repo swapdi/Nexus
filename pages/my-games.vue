@@ -9,19 +9,6 @@
   const { getGameName, gameMatchesSearch } = useGameUtils();
   // View Mode Management
   const { currentViewMode, getCurrentConfig } = useViewMode();
-  // Debug: Watch für currentViewMode
-  watch(
-    currentViewMode,
-    (newMode, oldMode) => {
-      console.log('my-games: ViewMode changed from', oldMode, 'to', newMode);
-      console.log('my-games: Current grid config:', getCurrentConfig());
-      console.log(
-        'my-games: Grid class will be:',
-        getCurrentConfig().gridClass
-      );
-    },
-    { immediate: true }
-  );
 
   onMounted(async () => {
     await userStore.init();
