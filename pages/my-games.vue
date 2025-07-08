@@ -37,7 +37,6 @@
   } | null>(null);
 
   // Import Progress Dialog State
-  const showImportProgress = ref(false);
   const importProgress = ref({
     current: 0,
     total: 0,
@@ -56,59 +55,25 @@
     if (!steamInput.value.trim()) return;
 
     importResult.value = null;
-
-    // Progress Dialog öffnen
-    showImportProgress.value = true;
-    importProgress.value = {
-      current: 0,
-      total: 0,
-      message: 'Import wird vorbereitet...',
-      isComplete: false
-    };
+    loadingStore.startOperation(
+      'steam-import',
+      'Steam-Bibliothek wird importiert...',
+      'process'
+    );
 
     try {
       const { $client } = useNuxtApp();
       const notifyStore = useNotifyStore();
 
-      // Server Progress Composable für Live-Updates
-      const { connectToProgress, disconnect } = useServerProgress();
-
-      // Generiere eindeutige Operation-ID für Progress-Tracking
-      const operationId = `steam-import-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
-
-      // Progress-Updates abonnieren
-      connectToProgress(operationId, update => {
-        importProgress.value = {
-          current: update.current,
-          total: update.total,
-          message: update.message,
-          isComplete: false
-        };
+      // Steam Import
+      const result = await $client.games.importSteamLibrary.mutate({
+        steamInput: steamInput.value.trim()
       });
 
-      // Schneller Import ohne IGDB-Anreicherung
-      const result = await $client.games.importSteamLibraryFast.mutate({
-        steamInput: steamInput.value.trim(),
-        operationId: operationId
-      });
-
-      // Progress als abgeschlossen markieren
-      importProgress.value.isComplete = true;
-      importProgress.value.message = 'Import erfolgreich abgeschlossen!';
-
-      // SSE-Verbindung schließen
-      disconnect();
-
+      loadingStore.finishOperation('steam-import');
       importResult.value = result;
 
       if (result.success) {
-        // Kurz warten, damit der Nutzer das "Abgeschlossen" sehen kann
-        setTimeout(() => {
-          showImportProgress.value = false;
-        }, 1500);
-
         // Erfolgs-Benachrichtigung
         let notificationMessage = 'Steam-Import abgeschlossen! ';
         if (result.imported && result.imported > 0) {
@@ -128,71 +93,18 @@
         steamInput.value = '';
 
         // Spieleliste aktualisieren
-        onImportCompleted(); // IGDB-Anreicherung im Hintergrund starten (separater Hintergrundprozess)
-        setTimeout(async () => {
-          try {
-            const loadingStore = useLoadingStore();
-            const enrichmentOperationId = `igdb-enrichment-${Date.now()}`;
-
-            // Loading Operation für IGDB-Anreicherung registrieren
-            loadingStore.startOperation(
-              enrichmentOperationId,
-              'IGDB-Spielinformationen werden angereichert...',
-              'process'
-            );
-
-            // Server Progress für IGDB-Anreicherung abonnieren
-            const {
-              connectToProgress: connectEnrichment,
-              disconnect: disconnectEnrichment
-            } = useServerProgress();
-
-            connectEnrichment(enrichmentOperationId, update => {
-              // Progress im Loading Store aktualisieren
-              const progressPercent =
-                update.total > 0 ? (update.current / update.total) * 100 : 0;
-              loadingStore.updateProgress(
-                enrichmentOperationId,
-                progressPercent,
-                update.current,
-                update.message
-              );
-            });
-
-            await $client.games.enrichGamesBackground.mutate({
-              platformSlug: 'steam',
-              operationId: enrichmentOperationId
-            });
-
-            // Anreicherung abgeschlossen - Loading Operation beenden
-            loadingStore.finishOperation(enrichmentOperationId);
-            disconnectEnrichment();
-          } catch (enrichError) {
-            console.error('IGDB-Anreicherung Fehler:', enrichError);
-            // Loading Operation auch bei Fehlern beenden
-            const loadingStore = useLoadingStore();
-            loadingStore.finishOperation(`igdb-enrichment-${Date.now()}`);
-          }
-        }, 500); // Kurz warten, damit Import-Dialog geschlossen ist
-
-        // Zusätzliche Benachrichtigung über laufende Anreicherung
-        setTimeout(() => {
-          notifyStore.notify(
-            'IGDB-Anreicherung läuft im Hintergrund - Spielinformationen werden automatisch ergänzt.',
-            1
-          );
-        }, 3000);
+        onImportCompleted();
       } else {
-        // Bei Fehlern Dialog schließen
-        setTimeout(() => {
-          showImportProgress.value = false;
-        }, 2000);
+        // Fehler-Benachrichtigung
+        if (result.errors && result.errors.length > 0) {
+          notifyStore.notify(result.errors.join(' '), 2);
+        } else {
+          notifyStore.notify('Unbekannter Fehler beim Steam-Import', 2);
+        }
       }
     } catch (error: any) {
+      loadingStore.finishOperation('steam-import');
       console.error('Steam Import Error:', error);
-
-      // Progress Dialog schließen
-      showImportProgress.value = false;
 
       importResult.value = {
         success: false,
@@ -216,18 +128,8 @@
 
   // Computed properties für Filter und Suche
   const platforms = computed(() => {
-    const uniquePlatforms = new Set(
-      gamesStore.games.flatMap(game => game.platforms)
-    );
-    return [
-      { value: 'all', label: 'Alle Plattformen' },
-      ...Array.from(uniquePlatforms)
-        .sort()
-        .map(platform => ({
-          value: platform,
-          label: platform
-        }))
-    ];
+    // Da wir keine Plattformdaten mehr haben, zeigen wir nur "Alle" an
+    return [{ value: 'all', label: 'Alle Plattformen' }];
   });
 
   const filteredGames = computed(() => {
@@ -236,25 +138,30 @@
     // Suchfilter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase();
-      games = games.filter(game => gameMatchesSearch(game, query));
-    }
-
-    // Plattformfilter
-    if (selectedPlatform.value !== 'all') {
-      games = games.filter(game =>
-        game.platforms.includes(selectedPlatform.value)
+      games = games.filter(
+        userGame =>
+          userGame.game.name.toLowerCase().includes(query) ||
+          (userGame.game.summary &&
+            userGame.game.summary.toLowerCase().includes(query))
       );
     }
+
+    // Plattformfilter - momentan nicht implementiert da keine Plattformdaten
+    // if (selectedPlatform.value !== 'all') {
+    //   games = games.filter(game =>
+    //     game.platforms.includes(selectedPlatform.value)
+    //   );
+    // }
 
     // Sortierung
     games.sort((a, b) => {
       switch (sortBy.value) {
         case 'title':
-          return getGameName(a).localeCompare(getGameName(b));
+          return a.game.name.localeCompare(b.game.name);
         case 'playTime':
           return (b.playtimeMinutes || 0) - (a.playtimeMinutes || 0);
         case 'rating':
-          return (b.totalRating || 0) - (a.totalRating || 0);
+          return (b.game.totalRating || 0) - (a.game.totalRating || 0);
         case 'addedAt':
           return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
         case 'lastPlayed':
@@ -336,7 +243,7 @@
         name: platform,
         count: games.length,
         totalPlaytime: games.reduce(
-          (sum, game) => sum + game.playtimeMinutes,
+          (sum, game) => sum + (game.playtimeMinutes || 0),
           0
         )
       }))
@@ -387,7 +294,9 @@
 
   // Rating-Statistiken (nur bewertete Spiele)
   const ratedGames = computed(() => {
-    return gamesStore.games.filter(g => g.rating && g.rating > 0);
+    return gamesStore.games.filter(
+      g => g.game.totalRating && g.game.totalRating > 0
+    );
   });
   const favoriteGames = computed(() => {
     return gamesStore.games.filter(g => g.isFavorite);
@@ -396,7 +305,10 @@
   const averageRating = computed(() => {
     const rated = ratedGames.value;
     if (rated.length === 0) return 'N/A';
-    const sum = rated.reduce((acc, game) => acc + (game.rating || 0), 0);
+    const sum = rated.reduce(
+      (acc, game) => acc + (game.game.totalRating || 0),
+      0
+    );
     return (sum / rated.length).toFixed(1);
   });
 </script>
@@ -1057,105 +969,6 @@
       confirm-variant="danger"
       @confirm="handleConfirmRemoval"
       @cancel="showConfirmModal = false" />
-
-    <!-- Steam Import Progress Dialog -->
-    <div
-      v-if="showImportProgress"
-      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div
-        class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 shadow-2xl max-w-md w-full">
-        <!-- Header -->
-        <div class="p-6 border-b border-gray-700/50">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Icon name="simple-icons:steam" class="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white">Steam Import</h3>
-              <p class="text-sm text-gray-400">
-                Ihre Steam-Bibliothek wird importiert...
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Progress Content -->
-        <div class="p-6 space-y-4">
-          <!-- Progress Bar -->
-          <div class="space-y-2">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-300">Fortschritt</span>
-              <span class="text-gray-400">
-                {{
-                  importProgress.total > 0
-                    ? `${importProgress.current} / ${importProgress.total}`
-                    : 'Wird vorbereitet...'
-                }}
-              </span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-              <div
-                class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300 ease-out"
-                :style="{
-                  width:
-                    importProgress.total > 0
-                      ? `${
-                          (importProgress.current / importProgress.total) * 100
-                        }%`
-                      : '10%'
-                }"
-                :class="{
-                  'animate-pulse': importProgress.total === 0
-                }"></div>
-            </div>
-          </div>
-
-          <!-- Status Message -->
-          <div class="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg">
-            <Icon
-              :name="
-                importProgress.isComplete
-                  ? 'heroicons:check-circle-20-solid'
-                  : 'heroicons:arrow-path-20-solid'
-              "
-              :class="[
-                'w-5 h-5 flex-shrink-0',
-                importProgress.isComplete
-                  ? 'text-green-400'
-                  : 'text-blue-400 animate-spin'
-              ]" />
-            <span class="text-sm text-gray-300 leading-relaxed">
-              {{ importProgress.message }}
-            </span>
-          </div>
-
-          <!-- Success/Completion Info -->
-          <div
-            v-if="importProgress.isComplete"
-            class="flex items-center gap-2 p-3 bg-green-900/20 border border-green-500/30 rounded-lg">
-            <Icon
-              name="heroicons:information-circle-20-solid"
-              class="w-4 h-4 text-green-400 flex-shrink-0" />
-            <span class="text-sm text-green-300">
-              IGDB-Anreicherung startet automatisch im Hintergrund. Fortschritt
-              wird im Header angezeigt.
-            </span>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="p-6 pt-0">
-          <div class="text-xs text-gray-500 text-center">
-            {{
-              importProgress.isComplete
-                ? 'Dialog schließt automatisch...'
-                : 'Bitte warten Sie, bis der Import abgeschlossen ist.'
-            }}
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 

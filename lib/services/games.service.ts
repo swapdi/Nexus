@@ -1,5 +1,4 @@
 import { PrismaClient, type Game, type UserGame } from '~/prisma/client';
-import { IGDBService, type IGDBGameData } from './igdb.service';
 
 const prisma = new PrismaClient();
 
@@ -114,21 +113,11 @@ export namespace GamesService {
   }
 
   /**
-   * Hole ein Spiel anhand der IGDB ID
-   */
-  export async function getGameByIGDBId(igdbId: number): Promise<Game | null> {
-    return prisma.game.findUnique({
-      where: { igdbId }
-    });
-  }
-
-  /**
    * Finde oder erstelle ein Spiel basierend auf dem Namen
-   * Verwendet IGDB zur Datenbeschaffung wenn das Spiel nicht existiert
+   * Versucht optional IGDB-Daten zu finden, aber scheitert nicht daran
    */
   export async function findOrCreateGame(
-    gameName: string,
-    platformName?: string
+    gameName: string
   ): Promise<GameImportResult> {
     try {
       // Prüfe zuerst lokale Datenbank
@@ -142,41 +131,65 @@ export namespace GamesService {
         };
       }
 
-      // Suche in IGDB und erstelle Spiel direkt
-      const igdbGameData = await IGDBService.searchAndConvertGame(
-        gameName,
-        platformName
-      );
-      if (!igdbGameData) {
-        // Erstelle minimales Spiel ohne IGDB-Daten
-        const newGame = await createMinimalGame(gameName);
-        return {
-          success: true,
-          game: newGame,
-          isNew: true,
-          message: 'Spiel ohne IGDB-Daten erstellt'
-        };
+      // Versuche IGDB-Daten zu finden (optional)
+      try {
+        const { IGDBService } = await import('./igdb.service');
+        const igdbGameData = await IGDBService.searchAndConvertGame(gameName);
+
+        if (igdbGameData) {
+          // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
+          const existingByIGDB = await prisma.game.findUnique({
+            where: { igdbId: igdbGameData.id }
+          });
+
+          if (existingByIGDB) {
+            return {
+              success: true,
+              game: existingByIGDB,
+              isNew: false,
+              message: 'Spiel mit IGDB-ID bereits vorhanden'
+            };
+          }
+
+          // Erstelle Spiel mit IGDB-Daten
+          const newGame = await prisma.game.create({
+            data: {
+              igdbId: igdbGameData.id,
+              name: igdbGameData.name,
+              slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+              summary: igdbGameData.summary,
+              firstReleaseDate: igdbGameData.firstReleaseDate,
+              coverUrl: igdbGameData.coverUrl,
+              screenshots: igdbGameData.screenshotUrls || [],
+              totalRating: igdbGameData.totalRating,
+              genres: igdbGameData.genres || [],
+              developers: igdbGameData.developers || [],
+              publishers: igdbGameData.publishers || [],
+              lastSyncedAt: new Date(),
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          });
+
+          return {
+            success: true,
+            game: newGame,
+            isNew: true,
+            message: 'Spiel mit IGDB-Daten erstellt'
+          };
+        }
+      } catch (igdbError) {
+        console.log(`IGDB-Suche für "${gameName}" fehlgeschlagen:`, igdbError);
+        // Fahre mit minimalem Spiel fort
       }
 
-      // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
-      const existingByIGDB = await getGameByIGDBId(igdbGameData.id);
-      if (existingByIGDB) {
-        return {
-          success: true,
-          game: existingByIGDB,
-          isNew: false,
-          message: 'Spiel mit IGDB-ID bereits vorhanden'
-        };
-      }
-
-      // Erstelle neues Spiel mit IGDB-Daten
-      const newGame = await createGameFromIGDBData(igdbGameData);
-
+      // Erstelle minimales Spiel ohne IGDB-Daten (Fallback)
+      const newGame = await createMinimalGame(gameName);
       return {
         success: true,
         game: newGame,
         isNew: true,
-        message: 'Spiel mit IGDB-Daten erstellt'
+        message: 'Spiel erstellt'
       };
     } catch (error) {
       console.error('Fehler beim Finden/Erstellen des Spiels:', error);
@@ -187,65 +200,22 @@ export namespace GamesService {
   }
 
   /**
-   * Aktualisiere ein Spiel mit neuen IGDB-Daten
+   * Finde oder erstelle ein Spiel mit Steam Cover-URL Präferenz
+   * Grund: Steam Cover-URLs sollen bevorzugt und überschrieben werden
    */
-  export async function updateGameWithIGDB(
-    gameId: number,
+  export async function findOrCreateGameWithSteamCover(
     gameName: string,
-    platformName?: string
-  ): Promise<Game> {
-    const igdbGameData = await IGDBService.searchAndConvertGame(
-      gameName,
-      platformName
-    );
-    if (!igdbGameData) {
-      throw new Error('IGDB-Spiel nicht gefunden');
-    }
-
-    return prisma.game.update({
-      where: { id: gameId },
-      data: {
-        igdbId: igdbGameData.id,
-        name: igdbGameData.name,
-        summary: igdbGameData.summary,
-        firstReleaseDate: igdbGameData.firstReleaseDate,
-        totalRating: igdbGameData.totalRating,
-        coverUrl: igdbGameData.coverUrl,
-        screenshots: igdbGameData.screenshotUrls || [],
-        genres: igdbGameData.genres || [],
-        developers: igdbGameData.developers || [],
-        publishers: igdbGameData.publishers || [],
-        lastSyncedAt: new Date()
-      }
-    });
-  }
-
-  /**
-   * Erstelle oder aktualisiere ein Spiel mit IGDB-Daten
-   * Für Batch-Import von IGDB-Spielen optimiert
-   */
-  export async function createOrUpdateGameFromIGDB(
-    igdbData: IGDBGameData
+    steamCoverUrl: string
   ): Promise<GameImportResult> {
     try {
-      // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
-      const existingGame = await getGameByIGDBId(igdbData.id);
-
+      // Prüfe zuerst lokale Datenbank
+      const existingGame = await findGameByName(gameName);
       if (existingGame) {
-        // Aktualisiere bestehendes Spiel
+        // Aktualisiere vorhandenes Spiel mit Steam Cover
         const updatedGame = await prisma.game.update({
           where: { id: existingGame.id },
           data: {
-            name: igdbData.name,
-            summary: igdbData.summary,
-            firstReleaseDate: igdbData.firstReleaseDate,
-            totalRating: igdbData.totalRating,
-            coverUrl: igdbData.coverUrl,
-            screenshots: igdbData.screenshotUrls || [],
-            genres: igdbData.genres || [],
-            developers: igdbData.developers || [],
-            publishers: igdbData.publishers || [],
-            lastSyncedAt: new Date(),
+            coverUrl: steamCoverUrl, // Steam Cover überschreibt vorhandenes Cover
             updatedAt: new Date()
           }
         });
@@ -254,21 +224,84 @@ export namespace GamesService {
           success: true,
           game: updatedGame,
           isNew: false,
-          message: 'Spiel aktualisiert'
+          message: 'Spiel mit Steam Cover aktualisiert'
         };
       }
 
-      // Erstelle neues Spiel
-      const newGame = await createGameFromIGDBData(igdbData);
+      // Versuche IGDB-Daten zu finden (optional)
+      try {
+        const { IGDBService } = await import('./igdb.service');
+        const igdbGameData = await IGDBService.searchAndConvertGame(gameName);
 
+        if (igdbGameData) {
+          // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
+          const existingByIGDB = await prisma.game.findUnique({
+            where: { igdbId: igdbGameData.id }
+          });
+
+          if (existingByIGDB) {
+            // Aktualisiere vorhandenes Spiel mit Steam Cover
+            const updatedGame = await prisma.game.update({
+              where: { id: existingByIGDB.id },
+              data: {
+                coverUrl: steamCoverUrl, // Steam Cover überschreibt IGDB Cover
+                updatedAt: new Date()
+              }
+            });
+
+            return {
+              success: true,
+              game: updatedGame,
+              isNew: false,
+              message: 'IGDB-Spiel mit Steam Cover aktualisiert'
+            };
+          }
+
+          // Erstelle Spiel mit IGDB-Daten aber Steam Cover
+          const newGame = await prisma.game.create({
+            data: {
+              igdbId: igdbGameData.id,
+              name: igdbGameData.name,
+              slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+              summary: igdbGameData.summary,
+              firstReleaseDate: igdbGameData.firstReleaseDate,
+              coverUrl: steamCoverUrl, // Steam Cover bevorzugt über IGDB Cover
+              screenshots: igdbGameData.screenshotUrls || [],
+              totalRating: igdbGameData.totalRating,
+              genres: igdbGameData.genres || [],
+              developers: igdbGameData.developers || [],
+              publishers: igdbGameData.publishers || [],
+              lastSyncedAt: new Date(),
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          });
+
+          return {
+            success: true,
+            game: newGame,
+            isNew: true,
+            message: 'Spiel mit IGDB-Daten und Steam Cover erstellt'
+          };
+        }
+      } catch (igdbError) {
+        console.log(`IGDB-Suche für "${gameName}" fehlgeschlagen:`, igdbError);
+        // Fahre mit minimalem Spiel fort
+      }
+
+      // Erstelle minimales Spiel mit Steam Cover (Fallback)
+      const newGame = await createMinimalGameWithSteamCover(
+        gameName,
+        steamCoverUrl
+      );
       return {
         success: true,
         game: newGame,
         isNew: true,
-        message: 'Spiel erstellt'
+        message: 'Spiel mit Steam Cover erstellt'
       };
     } catch (error) {
-      console.error('Fehler beim Erstellen/Aktualisieren des Spiels:', error);
+      console.error('Fehler beim Finden/Erstellen des Spiels:', error);
       const message =
         error instanceof Error ? error.message : 'Unbekannter Fehler';
       throw new Error(`Spiel konnte nicht importiert werden: ${message}`);
@@ -298,11 +331,10 @@ export namespace GamesService {
   export async function addGameToUser(
     userId: number,
     gameName: string,
-    platformName?: string,
     playtimeMinutes?: number
   ): Promise<UserGameWithDetails> {
     // Finde oder erstelle das Spiel
-    const importResult = await findOrCreateGame(gameName, platformName);
+    const importResult = await findOrCreateGame(gameName);
 
     // Prüfe ob User das Spiel bereits hat
     const existingUserGame = await prisma.userGame.findUnique({
@@ -454,13 +486,13 @@ export namespace GamesService {
   // ============================================================================
 
   /**
-   * Steam-Bibliothek importieren - erstellt nur UserGames
-   * Spiele werden über IGDB gefunden/erstellt falls sie nicht existieren
+   * Steam-Bibliothek importieren - Einfache Variante mit optionaler IGDB-Anreicherung
+   * Erstellt nur neue Spiele basierend auf dem Namen, fügt IGDB-Daten hinzu wenn verfügbar
+   * Steam Cover-URLs werden bevorzugt und überschreiben vorhandene Cover
    */
   export async function importSteamLibrary(
     userId: number,
-    steamInput: string,
-    operationId?: string
+    steamInput: string
   ): Promise<{
     success: boolean;
     imported: number;
@@ -468,18 +500,8 @@ export namespace GamesService {
     skipped: number;
     errors: string[];
   }> {
-    // TODO: Steam-API-Integration um aus steamInput Steam-Spiele zu holen
-    console.log(
-      `Steam import for user ${userId} with input: ${steamInput}, operation: ${operationId}`
-    );
-
-    // Platzhalter für Steam-Spiele (normalerweise würde hier Steam Web API aufgerufen)
-    const steamGames: Array<{
-      appId: number;
-      name: string;
-      playtimeMinutes: number;
-      lastPlayed?: Date;
-    }> = [];
+    const { useSteamImport } = await import('../../composables/useSteamImport');
+    const steamImport = useSteamImport();
 
     const result = {
       success: true,
@@ -489,109 +511,113 @@ export namespace GamesService {
       errors: [] as string[]
     };
 
-    for (const steamGame of steamGames) {
-      try {
-        // Finde oder erstelle das Game
-        const gameResult = await findOrCreateGame(steamGame.name, 'Steam');
+    try {
+      // Validiere Steam Input
+      const validation = await steamImport.validateSteamInput(steamInput);
+      if (!validation.isValid || !validation.steamId) {
+        result.success = false;
+        result.errors.push('Ungültige Steam ID oder Profil-URL');
+        return result;
+      }
 
-        if (!gameResult.success) {
-          result.errors.push(
-            `Fehler bei Spiel "${steamGame.name}": ${gameResult.message}`
-          );
-          continue;
-        }
+      // Hole Steam Library
+      const steamGames = await steamImport.fetchSteamLibrary(
+        validation.steamId
+      );
+      if (!steamGames || steamGames.length === 0) {
+        result.success = false;
+        result.errors.push(
+          'Keine Spiele in der Steam-Bibliothek gefunden oder Profil ist privat'
+        );
+        return result;
+      }
 
-        // Prüfe ob UserGame bereits existiert
-        const existingUserGame = await prisma.userGame.findFirst({
-          where: {
-            userId,
-            gameId: gameResult.game.id
+      // Verarbeite Steam-Spiele
+      for (const steamGame of steamGames) {
+        try {
+          // Generiere Steam Cover-URL
+          const steamCoverUrl = steamImport.getSteamCoverUrl(steamGame.appid);
+
+          // Prüfe ob Spiel bereits existiert
+          const existingGame = await findGameByName(steamGame.name);
+          let gameId: number;
+
+          if (existingGame) {
+            // Spiel existiert bereits - aktualisiere Cover-URL mit Steam Cover
+            await prisma.game.update({
+              where: { id: existingGame.id },
+              data: {
+                coverUrl: steamCoverUrl, // Steam Cover überschreibt vorhandenes Cover
+                updatedAt: new Date()
+              }
+            });
+            gameId = existingGame.id;
+          } else {
+            // Erstelle neues Spiel mit Steam Cover und optionaler IGDB-Anreicherung
+            const gameResult = await findOrCreateGameWithSteamCover(
+              steamGame.name,
+              steamCoverUrl
+            );
+            gameId = gameResult.game.id;
           }
-        });
 
-        if (existingUserGame) {
-          // Aktualisiere bestehendes UserGame
-          await prisma.userGame.update({
-            where: { id: existingUserGame.id },
-            data: {
-              playtimeMinutes: steamGame.playtimeMinutes,
-              lastPlayed: steamGame.lastPlayed
+          // Konvertiere Steam-Daten
+          const playtimeMinutes = steamGame.playtime_forever || 0;
+          const lastPlayed = steamGame.rtime_last_played
+            ? new Date(steamGame.rtime_last_played * 1000)
+            : null;
+
+          // Prüfe ob UserGame bereits existiert
+          const existingUserGame = await prisma.userGame.findFirst({
+            where: {
+              userId,
+              gameId
             }
           });
-          result.updated++;
-          continue;
-        }
 
-        // Erstelle UserGame
-        await prisma.userGame.create({
-          data: {
-            userId,
-            gameId: gameResult.game.id,
-            playtimeMinutes: steamGame.playtimeMinutes,
-            lastPlayed: steamGame.lastPlayed,
-            isInstalled: false,
-            isFavorite: false
+          if (existingUserGame) {
+            // Aktualisiere bestehendes UserGame
+            await prisma.userGame.update({
+              where: { id: existingUserGame.id },
+              data: {
+                playtimeMinutes,
+                lastPlayed
+              }
+            });
+            result.updated++;
+          } else {
+            // Erstelle neues UserGame
+            await prisma.userGame.create({
+              data: {
+                userId,
+                gameId,
+                playtimeMinutes,
+                lastPlayed,
+                isInstalled: false,
+                isFavorite: false
+              }
+            });
+            result.imported++;
           }
-        });
-
-        result.imported++;
-      } catch (error) {
-        const errorMsg = `Fehler beim Importieren von "${steamGame.name}": ${error}`;
-        result.errors.push(errorMsg);
-        console.error(errorMsg);
+        } catch (error) {
+          const errorMsg = `Fehler beim Importieren von "${steamGame.name}": ${error}`;
+          result.errors.push(errorMsg);
+          console.error(errorMsg);
+        }
       }
+
+      console.log(
+        `Steam Import completed for user ${userId}: ${result.imported} imported, ${result.updated} updated, ${result.skipped} skipped`
+      );
+      return result;
+    } catch (error) {
+      console.error('Steam Import Error:', error);
+      result.success = false;
+      result.errors.push(
+        error instanceof Error ? error.message : 'Unbekannter Fehler'
+      );
+      return result;
     }
-
-    return result;
-  }
-
-  /**
-   * Steam-Bibliothek schnell importieren (ohne IGDB-Anreicherung)
-   */
-  export async function importSteamLibraryFast(
-    userId: number,
-    steamInput: string,
-    operationId?: string
-  ): Promise<{
-    success: boolean;
-    imported: number;
-    updated: number;
-    skipped: number;
-    errors: string[];
-  }> {
-    // TODO: Implementierung für schnellen Steam-Import ohne IGDB
-    console.log(
-      `Fast Steam import for user ${userId} with input: ${steamInput}`
-    );
-
-    return {
-      success: true,
-      imported: 0,
-      updated: 0,
-      skipped: 0,
-      errors: []
-    };
-  }
-
-  /**
-   * Hintergrund-IGDB-Anreicherung für importierte Spiele
-   */
-  export async function enrichGamesBackground(
-    platformSlug: string,
-    operationId?: string
-  ): Promise<{
-    success: boolean;
-    enriched: number;
-    errors: string[];
-  }> {
-    // TODO: Implementierung für Hintergrund-Anreicherung
-    console.log(`Background enrichment for platform: ${platformSlug}`);
-
-    return {
-      success: true,
-      enriched: 0,
-      errors: []
-    };
   }
 
   // ============================================================================
@@ -600,21 +626,43 @@ export namespace GamesService {
 
   /**
    * Finde Spiel anhand des Namens (fuzzy search)
+   * Grund: Spiele können leicht unterschiedliche Namen haben
    */
   async function findGameByName(gameName: string): Promise<Game | null> {
-    // Zuerst exakte Suche
+    const normalizedName = gameName.trim();
+
+    // Zuerst exakte Suche (case-insensitive)
     const exactMatch = await prisma.game.findFirst({
-      where: { name: { equals: gameName, mode: 'insensitive' } }
+      where: { name: { equals: normalizedName, mode: 'insensitive' } }
     });
 
     if (exactMatch) return exactMatch;
 
-    // Dann fuzzy search
+    // Dann fuzzy search mit contains
     const fuzzyMatch = await prisma.game.findFirst({
-      where: { name: { contains: gameName, mode: 'insensitive' } }
+      where: { name: { contains: normalizedName, mode: 'insensitive' } }
     });
 
-    return fuzzyMatch;
+    if (fuzzyMatch) return fuzzyMatch;
+
+    // Versuche auch umgekehrt - wenn DB-Name im Suchbegriff enthalten ist
+    const reverseMatch = await prisma.game.findFirst({
+      where: {
+        OR: [
+          { name: { contains: normalizedName, mode: 'insensitive' } },
+          {
+            slug: {
+              contains: normalizedName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-'),
+              mode: 'insensitive'
+            }
+          }
+        ]
+      }
+    });
+
+    return reverseMatch;
   }
 
   /**
@@ -632,23 +680,17 @@ export namespace GamesService {
   }
 
   /**
-   * Erstelle Spiel aus IGDB-Daten
+   * Erstelle minimales Spiel mit Steam Cover-URL
    */
-  async function createGameFromIGDBData(igdbData: IGDBGameData): Promise<Game> {
+  async function createMinimalGameWithSteamCover(
+    gameName: string,
+    steamCoverUrl: string
+  ): Promise<Game> {
     return prisma.game.create({
       data: {
-        igdbId: igdbData.id,
-        name: igdbData.name,
-        slug: igdbData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        summary: igdbData.summary,
-        firstReleaseDate: igdbData.firstReleaseDate,
-        coverUrl: igdbData.coverUrl,
-        screenshots: igdbData.screenshotUrls || [],
-        totalRating: igdbData.totalRating,
-        genres: igdbData.genres || [],
-        developers: igdbData.developers || [],
-        publishers: igdbData.publishers || [],
-        lastSyncedAt: new Date(),
+        name: gameName,
+        slug: gameName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        coverUrl: steamCoverUrl,
         createdAt: new Date(),
         updatedAt: new Date()
       }

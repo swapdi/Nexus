@@ -252,8 +252,7 @@ export namespace IGDBService {
    * Spiel nach Namen suchen und beste Übereinstimmung finden
    */
   export const findBestMatch = async (
-    gameName: string,
-    platformName?: string
+    gameName: string
   ): Promise<IGDBGame | null> => {
     try {
       // Suche nach Spielen
@@ -404,12 +403,11 @@ export namespace IGDBService {
    * Spiel bei IGDB suchen und als standardisierte Daten zurückgeben
    */
   export const searchAndConvertGame = async (
-    gameName: string,
-    platformName?: string
+    gameName: string
   ): Promise<IGDBGameData | null> => {
     try {
       // Suche nach dem besten Match bei IGDB
-      const igdbGame = await findBestMatch(gameName, platformName);
+      const igdbGame = await findBestMatch(gameName);
 
       if (!igdbGame) {
         console.log(`[IGDB] Kein Match gefunden für: ${gameName}`);

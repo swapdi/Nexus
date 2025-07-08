@@ -115,19 +115,14 @@ export const gamesRouter = router({
       z.object({
         steamInput: z
           .string()
-          .min(1, 'Steam ID oder Profil-URL ist erforderlich'),
-        operationId: z
-          .string()
-          .optional()
-          .describe('Eindeutige ID für Progress-Tracking')
+          .min(1, 'Steam ID oder Profil-URL ist erforderlich')
       })
     )
     .mutation(async ({ input, ctx }) => {
       try {
         return await GamesService.importSteamLibrary(
           ctx.dbUser.id,
-          input.steamInput,
-          input.operationId
+          input.steamInput
         );
       } catch (error) {
         if (error instanceof TRPCError) {
@@ -144,62 +139,6 @@ export const gamesRouter = router({
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserStats(ctx.dbUser.id);
   }),
-  // Steam-Bibliothek sofort importieren (ohne IGDB-Anreicherung)
-  importSteamLibraryFast: protectedProcedure
-    .input(
-      z.object({
-        steamInput: z
-          .string()
-          .min(1, 'Steam ID oder Profil-URL ist erforderlich'),
-        operationId: z
-          .string()
-          .optional()
-          .describe('Eindeutige ID für Progress-Tracking')
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        return await GamesService.importSteamLibraryFast(
-          ctx.dbUser.id,
-          input.steamInput,
-          input.operationId
-        );
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-        console.error('Steam Fast Import Error:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Unerwarteter Fehler beim schnellen Steam-Import'
-        });
-      }
-    }),
-  // Hintergrund-IGDB-Anreicherung für importierte Spiele
-  enrichGamesBackground: protectedProcedure
-    .input(
-      z.object({
-        platformSlug: z.string().default('steam'),
-        operationId: z.string().optional()
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        return await GamesService.enrichGamesBackground(
-          input.platformSlug,
-          input.operationId
-        );
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-        console.error('Background Enrichment Error:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Fehler bei der Hintergrund-Anreicherung'
-        });
-      }
-    }),
   // Favoriten-Status für ein Spiel umschalten
   toggleFavorite: protectedProcedure
     .input(

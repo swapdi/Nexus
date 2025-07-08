@@ -1,8 +1,3 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\c        <PlatformLogo
-          v-for="platform in game.platforms.slice(0, 2)"
-          :key="platform"
-          :platform="platform"
-          size="sm" />ents\GameCard\GameCardMedium.vue -->
 <template>
   <div
     :class="[
@@ -34,18 +29,17 @@
     <!-- Cover Image -->
     <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
       <img
-        :src="getGameCoverUrl(game)"
-        :alt="getGameName(game)"
+        :src="gameData.coverUrl || './gameplaceholder.jpg'"
+        :alt="gameData.name"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
-      <!-- Platform Logos -->
-      <div class="absolute top-1 left-1 flex flex-wrap gap-0.5">
+
+      <!-- Platform Badge (Steam) -->
+      <div class="absolute top-1 left-1">
         <div
-          v-for="platform in game.platforms?.slice(0, 2)"
-          :key="platform"
           class="bg-black/80 backdrop-blur-sm rounded px-1.5 py-1 flex items-center justify-center min-w-[28px] min-h-[20px]">
-          <PlatformLogo :platform="platform" size="sm" />
+          <Icon name="simple-icons:steam" class="w-3 h-3 text-blue-400" />
         </div>
       </div>
 
@@ -71,14 +65,14 @@
 
       <!-- Rating Badge -->
       <div
-        v-if="getGameRating(game)"
+        v-if="gameData.totalRating"
         class="absolute bottom-1 right-1 bg-black/70 backdrop-blur-sm px-1.5 py-0.5 rounded">
         <div class="flex items-center gap-0.5">
           <Icon
             name="heroicons:star-16-solid"
             class="w-2.5 h-2.5 text-yellow-400" />
           <span class="text-xs text-white font-medium">{{
-            formatGameRating(game)
+            (gameData.totalRating / 10).toFixed(1)
           }}</span>
         </div>
       </div>
@@ -89,37 +83,39 @@
       <div class="flex items-start justify-between gap-2 mb-1">
         <h3
           class="font-medium text-white text-sm line-clamp-2 group-hover:text-purple-300 transition-colors flex-1">
-          {{ getGameName(game) }}
+          {{ gameData.name }}
         </h3>
       </div>
 
       <!-- Genres -->
-      <div v-if="getGameGenres(game).length > 0" class="mb-1">
+      <div v-if="gameData.genres && gameData.genres.length > 0" class="mb-1">
         <div class="flex flex-wrap gap-1">
           <span
-            v-for="genre in getGameGenres(game).slice(0, 2)"
+            v-for="genre in gameData.genres.slice(0, 2)"
             :key="genre"
             class="px-1.5 py-0.5 bg-purple-600/20 text-purple-300 text-xs rounded border border-purple-500/30">
             {{ genre }}
           </span>
           <span
-            v-if="getGameGenres(game).length > 2"
+            v-if="gameData.genres.length > 2"
             class="px-1.5 py-0.5 bg-gray-600/30 text-gray-400 text-xs rounded">
-            +{{ getGameGenres(game).length - 2 }}
+            +{{ gameData.genres.length - 2 }}
           </span>
         </div>
       </div>
 
-      <!-- Spacer to push stats to bottom -->
+      <!-- Spacer -->
       <div class="flex-1"></div>
 
-      <!-- Stats - jetzt am unteren Rand -->
-      <div
-        class="flex items-center justify-between text-xs text-gray-400 mt-auto">
+      <!-- Stats -->
+      <div class="flex items-center justify-between text-xs text-gray-400 mt-1">
+        <!-- Spielzeit -->
         <div v-if="game.playtimeMinutes" class="flex items-center gap-1">
           <Icon name="heroicons:clock-16-solid" class="w-2.5 h-2.5" />
           <span>{{ formatPlayTime(game.playtimeMinutes) }}</span>
         </div>
+
+        <!-- Zuletzt gespielt -->
         <div v-if="game.lastPlayed" class="flex items-center gap-1">
           <Icon name="heroicons:calendar-16-solid" class="w-2.5 h-2.5" />
           <span>{{ formatLastPlayed(game.lastPlayed) }}</span>
@@ -130,8 +126,10 @@
 </template>
 
 <script setup lang="ts">
+  import type { UserGameWithDetails } from '~/lib/services/games.service';
+
   interface Props {
-    game: any;
+    game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
   }
@@ -143,21 +141,15 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 
-  // Game Utils für Legacy-Support
-  const {
-    getGameName,
-    getGameCoverUrl,
-    getGameRating,
-    formatGameRating,
-    getGameGenres
-  } = useGameUtils();
+  // Zugriff auf die verschachtelten Spieldaten
+  const gameData = computed(() => props.game.game);
 
   const handleClick = () => {
     emit('click');
   };
 
   const toggleFavorite = () => {
-    emit('toggleFavorite', props.game.userGameId);
+    emit('toggleFavorite', props.game.id);
   };
 
   const handleImageError = (event: Event) => {

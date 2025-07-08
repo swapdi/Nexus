@@ -1,12 +1,14 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
   import type { UserGameWithDetails } from '~/lib/services/games.service';
-  // Route Parameter (eigentlich userGameId, nicht gameId)
+
+  // Route Parameter (Game ID, nicht UserGame ID)
   const route = useRoute();
-  const userGameId = computed(() => parseInt(route.params.id as string));
+  const gameId = computed(() => parseInt(route.params.id as string));
 
   // Stores
   const gamesStore = useGamesStore();
+
   // State
   const game = ref<UserGameWithDetails | null>(null);
   const isLoading = ref(true);
@@ -21,27 +23,31 @@
   definePageMeta({
     middleware: ['auth'],
     layout: 'authenticated'
-  }); // Lade Spiel-Details
+  });
+
+  // Lade Spiel-Details
   onMounted(async () => {
     try {
       await gamesStore.init();
 
-      // Versuche zuerst das Spiel aus dem Store zu holen (mit UserGame ID)
-      const existingGame = gamesStore.getGameByUserGameId(userGameId.value);
+      // Suche das Spiel in der Bibliothek des Users anhand der Game ID
+      const existingGame = gamesStore.games.find(
+        g => g.game.id === gameId.value
+      );
       if (existingGame) {
         game.value = existingGame;
         console.log('Loaded from store cache:', game.value);
         isLoading.value = false;
       } else {
         // Falls nicht im Store, lade es über den Store (mit UserGame ID)
-        const gameData = await gamesStore.getGameWithPlatforms(
-          userGameId.value
-        );
+        // Fallback: Versuche alle Spiele zu laden und dann zu finden
+        await gamesStore.loadGames();
+        const gameData = gamesStore.games.find(g => g.game.id === gameId.value);
         if (gameData) {
           game.value = gameData;
           console.log('Loaded from API:', game.value);
         } else {
-          error.value = 'Spiel nicht gefunden';
+          error.value = 'Spiel nicht gefunden oder nicht in deiner Bibliothek';
         }
         isLoading.value = false;
       }
@@ -66,9 +72,10 @@
       return `${minutes} Min`;
     }
   };
+
   const getStars = (rating: number) => {
-    // Konvertiere IGDB-Rating (1-10) zu 5-Sterne-System
-    const normalizedRating = Math.round((rating / 10) * 5);
+    // Konvertiere IGDB-Rating (0-100) zu 5-Sterne-System
+    const normalizedRating = Math.round((rating / 100) * 5);
     return Array.from({ length: 5 }, (_, i) => i < normalizedRating);
   };
 
@@ -100,6 +107,59 @@
       day: 'numeric'
     });
   };
+
+  const formatReleaseYear = (date: Date | string | null) => {
+    if (!date) return null;
+    return new Date(date).getFullYear();
+  };
+
+  const formatGenreList = (genres: string[]) => {
+    if (!genres || genres.length === 0) return 'Keine Genres';
+    if (genres.length <= 3) return genres.join(', ');
+    return `${genres.slice(0, 3).join(', ')} +${genres.length - 3} weitere`;
+  };
+
+  const formatDeveloperList = (developers: string[]) => {
+    if (!developers || developers.length === 0) return 'Unbekannt';
+    if (developers.length <= 2) return developers.join(', ');
+    return `${developers.slice(0, 2).join(', ')} +${
+      developers.length - 2
+    } weitere`;
+  };
+
+  const formatPublisherList = (publishers: string[]) => {
+    if (!publishers || publishers.length === 0) return 'Unbekannt';
+    if (publishers.length <= 2) return publishers.join(', ');
+    return `${publishers.slice(0, 2).join(', ')} +${
+      publishers.length - 2
+    } weitere`;
+  };
+
+  const getRatingColor = (rating: number) => {
+    if (rating >= 80) return 'text-green-400';
+    if (rating >= 60) return 'text-yellow-400';
+    if (rating >= 40) return 'text-orange-400';
+    return 'text-red-400';
+  };
+
+  const getRatingBgColor = (rating: number) => {
+    if (rating >= 80) return 'bg-green-500/20 border-green-500/40';
+    if (rating >= 60) return 'bg-yellow-500/20 border-yellow-500/40';
+    if (rating >= 40) return 'bg-orange-500/20 border-orange-500/40';
+    return 'bg-red-500/20 border-red-500/40';
+  };
+
+  const hasGameData = computed(() => {
+    return (
+      game.value &&
+      (game.value.game.summary ||
+        game.value.game.genres?.length ||
+        game.value.game.developers?.length ||
+        game.value.game.publishers?.length ||
+        game.value.game.firstReleaseDate ||
+        game.value.game.totalRating)
+    );
+  });
 
   // Zurück zur Bibliothek
   const goBack = () => {
@@ -301,141 +361,156 @@
                   <!-- Title with animated gradient -->
                   <div>
                     <h1
-                      class="text-5xl lg:text-6xl font-black mb-6 leading-tight">
+                      class="text-4xl lg:text-6xl font-black mb-4 leading-tight">
                       <span
                         class="bg-gradient-to-r from-purple-400 via-pink-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-300">
                         {{ game.game.name }}
                       </span>
                     </h1>
 
+                    <!-- Release Year & Rating Badge -->
+                    <div class="flex items-center gap-3 mb-6">
+                      <div
+                        v-if="formatReleaseYear(game.game.firstReleaseDate)"
+                        class="px-3 py-1 bg-gray-800/50 text-gray-300 text-sm rounded-full border border-gray-700/40 font-medium">
+                        {{ formatReleaseYear(game.game.firstReleaseDate) }}
+                      </div>
+                      <div
+                        v-if="game.game.totalRating"
+                        :class="getRatingBgColor(game.game.totalRating)"
+                        class="px-3 py-1 text-sm rounded-full border font-medium flex items-center gap-1">
+                        <Icon name="heroicons:star-20-solid" class="w-4 h-4" />
+                        <span :class="getRatingColor(game.game.totalRating)">{{
+                          formatRating(game.game.totalRating)
+                        }}</span>
+                      </div>
+                    </div>
+
                     <!-- Enhanced genres with glow -->
                     <div
                       v-if="game.game.genres && game.game.genres.length > 0"
-                      class="flex flex-wrap gap-3 mb-8">
+                      class="flex flex-wrap gap-2 mb-8">
                       <span
-                        v-for="genre in game.game.genres"
+                        v-for="genre in game.game.genres.slice(0, 5)"
                         :key="genre"
-                        class="px-4 py-2 bg-gradient-to-r from-purple-600/30 to-purple-700/30 text-purple-200 text-sm rounded-full border border-purple-500/40 font-semibold backdrop-blur-sm hover:from-purple-500/40 hover:to-purple-600/40 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20">
+                        class="px-3 py-1.5 bg-gradient-to-r from-purple-600/30 to-purple-700/30 text-purple-200 text-sm rounded-full border border-purple-500/40 font-medium backdrop-blur-sm hover:from-purple-500/40 hover:to-purple-600/40 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20">
                         {{ genre }}
                       </span>
+                      <span
+                        v-if="game.game.genres.length > 5"
+                        class="px-3 py-1.5 bg-gray-800/50 text-gray-400 text-sm rounded-full border border-gray-700/40 font-medium">
+                        +{{ game.game.genres.length - 5 }} weitere
+                      </span>
+                    </div>
+
+                    <!-- Game Summary -->
+                    <div v-if="game.game.summary" class="mb-6">
+                      <p class="text-gray-300 leading-relaxed text-base">
+                        {{ game.game.summary }}
+                      </p>
                     </div>
                   </div>
                   <!-- Enhanced Stats Grid mit Animationen -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Spielzeit Card -->
-                    <div class="group relative h-28">
+                    <div class="group relative h-24">
                       <div
                         class="absolute inset-0 bg-gradient-to-br from-blue-500/15 to-blue-600/15 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
                       <div
-                        class="relative bg-gradient-to-br from-blue-500/8 to-blue-600/8 rounded-xl p-4 border border-blue-500/20 backdrop-blur-sm hover:border-blue-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/10 h-full flex flex-col justify-between">
+                        class="relative bg-gradient-to-br from-blue-500/8 to-blue-600/8 rounded-xl p-3 border border-blue-500/20 backdrop-blur-sm hover:border-blue-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/10 h-full flex flex-col justify-between">
                         <div class="flex items-center gap-2">
-                          <div class="p-1.5 bg-blue-500/15 rounded-lg">
+                          <div class="p-1 bg-blue-500/15 rounded-lg">
                             <Icon
                               name="heroicons:clock-20-solid"
                               class="w-4 h-4 text-blue-400" />
                           </div>
-                          <span class="text-blue-300 font-medium text-sm"
+                          <span class="text-blue-300 font-medium text-xs"
                             >Spielzeit</span
                           >
                         </div>
                         <div class="flex-1 flex flex-col justify-center">
                           <div
-                            class="text-2xl font-bold text-white leading-tight">
+                            class="text-xl font-bold text-white leading-tight">
                             {{ formatPlayTime(game.playtimeMinutes || 0) }}
-                          </div>
-                          <div class="text-xs text-blue-200/60 mt-0.5">
-                            Gesamte Spielzeit
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Zuletzt gespielt Card -->
-                    <div class="group relative h-28">
+                    <div class="group relative h-24">
                       <div
                         class="absolute inset-0 bg-gradient-to-br from-green-500/15 to-green-600/15 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
                       <div
-                        class="relative bg-gradient-to-br from-green-500/8 to-green-600/8 rounded-xl p-4 border border-green-500/20 backdrop-blur-sm hover:border-green-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/10 h-full flex flex-col justify-between">
+                        class="relative bg-gradient-to-br from-green-500/8 to-green-600/8 rounded-xl p-3 border border-green-500/20 backdrop-blur-sm hover:border-green-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/10 h-full flex flex-col justify-between">
                         <div class="flex items-center gap-2">
-                          <div class="p-1.5 bg-green-500/15 rounded-lg">
+                          <div class="p-1 bg-green-500/15 rounded-lg">
                             <Icon
                               name="heroicons:calendar-20-solid"
                               class="w-4 h-4 text-green-400" />
                           </div>
-                          <span class="text-green-300 font-medium text-sm"
+                          <span class="text-green-300 font-medium text-xs"
                             >Letzte Session</span
                           >
                         </div>
                         <div class="flex-1 flex flex-col justify-center">
                           <div
-                            class="text-2xl font-bold text-white leading-tight">
+                            class="text-xl font-bold text-white leading-tight">
                             {{ formatRelativeTime(game.lastPlayed) }}
-                          </div>
-                          <div class="text-xs text-green-200/60 mt-0.5">
-                            Zuletzt gespielt
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Hinzugefügt Card -->
-                    <div class="group relative h-28">
+                    <div class="group relative h-24">
                       <div
                         class="absolute inset-0 bg-gradient-to-br from-purple-500/15 to-purple-600/15 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
                       <div
-                        class="relative bg-gradient-to-br from-purple-500/8 to-purple-600/8 rounded-xl p-4 border border-purple-500/20 backdrop-blur-sm hover:border-purple-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/10 h-full flex flex-col justify-between">
+                        class="relative bg-gradient-to-br from-purple-500/8 to-purple-600/8 rounded-xl p-3 border border-purple-500/20 backdrop-blur-sm hover:border-purple-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/10 h-full flex flex-col justify-between">
                         <div class="flex items-center gap-2">
-                          <div class="p-1.5 bg-purple-500/15 rounded-lg">
+                          <div class="p-1 bg-purple-500/15 rounded-lg">
                             <Icon
                               name="heroicons:plus-20-solid"
                               class="w-4 h-4 text-purple-400" />
                           </div>
-                          <span class="text-purple-300 font-medium text-sm"
+                          <span class="text-purple-300 font-medium text-xs"
                             >Hinzugefügt</span
                           >
                         </div>
                         <div class="flex-1 flex flex-col justify-center">
                           <div
-                            class="text-2xl font-bold text-white leading-tight">
+                            class="text-xl font-bold text-white leading-tight">
                             {{ formatRelativeTime(game.addedAt) }}
-                          </div>
-                          <div class="text-xs text-purple-200/60 mt-0.5">
-                            Zur Bibliothek
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Bewertung Card -->
-                    <div class="group relative h-28">
+                    <div class="group relative h-24">
                       <div
                         class="absolute inset-0 bg-gradient-to-br from-yellow-500/15 to-yellow-600/15 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
                       <div
-                        class="relative bg-gradient-to-br from-yellow-500/8 to-yellow-600/8 rounded-xl p-4 border border-yellow-500/20 backdrop-blur-sm hover:border-yellow-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10 h-full flex flex-col justify-between">
+                        class="relative bg-gradient-to-br from-yellow-500/8 to-yellow-600/8 rounded-xl p-3 border border-yellow-500/20 backdrop-blur-sm hover:border-yellow-400/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10 h-full flex flex-col justify-between">
                         <div class="flex items-center gap-2">
-                          <div class="p-1.5 bg-yellow-500/15 rounded-lg">
+                          <div class="p-1 bg-yellow-500/15 rounded-lg">
                             <Icon
                               name="heroicons:star-20-solid"
                               class="w-4 h-4 text-yellow-400" />
                           </div>
-                          <span class="text-yellow-300 font-medium text-sm"
+                          <span class="text-yellow-300 font-medium text-xs"
                             >Bewertung</span
                           >
                         </div>
                         <div class="flex-1 flex flex-col justify-center">
                           <div
-                            class="text-2xl font-bold text-white leading-tight">
+                            class="text-xl font-bold text-white leading-tight">
                             {{
                               game.game.totalRating
                                 ? `${formatRating(game.game.totalRating)}/100`
                                 : '—'
-                            }}
-                          </div>
-                          <div class="text-xs text-yellow-200/60 mt-0.5">
-                            {{
-                              game.game.totalRating
-                                ? 'IGDB Community Rating'
-                                : 'Nicht bewertet'
                             }}
                           </div>
                         </div>
@@ -447,6 +522,240 @@
             </div>
           </div>
         </div>
+
+        <!-- Screenshots Section -->
+        <div
+          v-if="game.game.screenshots && game.game.screenshots.length > 0"
+          class="mx-4 lg:mx-8">
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
+            <div
+              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg hover:shadow-gray-500/10">
+              <!-- Header -->
+              <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-gray-700/30 rounded-lg">
+                  <Icon
+                    name="heroicons:photo-20-solid"
+                    class="w-5 h-5 text-gray-300" />
+                </div>
+                <h2 class="text-xl font-bold text-white">Screenshots</h2>
+              </div>
+
+              <!-- Screenshots Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div
+                  v-for="(screenshot, index) in game.game.screenshots.slice(
+                    0,
+                    6
+                  )"
+                  :key="index"
+                  class="group relative aspect-video bg-gray-800/50 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                  <img
+                    :src="screenshot"
+                    :alt="`Screenshot ${index + 1}`"
+                    class="w-full h-full object-cover"
+                    loading="lazy" />
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div
+                    class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {{ index + 1 }} / {{ game.game.screenshots.length }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Show More Button -->
+              <div
+                v-if="game.game.screenshots.length > 6"
+                class="text-center mt-6">
+                <button
+                  class="px-6 py-3 bg-gradient-to-r from-purple-600/80 to-purple-700/80 hover:from-purple-500/90 hover:to-purple-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25">
+                  Alle {{ game.game.screenshots.length }} Screenshots anzeigen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Details Section -->
+        <div class="mx-4 lg:mx-8">
+          <!-- Enhanced Details Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
+            <div
+              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg hover:shadow-gray-500/10">
+              <!-- Header -->
+              <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-gray-700/30 rounded-lg">
+                  <Icon
+                    name="heroicons:information-circle-20-solid"
+                    class="w-5 h-5 text-gray-300" />
+                </div>
+                <h2 class="text-xl font-bold text-white">Spielinformationen</h2>
+              </div>
+
+              <!-- Enhanced Details Grid -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Left Column: Game Info -->
+                <div class="space-y-6">
+                  <!-- Developer -->
+                  <div
+                    v-if="
+                      game.game.developers && game.game.developers.length > 0
+                    "
+                    class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Entwickler
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                      <span
+                        v-for="dev in game.game.developers"
+                        :key="dev"
+                        class="px-3 py-1.5 bg-blue-500/10 text-blue-300 text-sm rounded-lg border border-blue-500/20 font-medium hover:bg-blue-500/20 hover:border-blue-400/30 transition-all duration-300">
+                        {{ dev }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Publisher -->
+                  <div
+                    v-if="
+                      game.game.publishers && game.game.publishers.length > 0
+                    "
+                    class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Publisher
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                      <span
+                        v-for="pub in game.game.publishers"
+                        :key="pub"
+                        class="px-3 py-1.5 bg-green-500/10 text-green-300 text-sm rounded-lg border border-green-500/20 font-medium hover:bg-green-500/20 hover:border-green-400/30 transition-all duration-300">
+                        {{ pub }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Release Date -->
+                  <div v-if="game.game.firstReleaseDate" class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Veröffentlichung
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <Icon
+                        name="heroicons:calendar-20-solid"
+                        class="w-4 h-4 text-gray-400" />
+                      <span class="text-white font-medium">
+                        {{ formatDate(game.game.firstReleaseDate) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- IGDB ID -->
+                  <div v-if="game.game.igdbId" class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      IGDB ID
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <Icon
+                        name="heroicons:link-20-solid"
+                        class="w-4 h-4 text-gray-400" />
+                      <span class="text-white font-medium">
+                        {{ game.game.igdbId }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Last Synced -->
+                  <div v-if="game.game.lastSyncedAt" class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Letzte Synchronisation
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <Icon
+                        name="heroicons:arrow-path-20-solid"
+                        class="w-4 h-4 text-gray-400" />
+                      <span class="text-white font-medium">
+                        {{ formatRelativeTime(game.game.lastSyncedAt) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column: Additional Info -->
+                <div class="space-y-6">
+                  <!-- Genres -->
+                  <div
+                    v-if="game.game.genres && game.game.genres.length > 0"
+                    class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Genres
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                      <span
+                        v-for="genre in game.game.genres"
+                        :key="genre"
+                        class="px-3 py-1.5 bg-purple-500/10 text-purple-300 text-sm rounded-lg border border-purple-500/20 font-medium hover:bg-purple-500/20 hover:border-purple-400/30 transition-all duration-300">
+                        {{ genre }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Rating Details -->
+                  <div v-if="game.game.totalRating" class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Community Bewertung
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <div class="flex items-center">
+                        <Icon
+                          v-for="(filled, index) in getStars(
+                            game.game.totalRating
+                          )"
+                          :key="index"
+                          name="heroicons:star-20-solid"
+                          :class="filled ? 'text-yellow-400' : 'text-gray-600'"
+                          class="w-5 h-5" />
+                      </div>
+                      <span
+                        :class="getRatingColor(game.game.totalRating)"
+                        class="font-bold text-lg">
+                        {{ formatRating(game.game.totalRating) }}/100
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Platform -->
+                  <div class="group">
+                    <div
+                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
+                      Plattform
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <Icon
+                        name="heroicons:computer-desktop-20-solid"
+                        class="w-4 h-4 text-gray-400" />
+                      <span
+                        class="px-3 py-1.5 bg-gray-800/50 text-gray-200 text-sm rounded-lg border border-gray-700/40 font-medium">
+                        Steam
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Game Details Section -->
         <div class="mx-4 lg:mx-8">
           <!-- Combined Details Card -->

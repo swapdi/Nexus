@@ -30,17 +30,16 @@
     <!-- Cover Image -->
     <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
       <img
-        :src="getGameCoverUrl(game)"
-        :alt="getGameName(game)"
+        :src="gameData.coverUrl || './gameplaceholder.jpg'"
+        :alt="gameData.name"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
-      <!-- Platform Logo (nur 1) -->
+      <!-- Platform Badge (Steam) -->
       <div class="absolute top-1 left-1">
         <div
-          v-if="game.platforms && game.platforms.length > 0"
           class="bg-black/80 backdrop-blur-sm rounded px-1.5 py-1 flex items-center justify-center min-w-[26px] min-h-[18px]">
-          <PlatformLogo :platform="game.platforms[0]" size="sm" />
+          <Icon name="simple-icons:steam" class="w-3 h-3 text-blue-400" />
         </div>
       </div>
 
@@ -66,10 +65,10 @@
 
       <!-- Rating Badge -->
       <div
-        v-if="getGameRating(game)"
+        v-if="gameData.totalRating"
         class="absolute bottom-1 right-1 bg-black/80 backdrop-blur-sm px-1 py-0.5 rounded text-xs">
         <span class="text-yellow-400 font-medium">{{
-          formatGameRating(game)
+          (gameData.totalRating / 10).toFixed(1)
         }}</span>
       </div>
     </div>
@@ -78,7 +77,7 @@
     <div class="p-1.5 flex flex-col flex-1">
       <h3
         class="font-medium text-white text-xs mb-0.5 line-clamp-2 group-hover:text-purple-300 transition-colors leading-tight">
-        {{ getGameName(game) }}
+        {{ gameData.name }}
       </h3>
 
       <!-- Spacer to push stats to bottom -->
@@ -98,8 +97,10 @@
 </template>
 
 <script setup lang="ts">
+  import type { UserGameWithDetails } from '~/lib/services/games.service';
+
   interface Props {
-    game: any;
+    game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
   }
@@ -111,16 +112,15 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 
-  // Game Utils für Legacy-Support
-  const { getGameName, getGameCoverUrl, getGameRating, formatGameRating } =
-    useGameUtils();
+  // Zugriff auf die verschachtelten Spieldaten
+  const gameData = computed(() => props.game.game);
 
   const handleClick = () => {
     emit('click');
   };
 
   const toggleFavorite = () => {
-    emit('toggleFavorite', props.game.userGameId);
+    emit('toggleFavorite', props.game.id);
   };
 
   const handleImageError = (event: Event) => {

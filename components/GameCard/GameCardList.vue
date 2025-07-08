@@ -30,8 +30,8 @@
     <div
       class="flex-shrink-0 w-12 h-16 bg-gray-700/50 rounded overflow-hidden relative">
       <img
-        :src="getGameCoverUrl(game)"
-        :alt="getGameName(game)"
+        :src="gameData.coverUrl || './gameplaceholder.jpg'"
+        :alt="gameData.name"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
@@ -41,41 +41,32 @@
     <div class="flex-1 min-w-0">
       <h3
         class="font-semibold text-white text-base line-clamp-1 group-hover:text-purple-300 transition-colors mb-1">
-        {{ getGameName(game) }}
+        {{ gameData.name }}
       </h3>
 
       <!-- Genres direkt unter dem Titel -->
-      <div v-if="getGameGenres(game).length > 0" class="flex flex-wrap gap-1">
+      <div
+        v-if="gameData.genres && gameData.genres.length > 0"
+        class="flex flex-wrap gap-1">
         <span
-          v-for="genre in getGameGenres(game).slice(0, 2)"
+          v-for="genre in gameData.genres.slice(0, 2)"
           :key="genre"
           class="px-2 py-0.5 bg-purple-600/20 text-purple-300 text-xs rounded border border-purple-500/30">
           {{ genre }}
         </span>
         <span
-          v-if="getGameGenres(game).length > 2"
+          v-if="gameData.genres.length > 2"
           class="px-2 py-0.5 bg-gray-600/30 text-gray-400 text-xs rounded">
-          +{{ getGameGenres(game).length - 2 }}
+          +{{ gameData.genres.length - 2 }}
         </span>
       </div>
     </div>
 
-    <!-- Platforms (fixed width) -->
+    <!-- Platform Badge (Steam) -->
     <div class="w-24 flex-shrink-0 flex justify-center">
-      <div class="flex gap-1">
-        <div
-          v-for="platform in game.platforms?.slice(0, 2)"
-          :key="platform"
-          class="flex items-center justify-center min-w-[24px] min-h-[18px]">
-          <PlatformLogo :platform="platform" size="sm" />
-        </div>
-        <div
-          v-if="game.platforms && game.platforms.length > 2"
-          class="flex items-center justify-center min-w-[24px] min-h-[18px]">
-          <span class="text-xs text-gray-400 font-medium"
-            >+{{ game.platforms.length - 2 }}</span
-          >
-        </div>
+      <div
+        class="bg-black/80 backdrop-blur-sm rounded px-2 py-1 flex items-center justify-center">
+        <Icon name="simple-icons:steam" class="w-4 h-4 text-blue-400" />
       </div>
     </div>
 
@@ -124,8 +115,10 @@
 </template>
 
 <script setup lang="ts">
+  import type { UserGameWithDetails } from '~/lib/services/games.service';
+
   interface Props {
-    game: any;
+    game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
   }
@@ -137,15 +130,15 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
 
-  // Game Utils für Legacy-Support
-  const { getGameName, getGameCoverUrl, getGameGenres } = useGameUtils();
+  // Zugriff auf die verschachtelten Spieldaten
+  const gameData = computed(() => props.game.game);
 
   const handleClick = () => {
     emit('click');
   };
 
   const toggleFavorite = () => {
-    emit('toggleFavorite', props.game.userGameId);
+    emit('toggleFavorite', props.game.id);
   };
 
   const handleImageError = (event: Event) => {
