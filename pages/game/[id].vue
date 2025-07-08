@@ -212,63 +212,16 @@
 <template>
   <div class="min-h-screen overflow-hidden">
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center min-h-screen">
-      <div class="relative">
-        <!-- Pulsierender Gaming-Loader -->
-        <div class="relative w-20 h-20">
-          <div
-            class="absolute inset-0 rounded-full border-4 border-purple-500/20"></div>
-          <div
-            class="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin"></div>
-          <div
-            class="absolute inset-2 rounded-full border-4 border-transparent border-r-blue-500 animate-spin animation-delay-300"></div>
-          <div
-            class="absolute inset-4 rounded-full border-4 border-transparent border-b-pink-500 animate-spin animation-delay-600"></div>
-        </div>
-        <div class="text-center mt-6">
-          <div class="text-lg font-semibold text-white mb-2">
-            Lade Spiel-Details...
-          </div>
-          <div class="text-sm text-gray-400">
-            Bereite epische Informationen vor
-          </div>
-        </div>
-      </div>
-    </div>
+    <LoadingOverlay v-if="isLoading" />
 
     <!-- Error State -->
     <div
       v-else-if="error"
       class="flex items-center justify-center min-h-screen">
-      <div class="relative max-w-md mx-auto">
-        <!-- Animated error background -->
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-600/5 to-red-700/10 rounded-3xl blur-xl"></div>
-        <div
-          class="relative bg-gradient-to-br from-red-500/20 to-red-700/20 border border-red-500/30 rounded-2xl p-8 backdrop-blur-sm">
-          <div class="text-center">
-            <div class="relative mx-auto w-16 h-16 mb-6">
-              <Icon
-                name="heroicons:exclamation-triangle-20-solid"
-                class="w-16 h-16 text-red-400 animate-pulse" />
-              <div
-                class="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
-            </div>
-            <h2 class="text-2xl font-bold text-red-300 mb-3">Epic Fail!</h2>
-            <p class="text-red-200 mb-6">{{ error }}</p>
-            <NuxtLink>
-              <button
-                class="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-purple-500/25">
-                <span class="relative z-10 flex items-center gap-2">
-                  <Icon name="heroicons:arrow-left-20-solid" class="w-5 h-5" />
-                  Zurück zur Bibliothek
-                </span>
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-purple-400 to-purple-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-              </button>
-            </NuxtLink>
-          </div>
-        </div>
+      <div class="text-center">
+        <div class="text-red-400 text-6xl mb-4">⚠️</div>
+        <h2 class="text-xl font-bold text-white mb-2">Fehler</h2>
+        <p class="text-gray-400">{{ error }}</p>
       </div>
     </div>
 

@@ -5,7 +5,7 @@ import { useLoading } from '~/stores/loading.store';
 
 export const useGamesStore = defineStore('games', () => {
   // Loading store integration
-  const { loading, progressLoading } = useLoading();
+  const { loading } = useLoading();
 
   // State
   const games = ref<UserGameWithDetails[]>([]);
@@ -188,10 +188,10 @@ export const useGamesStore = defineStore('games', () => {
       return false;
     }
 
-    return await progressLoading(
+    return await loading(
       'remove-games',
       'Entferne Spiele aus der Bibliothek...',
-      async updateProgress => {
+      async () => {
         const { $client } = useNuxtApp();
         const notifyStore = useNotifyStore();
 
@@ -199,20 +199,11 @@ export const useGamesStore = defineStore('games', () => {
           isRemovingGames.value = true;
           const gameIdsArray = Array.from(selectedGameIds.value);
 
-          // Fortschritt initialisieren
-          updateProgress(0, gameIdsArray.length, 'Bereite Entfernung vor...');
-
           const result = await $client.games.removeGamesFromLibrary.mutate({
             userGameIds: gameIdsArray
           });
 
           if (result.success) {
-            updateProgress(
-              gameIdsArray.length * 0.8,
-              gameIdsArray.length,
-              'Aktualisiere lokale Daten...'
-            );
-
             // Erfolgreiche Entfernung
             const message = `${result.removedCount} Spiel${
               result.removedCount > 1 || 0 ? 'e' : ''
@@ -224,21 +215,11 @@ export const useGamesStore = defineStore('games', () => {
               game => !gameIdsArray.includes(game.id)
             );
 
-            updateProgress(
-              gameIdsArray.length * 0.9,
-              gameIdsArray.length,
-              'Lade Statistiken neu...'
-            );
             // Statistiken neu berechnen
             await loadStats();
 
             // Auswahlmodus beenden
             exitSelectionMode();
-            updateProgress(
-              gameIdsArray.length,
-              gameIdsArray.length,
-              'Abgeschlossen'
-            );
             return true;
           }
 

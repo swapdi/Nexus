@@ -94,7 +94,6 @@ Jede Schicht hat eine spezifische Verantwortung:
 - `useGameUtils.ts` - Hilfsfunktionen für Spieledaten
 - `useUserStats.ts` - Benutzerbibliotheksstatistiken
 - `useViewMode.ts` - UI-Ansichtsmodi
-- `useServerProgress.ts` - Server-seitige Operationsfortschritte
 
 ### 5. Gelöschte/Obsolete Dateien ✅
 

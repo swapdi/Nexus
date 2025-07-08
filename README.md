@@ -37,13 +37,13 @@ Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliot
 ### ✅ Vollständig implementiert
 
 - **Benutzerauthentifizierung:** Registrierung, Login, Logout über Supabase Auth
-- **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API mit Echtzeit-Progress-Tracking
+- **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API mit einfacher Loading-Anzeige
 - **IGDB-Metadaten-Anreicherung:** Automatische Anreicherung mit Beschreibungen, Genres, Cover-Bildern
 - **Spielebibliotheks-Anzeige:** Filterable und sortierbare Spieleübersicht mit verschiedenen Ansichtsmodi
 - **View-Mode-System:** 4 verschiedene Ansichtsmodi (Große Kacheln, Mittlere Kacheln, Mini-Kacheln, Listenansicht) mit localStorage-Persistierung
 - **Responsive UI:** Modernes, dunkles Design mit Tailwind CSS
 - **Gamification-Grundlagen:** Credits-System und User-XP-Framework
-- **Real-time Progress-Tracking:** Server-Sent Events für Live-Import-Updates
+- **Vereinfachtes Loading-System:** Einheitliches Loading-Overlay für alle Operationen
 
 ### 🚧 In Entwicklung
 
@@ -54,54 +54,53 @@ Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliot
 
 ### 🔧 Technische Features
 
-#### Progress-Tracking-System
+#### Vereinfachtes Loading-System
 
-Das Projekt implementiert ein fortschrittliches Progress-Tracking-System für lang andauernde Operationen wie Steam-Imports:
+Das Projekt verwendet ein einheitliches, vereinfachtes Loading-System:
 
-- **Server-Sent Events (SSE):** Echtzeit-Updates vom Backend zum Frontend
-- **Fallback-Mechanismus:** Automatischer Fallback auf standard Progress-Anzeige bei SSE-Fehlern
-- **Batch-Processing:** Optimierte Import-Performance mit 15er-Batches
-- **Detaillierte Progress-Nachrichten:** Spezifische Fortschrittsmeldungen für jede Import-Phase
+- **Globales Loading-Overlay:** Ein zentrales Overlay für alle Ladezustände
+- **Einheitliche Benutzeroberfläche:** Konsistente Ladeanzeige in der gesamten Anwendung
+- **Optimierte Performance:** Entfernung komplexer Progress-Tracking-Systeme
+- **Wartungsfreundlich:** Einfache Wartung und Erweiterung der Ladezustände
 
-#### Hintergrund-Anreicherung-System
+#### Steam Import System
 
-Neues System für verbesserte Benutzererfahrung beim Steam-Import:
+Steam-Import mit optimierter Benutzeroberfläche:
 
-- **Minimierbare Import-Dialoge:** Steam-Import-Dialog kann während der Verarbeitung minimiert werden
-- **Header-Fortschrittsbalken:** Zentrale Anzeige von Hintergrund-Operationen im AppHeader
-- **Sofortige Spielanzeige:** Importierte Spiele werden sofort ohne IGDB-Daten angezeigt
-- **Asynchrone IGDB-Anreicherung:** IGDB-Metadaten werden im Hintergrund ergänzt, ohne den Benutzer zu blockieren
-- **Hintergrund-Benachrichtigungen:** Elegant positionierte Benachrichtigungen für laufende Hintergrund-Prozesse
+- **Einfacher Import-Dialog:** Klare und intuitive Benutzeroberfläche
+- **Sofortige Spielanzeige:** Importierte Spiele werden direkt angezeigt
+- **Einheitliches Loading:** Verwendung des globalen Loading-Overlays
+- **Benutzerfreundliche Fehlermeldungen:** Klare Rückmeldungen bei Problemen
 
 **Dateien:**
 
-- `server/api/progress/[operationId].get.ts` - SSE-Endpunkt für Progress-Updates
-- `components/LibraryImport.vue` - Frontend Progress-Integration mit Minimierungsfunktion
-- `components/AppHeader.vue` - Header-Fortschrittsbalken für Hintergrund-Operationen
-- `server/trpc/routers/games.router.ts` - Backend Progress-Implementation mit schnellem Import
-- `stores/loading.store.ts` - Erweiterte Loading-States für Hintergrund-Operationen
+- `components/LibraryImport.vue` - Vereinfachte Import-Komponente
+- `components/LoadingOverlay.vue` - Globales Loading-Overlay
+- `components/AppHeader.vue` - Vereinfachter Header ohne Progress-Anzeigen
+- `server/trpc/routers/games.router.ts` - Backend Steam-Import-Implementation
+- `stores/loading.store.ts` - Vereinfachte Loading-States
 
-### 🎮 Steam Import & Hintergrundanreicherung
+### 🎮 Steam Import
 
-Der Steam-Import wurde mit einem Hintergrundanreicherungssystem optimiert:
+Der Steam-Import wurde für bessere Benutzerfreundlichkeit optimiert:
 
 **Import-Workflow:**
 
-1. **Schneller Initial-Import**: Steam-Spiele werden sofort mit Basis-Metadaten importiert
-2. **Hintergrundanreicherung**: IGDB-Daten werden asynchron geladen und hinzugefügt
-3. **Minimierbare UI**: Der Import-Dialog kann minimiert werden, während die Anreicherung läuft
+1. **Steam-Bibliothek-Import**: Steam-Spiele werden mit Basis-Metadaten importiert
+2. **Globales Loading-Overlay**: Ein einheitliches Loading-Overlay wird während des Imports angezeigt
+3. **Benutzerfreundliche Rückmeldungen**: Klare Status-Meldungen und Erfolgsmeldungen
 
 **UI-Verhalten:**
 
-- **Vordergrundoperationen**: Zeigen das Modal/LoadingOverlay und blockieren die UI
-- **Hintergrundoperationen**: Nur Header-Progressbar und Notifications, UI bleibt nutzbar
-- **Auto-Minimierung**: Import-Dialog minimiert sich automatisch bei reinen Hintergrundoperationen
+- **Einheitliche Ladeanzeige**: Globales Loading-Overlay für alle Operationen
+- **Responsive Design**: Optimiert für Desktop und mobile Geräte
+- **Intuitive Benutzeroberfläche**: Einfache und klare Benutzerführung
 
 **Technische Details:**
 
-- Loading Store unterscheidet zwischen `hasForegroundOperations` und `hasBackgroundOperations`
-- Separate Mutations für schnellen Import (`importSteamLibraryFast`) und Hintergrundanreicherung (`enrichGamesFromIGDB`)
-- Progressbar im Header für laufende Hintergrundoperationen
+- Vereinfachte Loading Store mit `isLoading` und `primaryOperation`
+- Einheitliche Steam-Import-Mutation (`importSteamLibrary`)
+- Globales Loading-Overlay (`<LoadingOverlay />`) für alle Ladezustände
 
 ## Projektstruktur (Überblick)
 

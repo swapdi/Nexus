@@ -116,30 +116,8 @@
 <template>
   <!-- Main Container with proper padding -->
   <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-4">
-    <!-- Loading State -->
-    <div
-      v-if="loadingStore.hasForegroundOperations"
-      class="bg-gray-800/50 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-700/50">
-      <div class="animate-pulse flex space-x-4">
-        <div
-          class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 h-16 w-16 opacity-50"></div>
-        <div class="flex-1 space-y-3 py-1">
-          <div
-            class="h-6 bg-gradient-to-r from-gray-600 to-gray-700 rounded"></div>
-          <div class="space-y-2">
-            <div
-              class="h-4 bg-gradient-to-r from-gray-700 to-gray-600 rounded"></div>
-            <div
-              class="h-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded w-5/6"></div>
-          </div>
-        </div>
-      </div>
-      <p class="text-center text-gray-400 mt-6">
-        Gaming-Profil wird geladen...
-      </p>
-    </div>
     <!-- Profile Content -->
-    <div v-else class="my-8">
+    <div class="my-8">
       <!-- Player Card -->
       <div
         class="bg-gray-800/50 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden border border-gray-700/30">
@@ -641,6 +619,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Loading Overlay -->
+    <LoadingOverlay />
   </div>
 </template>
 

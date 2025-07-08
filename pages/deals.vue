@@ -561,6 +561,9 @@
       </button>
     </div>
   </div>
+
+  <!-- Loading Overlay -->
+  <LoadingOverlay />
 </template>
 
 <style scoped>

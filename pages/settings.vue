@@ -117,17 +117,8 @@
           Manage your account details, preferences, and security settings.
         </p>
       </div>
-      <!-- Loading State -->
+      <!-- Settings Content -->
       <div
-        v-if="loadingStore.hasForegroundOperations"
-        class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6">
-        <div class="animate-pulse flex space-x-4">
-          <div
-            class="rounded-full bg-gray-300 dark:bg-gray-600 h-12 w-12"></div>
-          <div class="flex-1 space-y-2 py-1">
-            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
               <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-5/6"></div>
             </div>
           </div>
@@ -138,7 +129,7 @@
       </div>
 
       <!-- Settings Content -->
-      <div v-else class="space-y-6">
+      <div class="space-y-6">
         <!-- Profile Settings Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -590,6 +581,9 @@
         </div>
       </div>
     </div>
+    
+    <!-- Loading Overlay -->
+    <LoadingOverlay />
   </div>
 </template>
 

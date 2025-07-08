@@ -36,14 +36,6 @@
     message?: string;
   } | null>(null);
 
-  // Import Progress Dialog State
-  const importProgress = ref({
-    current: 0,
-    total: 0,
-    message: 'Import wird vorbereitet...',
-    isComplete: false
-  });
-
   // Ein-/Ausklappen der Bibliothek-Sektion
   const isLibrarySectionExpanded = ref(true);
 
@@ -936,26 +928,8 @@
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div
-      v-if="loadingStore.hasForegroundOperations"
-      class="flex flex-col items-center justify-center py-16 space-y-6">
-      <div class="relative">
-        <!-- Animated Ring -->
-        <div
-          class="w-16 h-16 border-4 border-purple-200/20 border-t-purple-500 rounded-full animate-spin"></div>
-        <div
-          class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-blue-500 rounded-full animate-spin animation-delay-75"></div>
-      </div>
-      <div class="text-center">
-        <h3 class="text-lg font-semibold text-gray-300 mb-2">
-          Wird geladen...
-        </h3>
-        <p class="text-gray-400">
-          {{ loadingStore.primaryOperation?.label || 'Wird geladen...' }}
-        </p>
-      </div>
-    </div>
+    <!-- Loading Overlay -->
+    <LoadingOverlay />
     <!-- Confirm Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
