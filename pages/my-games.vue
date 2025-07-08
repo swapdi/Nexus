@@ -417,34 +417,31 @@
                           type="text"
                           placeholder="Steam ID oder Profil-URL eingeben..."
                           class="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          :disabled="loadingStore.hasForegroundOperations"
+                          :disabled="loadingStore.isLoading"
                           @keypress.enter="
                             steamInput.trim() &&
-                              !loadingStore.hasForegroundOperations &&
+                              !loadingStore.isLoading &&
                               importSteamLibrary()
                           " />
 
                         <button
                           @click.stop="importSteamLibrary"
                           :disabled="
-                            !steamInput.trim() ||
-                            loadingStore.hasForegroundOperations
+                            !steamInput.trim() || loadingStore.isLoading
                           "
                           class="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2">
                           <Icon
                             :name="
-                              loadingStore.hasForegroundOperations
+                              loadingStore.isLoading
                                 ? 'heroicons:arrow-path-16-solid'
                                 : 'heroicons:arrow-down-tray-16-solid'
                             "
                             :class="[
                               'w-4 h-4',
-                              loadingStore.hasForegroundOperations
-                                ? 'animate-spin'
-                                : ''
+                              loadingStore.isLoading ? 'animate-spin' : ''
                             ]" />
                           {{
-                            loadingStore.hasForegroundOperations
+                            loadingStore.isLoading
                               ? 'Importiere...'
                               : 'Bibliothek importieren'
                           }}
@@ -786,10 +783,7 @@
           class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-gray-700/30">
           <!-- Linke Seite: Aktions-Button oder Selection-Modus -->
           <div
-            v-if="
-              !loadingStore.hasForegroundOperations &&
-              gamesStore.games.length > 0
-            "
+            v-if="!loadingStore.isLoading && gamesStore.games.length > 0"
             class="flex items-center gap-3">
             <!-- Löschen Button (Normal Mode) -->
             <button
@@ -861,10 +855,7 @@
 
           <!-- Rechte Seite: View Mode Toggle und Game Count -->
           <div
-            v-if="
-              !loadingStore.hasForegroundOperations &&
-              gamesStore.games.length > 0
-            "
+            v-if="!loadingStore.isLoading && gamesStore.games.length > 0"
             class="flex items-center gap-3">
             <!-- Game Count -->
             <span class="text-xs text-gray-500 whitespace-nowrap">
@@ -897,9 +888,7 @@
     </div>
 
     <!-- Empty State -->
-    <div
-      v-else-if="!loadingStore.hasForegroundOperations"
-      class="text-center py-16 px-6">
+    <div v-else-if="!loadingStore.isLoading" class="text-center py-16 px-6">
       <div
         class="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-12 max-w-md mx-auto">
         <Icon

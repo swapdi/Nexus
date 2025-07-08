@@ -44,7 +44,7 @@
       </div>
 
       <!-- Favorite Icon -->
-      <div v-if="!isSelectionMode" class="absolute top-1 right-1 z-10">
+      <div v-if="!isSelectionMode" class="absolute bottom-1 left-1 z-10">
         <button
           @click.stop="toggleFavorite"
           class="w-6 h-6 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite">

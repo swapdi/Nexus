@@ -1,0 +1,5 @@
+- Anstatt bibliotheksimport -> Konto Verknüpfen (ggf. ProfilID verknüpfen) und beim erstmaligen starten auf neuerungen überprüfen
+- Plattformen auf my-games = 0?
+- Deals!!!
+- Suchleiste für alle Games -> gleichzeitig Deals laden
+- archievements und levelsystem entfernen

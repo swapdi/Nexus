@@ -67,9 +67,14 @@
       <div
         v-if="gameData.totalRating"
         class="absolute bottom-1 right-1 bg-black/80 backdrop-blur-sm px-1 py-0.5 rounded text-xs">
-        <span class="text-yellow-400 font-medium">{{
-          (gameData.totalRating / 10).toFixed(1)
-        }}</span>
+        <div class="flex items-center gap-0.5">
+          <Icon
+            name="heroicons:star-16-solid"
+            class="w-2.5 h-2.5 text-yellow-400" />
+          <span class="text-yellow-400 font-medium">{{
+            (gameData.totalRating / 10).toFixed(1)
+          }}</span>
+        </div>
       </div>
     </div>
 

@@ -65,7 +65,7 @@
       <!-- Rating Badge -->
       <div
         v-if="gameData.totalRating"
-        class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md">
+        class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md">
         <div class="flex items-center gap-1">
           <Icon
             name="heroicons:star-16-solid"
@@ -100,14 +100,6 @@
           +{{ gameData.genres.length - 2 }}
         </span>
       </div>
-
-      <!-- Summary -->
-      <p
-        v-if="gameData.summary"
-        class="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
-        {{ gameData.summary }}
-      </p>
-
       <!-- Spacer to push stats to bottom -->
       <div class="flex-1"></div>
 

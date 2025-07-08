@@ -595,7 +595,7 @@
       <div v-else class="space-y-4">
         <div
           v-for="achievement in recentAchievements"
-          :key="achievement.id"
+          :key="achievement.achievement.id"
           class="flex items-center space-x-4 p-4 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:bg-gray-700/40 transition-colors">
           <div class="flex-shrink-0">
             <div

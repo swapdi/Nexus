@@ -118,17 +118,6 @@
         </p>
       </div>
       <!-- Settings Content -->
-      <div
-              <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-5/6"></div>
-            </div>
-          </div>
-        </div>
-        <p class="text-center text-gray-500 dark:text-gray-400 mt-4">
-          Loading account details...
-        </p>
-      </div>
-
-      <!-- Settings Content -->
       <div class="space-y-6">
         <!-- Profile Settings Card -->
         <div
@@ -322,7 +311,11 @@
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" class="sr-only peer" checked />
+                  <input
+                    type="checkbox"
+                    class="sr-only peer"
+                    checked
+                    aria-label="Toggle dark mode" />
                   <div
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
@@ -340,7 +333,11 @@
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" class="sr-only peer" checked />
+                  <input
+                    type="checkbox"
+                    class="sr-only peer"
+                    checked
+                    aria-label="Toggle email notifications" />
                   <div
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
@@ -358,7 +355,11 @@
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" class="sr-only peer" checked />
+                  <input
+                    type="checkbox"
+                    class="sr-only peer"
+                    checked
+                    aria-label="Toggle achievement notifications" />
                   <div
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
@@ -581,7 +582,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Loading Overlay -->
     <LoadingOverlay />
   </div>

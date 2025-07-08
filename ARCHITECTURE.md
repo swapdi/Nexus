@@ -83,7 +83,7 @@ Jede Schicht hat eine spezifische Verantwortung:
 - `user.store.ts` - User-State-Management
 - `games.store.ts` - Spiele-State-Management
 - `deals.store.ts` - Deal-State-Management
-- `loading.store.ts` - Loading-States
+- `loading.store.ts` - Vereinfachte Loading-States (ohne Progress-Tracking)
 - `notify.store.ts` - Benachrichtigungen
 
 #### Composables:

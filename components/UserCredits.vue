@@ -16,12 +16,6 @@
         class="text-slate-400 font-semibold text-sm group-hover:text-white transition-colors duration-300">
         {{ formattedCredits }}
       </span>
-
-      <!-- "Credits" Label -->
-      <span
-        class="text-slate-400 text-xs font-medium group-hover:text-white transition-colors duration-300">
-        Credits
-      </span>
     </div>
   </NuxtLink>
 </template>
