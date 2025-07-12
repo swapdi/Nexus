@@ -1,132 +1,109 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-import type {
-  DealFilters,
-  DealSortOptions,
-  DealWithRelations
-} from '~/lib/services/deals.service';
+import { computed, readonly, ref } from 'vue';
+import type { DealWithRelations } from '~/lib/services/deals.service';
 import { useLoading } from '~/stores/loading.store';
+
+export type DealSortOptions =
+  | 'discount-desc'
+  | 'price-asc'
+  | 'recent'
+  | 'ending-soon';
+
+export interface DealSearchFilters {
+  gameId?: number;
+  storeName?: string;
+  priceMax?: number;
+  priceMin?: number;
+  discountMin?: number;
+  isFreebie?: boolean;
+  isActive?: boolean;
+  source?: string;
+  limit?: number;
+  offset?: number;
+}
 
 export const useDealsStore = defineStore('deals', () => {
   // Loading store integration
-  const { loading: loadingHelper } = useLoading();
+  const { loading } = useLoading();
 
   // State
   const deals = ref<DealWithRelations[]>([]);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
+  const bestDeals = ref<DealWithRelations[]>([]);
+  const freeGames = ref<DealWithRelations[]>([]);
   const availableStores = ref<string[]>([]);
-  const dealStats = ref<{
-    totalDeals: number;
-    freebies: number;
-    averageDiscount: number;
-    topStores: Array<{ name: string; count: number }>;
-  } | null>(null);
+  const error = ref<string | null>(null);
 
-  // Current filters and sorting
-  const currentFilters = ref<DealFilters>({});
+  // Current filters und sorting
+  const currentFilters = ref<DealSearchFilters>({});
   const currentSortBy = ref<DealSortOptions>('recent');
 
   const { $client } = useNuxtApp();
+
   /**
-   * Lade alle Deals mit aktuellen Filtern
+   * Synchronisiert CheapShark Deals und lädt alle Deals aus der Datenbank
+   * Grund: Hauptfunktion für Deal-Seite - lädt CheapShark, speichert neue, gibt DB-Deals zurück
    */
-  async function fetchDeals(filters?: DealFilters, sortBy?: DealSortOptions) {
-    return await loadingHelper(
-      'deals-fetch',
-      'Lade aktuelle Deals...',
+  async function syncAndLoadDeals() {
+    return await loading(
+      'sync-and-load-deals',
+      'Synchronisiere Deals und lade aus Datenbank...',
       async () => {
+        const notifyStore = useNotifyStore();
         error.value = null;
 
         try {
-          const filtersToUse = filters || currentFilters.value;
-          const sortToUse = sortBy || currentSortBy.value;
-
-          const response = await $client.deals.getDeals.query({
-            filters: filtersToUse,
-            sortBy: sortToUse
+          // Grund: Neue Router-Funktion die CheapShark sync + DB load kombiniert
+          const response = await $client.deals.syncAndLoadDeals.query({
+            pageSize: 50,
+            sortBy: 'Deal Rating',
+            desc: true,
+            cleanupDays: 7
           });
 
-          if (response.success) {
-            deals.value = response.deals;
-            currentFilters.value = filtersToUse;
-            currentSortBy.value = sortToUse;
-          } else {
-            throw new Error('Fehler beim Laden der Angebote');
-          }
-        } catch (err) {
+          // Grund: Deals in Store setzen
+          deals.value = response.deals;
+
+          // Grund: Erfolgreiche Synchronisation melden
+          notifyStore.notify(
+            `${response.syncedCount} Deals synchronisiert, ${response.totalDeals} Deals geladen`,
+            0
+          );
+
+          return response;
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Synchronisieren der Deals';
+          notifyStore.notify(error.value, 3);
+          console.error('Error syncing and loading deals:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
+  }
+
+  /**
+   * Fallback: Lade nur Deals aus Datenbank (ohne CheapShark sync)
+   */
+  async function fetchDeals(filters?: DealSearchFilters) {
+    return await loading(
+      'deals-fetch',
+      'Lade aktuelle Deals...',
+      async () => {
+        const notifyStore = useNotifyStore();
+        error.value = null;
+
+        try {
+          const filtersToUse = { ...filters, isActive: true };
+
+          const response = await $client.deals.getAllDeals.query(filtersToUse);
+
+          console.log(response);
+          deals.value = response;
+          currentFilters.value = filtersToUse;
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Laden der Angebote';
+          notifyStore.notify(error.value, 3);
           console.error('Error fetching deals:', err);
-          error.value = 'Fehler beim Laden der Angebote';
-          throw err;
-        }
-      },
-      'data'
-    );
-  }
-  /**
-   * Lade verfügbare Stores für Filter
-   */
-  async function fetchAvailableStores() {
-    return await loadingHelper(
-      'stores-fetch',
-      'Lade verfügbare Stores...',
-      async () => {
-        try {
-          const response = await $client.deals.getAvailableStores.query();
-          if (response.success) {
-            availableStores.value = response.stores;
-          }
-        } catch (err) {
-          console.error('Error fetching available stores:', err);
-          throw err;
-        }
-      },
-      'data'
-    );
-  }
-
-  /**
-   * Lade Deal-Statistiken
-   */
-  async function fetchDealStats() {
-    return await loadingHelper(
-      'stats-fetch',
-      'Lade Deal-Statistiken...',
-      async () => {
-        try {
-          const response = await $client.deals.getDealStats.query();
-          if (response.success) {
-            dealStats.value = response.stats;
-          }
-        } catch (err) {
-          console.error('Error fetching deal stats:', err);
-          throw err;
-        }
-      },
-      'data'
-    );
-  }
-
-  /**
-   * Lade Deals für ein bestimmtes Spiel
-   */
-  async function fetchDealsByGameId(
-    gameId: number
-  ): Promise<DealWithRelations[]> {
-    return await loadingHelper(
-      'game-deals-fetch',
-      `Lade Deals für Spiel...`,
-      async () => {
-        try {
-          const response = await $client.deals.getDealsByGameId.query({
-            gameId
-          });
-          if (response.success) {
-            return response.deals;
-          }
-          return [];
-        } catch (err) {
-          console.error('Error fetching deals by game ID:', err);
           throw err;
         }
       },
@@ -137,43 +114,56 @@ export const useDealsStore = defineStore('deals', () => {
   /**
    * Setze Filter und lade Deals neu
    */
-  async function setFilters(filters: DealFilters) {
-    await fetchDeals(filters, currentSortBy.value);
+  async function setFilters(filters: DealSearchFilters) {
+    currentFilters.value = filters;
+    await fetchDeals(filters);
   }
 
   /**
    * Setze Sortierung und lade Deals neu
    */
   async function setSortBy(sortBy: DealSortOptions) {
-    await fetchDeals(currentFilters.value, sortBy);
+    currentSortBy.value = sortBy;
+    // Sortierung wird lokal angewendet, kein API-Call nötig
   }
 
   /**
    * Lösche alle Filter
    */
   async function clearFilters() {
-    const emptyFilters: DealFilters = {};
-    await fetchDeals(emptyFilters, 'recent');
+    const emptyFilters: DealSearchFilters = {};
+    currentFilters.value = emptyFilters;
+    currentSortBy.value = 'recent';
+    await fetchDeals(emptyFilters);
   }
 
   /**
    * Refresh/reload aktueller Deals
    */
   async function refreshDeals() {
-    await fetchDeals();
+    await syncAndLoadDeals();
+  }
+
+  /**
+   * Hole verfügbare Stores aus aktuellen Deals
+   */
+  function updateAvailableStores() {
+    const stores = new Set<string>();
+    deals.value.forEach(deal => stores.add(deal.storeName));
+    availableStores.value = Array.from(stores).sort();
   }
 
   // Computed Properties
 
   /**
-   * Gefilterte Deals für lokale Suche
+   * Lokale Suche in geladenen Deals
    */
   const searchDeals = computed(() => {
     return (searchTerm: string) => {
-      if (!searchTerm.trim()) return deals.value;
+      if (!searchTerm.trim()) return sortedDeals.value;
 
       const term = searchTerm.toLowerCase();
-      return deals.value.filter(
+      return sortedDeals.value.filter(
         (deal: DealWithRelations) =>
           deal.title.toLowerCase().includes(term) ||
           deal.game.name.toLowerCase().includes(term) ||
@@ -186,66 +176,43 @@ export const useDealsStore = defineStore('deals', () => {
   });
 
   /**
-   * Freebies (kostenlose Spiele)
+   * Sortierte Deals basierend auf currentSortBy
+   */
+  const sortedDeals = computed(() => {
+    const sorted = [...deals.value];
+
+    switch (currentSortBy.value) {
+      case 'discount-desc':
+        return sorted.sort(
+          (a, b) => (b.discountPercent || 0) - (a.discountPercent || 0)
+        );
+      case 'price-asc':
+        return sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+      case 'recent':
+        return sorted.sort(
+          (a, b) =>
+            new Date(b.discoveredAt).getTime() -
+            new Date(a.discoveredAt).getTime()
+        );
+      case 'ending-soon':
+        return sorted.sort((a, b) => {
+          if (!a.validUntil && !b.validUntil) return 0;
+          if (!a.validUntil) return 1;
+          if (!b.validUntil) return -1;
+          return (
+            new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
+          );
+        });
+      default:
+        return sorted;
+    }
+  });
+
+  /**
+   * Freebies (kostenlose Spiele) aus aktuellen Deals
    */
   const freebies = computed(() =>
     deals.value.filter((deal: DealWithRelations) => deal.isFreebie)
-  );
-
-  /**
-   * Deals mit hohen Rabatten (>= 75%)
-   */
-  const highDiscountDeals = computed(() =>
-    deals.value.filter(
-      (deal: DealWithRelations) =>
-        deal.discountPercent && deal.discountPercent >= 75
-    )
-  );
-
-  /**
-   * Deals die bald ablaufen (innerhalb 24 Stunden)
-   */
-  const endingSoonDeals = computed(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    return deals.value.filter(
-      (deal: DealWithRelations) =>
-        deal.validUntil &&
-        new Date(deal.validUntil) <= tomorrow &&
-        new Date(deal.validUntil) > new Date()
-    );
-  });
-
-  /**
-   * Gruppiere Deals nach Store
-   */
-  const dealsByStore = computed(() => {
-    const grouped: Record<string, DealWithRelations[]> = {};
-
-    deals.value.forEach((deal: DealWithRelations) => {
-      if (!grouped[deal.storeName]) {
-        grouped[deal.storeName] = [];
-      }
-      grouped[deal.storeName].push(deal);
-    });
-
-    return grouped;
-  });
-
-  /**
-   * Günstigste Deals (unter 10€)
-   */
-  const cheapDeals = computed(() =>
-    deals.value
-      .filter(
-        (deal: DealWithRelations) =>
-          deal.price !== null && deal.price > 0 && deal.price <= 10
-      )
-      .sort(
-        (a: DealWithRelations, b: DealWithRelations) =>
-          (a.price || 0) - (b.price || 0)
-      )
   );
 
   // Helper Functions
@@ -269,56 +236,19 @@ export const useDealsStore = defineStore('deals', () => {
     return `-${Math.round(discount)}%`;
   }
 
-  /**
-   * Berechne verbleibende Zeit für Deal
-   */
-  function getTimeRemaining(validUntil: string | null): string | null {
-    if (!validUntil) return null;
-
-    const now = new Date();
-    const end = new Date(validUntil);
-    const diff = end.getTime() - now.getTime();
-
-    if (diff <= 0) return 'Abgelaufen';
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-    if (days > 0) return `${days} Tag${days === 1 ? '' : 'e'}`;
-    if (hours > 0) return `${hours} Stunde${hours === 1 ? '' : 'n'}`;
-
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${minutes} Minute${minutes === 1 ? '' : 'n'}`;
-  }
-
-  /**
-   * Prüfe ob Deal bald abläuft (< 24h)
-   */
-  function isEndingSoon(validUntil: string | null): boolean {
-    if (!validUntil) return false;
-
-    const now = new Date();
-    const end = new Date(validUntil);
-    const diff = end.getTime() - now.getTime();
-
-    return diff > 0 && diff <= 24 * 60 * 60 * 1000; // 24 Stunden
-  }
-
   return {
     // State
     deals: readonly(deals),
-    loading: readonly(loading),
-    error: readonly(error),
+    bestDeals: readonly(bestDeals),
+    freeGames: readonly(freeGames),
     availableStores: readonly(availableStores),
-    dealStats: readonly(dealStats),
+    error: readonly(error),
     currentFilters: readonly(currentFilters),
     currentSortBy: readonly(currentSortBy),
 
-    // Actions
+    // Actions - Nur die wichtigsten für den Workflow
+    syncAndLoadDeals,
     fetchDeals,
-    fetchAvailableStores,
-    fetchDealStats,
-    fetchDealsByGameId,
     setFilters,
     setSortBy,
     clearFilters,
@@ -326,16 +256,11 @@ export const useDealsStore = defineStore('deals', () => {
 
     // Computed
     searchDeals,
+    sortedDeals,
     freebies,
-    highDiscountDeals,
-    endingSoonDeals,
-    dealsByStore,
-    cheapDeals,
 
     // Helpers
     formatPrice,
-    formatDiscount,
-    getTimeRemaining,
-    isEndingSoon
+    formatDiscount
   };
 });

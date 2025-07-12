@@ -8,6 +8,8 @@
 
 - **Verwende konsistente Namenskonventionen, Dateistrukturen und Architekturmuster**, wie in `PLANNING.md` beschrieben.
 
+- Schreibe nur die Funktionen die für die geforderte Aufgabe notwendig sind, ohne zusätzliche Features oder Änderungen.
+
 ### 🧱 Codestruktur & Modularität
 
 - **Organisieren Sie Code in klar getrennte Module**, gruppiert nach Funktion oder Verantwortung.

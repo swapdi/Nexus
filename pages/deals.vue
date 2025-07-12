@@ -1,12 +1,10 @@
 <script setup lang="ts">
-  import type {
-    DealSortOptions,
-    DealWithRelations
-  } from '~/lib/services/deals.service';
+  import type { DealWithRelations } from '~/lib/services/deals.service';
+  import type { DealSortOptions } from '~/stores/deals.store';
 
   const userStore = useUserStore();
-  // Using the store auto-import from Nuxt
   const dealsStore = useDealsStore();
+  const loadingStore = useLoadingStore();
 
   definePageMeta({
     middleware: ['auth'],
@@ -21,12 +19,15 @@
   const hideOwned = ref(false);
   const sortBy = ref<DealSortOptions>('discount-desc');
 
+  // Loading state aus LoadingStore
+  const isLoading = computed(() => loadingStore.isLoading);
+
   // Initialize data
   onMounted(async () => {
     await userStore.init();
-    await dealsStore.fetchDeals();
-    await dealsStore.fetchAvailableStores();
-    await dealsStore.fetchDealStats();
+
+    // Grund: Neue Sync-Funktion - lädt CheapShark Deals, speichert neue in DB, gibt alle DB-Deals zurück
+    await dealsStore.syncAndLoadDeals();
   });
 
   // Computed properties for filters
@@ -103,13 +104,18 @@
   });
   // Statistics
   const statistics = computed(() => {
-    const stats = dealsStore.dealStats;
     return {
-      totalDeals: stats?.totalDeals || dealsStore.deals.length,
-      freeGames: stats?.freebies || dealsStore.freebies.length,
-      averageDiscount: stats?.averageDiscount
-        ? Math.round(stats.averageDiscount)
-        : 0,
+      totalDeals: dealsStore.deals.length,
+      freeGames: dealsStore.freebies.length,
+      averageDiscount:
+        dealsStore.deals.length > 0
+          ? Math.round(
+              dealsStore.deals.reduce(
+                (sum, deal) => sum + (deal.discountPercent || 0),
+                0
+              ) / dealsStore.deals.length
+            )
+          : 0,
       maxDiscount: Math.max(
         ...dealsStore.deals.map(d => d.discountPercent || 0),
         0
@@ -135,21 +141,6 @@
     return deal.game.genres.slice(0, 2).join(', ') || 'Unbekannt';
   };
 
-  const getTimeRemainingColor = (date: Date | null): string => {
-    if (!date) return 'text-green-400';
-    const remaining = dealsStore.getTimeRemaining(date.toISOString());
-    if (!remaining || remaining === 'Abgelaufen') return 'text-red-400';
-    if (remaining.includes('Stunde') || remaining.includes('Minute'))
-      return 'text-red-400';
-    if (remaining.includes('1 Tag')) return 'text-yellow-400';
-    return 'text-green-400';
-  };
-
-  const formatDate = (date: Date | null): string => {
-    if (!date) return 'Unbegrenzt';
-    return dealsStore.getTimeRemaining(date.toISOString()) || 'Abgelaufen';
-  };
-
   const isGameOwned = (deal: DealWithRelations): boolean => {
     // TODO: Implement ownership check against user's library
     return false;
@@ -162,10 +153,11 @@
   };
 
   const refreshDeals = async () => {
-    await dealsStore.refreshDeals();
+    // Grund: Verwende neue Sync-Funktion für komplettes Refresh
+    await dealsStore.syncAndLoadDeals();
   };
 
-  // Deal Aggregation (to be implemented)
+  // Deal Aggregation
   const isAggregating = ref(false);
   const aggregationMessage = ref<string | null>(null);
 
@@ -174,10 +166,24 @@
     aggregationMessage.value = null;
 
     try {
-      // TODO: Implement actual deal aggregation via TRPC
-      // await $client.deals.aggregateDeals.mutate();
+      // Implementiere echte CheapShark Deal-Aggregation
+      const { $client } = useNuxtApp();
 
-      aggregationMessage.value = `Deal-Aggregation noch nicht implementiert.`;
+      // Beispiel: Hole populäre Spiele und importiere deren Deals
+      const cheapSharkDeals = await $client.deals.getCheapSharkDeals.query({
+        pageSize: 50,
+        sortBy: 'Deal Rating',
+        desc: true
+      });
+
+      if (cheapSharkDeals.length > 0) {
+        aggregationMessage.value = `${cheapSharkDeals.length} Deals von CheapShark gefunden und verarbeitet.`;
+
+        // Cache invalidieren um neue Deals zu laden
+        await dealsStore.refreshDeals();
+      } else {
+        aggregationMessage.value = 'Keine neuen Deals gefunden.';
+      }
 
       // Auto-hide message after 3 seconds
       setTimeout(() => {
@@ -213,12 +219,12 @@
         <div class="flex gap-2">
           <button
             @click="refreshDeals"
-            :disabled="dealsStore.loading"
+            :disabled="isLoading"
             class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2">
             <Icon
               name="heroicons:arrow-path-20-solid"
               class="w-4 h-4"
-              :class="{ 'animate-spin': dealsStore.loading }" />
+              :class="{ 'animate-spin': isLoading }" />
             Aktualisieren
           </button>
 
@@ -237,7 +243,7 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="dealsStore.loading" class="text-center py-8">
+      <div v-if="isLoading" class="text-center py-8">
         <Icon
           name="heroicons:arrow-path-20-solid"
           class="w-8 h-8 animate-spin text-green-400 mx-auto mb-2" />
@@ -306,7 +312,7 @@
 
     <!-- Filter und Suche -->
     <div
-      v-if="!dealsStore.loading && !dealsStore.error"
+      v-if="!isLoading && !dealsStore.error"
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
       <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
         <!-- Suche -->
@@ -400,7 +406,7 @@
 
     <!-- Deals Grid -->
     <div
-      v-if="!dealsStore.loading && !dealsStore.error"
+      v-if="!isLoading && !dealsStore.error"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div
         v-for="deal in filteredDeals"
@@ -480,18 +486,6 @@
                 <div class="text-green-400 font-bold text-lg">KOSTENLOS</div>
               </div>
             </div>
-
-            <!-- Gültigkeitsdauer -->
-            <div
-              v-if="deal.validUntil"
-              class="flex justify-between items-center">
-              <span class="text-gray-400">Gültig:</span>
-              <span
-                :class="getTimeRemainingColor(deal.validUntil)"
-                class="font-medium">
-                {{ formatDate(deal.validUntil) }}
-              </span>
-            </div>
           </div>
 
           <!-- Action Buttons -->
@@ -524,9 +518,7 @@
 
     <!-- Leerer Zustand -->
     <div
-      v-if="
-        !dealsStore.loading && !dealsStore.error && filteredDeals.length === 0
-      "
+      v-if="!isLoading && !dealsStore.error && filteredDeals.length === 0"
       class="text-center py-12">
       <Icon
         name="heroicons:tag-20-solid"
@@ -539,11 +531,7 @@
 
     <!-- No deals state when store is empty -->
     <div
-      v-if="
-        !dealsStore.loading &&
-        !dealsStore.error &&
-        dealsStore.deals.length === 0
-      "
+      v-if="!isLoading && !dealsStore.error && dealsStore.deals.length === 0"
       class="text-center py-12">
       <Icon
         name="heroicons:tag-20-solid"
@@ -561,9 +549,6 @@
       </button>
     </div>
   </div>
-
-  <!-- Loading Overlay -->
-  <LoadingOverlay />
 </template>
 
 <style scoped>
