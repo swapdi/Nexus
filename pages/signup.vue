@@ -23,18 +23,6 @@
     try {
       loading.value = true;
       provider.value = 'email';
-      // Option: Metadaten für handle_new_user Trigger hinzufügen (z.B. display_name, falls vorhanden)
-      // const { data, error } = await supabase.auth.signUp({
-      //   email: email.value,
-      //   password: password.value,
-      //   options: {
-      //     data: {
-      //       display_name: 'Initialer Name' // Optional, falls du ein Namensfeld hinzufügst
-      //     },
-      //     emailRedirectTo: `${config.public.siteRootUrl}/confirm` // Wichtig für E-Mail Bestätigung
-      //   }
-      // });
-
       const { data, error } = await supabase.auth.signUp({
         email: email.value,
         password: password.value,
@@ -47,7 +35,6 @@
         throw error;
       } else {
         signUpOk.value = true;
-        // Optional: E-Mail und Passwort-Felder leeren
         email.value = '';
         password.value = '';
         confirmPassword.value = '';
@@ -63,7 +50,7 @@
     }
   };
   const handleOAuthSignup = async (
-    providerName: 'google' | 'discord' | 'github'
+    providerName: 'google' | 'discord' | 'github' | 'twitch'
   ) => {
     console.log(`handleOAuthSignup for ${providerName}`);
     try {
@@ -89,15 +76,6 @@
 
   definePageMeta({
     title: 'Registrieren' // Titel angepasst
-  });
-
-  watchEffect(async () => {
-    if (user.value) {
-      // Ggf. userStore.init() hier, falls es nach Registrierung & Auto-Login relevant ist
-      // Direkt nach SignUp ist der User oft noch nicht voll "aktiv" (E-Mail Bestätigung)
-      // Aber Supabase setzt user.value oft schon.
-      // navigateTo('/dashboard', { replace: true }); // Weiterleitung erfolgt erst nach E-Mail Bestätigung wirklich sinnvoll
-    }
   });
 </script>
 
@@ -243,6 +221,22 @@
             <Icon name="logos:github-icon" class="w-5 h-5" />
             <span v-if="loading && provider === 'github'">Verbinde...</span>
             <span v-else>Mit GitHub fortfahren</span>
+          </button>
+          <button
+            @click="handleOAuthSignup('twitch')"
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-600 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20px"
+              height="20px">
+              <path
+                fill="#9146ff"
+                d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+            </svg>
+            <span v-if="loading && provider === 'twitch'">Verbinde...</span>
+            <span v-else>Mit Twitch fortfahren</span>
           </button>
         </div>
       </div>
