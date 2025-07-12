@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, readonly, ref } from 'vue';
-import type { Deal } from '~/prisma/client';
+import type { DealWithGame } from '~/lib/services/deals.service';
 import { useLoading } from '~/stores/loading.store';
 
 export type DealSortOptions =
@@ -27,9 +27,9 @@ export const useDealsStore = defineStore('deals', () => {
   const { loading } = useLoading();
 
   // State
-  const deals = ref<Deal[]>([]);
-  const bestDeals = ref<Deal[]>([]);
-  const freeGames = ref<Deal[]>([]);
+  const deals = ref<DealWithGame[]>([]);
+  const bestDeals = ref<DealWithGame[]>([]);
+  const freeGames = ref<DealWithGame[]>([]);
   const availableStores = ref<string[]>([]);
   const error = ref<string | null>(null);
 
@@ -41,7 +41,7 @@ export const useDealsStore = defineStore('deals', () => {
 
   /**
    * Synchronisiert CheapShark Deals und lädt alle Deals aus der Datenbank
-   * Grund: Hauptfunktion für Deal-Seite - lädt CheapShark, speichert neue, gibt DB-Deals zurück
+   * Grund: Hauptfunktion für DealWithGame-Seite - lädt CheapShark, speichert neue, gibt DB-Deals zurück
    */
   async function syncAndLoadDeals() {
     return await loading(
@@ -164,7 +164,7 @@ export const useDealsStore = defineStore('deals', () => {
 
       const term = searchTerm.toLowerCase();
       return sortedDeals.value.filter(
-        (deal: Deal) =>
+        (deal: DealWithGame) =>
           deal.title.toLowerCase().includes(term) ||
           deal.storeName.toLowerCase().includes(term)
       );
@@ -208,7 +208,7 @@ export const useDealsStore = defineStore('deals', () => {
    * Freebies (kostenlose Spiele) aus aktuellen Deals
    */
   const freebies = computed(() =>
-    deals.value.filter((deal: Deal) => deal.isFreebie)
+    deals.value.filter((deal: DealWithGame) => deal.isFreebie)
   );
 
   // Helper Functions

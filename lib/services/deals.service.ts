@@ -1,13 +1,16 @@
 // Deals Service - BEREINIGT
 // Grund: Nur noch die Funktionen die für den syncAndLoadDeals Workflow benötigt werden
 
-import type { Deal } from '~/prisma/client';
+import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
 import { GamesService } from './games.service';
 
 const prisma = new PrismaClient();
 
+export interface DealWithGame extends Deal {
+  game: Game;
+}
 export interface DealCreateInput {
   gameId: number;
   title: string;
@@ -46,7 +49,7 @@ export namespace DealsService {
    */
   export async function searchDeals(
     filters: DealSearchFilters = {}
-  ): Promise<Deal[]> {
+  ): Promise<DealWithGame[]> {
     try {
       const where: any = {};
 
@@ -87,7 +90,7 @@ export namespace DealsService {
         skip: filters.offset
       });
 
-      return deals as Deal[];
+      return deals as DealWithGame[];
     } catch (error) {
       console.error('Error searching deals:', error);
       throw new Error(
@@ -128,11 +131,16 @@ export namespace DealsService {
       let finalGameId = gameId;
       if (!finalGameId) {
         try {
-          const gameResult = await GamesService.findOrCreateGame(
-            cheapSharkDeal.title
-          );
-          if (gameResult.success && gameResult.game) {
+          // Grund: Verwende verbesserte IGDB-Relevanz-Suche
+          const gameResult =
+            await GamesService.findOrCreateGameWithIGDBRelevance(
+              cheapSharkDeal.title
+            );
+          if (gameResult && gameResult.success && gameResult.game) {
             finalGameId = gameResult.game.id;
+            console.log(
+              `Found/created game: ${gameResult.game.name} (ID: ${finalGameId}) for deal: ${cheapSharkDeal.title}`
+            );
           } else {
             console.warn(
               `Could not find/create game for deal: ${cheapSharkDeal.title}`

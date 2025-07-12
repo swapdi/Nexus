@@ -113,93 +113,6 @@ export namespace GamesService {
   }
 
   /**
-   * Finde oder erstelle ein Spiel basierend auf dem Namen
-   * Versucht optional IGDB-Daten zu finden, aber scheitert nicht daran
-   */
-  export async function findOrCreateGame(
-    gameName: string
-  ): Promise<GameImportResult> {
-    try {
-      // Prüfe zuerst lokale Datenbank
-      const existingGame = await findGameByName(gameName);
-      if (existingGame) {
-        return {
-          success: true,
-          game: existingGame,
-          isNew: false,
-          message: 'Spiel bereits in der Datenbank'
-        };
-      }
-
-      // Versuche IGDB-Daten zu finden (optional)
-      try {
-        const { IGDBService } = await import('./igdb.service');
-        const igdbGameData = await IGDBService.searchAndConvertGame(gameName);
-
-        if (igdbGameData) {
-          // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
-          const existingByIGDB = await prisma.game.findUnique({
-            where: { igdbId: igdbGameData.id }
-          });
-
-          if (existingByIGDB) {
-            return {
-              success: true,
-              game: existingByIGDB,
-              isNew: false,
-              message: 'Spiel mit IGDB-ID bereits vorhanden'
-            };
-          }
-
-          // Erstelle Spiel mit IGDB-Daten
-          const newGame = await prisma.game.create({
-            data: {
-              igdbId: igdbGameData.id,
-              name: igdbGameData.name,
-              slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-              summary: igdbGameData.summary,
-              firstReleaseDate: igdbGameData.firstReleaseDate,
-              coverUrl: igdbGameData.coverUrl,
-              screenshots: igdbGameData.screenshotUrls || [],
-              totalRating: igdbGameData.totalRating,
-              genres: igdbGameData.genres || [],
-              developers: igdbGameData.developers || [],
-              publishers: igdbGameData.publishers || [],
-              lastSyncedAt: new Date(),
-              createdAt: new Date(),
-              updatedAt: new Date()
-            }
-          });
-
-          return {
-            success: true,
-            game: newGame,
-            isNew: true,
-            message: 'Spiel mit IGDB-Daten erstellt'
-          };
-        }
-      } catch (igdbError) {
-        console.log(`IGDB-Suche für "${gameName}" fehlgeschlagen:`, igdbError);
-        // Fahre mit minimalem Spiel fort
-      }
-
-      // Erstelle minimales Spiel ohne IGDB-Daten (Fallback)
-      const newGame = await createMinimalGame(gameName);
-      return {
-        success: true,
-        game: newGame,
-        isNew: true,
-        message: 'Spiel erstellt'
-      };
-    } catch (error) {
-      console.error('Fehler beim Finden/Erstellen des Spiels:', error);
-      const message =
-        error instanceof Error ? error.message : 'Unbekannter Fehler';
-      throw new Error(`Spiel konnte nicht importiert werden: ${message}`);
-    }
-  }
-
-  /**
    * Finde oder erstelle ein Spiel mit Steam Cover-URL Präferenz
    * Grund: Steam Cover-URLs sollen bevorzugt und überschrieben werden
    */
@@ -308,6 +221,183 @@ export namespace GamesService {
     }
   }
 
+  /**
+   * Verbesserte IGDB-Suche basierend auf Relevanz, Popularität und Erscheinungsjahr
+   * Grund: Wie IGDB-Webseite - nimmt das relevanteste erste Ergebnis
+   */
+  export async function findOrCreateGameWithIGDBRelevance(
+    gameName: string
+  ): Promise<GameImportResult | undefined> {
+    try {
+      // Prüfe zuerst lokale Datenbank
+      const existingGame = await findGameByName(gameName);
+      if (existingGame) {
+        return {
+          success: true,
+          game: existingGame,
+          isNew: false,
+          message: 'Spiel bereits in der Datenbank'
+        };
+      }
+
+      // Versuche verbesserte IGDB-Suche
+      try {
+        const { IGDBService } = await import('./igdb.service');
+
+        // Grund: Hole mehrere Ergebnisse und bewerte sie nach Relevanz
+        const searchResults = await IGDBService.searchGames(gameName, 20);
+
+        // Grund: Bewerte Ergebnisse nach IGDB-Webseiten-Logik
+        const bestMatch = findMostRelevantGame(gameName, searchResults);
+
+        // Grund: Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
+        const existingByIGDB = await prisma.game.findUnique({
+          where: { igdbId: bestMatch.id }
+        });
+
+        if (existingByIGDB) {
+          return {
+            success: true,
+            game: existingByIGDB,
+            isNew: false,
+            message: 'Spiel mit IGDB-ID bereits vorhanden'
+          };
+        }
+
+        // Grund: Hole detaillierte Daten für das beste Match
+        const newIGDBGame = await IGDBService.getGameDetails(bestMatch.id);
+        if (!newIGDBGame) {
+          throw new Error(`Failed to find game on IGDB`);
+        }
+        // Grund: Konvertiere IGDB-Daten zu unserem Format
+        const igdbGameData = IGDBService.convertIGDBGame(newIGDBGame);
+
+        // Grund: Erstelle Spiel mit IGDB-Daten
+        const newGame = await prisma.game.create({
+          data: {
+            igdbId: igdbGameData.id,
+            name: igdbGameData.name,
+            slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            summary: igdbGameData.summary,
+            firstReleaseDate: igdbGameData.firstReleaseDate,
+            coverUrl: igdbGameData.coverUrl,
+            screenshots: igdbGameData.screenshotUrls || [],
+            totalRating: igdbGameData.totalRating,
+            genres: igdbGameData.genres || [],
+            developers: igdbGameData.developers || [],
+            publishers: igdbGameData.publishers || [],
+            lastSyncedAt: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        return {
+          success: true,
+          game: newGame,
+          isNew: true,
+          message: `Spiel erstellt mit IGDB-Daten (ID: ${bestMatch.id})`
+        };
+      } catch (igdbError) {
+        console.error('IGDB Error:', igdbError);
+        // Grund: Fallback zu minimalem Spiel wenn IGDB fehlschlägt
+      }
+    } catch (error) {
+      console.error('Error in findOrCreateGameWithIGDBRelevance:', error);
+      throw new Error(
+        `Failed to find or create game: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
+    }
+  }
+
+  /**
+   * Findet das relevanteste Spiel basierend auf IGDB-Webseiten-Logik
+   * Grund: Sortierung nach Relevanz, Popularität und Erscheinungsjahr
+   */
+  function findMostRelevantGame(
+    searchQuery: string,
+    searchResults: any[]
+  ): any | null {
+    if (searchResults.length === 0) return null;
+
+    const normalizedQuery = searchQuery.toLowerCase().trim();
+
+    // Grund: Bewerte jedes Ergebnis nach mehreren Kriterien
+    const scoredResults = searchResults.map(game => {
+      const normalizedName = game.name.toLowerCase().trim();
+
+      let score = 0;
+
+      // Grund: Exakte Übereinstimmung hat höchste Priorität
+      if (normalizedName === normalizedQuery) {
+        score += 1000;
+      }
+
+      // Grund: Name beginnt mit Query
+      else if (normalizedName.startsWith(normalizedQuery)) {
+        score += 500;
+      }
+
+      // Grund: Query ist in Name enthalten
+      else if (normalizedName.includes(normalizedQuery)) {
+        score += 300;
+      }
+
+      // Grund: Ähnlichkeit über Wort-Übereinstimmungen
+      else {
+        const queryWords = normalizedQuery.split(/\s+/);
+        const nameWords = normalizedName.split(/\s+/);
+
+        const matchingWords = queryWords.filter((word: string) =>
+          nameWords.some(
+            (nameWord: string) =>
+              nameWord.includes(word) || word.includes(nameWord)
+          )
+        );
+
+        score += (matchingWords.length / queryWords.length) * 200;
+      }
+
+      // Grund: Neuere Spiele bevorzugen (falls Erscheinungsdatum vorhanden)
+      if (game.first_release_date) {
+        const releaseYear = new Date(
+          game.first_release_date * 1000
+        ).getFullYear();
+        const currentYear = new Date().getFullYear();
+
+        // Grund: Bonus für Spiele der letzten 20 Jahre
+        if (releaseYear >= currentYear - 20) {
+          score += Math.max(0, 50 - (currentYear - releaseYear));
+        }
+      }
+
+      // Grund: Spiele mit mehr Plattformen sind meist populärer
+      if (game.platforms && game.platforms.length > 0) {
+        score += Math.min(game.platforms.length * 5, 25);
+      }
+
+      return { game, score };
+    });
+
+    // Grund: Sortiere nach Score (höchster zuerst)
+    scoredResults.sort((a, b) => b.score - a.score);
+
+    console.log(`IGDB Relevance Search for "${searchQuery}":`);
+    console.log(
+      `Best match: "${scoredResults[0].game.name}" (Score: ${scoredResults[0].score})`
+    );
+
+    // Grund: Mindest-Score für Akzeptanz
+    if (scoredResults[0].score < 50) {
+      console.log(`Score too low (${scoredResults[0].score}), rejecting match`);
+      return null;
+    }
+
+    return scoredResults[0].game;
+  }
+
   // ============================================================================
   // USER GAMES OPERATIONEN
   // ============================================================================
@@ -332,10 +422,14 @@ export namespace GamesService {
     userId: number,
     gameName: string,
     playtimeMinutes?: number
-  ): Promise<UserGameWithDetails> {
+  ): Promise<UserGameWithDetails | null> {
     // Finde oder erstelle das Spiel
-    const importResult = await findOrCreateGame(gameName);
-
+    const importResult = await findOrCreateGameWithIGDBRelevance(gameName);
+    if (!importResult || !importResult.game) {
+      throw new Error(
+        `Spiel "${gameName}" konnte nicht gefunden oder erstellt werden.`
+      );
+    }
     // Prüfe ob User das Spiel bereits hat
     const existingUserGame = await prisma.userGame.findUnique({
       where: {
@@ -663,20 +757,6 @@ export namespace GamesService {
     });
 
     return reverseMatch;
-  }
-
-  /**
-   * Erstelle minimales Spiel ohne IGDB-Daten
-   */
-  async function createMinimalGame(gameName: string): Promise<Game> {
-    return prisma.game.create({
-      data: {
-        name: gameName,
-        slug: gameName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    });
   }
 
   /**

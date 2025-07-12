@@ -51,7 +51,7 @@ export const dealsRouter = router({
     .input(
       z
         .object({
-          pageSize: z.number().min(1).max(60).default(50),
+          pageSize: z.number().min(1).max(200).default(100),
           sortBy: z
             .enum([
               'Deal Rating',
@@ -73,7 +73,7 @@ export const dealsRouter = router({
     .query(async ({ input }) => {
       try {
         const {
-          pageSize = 50,
+          pageSize = 100,
           sortBy = 'Deal Rating',
           desc = true,
           cleanupDays = 7

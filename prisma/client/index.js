@@ -243,7 +243,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\jgram\\git\\Nexus\\prisma\\client",
+      "value": "c:\\Users\\jgram\\git\\Nexus\\prisma\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -257,7 +257,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\jgram\\git\\Nexus\\prisma\\schema.prisma",
+    "sourceFilePath": "c:\\Users\\jgram\\git\\Nexus\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
