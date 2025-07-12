@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, readonly, ref } from 'vue';
-import type { DealWithRelations } from '~/lib/services/deals.service';
+import type { Deal } from '~/prisma/client';
 import { useLoading } from '~/stores/loading.store';
 
 export type DealSortOptions =
@@ -27,9 +27,9 @@ export const useDealsStore = defineStore('deals', () => {
   const { loading } = useLoading();
 
   // State
-  const deals = ref<DealWithRelations[]>([]);
-  const bestDeals = ref<DealWithRelations[]>([]);
-  const freeGames = ref<DealWithRelations[]>([]);
+  const deals = ref<Deal[]>([]);
+  const bestDeals = ref<Deal[]>([]);
+  const freeGames = ref<Deal[]>([]);
   const availableStores = ref<string[]>([]);
   const error = ref<string | null>(null);
 
@@ -164,13 +164,9 @@ export const useDealsStore = defineStore('deals', () => {
 
       const term = searchTerm.toLowerCase();
       return sortedDeals.value.filter(
-        (deal: DealWithRelations) =>
+        (deal: Deal) =>
           deal.title.toLowerCase().includes(term) ||
-          deal.game.name.toLowerCase().includes(term) ||
-          deal.storeName.toLowerCase().includes(term) ||
-          deal.game.genres.some((genre: string) =>
-            genre.toLowerCase().includes(term)
-          )
+          deal.storeName.toLowerCase().includes(term)
       );
     };
   });
@@ -212,7 +208,7 @@ export const useDealsStore = defineStore('deals', () => {
    * Freebies (kostenlose Spiele) aus aktuellen Deals
    */
   const freebies = computed(() =>
-    deals.value.filter((deal: DealWithRelations) => deal.isFreebie)
+    deals.value.filter((deal: Deal) => deal.isFreebie)
   );
 
   // Helper Functions
@@ -253,6 +249,7 @@ export const useDealsStore = defineStore('deals', () => {
     setSortBy,
     clearFilters,
     refreshDeals,
+    updateAvailableStores,
 
     // Computed
     searchDeals,

@@ -154,8 +154,7 @@ exports.Prisma.GameScalarFieldEnum = {
   ageRatings: 'ageRatings',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  lastSyncedAt: 'lastSyncedAt',
-  steamAppId: 'steamAppId'
+  lastSyncedAt: 'lastSyncedAt'
 };
 
 exports.Prisma.PlatformScalarFieldEnum = {
@@ -166,18 +165,11 @@ exports.Prisma.PlatformScalarFieldEnum = {
   siteUrl: 'siteUrl'
 };
 
-exports.Prisma.PlatformGameScalarFieldEnum = {
-  id: 'id',
-  gameId: 'gameId',
-  platformId: 'platformId',
-  platformSpecificId: 'platformSpecificId',
-  url: 'url'
-};
-
 exports.Prisma.UserGameScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   gameId: 'gameId',
+  platformIds: 'platformIds',
   addedAt: 'addedAt',
   playtimeMinutes: 'playtimeMinutes',
   lastPlayed: 'lastPlayed',
@@ -189,7 +181,7 @@ exports.Prisma.UserGameScalarFieldEnum = {
 exports.Prisma.DealScalarFieldEnum = {
   id: 'id',
   gameId: 'gameId',
-  platformGameId: 'platformGameId',
+  platformIds: 'platformIds',
   title: 'title',
   storeName: 'storeName',
   price: 'price',
@@ -261,7 +253,6 @@ exports.Prisma.ModelName = {
   User: 'User',
   Game: 'Game',
   Platform: 'Platform',
-  PlatformGame: 'PlatformGame',
   UserGame: 'UserGame',
   Deal: 'Deal',
   Achievement: 'Achievement',

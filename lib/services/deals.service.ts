@@ -1,15 +1,15 @@
 // Deals Service - BEREINIGT
 // Grund: Nur noch die Funktionen die für den syncAndLoadDeals Workflow benötigt werden
 
-import type { Deal, Game, PlatformGame } from '~/prisma/client';
+import type { Deal } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
+import { GamesService } from './games.service';
 
 const prisma = new PrismaClient();
 
 export interface DealCreateInput {
   gameId: number;
-  platformGameId?: number;
   title: string;
   storeName: string;
   price?: number;
@@ -36,11 +36,6 @@ export interface DealSearchFilters {
   offset?: number;
 }
 
-export interface DealWithRelations extends Deal {
-  game: Game;
-  platformGame?: PlatformGame | null;
-}
-
 export namespace DealsService {
   // ===== CORE WORKFLOW FUNCTIONS =====
 
@@ -51,7 +46,7 @@ export namespace DealsService {
    */
   export async function searchDeals(
     filters: DealSearchFilters = {}
-  ): Promise<DealWithRelations[]> {
+  ): Promise<Deal[]> {
     try {
       const where: any = {};
 
@@ -85,19 +80,14 @@ export namespace DealsService {
       const deals = await prisma.deal.findMany({
         where,
         include: {
-          game: true,
-          platformGame: {
-            include: {
-              platform: true
-            }
-          }
+          game: true
         },
         orderBy: [{ discoveredAt: 'desc' }, { id: 'desc' }],
         take: filters.limit,
         skip: filters.offset
       });
 
-      return deals as DealWithRelations[];
+      return deals as Deal[];
     } catch (error) {
       console.error('Error searching deals:', error);
       throw new Error(
@@ -116,10 +106,10 @@ export namespace DealsService {
    * @param gameId Optional: Verknüpfung zu unserem Game
    * @returns DealCreateInput für die Erstellung
    */
-  export function convertCheapSharkDeal(
+  export async function convertCheapSharkDeal(
     cheapSharkDeal: CheapSharkDeal,
     gameId?: number | null
-  ): DealCreateInput | null {
+  ): Promise<DealCreateInput | null> {
     try {
       // Grund: Validierung der notwendigen CheapShark Daten
       if (!cheapSharkDeal.dealID || !cheapSharkDeal.title) {
@@ -131,14 +121,39 @@ export namespace DealsService {
       const normalPrice = parseFloat(cheapSharkDeal.normalPrice || '0');
       const savings = parseFloat(cheapSharkDeal.savings || '0');
 
+      // Grund: Store-Namen aus CheapShark Service holen
+      const storeName = CheapSharkService.getStoreName(cheapSharkDeal.storeID);
+
+      // Grund: Spiel finden oder erstellen wenn keine gameId gegeben
+      let finalGameId = gameId;
+      if (!finalGameId) {
+        try {
+          const gameResult = await GamesService.findOrCreateGame(
+            cheapSharkDeal.title
+          );
+          if (gameResult.success && gameResult.game) {
+            finalGameId = gameResult.game.id;
+          } else {
+            console.warn(
+              `Could not find/create game for deal: ${cheapSharkDeal.title}`
+            );
+            return null;
+          }
+        } catch (error) {
+          console.error('Error finding/creating game for deal:', error);
+          return null;
+        }
+      }
+
       return {
-        gameId: gameId || 1, // Grund: Fallback auf Standard-Game wenn kein gameId gegeben
+        gameId: finalGameId,
         title: cheapSharkDeal.title,
-        storeName: cheapSharkDeal.storeID || 'Unknown Store',
+        storeName: storeName,
         price: salePrice > 0 ? salePrice : undefined,
         originalPrice: normalPrice > 0 ? normalPrice : undefined,
         discountPercent: savings > 0 ? savings : undefined,
         url: `https://www.cheapshark.com/redirect?dealID=${cheapSharkDeal.dealID}`,
+        validFrom: new Date(), // Grund: Aktuelles Datum setzen
         isFreebie: salePrice === 0,
         externalId: cheapSharkDeal.dealID,
         source: 'CheapShark'
@@ -163,8 +178,8 @@ export namespace DealsService {
 
     try {
       for (const cheapSharkDeal of cheapSharkDeals) {
-        // Grund: Deal-Daten konvertieren
-        const dealData = convertCheapSharkDeal(cheapSharkDeal, gameId);
+        // Grund: Deal-Daten konvertieren (jetzt async)
+        const dealData = await convertCheapSharkDeal(cheapSharkDeal, gameId);
         if (!dealData) continue;
 
         // Grund: Prüfen ob Deal bereits existiert (basierend auf externalId)

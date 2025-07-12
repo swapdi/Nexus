@@ -25,7 +25,6 @@
   // Initialize data
   onMounted(async () => {
     await userStore.init();
-
     // Grund: Neue Sync-Funktion - lädt CheapShark Deals, speichert neue in DB, gibt alle DB-Deals zurück
     await dealsStore.syncAndLoadDeals();
   });
@@ -160,49 +159,6 @@
   // Deal Aggregation
   const isAggregating = ref(false);
   const aggregationMessage = ref<string | null>(null);
-
-  const aggregateDeals = async () => {
-    isAggregating.value = true;
-    aggregationMessage.value = null;
-
-    try {
-      // Implementiere echte CheapShark Deal-Aggregation
-      const { $client } = useNuxtApp();
-
-      // Beispiel: Hole populäre Spiele und importiere deren Deals
-      const cheapSharkDeals = await $client.deals.getCheapSharkDeals.query({
-        pageSize: 50,
-        sortBy: 'Deal Rating',
-        desc: true
-      });
-
-      if (cheapSharkDeals.length > 0) {
-        aggregationMessage.value = `${cheapSharkDeals.length} Deals von CheapShark gefunden und verarbeitet.`;
-
-        // Cache invalidieren um neue Deals zu laden
-        await dealsStore.refreshDeals();
-      } else {
-        aggregationMessage.value = 'Keine neuen Deals gefunden.';
-      }
-
-      // Auto-hide message after 3 seconds
-      setTimeout(() => {
-        aggregationMessage.value = null;
-      }, 3000);
-    } catch (error: unknown) {
-      console.error('Deal aggregation failed:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unbekannter Fehler';
-      aggregationMessage.value = `Fehler beim Sammeln der Deals: ${errorMessage}`;
-
-      // Auto-hide error message after 5 seconds
-      setTimeout(() => {
-        aggregationMessage.value = null;
-      }, 5000);
-    } finally {
-      isAggregating.value = false;
-    }
-  };
 </script>
 
 <template>
@@ -226,18 +182,6 @@
               class="w-4 h-4"
               :class="{ 'animate-spin': isLoading }" />
             Aktualisieren
-          </button>
-
-          <!-- Aggregate Deals Button -->
-          <button
-            @click="aggregateDeals"
-            :disabled="isAggregating"
-            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2">
-            <Icon
-              name="heroicons:cloud-arrow-down-20-solid"
-              class="w-4 h-4"
-              :class="{ 'animate-spin': isAggregating }" />
-            Deals Sammeln
           </button>
         </div>
       </div>

@@ -29,11 +29,6 @@ export type Game = $Result.DefaultSelection<Prisma.$GamePayload>
  */
 export type Platform = $Result.DefaultSelection<Prisma.$PlatformPayload>
 /**
- * Model PlatformGame
- * 
- */
-export type PlatformGame = $Result.DefaultSelection<Prisma.$PlatformGamePayload>
-/**
  * Model UserGame
  * 
  */
@@ -213,16 +208,6 @@ export class PrismaClient<
     * ```
     */
   get platform(): Prisma.PlatformDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.platformGame`: Exposes CRUD operations for the **PlatformGame** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more PlatformGames
-    * const platformGames = await prisma.platformGame.findMany()
-    * ```
-    */
-  get platformGame(): Prisma.PlatformGameDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.userGame`: Exposes CRUD operations for the **UserGame** model.
@@ -716,7 +701,6 @@ export namespace Prisma {
     User: 'User',
     Game: 'Game',
     Platform: 'Platform',
-    PlatformGame: 'PlatformGame',
     UserGame: 'UserGame',
     Deal: 'Deal',
     Achievement: 'Achievement',
@@ -740,7 +724,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "game" | "platform" | "platformGame" | "userGame" | "deal" | "achievement" | "userAchievement" | "wishlist"
+      modelProps: "user" | "game" | "platform" | "userGame" | "deal" | "achievement" | "userAchievement" | "wishlist"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -963,80 +947,6 @@ export namespace Prisma {
           count: {
             args: Prisma.PlatformCountArgs<ExtArgs>
             result: $Utils.Optional<PlatformCountAggregateOutputType> | number
-          }
-        }
-      }
-      PlatformGame: {
-        payload: Prisma.$PlatformGamePayload<ExtArgs>
-        fields: Prisma.PlatformGameFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.PlatformGameFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.PlatformGameFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>
-          }
-          findFirst: {
-            args: Prisma.PlatformGameFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.PlatformGameFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>
-          }
-          findMany: {
-            args: Prisma.PlatformGameFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>[]
-          }
-          create: {
-            args: Prisma.PlatformGameCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>
-          }
-          createMany: {
-            args: Prisma.PlatformGameCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.PlatformGameCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>[]
-          }
-          delete: {
-            args: Prisma.PlatformGameDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>
-          }
-          update: {
-            args: Prisma.PlatformGameUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>
-          }
-          deleteMany: {
-            args: Prisma.PlatformGameDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.PlatformGameUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.PlatformGameUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>[]
-          }
-          upsert: {
-            args: Prisma.PlatformGameUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PlatformGamePayload>
-          }
-          aggregate: {
-            args: Prisma.PlatformGameAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregatePlatformGame>
-          }
-          groupBy: {
-            args: Prisma.PlatformGameGroupByArgs<ExtArgs>
-            result: $Utils.Optional<PlatformGameGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.PlatformGameCountArgs<ExtArgs>
-            result: $Utils.Optional<PlatformGameCountAggregateOutputType> | number
           }
         }
       }
@@ -1497,7 +1407,6 @@ export namespace Prisma {
     user?: UserOmit
     game?: GameOmit
     platform?: PlatformOmit
-    platformGame?: PlatformGameOmit
     userGame?: UserGameOmit
     deal?: DealOmit
     achievement?: AchievementOmit
@@ -1647,14 +1556,12 @@ export namespace Prisma {
 
   export type GameCountOutputType = {
     deals: number
-    platformGames: number
     userGames: number
     wishlistedBy: number
   }
 
   export type GameCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | GameCountOutputTypeCountDealsArgs
-    platformGames?: boolean | GameCountOutputTypeCountPlatformGamesArgs
     userGames?: boolean | GameCountOutputTypeCountUserGamesArgs
     wishlistedBy?: boolean | GameCountOutputTypeCountWishlistedByArgs
   }
@@ -1680,13 +1587,6 @@ export namespace Prisma {
   /**
    * GameCountOutputType without action
    */
-  export type GameCountOutputTypeCountPlatformGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PlatformGameWhereInput
-  }
-
-  /**
-   * GameCountOutputType without action
-   */
   export type GameCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserGameWhereInput
   }
@@ -1696,68 +1596,6 @@ export namespace Prisma {
    */
   export type GameCountOutputTypeCountWishlistedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WishlistWhereInput
-  }
-
-
-  /**
-   * Count Type PlatformCountOutputType
-   */
-
-  export type PlatformCountOutputType = {
-    platformGames: number
-  }
-
-  export type PlatformCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    platformGames?: boolean | PlatformCountOutputTypeCountPlatformGamesArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * PlatformCountOutputType without action
-   */
-  export type PlatformCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformCountOutputType
-     */
-    select?: PlatformCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * PlatformCountOutputType without action
-   */
-  export type PlatformCountOutputTypeCountPlatformGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PlatformGameWhereInput
-  }
-
-
-  /**
-   * Count Type PlatformGameCountOutputType
-   */
-
-  export type PlatformGameCountOutputType = {
-    deals: number
-  }
-
-  export type PlatformGameCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    deals?: boolean | PlatformGameCountOutputTypeCountDealsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * PlatformGameCountOutputType without action
-   */
-  export type PlatformGameCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGameCountOutputType
-     */
-    select?: PlatformGameCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * PlatformGameCountOutputType without action
-   */
-  export type PlatformGameCountOutputTypeCountDealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DealWhereInput
   }
 
 
@@ -3027,7 +2865,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     lastSyncedAt: Date | null
-    steamAppId: string | null
   }
 
   export type GameMaxAggregateOutputType = {
@@ -3046,7 +2883,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     lastSyncedAt: Date | null
-    steamAppId: string | null
   }
 
   export type GameCountAggregateOutputType = {
@@ -3075,7 +2911,6 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     lastSyncedAt: number
-    steamAppId: number
     _all: number
   }
 
@@ -3114,7 +2949,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastSyncedAt?: true
-    steamAppId?: true
   }
 
   export type GameMaxAggregateInputType = {
@@ -3133,7 +2967,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastSyncedAt?: true
-    steamAppId?: true
   }
 
   export type GameCountAggregateInputType = {
@@ -3162,7 +2995,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastSyncedAt?: true
-    steamAppId?: true
     _all?: true
   }
 
@@ -3278,7 +3110,6 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     lastSyncedAt: Date | null
-    steamAppId: string | null
     _count: GameCountAggregateOutputType | null
     _avg: GameAvgAggregateOutputType | null
     _sum: GameSumAggregateOutputType | null
@@ -3326,9 +3157,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    steamAppId?: boolean
     deals?: boolean | Game$dealsArgs<ExtArgs>
-    platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
     userGames?: boolean | Game$userGamesArgs<ExtArgs>
     wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
@@ -3360,7 +3189,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    steamAppId?: boolean
   }, ExtArgs["result"]["game"]>
 
   export type GameSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3389,7 +3217,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    steamAppId?: boolean
   }, ExtArgs["result"]["game"]>
 
   export type GameSelectScalar = {
@@ -3418,13 +3245,11 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastSyncedAt?: boolean
-    steamAppId?: boolean
   }
 
-  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt" | "steamAppId", ExtArgs["result"]["game"]>
+  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt", ExtArgs["result"]["game"]>
   export type GameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | Game$dealsArgs<ExtArgs>
-    platformGames?: boolean | Game$platformGamesArgs<ExtArgs>
     userGames?: boolean | Game$userGamesArgs<ExtArgs>
     wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
@@ -3436,7 +3261,6 @@ export namespace Prisma {
     name: "Game"
     objects: {
       deals: Prisma.$DealPayload<ExtArgs>[]
-      platformGames: Prisma.$PlatformGamePayload<ExtArgs>[]
       userGames: Prisma.$UserGamePayload<ExtArgs>[]
       wishlistedBy: Prisma.$WishlistPayload<ExtArgs>[]
     }
@@ -3466,7 +3290,6 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       lastSyncedAt: Date | null
-      steamAppId: string | null
     }, ExtArgs["result"]["game"]>
     composites: {}
   }
@@ -3862,7 +3685,6 @@ export namespace Prisma {
   export interface Prisma__GameClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     deals<T extends Game$dealsArgs<ExtArgs> = {}>(args?: Subset<T, Game$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    platformGames<T extends Game$platformGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$platformGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userGames<T extends Game$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     wishlistedBy<T extends Game$wishlistedByArgs<ExtArgs> = {}>(args?: Subset<T, Game$wishlistedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -3919,7 +3741,6 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Game", 'DateTime'>
     readonly updatedAt: FieldRef<"Game", 'DateTime'>
     readonly lastSyncedAt: FieldRef<"Game", 'DateTime'>
-    readonly steamAppId: FieldRef<"Game", 'String'>
   }
     
 
@@ -4332,30 +4153,6 @@ export namespace Prisma {
   }
 
   /**
-   * Game.platformGames
-   */
-  export type Game$platformGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    where?: PlatformGameWhereInput
-    orderBy?: PlatformGameOrderByWithRelationInput | PlatformGameOrderByWithRelationInput[]
-    cursor?: PlatformGameWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PlatformGameScalarFieldEnum | PlatformGameScalarFieldEnum[]
-  }
-
-  /**
    * Game.userGames
    */
   export type Game$userGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4620,8 +4417,6 @@ export namespace Prisma {
     slug?: boolean
     iconUrl?: boolean
     siteUrl?: boolean
-    platformGames?: boolean | Platform$platformGamesArgs<ExtArgs>
-    _count?: boolean | PlatformCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["platform"]>
 
   export type PlatformSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4649,18 +4444,10 @@ export namespace Prisma {
   }
 
   export type PlatformOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "iconUrl" | "siteUrl", ExtArgs["result"]["platform"]>
-  export type PlatformInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    platformGames?: boolean | Platform$platformGamesArgs<ExtArgs>
-    _count?: boolean | PlatformCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type PlatformIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type PlatformIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $PlatformPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Platform"
-    objects: {
-      platformGames: Prisma.$PlatformGamePayload<ExtArgs>[]
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
@@ -5061,7 +4848,6 @@ export namespace Prisma {
    */
   export interface Prisma__PlatformClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    platformGames<T extends Platform$platformGamesArgs<ExtArgs> = {}>(args?: Subset<T, Platform$platformGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5113,10 +4899,6 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-    /**
      * Filter, which Platform to fetch.
      */
     where: PlatformWhereUniqueInput
@@ -5135,10 +4917,6 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-    /**
      * Filter, which Platform to fetch.
      */
     where: PlatformWhereUniqueInput
@@ -5156,10 +4934,6 @@ export namespace Prisma {
      * Omit specific fields from the Platform
      */
     omit?: PlatformOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
     /**
      * Filter, which Platform to fetch.
      */
@@ -5209,10 +4983,6 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-    /**
      * Filter, which Platform to fetch.
      */
     where?: PlatformWhereInput
@@ -5261,10 +5031,6 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-    /**
      * Filter, which Platforms to fetch.
      */
     where?: PlatformWhereInput
@@ -5307,10 +5073,6 @@ export namespace Prisma {
      * Omit specific fields from the Platform
      */
     omit?: PlatformOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
     /**
      * The data needed to create a Platform.
      */
@@ -5359,10 +5121,6 @@ export namespace Prisma {
      * Omit specific fields from the Platform
      */
     omit?: PlatformOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
     /**
      * The data needed to update a Platform.
      */
@@ -5430,10 +5188,6 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-    /**
      * The filter to search for the Platform to update in case it exists.
      */
     where: PlatformWhereUniqueInput
@@ -5460,10 +5214,6 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-    /**
      * Filter which Platform to delete.
      */
     where: PlatformWhereUniqueInput
@@ -5484,30 +5234,6 @@ export namespace Prisma {
   }
 
   /**
-   * Platform.platformGames
-   */
-  export type Platform$platformGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    where?: PlatformGameWhereInput
-    orderBy?: PlatformGameOrderByWithRelationInput | PlatformGameOrderByWithRelationInput[]
-    cursor?: PlatformGameWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PlatformGameScalarFieldEnum | PlatformGameScalarFieldEnum[]
-  }
-
-  /**
    * Platform without action
    */
   export type PlatformDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5519,1148 +5245,6 @@ export namespace Prisma {
      * Omit specific fields from the Platform
      */
     omit?: PlatformOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model PlatformGame
-   */
-
-  export type AggregatePlatformGame = {
-    _count: PlatformGameCountAggregateOutputType | null
-    _avg: PlatformGameAvgAggregateOutputType | null
-    _sum: PlatformGameSumAggregateOutputType | null
-    _min: PlatformGameMinAggregateOutputType | null
-    _max: PlatformGameMaxAggregateOutputType | null
-  }
-
-  export type PlatformGameAvgAggregateOutputType = {
-    id: number | null
-    gameId: number | null
-    platformId: number | null
-  }
-
-  export type PlatformGameSumAggregateOutputType = {
-    id: number | null
-    gameId: number | null
-    platformId: number | null
-  }
-
-  export type PlatformGameMinAggregateOutputType = {
-    id: number | null
-    gameId: number | null
-    platformId: number | null
-    platformSpecificId: string | null
-    url: string | null
-  }
-
-  export type PlatformGameMaxAggregateOutputType = {
-    id: number | null
-    gameId: number | null
-    platformId: number | null
-    platformSpecificId: string | null
-    url: string | null
-  }
-
-  export type PlatformGameCountAggregateOutputType = {
-    id: number
-    gameId: number
-    platformId: number
-    platformSpecificId: number
-    url: number
-    _all: number
-  }
-
-
-  export type PlatformGameAvgAggregateInputType = {
-    id?: true
-    gameId?: true
-    platformId?: true
-  }
-
-  export type PlatformGameSumAggregateInputType = {
-    id?: true
-    gameId?: true
-    platformId?: true
-  }
-
-  export type PlatformGameMinAggregateInputType = {
-    id?: true
-    gameId?: true
-    platformId?: true
-    platformSpecificId?: true
-    url?: true
-  }
-
-  export type PlatformGameMaxAggregateInputType = {
-    id?: true
-    gameId?: true
-    platformId?: true
-    platformSpecificId?: true
-    url?: true
-  }
-
-  export type PlatformGameCountAggregateInputType = {
-    id?: true
-    gameId?: true
-    platformId?: true
-    platformSpecificId?: true
-    url?: true
-    _all?: true
-  }
-
-  export type PlatformGameAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which PlatformGame to aggregate.
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PlatformGames to fetch.
-     */
-    orderBy?: PlatformGameOrderByWithRelationInput | PlatformGameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: PlatformGameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PlatformGames from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PlatformGames.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned PlatformGames
-    **/
-    _count?: true | PlatformGameCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: PlatformGameAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: PlatformGameSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: PlatformGameMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: PlatformGameMaxAggregateInputType
-  }
-
-  export type GetPlatformGameAggregateType<T extends PlatformGameAggregateArgs> = {
-        [P in keyof T & keyof AggregatePlatformGame]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregatePlatformGame[P]>
-      : GetScalarType<T[P], AggregatePlatformGame[P]>
-  }
-
-
-
-
-  export type PlatformGameGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PlatformGameWhereInput
-    orderBy?: PlatformGameOrderByWithAggregationInput | PlatformGameOrderByWithAggregationInput[]
-    by: PlatformGameScalarFieldEnum[] | PlatformGameScalarFieldEnum
-    having?: PlatformGameScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: PlatformGameCountAggregateInputType | true
-    _avg?: PlatformGameAvgAggregateInputType
-    _sum?: PlatformGameSumAggregateInputType
-    _min?: PlatformGameMinAggregateInputType
-    _max?: PlatformGameMaxAggregateInputType
-  }
-
-  export type PlatformGameGroupByOutputType = {
-    id: number
-    gameId: number
-    platformId: number
-    platformSpecificId: string
-    url: string | null
-    _count: PlatformGameCountAggregateOutputType | null
-    _avg: PlatformGameAvgAggregateOutputType | null
-    _sum: PlatformGameSumAggregateOutputType | null
-    _min: PlatformGameMinAggregateOutputType | null
-    _max: PlatformGameMaxAggregateOutputType | null
-  }
-
-  type GetPlatformGameGroupByPayload<T extends PlatformGameGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<PlatformGameGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof PlatformGameGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], PlatformGameGroupByOutputType[P]>
-            : GetScalarType<T[P], PlatformGameGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type PlatformGameSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    gameId?: boolean
-    platformId?: boolean
-    platformSpecificId?: boolean
-    url?: boolean
-    deals?: boolean | PlatformGame$dealsArgs<ExtArgs>
-    game?: boolean | GameDefaultArgs<ExtArgs>
-    platform?: boolean | PlatformDefaultArgs<ExtArgs>
-    _count?: boolean | PlatformGameCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["platformGame"]>
-
-  export type PlatformGameSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    gameId?: boolean
-    platformId?: boolean
-    platformSpecificId?: boolean
-    url?: boolean
-    game?: boolean | GameDefaultArgs<ExtArgs>
-    platform?: boolean | PlatformDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["platformGame"]>
-
-  export type PlatformGameSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    gameId?: boolean
-    platformId?: boolean
-    platformSpecificId?: boolean
-    url?: boolean
-    game?: boolean | GameDefaultArgs<ExtArgs>
-    platform?: boolean | PlatformDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["platformGame"]>
-
-  export type PlatformGameSelectScalar = {
-    id?: boolean
-    gameId?: boolean
-    platformId?: boolean
-    platformSpecificId?: boolean
-    url?: boolean
-  }
-
-  export type PlatformGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformId" | "platformSpecificId" | "url", ExtArgs["result"]["platformGame"]>
-  export type PlatformGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    deals?: boolean | PlatformGame$dealsArgs<ExtArgs>
-    game?: boolean | GameDefaultArgs<ExtArgs>
-    platform?: boolean | PlatformDefaultArgs<ExtArgs>
-    _count?: boolean | PlatformGameCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type PlatformGameIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    game?: boolean | GameDefaultArgs<ExtArgs>
-    platform?: boolean | PlatformDefaultArgs<ExtArgs>
-  }
-  export type PlatformGameIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    game?: boolean | GameDefaultArgs<ExtArgs>
-    platform?: boolean | PlatformDefaultArgs<ExtArgs>
-  }
-
-  export type $PlatformGamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "PlatformGame"
-    objects: {
-      deals: Prisma.$DealPayload<ExtArgs>[]
-      game: Prisma.$GamePayload<ExtArgs>
-      platform: Prisma.$PlatformPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: number
-      gameId: number
-      platformId: number
-      platformSpecificId: string
-      url: string | null
-    }, ExtArgs["result"]["platformGame"]>
-    composites: {}
-  }
-
-  type PlatformGameGetPayload<S extends boolean | null | undefined | PlatformGameDefaultArgs> = $Result.GetResult<Prisma.$PlatformGamePayload, S>
-
-  type PlatformGameCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<PlatformGameFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: PlatformGameCountAggregateInputType | true
-    }
-
-  export interface PlatformGameDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlatformGame'], meta: { name: 'PlatformGame' } }
-    /**
-     * Find zero or one PlatformGame that matches the filter.
-     * @param {PlatformGameFindUniqueArgs} args - Arguments to find a PlatformGame
-     * @example
-     * // Get one PlatformGame
-     * const platformGame = await prisma.platformGame.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends PlatformGameFindUniqueArgs>(args: SelectSubset<T, PlatformGameFindUniqueArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one PlatformGame that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {PlatformGameFindUniqueOrThrowArgs} args - Arguments to find a PlatformGame
-     * @example
-     * // Get one PlatformGame
-     * const platformGame = await prisma.platformGame.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends PlatformGameFindUniqueOrThrowArgs>(args: SelectSubset<T, PlatformGameFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first PlatformGame that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameFindFirstArgs} args - Arguments to find a PlatformGame
-     * @example
-     * // Get one PlatformGame
-     * const platformGame = await prisma.platformGame.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends PlatformGameFindFirstArgs>(args?: SelectSubset<T, PlatformGameFindFirstArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first PlatformGame that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameFindFirstOrThrowArgs} args - Arguments to find a PlatformGame
-     * @example
-     * // Get one PlatformGame
-     * const platformGame = await prisma.platformGame.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends PlatformGameFindFirstOrThrowArgs>(args?: SelectSubset<T, PlatformGameFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more PlatformGames that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all PlatformGames
-     * const platformGames = await prisma.platformGame.findMany()
-     * 
-     * // Get first 10 PlatformGames
-     * const platformGames = await prisma.platformGame.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const platformGameWithIdOnly = await prisma.platformGame.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends PlatformGameFindManyArgs>(args?: SelectSubset<T, PlatformGameFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a PlatformGame.
-     * @param {PlatformGameCreateArgs} args - Arguments to create a PlatformGame.
-     * @example
-     * // Create one PlatformGame
-     * const PlatformGame = await prisma.platformGame.create({
-     *   data: {
-     *     // ... data to create a PlatformGame
-     *   }
-     * })
-     * 
-     */
-    create<T extends PlatformGameCreateArgs>(args: SelectSubset<T, PlatformGameCreateArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many PlatformGames.
-     * @param {PlatformGameCreateManyArgs} args - Arguments to create many PlatformGames.
-     * @example
-     * // Create many PlatformGames
-     * const platformGame = await prisma.platformGame.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends PlatformGameCreateManyArgs>(args?: SelectSubset<T, PlatformGameCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many PlatformGames and returns the data saved in the database.
-     * @param {PlatformGameCreateManyAndReturnArgs} args - Arguments to create many PlatformGames.
-     * @example
-     * // Create many PlatformGames
-     * const platformGame = await prisma.platformGame.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many PlatformGames and only return the `id`
-     * const platformGameWithIdOnly = await prisma.platformGame.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends PlatformGameCreateManyAndReturnArgs>(args?: SelectSubset<T, PlatformGameCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a PlatformGame.
-     * @param {PlatformGameDeleteArgs} args - Arguments to delete one PlatformGame.
-     * @example
-     * // Delete one PlatformGame
-     * const PlatformGame = await prisma.platformGame.delete({
-     *   where: {
-     *     // ... filter to delete one PlatformGame
-     *   }
-     * })
-     * 
-     */
-    delete<T extends PlatformGameDeleteArgs>(args: SelectSubset<T, PlatformGameDeleteArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one PlatformGame.
-     * @param {PlatformGameUpdateArgs} args - Arguments to update one PlatformGame.
-     * @example
-     * // Update one PlatformGame
-     * const platformGame = await prisma.platformGame.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends PlatformGameUpdateArgs>(args: SelectSubset<T, PlatformGameUpdateArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more PlatformGames.
-     * @param {PlatformGameDeleteManyArgs} args - Arguments to filter PlatformGames to delete.
-     * @example
-     * // Delete a few PlatformGames
-     * const { count } = await prisma.platformGame.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends PlatformGameDeleteManyArgs>(args?: SelectSubset<T, PlatformGameDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more PlatformGames.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many PlatformGames
-     * const platformGame = await prisma.platformGame.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends PlatformGameUpdateManyArgs>(args: SelectSubset<T, PlatformGameUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more PlatformGames and returns the data updated in the database.
-     * @param {PlatformGameUpdateManyAndReturnArgs} args - Arguments to update many PlatformGames.
-     * @example
-     * // Update many PlatformGames
-     * const platformGame = await prisma.platformGame.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more PlatformGames and only return the `id`
-     * const platformGameWithIdOnly = await prisma.platformGame.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends PlatformGameUpdateManyAndReturnArgs>(args: SelectSubset<T, PlatformGameUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one PlatformGame.
-     * @param {PlatformGameUpsertArgs} args - Arguments to update or create a PlatformGame.
-     * @example
-     * // Update or create a PlatformGame
-     * const platformGame = await prisma.platformGame.upsert({
-     *   create: {
-     *     // ... data to create a PlatformGame
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the PlatformGame we want to update
-     *   }
-     * })
-     */
-    upsert<T extends PlatformGameUpsertArgs>(args: SelectSubset<T, PlatformGameUpsertArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of PlatformGames.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameCountArgs} args - Arguments to filter PlatformGames to count.
-     * @example
-     * // Count the number of PlatformGames
-     * const count = await prisma.platformGame.count({
-     *   where: {
-     *     // ... the filter for the PlatformGames we want to count
-     *   }
-     * })
-    **/
-    count<T extends PlatformGameCountArgs>(
-      args?: Subset<T, PlatformGameCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], PlatformGameCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a PlatformGame.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends PlatformGameAggregateArgs>(args: Subset<T, PlatformGameAggregateArgs>): Prisma.PrismaPromise<GetPlatformGameAggregateType<T>>
-
-    /**
-     * Group by PlatformGame.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PlatformGameGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends PlatformGameGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: PlatformGameGroupByArgs['orderBy'] }
-        : { orderBy?: PlatformGameGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, PlatformGameGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlatformGameGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the PlatformGame model
-   */
-  readonly fields: PlatformGameFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for PlatformGame.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__PlatformGameClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    deals<T extends PlatformGame$dealsArgs<ExtArgs> = {}>(args?: Subset<T, PlatformGame$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    game<T extends GameDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GameDefaultArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    platform<T extends PlatformDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlatformDefaultArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the PlatformGame model
-   */
-  interface PlatformGameFieldRefs {
-    readonly id: FieldRef<"PlatformGame", 'Int'>
-    readonly gameId: FieldRef<"PlatformGame", 'Int'>
-    readonly platformId: FieldRef<"PlatformGame", 'Int'>
-    readonly platformSpecificId: FieldRef<"PlatformGame", 'String'>
-    readonly url: FieldRef<"PlatformGame", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * PlatformGame findUnique
-   */
-  export type PlatformGameFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * Filter, which PlatformGame to fetch.
-     */
-    where: PlatformGameWhereUniqueInput
-  }
-
-  /**
-   * PlatformGame findUniqueOrThrow
-   */
-  export type PlatformGameFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * Filter, which PlatformGame to fetch.
-     */
-    where: PlatformGameWhereUniqueInput
-  }
-
-  /**
-   * PlatformGame findFirst
-   */
-  export type PlatformGameFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * Filter, which PlatformGame to fetch.
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PlatformGames to fetch.
-     */
-    orderBy?: PlatformGameOrderByWithRelationInput | PlatformGameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for PlatformGames.
-     */
-    cursor?: PlatformGameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PlatformGames from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PlatformGames.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of PlatformGames.
-     */
-    distinct?: PlatformGameScalarFieldEnum | PlatformGameScalarFieldEnum[]
-  }
-
-  /**
-   * PlatformGame findFirstOrThrow
-   */
-  export type PlatformGameFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * Filter, which PlatformGame to fetch.
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PlatformGames to fetch.
-     */
-    orderBy?: PlatformGameOrderByWithRelationInput | PlatformGameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for PlatformGames.
-     */
-    cursor?: PlatformGameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PlatformGames from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PlatformGames.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of PlatformGames.
-     */
-    distinct?: PlatformGameScalarFieldEnum | PlatformGameScalarFieldEnum[]
-  }
-
-  /**
-   * PlatformGame findMany
-   */
-  export type PlatformGameFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * Filter, which PlatformGames to fetch.
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PlatformGames to fetch.
-     */
-    orderBy?: PlatformGameOrderByWithRelationInput | PlatformGameOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing PlatformGames.
-     */
-    cursor?: PlatformGameWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PlatformGames from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PlatformGames.
-     */
-    skip?: number
-    distinct?: PlatformGameScalarFieldEnum | PlatformGameScalarFieldEnum[]
-  }
-
-  /**
-   * PlatformGame create
-   */
-  export type PlatformGameCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * The data needed to create a PlatformGame.
-     */
-    data: XOR<PlatformGameCreateInput, PlatformGameUncheckedCreateInput>
-  }
-
-  /**
-   * PlatformGame createMany
-   */
-  export type PlatformGameCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many PlatformGames.
-     */
-    data: PlatformGameCreateManyInput | PlatformGameCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * PlatformGame createManyAndReturn
-   */
-  export type PlatformGameCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * The data used to create many PlatformGames.
-     */
-    data: PlatformGameCreateManyInput | PlatformGameCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * PlatformGame update
-   */
-  export type PlatformGameUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * The data needed to update a PlatformGame.
-     */
-    data: XOR<PlatformGameUpdateInput, PlatformGameUncheckedUpdateInput>
-    /**
-     * Choose, which PlatformGame to update.
-     */
-    where: PlatformGameWhereUniqueInput
-  }
-
-  /**
-   * PlatformGame updateMany
-   */
-  export type PlatformGameUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update PlatformGames.
-     */
-    data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyInput>
-    /**
-     * Filter which PlatformGames to update
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * Limit how many PlatformGames to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * PlatformGame updateManyAndReturn
-   */
-  export type PlatformGameUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * The data used to update PlatformGames.
-     */
-    data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyInput>
-    /**
-     * Filter which PlatformGames to update
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * Limit how many PlatformGames to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * PlatformGame upsert
-   */
-  export type PlatformGameUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * The filter to search for the PlatformGame to update in case it exists.
-     */
-    where: PlatformGameWhereUniqueInput
-    /**
-     * In case the PlatformGame found by the `where` argument doesn't exist, create a new PlatformGame with this data.
-     */
-    create: XOR<PlatformGameCreateInput, PlatformGameUncheckedCreateInput>
-    /**
-     * In case the PlatformGame was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<PlatformGameUpdateInput, PlatformGameUncheckedUpdateInput>
-  }
-
-  /**
-   * PlatformGame delete
-   */
-  export type PlatformGameDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    /**
-     * Filter which PlatformGame to delete.
-     */
-    where: PlatformGameWhereUniqueInput
-  }
-
-  /**
-   * PlatformGame deleteMany
-   */
-  export type PlatformGameDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which PlatformGames to delete
-     */
-    where?: PlatformGameWhereInput
-    /**
-     * Limit how many PlatformGames to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * PlatformGame.deals
-   */
-  export type PlatformGame$dealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Deal
-     */
-    select?: DealSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Deal
-     */
-    omit?: DealOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DealInclude<ExtArgs> | null
-    where?: DealWhereInput
-    orderBy?: DealOrderByWithRelationInput | DealOrderByWithRelationInput[]
-    cursor?: DealWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
-  }
-
-  /**
-   * PlatformGame without action
-   */
-  export type PlatformGameDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
   }
 
 
@@ -6680,6 +5264,7 @@ export namespace Prisma {
     id: number | null
     userId: number | null
     gameId: number | null
+    platformIds: number | null
     playtimeMinutes: number | null
   }
 
@@ -6687,6 +5272,7 @@ export namespace Prisma {
     id: number | null
     userId: number | null
     gameId: number | null
+    platformIds: number[]
     playtimeMinutes: number | null
   }
 
@@ -6718,6 +5304,7 @@ export namespace Prisma {
     id: number
     userId: number
     gameId: number
+    platformIds: number
     addedAt: number
     playtimeMinutes: number
     lastPlayed: number
@@ -6732,6 +5319,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     gameId?: true
+    platformIds?: true
     playtimeMinutes?: true
   }
 
@@ -6739,6 +5327,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     gameId?: true
+    platformIds?: true
     playtimeMinutes?: true
   }
 
@@ -6770,6 +5359,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     gameId?: true
+    platformIds?: true
     addedAt?: true
     playtimeMinutes?: true
     lastPlayed?: true
@@ -6869,6 +5459,7 @@ export namespace Prisma {
     id: number
     userId: number
     gameId: number
+    platformIds: number[]
     addedAt: Date
     playtimeMinutes: number | null
     lastPlayed: Date | null
@@ -6900,6 +5491,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     gameId?: boolean
+    platformIds?: boolean
     addedAt?: boolean
     playtimeMinutes?: boolean
     lastPlayed?: boolean
@@ -6914,6 +5506,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     gameId?: boolean
+    platformIds?: boolean
     addedAt?: boolean
     playtimeMinutes?: boolean
     lastPlayed?: boolean
@@ -6928,6 +5521,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     gameId?: boolean
+    platformIds?: boolean
     addedAt?: boolean
     playtimeMinutes?: boolean
     lastPlayed?: boolean
@@ -6942,6 +5536,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     gameId?: boolean
+    platformIds?: boolean
     addedAt?: boolean
     playtimeMinutes?: boolean
     lastPlayed?: boolean
@@ -6950,7 +5545,7 @@ export namespace Prisma {
     notes?: boolean
   }
 
-  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "isFavorite" | "notes", ExtArgs["result"]["userGame"]>
+  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "platformIds" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "isFavorite" | "notes", ExtArgs["result"]["userGame"]>
   export type UserGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6974,6 +5569,7 @@ export namespace Prisma {
       id: number
       userId: number
       gameId: number
+      platformIds: number[]
       addedAt: Date
       playtimeMinutes: number | null
       lastPlayed: Date | null
@@ -7408,6 +6004,7 @@ export namespace Prisma {
     readonly id: FieldRef<"UserGame", 'Int'>
     readonly userId: FieldRef<"UserGame", 'Int'>
     readonly gameId: FieldRef<"UserGame", 'Int'>
+    readonly platformIds: FieldRef<"UserGame", 'Int[]'>
     readonly addedAt: FieldRef<"UserGame", 'DateTime'>
     readonly playtimeMinutes: FieldRef<"UserGame", 'Int'>
     readonly lastPlayed: FieldRef<"UserGame", 'DateTime'>
@@ -7843,7 +6440,7 @@ export namespace Prisma {
   export type DealAvgAggregateOutputType = {
     id: number | null
     gameId: number | null
-    platformGameId: number | null
+    platformIds: number | null
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
@@ -7852,7 +6449,7 @@ export namespace Prisma {
   export type DealSumAggregateOutputType = {
     id: number | null
     gameId: number | null
-    platformGameId: number | null
+    platformIds: number[]
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
@@ -7861,7 +6458,6 @@ export namespace Prisma {
   export type DealMinAggregateOutputType = {
     id: number | null
     gameId: number | null
-    platformGameId: number | null
     title: string | null
     storeName: string | null
     price: number | null
@@ -7880,7 +6476,6 @@ export namespace Prisma {
   export type DealMaxAggregateOutputType = {
     id: number | null
     gameId: number | null
-    platformGameId: number | null
     title: string | null
     storeName: string | null
     price: number | null
@@ -7899,7 +6494,7 @@ export namespace Prisma {
   export type DealCountAggregateOutputType = {
     id: number
     gameId: number
-    platformGameId: number
+    platformIds: number
     title: number
     storeName: number
     price: number
@@ -7920,7 +6515,7 @@ export namespace Prisma {
   export type DealAvgAggregateInputType = {
     id?: true
     gameId?: true
-    platformGameId?: true
+    platformIds?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
@@ -7929,7 +6524,7 @@ export namespace Prisma {
   export type DealSumAggregateInputType = {
     id?: true
     gameId?: true
-    platformGameId?: true
+    platformIds?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
@@ -7938,7 +6533,6 @@ export namespace Prisma {
   export type DealMinAggregateInputType = {
     id?: true
     gameId?: true
-    platformGameId?: true
     title?: true
     storeName?: true
     price?: true
@@ -7957,7 +6551,6 @@ export namespace Prisma {
   export type DealMaxAggregateInputType = {
     id?: true
     gameId?: true
-    platformGameId?: true
     title?: true
     storeName?: true
     price?: true
@@ -7976,7 +6569,7 @@ export namespace Prisma {
   export type DealCountAggregateInputType = {
     id?: true
     gameId?: true
-    platformGameId?: true
+    platformIds?: true
     title?: true
     storeName?: true
     price?: true
@@ -8082,7 +6675,7 @@ export namespace Prisma {
   export type DealGroupByOutputType = {
     id: number
     gameId: number
-    platformGameId: number | null
+    platformIds: number[]
     title: string
     storeName: string
     price: number | null
@@ -8120,7 +6713,7 @@ export namespace Prisma {
   export type DealSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     gameId?: boolean
-    platformGameId?: boolean
+    platformIds?: boolean
     title?: boolean
     storeName?: boolean
     price?: boolean
@@ -8135,13 +6728,12 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
-    platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
   export type DealSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     gameId?: boolean
-    platformGameId?: boolean
+    platformIds?: boolean
     title?: boolean
     storeName?: boolean
     price?: boolean
@@ -8156,13 +6748,12 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
-    platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
   export type DealSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     gameId?: boolean
-    platformGameId?: boolean
+    platformIds?: boolean
     title?: boolean
     storeName?: boolean
     price?: boolean
@@ -8177,13 +6768,12 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
-    platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
   export type DealSelectScalar = {
     id?: boolean
     gameId?: boolean
-    platformGameId?: boolean
+    platformIds?: boolean
     title?: boolean
     storeName?: boolean
     price?: boolean
@@ -8199,30 +6789,26 @@ export namespace Prisma {
     source?: boolean
   }
 
-  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformGameId" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source", ExtArgs["result"]["deal"]>
+  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformIds" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source", ExtArgs["result"]["deal"]>
   export type DealInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
-    platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }
   export type DealIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
-    platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }
   export type DealIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
-    platformGame?: boolean | Deal$platformGameArgs<ExtArgs>
   }
 
   export type $DealPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Deal"
     objects: {
       game: Prisma.$GamePayload<ExtArgs>
-      platformGame: Prisma.$PlatformGamePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       gameId: number
-      platformGameId: number | null
+      platformIds: number[]
       title: string
       storeName: string
       price: number | null
@@ -8631,7 +7217,6 @@ export namespace Prisma {
   export interface Prisma__DealClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     game<T extends GameDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GameDefaultArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    platformGame<T extends Deal$platformGameArgs<ExtArgs> = {}>(args?: Subset<T, Deal$platformGameArgs<ExtArgs>>): Prisma__PlatformGameClient<$Result.GetResult<Prisma.$PlatformGamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8663,7 +7248,7 @@ export namespace Prisma {
   interface DealFieldRefs {
     readonly id: FieldRef<"Deal", 'Int'>
     readonly gameId: FieldRef<"Deal", 'Int'>
-    readonly platformGameId: FieldRef<"Deal", 'Int'>
+    readonly platformIds: FieldRef<"Deal", 'Int[]'>
     readonly title: FieldRef<"Deal", 'String'>
     readonly storeName: FieldRef<"Deal", 'String'>
     readonly price: FieldRef<"Deal", 'Float'>
@@ -9070,25 +7655,6 @@ export namespace Prisma {
      * Limit how many Deals to delete.
      */
     limit?: number
-  }
-
-  /**
-   * Deal.platformGame
-   */
-  export type Deal$platformGameArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PlatformGame
-     */
-    select?: PlatformGameSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PlatformGame
-     */
-    omit?: PlatformGameOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PlatformGameInclude<ExtArgs> | null
-    where?: PlatformGameWhereInput
   }
 
   /**
@@ -12502,8 +11068,7 @@ export namespace Prisma {
     ageRatings: 'ageRatings',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    lastSyncedAt: 'lastSyncedAt',
-    steamAppId: 'steamAppId'
+    lastSyncedAt: 'lastSyncedAt'
   };
 
   export type GameScalarFieldEnum = (typeof GameScalarFieldEnum)[keyof typeof GameScalarFieldEnum]
@@ -12520,21 +11085,11 @@ export namespace Prisma {
   export type PlatformScalarFieldEnum = (typeof PlatformScalarFieldEnum)[keyof typeof PlatformScalarFieldEnum]
 
 
-  export const PlatformGameScalarFieldEnum: {
-    id: 'id',
-    gameId: 'gameId',
-    platformId: 'platformId',
-    platformSpecificId: 'platformSpecificId',
-    url: 'url'
-  };
-
-  export type PlatformGameScalarFieldEnum = (typeof PlatformGameScalarFieldEnum)[keyof typeof PlatformGameScalarFieldEnum]
-
-
   export const UserGameScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
     gameId: 'gameId',
+    platformIds: 'platformIds',
     addedAt: 'addedAt',
     playtimeMinutes: 'playtimeMinutes',
     lastPlayed: 'lastPlayed',
@@ -12549,7 +11104,7 @@ export namespace Prisma {
   export const DealScalarFieldEnum: {
     id: 'id',
     gameId: 'gameId',
-    platformGameId: 'platformGameId',
+    platformIds: 'platformIds',
     title: 'title',
     storeName: 'storeName',
     price: 'price',
@@ -12825,9 +11380,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableFilter<"Game"> | Date | string | null
-    steamAppId?: StringNullableFilter<"Game"> | string | null
     deals?: DealListRelationFilter
-    platformGames?: PlatformGameListRelationFilter
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
   }
@@ -12858,9 +11411,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrderInput | SortOrder
-    steamAppId?: SortOrderInput | SortOrder
     deals?: DealOrderByRelationAggregateInput
-    platformGames?: PlatformGameOrderByRelationAggregateInput
     userGames?: UserGameOrderByRelationAggregateInput
     wishlistedBy?: WishlistOrderByRelationAggregateInput
   }
@@ -12894,9 +11445,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Game"> | Date | string
     updatedAt?: DateTimeFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableFilter<"Game"> | Date | string | null
-    steamAppId?: StringNullableFilter<"Game"> | string | null
     deals?: DealListRelationFilter
-    platformGames?: PlatformGameListRelationFilter
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
   }, "id" | "igdbId">
@@ -12927,7 +11476,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrderInput | SortOrder
-    steamAppId?: SortOrderInput | SortOrder
     _count?: GameCountOrderByAggregateInput
     _avg?: GameAvgOrderByAggregateInput
     _max?: GameMaxOrderByAggregateInput
@@ -12964,7 +11512,6 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
-    steamAppId?: StringNullableWithAggregatesFilter<"Game"> | string | null
   }
 
   export type PlatformWhereInput = {
@@ -12976,7 +11523,6 @@ export namespace Prisma {
     slug?: StringFilter<"Platform"> | string
     iconUrl?: StringNullableFilter<"Platform"> | string | null
     siteUrl?: StringNullableFilter<"Platform"> | string | null
-    platformGames?: PlatformGameListRelationFilter
   }
 
   export type PlatformOrderByWithRelationInput = {
@@ -12985,7 +11531,6 @@ export namespace Prisma {
     slug?: SortOrder
     iconUrl?: SortOrderInput | SortOrder
     siteUrl?: SortOrderInput | SortOrder
-    platformGames?: PlatformGameOrderByRelationAggregateInput
   }
 
   export type PlatformWhereUniqueInput = Prisma.AtLeast<{
@@ -12997,7 +11542,6 @@ export namespace Prisma {
     NOT?: PlatformWhereInput | PlatformWhereInput[]
     iconUrl?: StringNullableFilter<"Platform"> | string | null
     siteUrl?: StringNullableFilter<"Platform"> | string | null
-    platformGames?: PlatformGameListRelationFilter
   }, "id" | "name" | "slug">
 
   export type PlatformOrderByWithAggregationInput = {
@@ -13024,71 +11568,6 @@ export namespace Prisma {
     siteUrl?: StringNullableWithAggregatesFilter<"Platform"> | string | null
   }
 
-  export type PlatformGameWhereInput = {
-    AND?: PlatformGameWhereInput | PlatformGameWhereInput[]
-    OR?: PlatformGameWhereInput[]
-    NOT?: PlatformGameWhereInput | PlatformGameWhereInput[]
-    id?: IntFilter<"PlatformGame"> | number
-    gameId?: IntFilter<"PlatformGame"> | number
-    platformId?: IntFilter<"PlatformGame"> | number
-    platformSpecificId?: StringFilter<"PlatformGame"> | string
-    url?: StringNullableFilter<"PlatformGame"> | string | null
-    deals?: DealListRelationFilter
-    game?: XOR<GameScalarRelationFilter, GameWhereInput>
-    platform?: XOR<PlatformScalarRelationFilter, PlatformWhereInput>
-  }
-
-  export type PlatformGameOrderByWithRelationInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
-    platformSpecificId?: SortOrder
-    url?: SortOrderInput | SortOrder
-    deals?: DealOrderByRelationAggregateInput
-    game?: GameOrderByWithRelationInput
-    platform?: PlatformOrderByWithRelationInput
-  }
-
-  export type PlatformGameWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    gameId_platformId?: PlatformGameGameIdPlatformIdCompoundUniqueInput
-    platformId_platformSpecificId?: PlatformGamePlatformIdPlatformSpecificIdCompoundUniqueInput
-    AND?: PlatformGameWhereInput | PlatformGameWhereInput[]
-    OR?: PlatformGameWhereInput[]
-    NOT?: PlatformGameWhereInput | PlatformGameWhereInput[]
-    gameId?: IntFilter<"PlatformGame"> | number
-    platformId?: IntFilter<"PlatformGame"> | number
-    platformSpecificId?: StringFilter<"PlatformGame"> | string
-    url?: StringNullableFilter<"PlatformGame"> | string | null
-    deals?: DealListRelationFilter
-    game?: XOR<GameScalarRelationFilter, GameWhereInput>
-    platform?: XOR<PlatformScalarRelationFilter, PlatformWhereInput>
-  }, "id" | "gameId_platformId" | "platformId_platformSpecificId" | "gameId_platformId" | "platformId_platformSpecificId">
-
-  export type PlatformGameOrderByWithAggregationInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
-    platformSpecificId?: SortOrder
-    url?: SortOrderInput | SortOrder
-    _count?: PlatformGameCountOrderByAggregateInput
-    _avg?: PlatformGameAvgOrderByAggregateInput
-    _max?: PlatformGameMaxOrderByAggregateInput
-    _min?: PlatformGameMinOrderByAggregateInput
-    _sum?: PlatformGameSumOrderByAggregateInput
-  }
-
-  export type PlatformGameScalarWhereWithAggregatesInput = {
-    AND?: PlatformGameScalarWhereWithAggregatesInput | PlatformGameScalarWhereWithAggregatesInput[]
-    OR?: PlatformGameScalarWhereWithAggregatesInput[]
-    NOT?: PlatformGameScalarWhereWithAggregatesInput | PlatformGameScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"PlatformGame"> | number
-    gameId?: IntWithAggregatesFilter<"PlatformGame"> | number
-    platformId?: IntWithAggregatesFilter<"PlatformGame"> | number
-    platformSpecificId?: StringWithAggregatesFilter<"PlatformGame"> | string
-    url?: StringNullableWithAggregatesFilter<"PlatformGame"> | string | null
-  }
-
   export type UserGameWhereInput = {
     AND?: UserGameWhereInput | UserGameWhereInput[]
     OR?: UserGameWhereInput[]
@@ -13096,6 +11575,7 @@ export namespace Prisma {
     id?: IntFilter<"UserGame"> | number
     userId?: IntFilter<"UserGame"> | number
     gameId?: IntFilter<"UserGame"> | number
+    platformIds?: IntNullableListFilter<"UserGame">
     addedAt?: DateTimeFilter<"UserGame"> | Date | string
     playtimeMinutes?: IntNullableFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
@@ -13110,6 +11590,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
+    platformIds?: SortOrder
     addedAt?: SortOrder
     playtimeMinutes?: SortOrderInput | SortOrder
     lastPlayed?: SortOrderInput | SortOrder
@@ -13128,6 +11609,7 @@ export namespace Prisma {
     NOT?: UserGameWhereInput | UserGameWhereInput[]
     userId?: IntFilter<"UserGame"> | number
     gameId?: IntFilter<"UserGame"> | number
+    platformIds?: IntNullableListFilter<"UserGame">
     addedAt?: DateTimeFilter<"UserGame"> | Date | string
     playtimeMinutes?: IntNullableFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
@@ -13142,6 +11624,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
+    platformIds?: SortOrder
     addedAt?: SortOrder
     playtimeMinutes?: SortOrderInput | SortOrder
     lastPlayed?: SortOrderInput | SortOrder
@@ -13162,6 +11645,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"UserGame"> | number
     userId?: IntWithAggregatesFilter<"UserGame"> | number
     gameId?: IntWithAggregatesFilter<"UserGame"> | number
+    platformIds?: IntNullableListFilter<"UserGame">
     addedAt?: DateTimeWithAggregatesFilter<"UserGame"> | Date | string
     playtimeMinutes?: IntNullableWithAggregatesFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableWithAggregatesFilter<"UserGame"> | Date | string | null
@@ -13176,7 +11660,7 @@ export namespace Prisma {
     NOT?: DealWhereInput | DealWhereInput[]
     id?: IntFilter<"Deal"> | number
     gameId?: IntFilter<"Deal"> | number
-    platformGameId?: IntNullableFilter<"Deal"> | number | null
+    platformIds?: IntNullableListFilter<"Deal">
     title?: StringFilter<"Deal"> | string
     storeName?: StringFilter<"Deal"> | string
     price?: FloatNullableFilter<"Deal"> | number | null
@@ -13191,13 +11675,12 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
-    platformGame?: XOR<PlatformGameNullableScalarRelationFilter, PlatformGameWhereInput> | null
   }
 
   export type DealOrderByWithRelationInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrderInput | SortOrder
+    platformIds?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
     price?: SortOrderInput | SortOrder
@@ -13212,7 +11695,6 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
-    platformGame?: PlatformGameOrderByWithRelationInput
   }
 
   export type DealWhereUniqueInput = Prisma.AtLeast<{
@@ -13221,7 +11703,7 @@ export namespace Prisma {
     OR?: DealWhereInput[]
     NOT?: DealWhereInput | DealWhereInput[]
     gameId?: IntFilter<"Deal"> | number
-    platformGameId?: IntNullableFilter<"Deal"> | number | null
+    platformIds?: IntNullableListFilter<"Deal">
     title?: StringFilter<"Deal"> | string
     storeName?: StringFilter<"Deal"> | string
     price?: FloatNullableFilter<"Deal"> | number | null
@@ -13236,13 +11718,12 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
-    platformGame?: XOR<PlatformGameNullableScalarRelationFilter, PlatformGameWhereInput> | null
   }, "id">
 
   export type DealOrderByWithAggregationInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrderInput | SortOrder
+    platformIds?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
     price?: SortOrderInput | SortOrder
@@ -13269,7 +11750,7 @@ export namespace Prisma {
     NOT?: DealScalarWhereWithAggregatesInput | DealScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Deal"> | number
     gameId?: IntWithAggregatesFilter<"Deal"> | number
-    platformGameId?: IntNullableWithAggregatesFilter<"Deal"> | number | null
+    platformIds?: IntNullableListFilter<"Deal">
     title?: StringWithAggregatesFilter<"Deal"> | string
     storeName?: StringWithAggregatesFilter<"Deal"> | string
     price?: FloatNullableWithAggregatesFilter<"Deal"> | number | null
@@ -13566,9 +12047,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
@@ -13599,9 +12078,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
@@ -13631,9 +12108,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
@@ -13664,9 +12139,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
@@ -13697,7 +12170,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
   }
 
   export type GameUpdateManyMutationInput = {
@@ -13725,7 +12197,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type GameUncheckedUpdateManyInput = {
@@ -13754,7 +12225,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PlatformCreateInput = {
@@ -13762,7 +12232,6 @@ export namespace Prisma {
     slug: string
     iconUrl?: string | null
     siteUrl?: string | null
-    platformGames?: PlatformGameCreateNestedManyWithoutPlatformInput
   }
 
   export type PlatformUncheckedCreateInput = {
@@ -13771,7 +12240,6 @@ export namespace Prisma {
     slug: string
     iconUrl?: string | null
     siteUrl?: string | null
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutPlatformInput
   }
 
   export type PlatformUpdateInput = {
@@ -13779,7 +12247,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    platformGames?: PlatformGameUpdateManyWithoutPlatformNestedInput
   }
 
   export type PlatformUncheckedUpdateInput = {
@@ -13788,7 +12255,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutPlatformNestedInput
   }
 
   export type PlatformCreateManyInput = {
@@ -13814,62 +12280,8 @@ export namespace Prisma {
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type PlatformGameCreateInput = {
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealCreateNestedManyWithoutPlatformGameInput
-    game: GameCreateNestedOneWithoutPlatformGamesInput
-    platform: PlatformCreateNestedOneWithoutPlatformGamesInput
-  }
-
-  export type PlatformGameUncheckedCreateInput = {
-    id?: number
-    gameId: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealUncheckedCreateNestedManyWithoutPlatformGameInput
-  }
-
-  export type PlatformGameUpdateInput = {
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUpdateManyWithoutPlatformGameNestedInput
-    game?: GameUpdateOneRequiredWithoutPlatformGamesNestedInput
-    platform?: PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUncheckedUpdateManyWithoutPlatformGameNestedInput
-  }
-
-  export type PlatformGameCreateManyInput = {
-    id?: number
-    gameId: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-  }
-
-  export type PlatformGameUpdateManyMutationInput = {
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type PlatformGameUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type UserGameCreateInput = {
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -13884,6 +12296,7 @@ export namespace Prisma {
     id?: number
     userId: number
     gameId: number
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -13893,6 +12306,7 @@ export namespace Prisma {
   }
 
   export type UserGameUpdateInput = {
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -13907,6 +12321,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -13919,6 +12334,7 @@ export namespace Prisma {
     id?: number
     userId: number
     gameId: number
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -13928,6 +12344,7 @@ export namespace Prisma {
   }
 
   export type UserGameUpdateManyMutationInput = {
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -13940,6 +12357,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -13949,6 +12367,7 @@ export namespace Prisma {
   }
 
   export type DealCreateInput = {
+    platformIds?: DealCreateplatformIdsInput | number[]
     title: string
     storeName: string
     price?: number | null
@@ -13963,13 +12382,12 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     game: GameCreateNestedOneWithoutDealsInput
-    platformGame?: PlatformGameCreateNestedOneWithoutDealsInput
   }
 
   export type DealUncheckedCreateInput = {
     id?: number
     gameId: number
-    platformGameId?: number | null
+    platformIds?: DealCreateplatformIdsInput | number[]
     title: string
     storeName: string
     price?: number | null
@@ -13986,6 +12404,7 @@ export namespace Prisma {
   }
 
   export type DealUpdateInput = {
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14000,13 +12419,12 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneRequiredWithoutDealsNestedInput
-    platformGame?: PlatformGameUpdateOneWithoutDealsNestedInput
   }
 
   export type DealUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
-    platformGameId?: NullableIntFieldUpdateOperationsInput | number | null
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14025,7 +12443,7 @@ export namespace Prisma {
   export type DealCreateManyInput = {
     id?: number
     gameId: number
-    platformGameId?: number | null
+    platformIds?: DealCreateplatformIdsInput | number[]
     title: string
     storeName: string
     price?: number | null
@@ -14042,6 +12460,7 @@ export namespace Prisma {
   }
 
   export type DealUpdateManyMutationInput = {
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14060,7 +12479,7 @@ export namespace Prisma {
   export type DealUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
-    platformGameId?: NullableIntFieldUpdateOperationsInput | number | null
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14492,17 +12911,7 @@ export namespace Prisma {
     none?: DealWhereInput
   }
 
-  export type PlatformGameListRelationFilter = {
-    every?: PlatformGameWhereInput
-    some?: PlatformGameWhereInput
-    none?: PlatformGameWhereInput
-  }
-
   export type DealOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type PlatformGameOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -14532,7 +12941,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
-    steamAppId?: SortOrder
   }
 
   export type GameAvgOrderByAggregateInput = {
@@ -14560,7 +12968,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
-    steamAppId?: SortOrder
   }
 
   export type GameMinOrderByAggregateInput = {
@@ -14579,7 +12986,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
-    steamAppId?: SortOrder
   }
 
   export type GameSumOrderByAggregateInput = {
@@ -14709,65 +13115,22 @@ export namespace Prisma {
     id?: SortOrder
   }
 
-  export type GameScalarRelationFilter = {
-    is?: GameWhereInput
-    isNot?: GameWhereInput
-  }
-
-  export type PlatformScalarRelationFilter = {
-    is?: PlatformWhereInput
-    isNot?: PlatformWhereInput
-  }
-
-  export type PlatformGameGameIdPlatformIdCompoundUniqueInput = {
-    gameId: number
-    platformId: number
-  }
-
-  export type PlatformGamePlatformIdPlatformSpecificIdCompoundUniqueInput = {
-    platformId: number
-    platformSpecificId: string
-  }
-
-  export type PlatformGameCountOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
-    platformSpecificId?: SortOrder
-    url?: SortOrder
-  }
-
-  export type PlatformGameAvgOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
-  }
-
-  export type PlatformGameMaxOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
-    platformSpecificId?: SortOrder
-    url?: SortOrder
-  }
-
-  export type PlatformGameMinOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
-    platformSpecificId?: SortOrder
-    url?: SortOrder
-  }
-
-  export type PlatformGameSumOrderByAggregateInput = {
-    id?: SortOrder
-    gameId?: SortOrder
-    platformId?: SortOrder
+  export type IntNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    has?: number | IntFieldRefInput<$PrismaModel> | null
+    hasEvery?: number[] | ListIntFieldRefInput<$PrismaModel>
+    hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
   }
 
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type GameScalarRelationFilter = {
+    is?: GameWhereInput
+    isNot?: GameWhereInput
   }
 
   export type UserScalarRelationFilter = {
@@ -14784,6 +13147,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
+    platformIds?: SortOrder
     addedAt?: SortOrder
     playtimeMinutes?: SortOrder
     lastPlayed?: SortOrder
@@ -14796,6 +13160,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
+    platformIds?: SortOrder
     playtimeMinutes?: SortOrder
   }
 
@@ -14827,6 +13192,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
+    platformIds?: SortOrder
     playtimeMinutes?: SortOrder
   }
 
@@ -14838,15 +13204,10 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type PlatformGameNullableScalarRelationFilter = {
-    is?: PlatformGameWhereInput | null
-    isNot?: PlatformGameWhereInput | null
-  }
-
   export type DealCountOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrder
+    platformIds?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
     price?: SortOrder
@@ -14865,7 +13226,7 @@ export namespace Prisma {
   export type DealAvgOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrder
+    platformIds?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
@@ -14874,7 +13235,6 @@ export namespace Prisma {
   export type DealMaxOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
     price?: SortOrder
@@ -14893,7 +13253,6 @@ export namespace Prisma {
   export type DealMinOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
     price?: SortOrder
@@ -14912,7 +13271,7 @@ export namespace Prisma {
   export type DealSumOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformGameId?: SortOrder
+    platformIds?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
@@ -15221,13 +13580,6 @@ export namespace Prisma {
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
   }
 
-  export type PlatformGameCreateNestedManyWithoutGameInput = {
-    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
-    createMany?: PlatformGameCreateManyGameInputEnvelope
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-  }
-
   export type UserGameCreateNestedManyWithoutGameInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
@@ -15247,13 +13599,6 @@ export namespace Prisma {
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
     createMany?: DealCreateManyGameInputEnvelope
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-  }
-
-  export type PlatformGameUncheckedCreateNestedManyWithoutGameInput = {
-    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
-    createMany?: PlatformGameCreateManyGameInputEnvelope
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
   }
 
   export type UserGameUncheckedCreateNestedManyWithoutGameInput = {
@@ -15343,20 +13688,6 @@ export namespace Prisma {
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
 
-  export type PlatformGameUpdateManyWithoutGameNestedInput = {
-    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
-    upsert?: PlatformGameUpsertWithWhereUniqueWithoutGameInput | PlatformGameUpsertWithWhereUniqueWithoutGameInput[]
-    createMany?: PlatformGameCreateManyGameInputEnvelope
-    set?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    disconnect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    delete?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    update?: PlatformGameUpdateWithWhereUniqueWithoutGameInput | PlatformGameUpdateWithWhereUniqueWithoutGameInput[]
-    updateMany?: PlatformGameUpdateManyWithWhereWithoutGameInput | PlatformGameUpdateManyWithWhereWithoutGameInput[]
-    deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-  }
-
   export type UserGameUpdateManyWithoutGameNestedInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
@@ -15399,20 +13730,6 @@ export namespace Prisma {
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
 
-  export type PlatformGameUncheckedUpdateManyWithoutGameNestedInput = {
-    create?: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput> | PlatformGameCreateWithoutGameInput[] | PlatformGameUncheckedCreateWithoutGameInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutGameInput | PlatformGameCreateOrConnectWithoutGameInput[]
-    upsert?: PlatformGameUpsertWithWhereUniqueWithoutGameInput | PlatformGameUpsertWithWhereUniqueWithoutGameInput[]
-    createMany?: PlatformGameCreateManyGameInputEnvelope
-    set?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    disconnect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    delete?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    update?: PlatformGameUpdateWithWhereUniqueWithoutGameInput | PlatformGameUpdateWithWhereUniqueWithoutGameInput[]
-    updateMany?: PlatformGameUpdateManyWithWhereWithoutGameInput | PlatformGameUpdateManyWithWhereWithoutGameInput[]
-    deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-  }
-
   export type UserGameUncheckedUpdateManyWithoutGameNestedInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
@@ -15441,116 +13758,8 @@ export namespace Prisma {
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
-  export type PlatformGameCreateNestedManyWithoutPlatformInput = {
-    create?: XOR<PlatformGameCreateWithoutPlatformInput, PlatformGameUncheckedCreateWithoutPlatformInput> | PlatformGameCreateWithoutPlatformInput[] | PlatformGameUncheckedCreateWithoutPlatformInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutPlatformInput | PlatformGameCreateOrConnectWithoutPlatformInput[]
-    createMany?: PlatformGameCreateManyPlatformInputEnvelope
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-  }
-
-  export type PlatformGameUncheckedCreateNestedManyWithoutPlatformInput = {
-    create?: XOR<PlatformGameCreateWithoutPlatformInput, PlatformGameUncheckedCreateWithoutPlatformInput> | PlatformGameCreateWithoutPlatformInput[] | PlatformGameUncheckedCreateWithoutPlatformInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutPlatformInput | PlatformGameCreateOrConnectWithoutPlatformInput[]
-    createMany?: PlatformGameCreateManyPlatformInputEnvelope
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-  }
-
-  export type PlatformGameUpdateManyWithoutPlatformNestedInput = {
-    create?: XOR<PlatformGameCreateWithoutPlatformInput, PlatformGameUncheckedCreateWithoutPlatformInput> | PlatformGameCreateWithoutPlatformInput[] | PlatformGameUncheckedCreateWithoutPlatformInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutPlatformInput | PlatformGameCreateOrConnectWithoutPlatformInput[]
-    upsert?: PlatformGameUpsertWithWhereUniqueWithoutPlatformInput | PlatformGameUpsertWithWhereUniqueWithoutPlatformInput[]
-    createMany?: PlatformGameCreateManyPlatformInputEnvelope
-    set?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    disconnect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    delete?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    update?: PlatformGameUpdateWithWhereUniqueWithoutPlatformInput | PlatformGameUpdateWithWhereUniqueWithoutPlatformInput[]
-    updateMany?: PlatformGameUpdateManyWithWhereWithoutPlatformInput | PlatformGameUpdateManyWithWhereWithoutPlatformInput[]
-    deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-  }
-
-  export type PlatformGameUncheckedUpdateManyWithoutPlatformNestedInput = {
-    create?: XOR<PlatformGameCreateWithoutPlatformInput, PlatformGameUncheckedCreateWithoutPlatformInput> | PlatformGameCreateWithoutPlatformInput[] | PlatformGameUncheckedCreateWithoutPlatformInput[]
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutPlatformInput | PlatformGameCreateOrConnectWithoutPlatformInput[]
-    upsert?: PlatformGameUpsertWithWhereUniqueWithoutPlatformInput | PlatformGameUpsertWithWhereUniqueWithoutPlatformInput[]
-    createMany?: PlatformGameCreateManyPlatformInputEnvelope
-    set?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    disconnect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    delete?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    connect?: PlatformGameWhereUniqueInput | PlatformGameWhereUniqueInput[]
-    update?: PlatformGameUpdateWithWhereUniqueWithoutPlatformInput | PlatformGameUpdateWithWhereUniqueWithoutPlatformInput[]
-    updateMany?: PlatformGameUpdateManyWithWhereWithoutPlatformInput | PlatformGameUpdateManyWithWhereWithoutPlatformInput[]
-    deleteMany?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-  }
-
-  export type DealCreateNestedManyWithoutPlatformGameInput = {
-    create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
-    connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
-    createMany?: DealCreateManyPlatformGameInputEnvelope
-    connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-  }
-
-  export type GameCreateNestedOneWithoutPlatformGamesInput = {
-    create?: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
-    connectOrCreate?: GameCreateOrConnectWithoutPlatformGamesInput
-    connect?: GameWhereUniqueInput
-  }
-
-  export type PlatformCreateNestedOneWithoutPlatformGamesInput = {
-    create?: XOR<PlatformCreateWithoutPlatformGamesInput, PlatformUncheckedCreateWithoutPlatformGamesInput>
-    connectOrCreate?: PlatformCreateOrConnectWithoutPlatformGamesInput
-    connect?: PlatformWhereUniqueInput
-  }
-
-  export type DealUncheckedCreateNestedManyWithoutPlatformGameInput = {
-    create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
-    connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
-    createMany?: DealCreateManyPlatformGameInputEnvelope
-    connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-  }
-
-  export type DealUpdateManyWithoutPlatformGameNestedInput = {
-    create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
-    connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
-    upsert?: DealUpsertWithWhereUniqueWithoutPlatformGameInput | DealUpsertWithWhereUniqueWithoutPlatformGameInput[]
-    createMany?: DealCreateManyPlatformGameInputEnvelope
-    set?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    disconnect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    delete?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    update?: DealUpdateWithWhereUniqueWithoutPlatformGameInput | DealUpdateWithWhereUniqueWithoutPlatformGameInput[]
-    updateMany?: DealUpdateManyWithWhereWithoutPlatformGameInput | DealUpdateManyWithWhereWithoutPlatformGameInput[]
-    deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
-  }
-
-  export type GameUpdateOneRequiredWithoutPlatformGamesNestedInput = {
-    create?: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
-    connectOrCreate?: GameCreateOrConnectWithoutPlatformGamesInput
-    upsert?: GameUpsertWithoutPlatformGamesInput
-    connect?: GameWhereUniqueInput
-    update?: XOR<XOR<GameUpdateToOneWithWhereWithoutPlatformGamesInput, GameUpdateWithoutPlatformGamesInput>, GameUncheckedUpdateWithoutPlatformGamesInput>
-  }
-
-  export type PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput = {
-    create?: XOR<PlatformCreateWithoutPlatformGamesInput, PlatformUncheckedCreateWithoutPlatformGamesInput>
-    connectOrCreate?: PlatformCreateOrConnectWithoutPlatformGamesInput
-    upsert?: PlatformUpsertWithoutPlatformGamesInput
-    connect?: PlatformWhereUniqueInput
-    update?: XOR<XOR<PlatformUpdateToOneWithWhereWithoutPlatformGamesInput, PlatformUpdateWithoutPlatformGamesInput>, PlatformUncheckedUpdateWithoutPlatformGamesInput>
-  }
-
-  export type DealUncheckedUpdateManyWithoutPlatformGameNestedInput = {
-    create?: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput> | DealCreateWithoutPlatformGameInput[] | DealUncheckedCreateWithoutPlatformGameInput[]
-    connectOrCreate?: DealCreateOrConnectWithoutPlatformGameInput | DealCreateOrConnectWithoutPlatformGameInput[]
-    upsert?: DealUpsertWithWhereUniqueWithoutPlatformGameInput | DealUpsertWithWhereUniqueWithoutPlatformGameInput[]
-    createMany?: DealCreateManyPlatformGameInputEnvelope
-    set?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    disconnect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    delete?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
-    update?: DealUpdateWithWhereUniqueWithoutPlatformGameInput | DealUpdateWithWhereUniqueWithoutPlatformGameInput[]
-    updateMany?: DealUpdateManyWithWhereWithoutPlatformGameInput | DealUpdateManyWithWhereWithoutPlatformGameInput[]
-    deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
+  export type UserGameCreateplatformIdsInput = {
+    set: number[]
   }
 
   export type GameCreateNestedOneWithoutUserGamesInput = {
@@ -15563,6 +13772,11 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type UserGameUpdateplatformIdsInput = {
+    set?: number[]
+    push?: number | number[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -15585,16 +13799,19 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserGamesInput, UserUpdateWithoutUserGamesInput>, UserUncheckedUpdateWithoutUserGamesInput>
   }
 
+  export type DealCreateplatformIdsInput = {
+    set: number[]
+  }
+
   export type GameCreateNestedOneWithoutDealsInput = {
     create?: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
     connectOrCreate?: GameCreateOrConnectWithoutDealsInput
     connect?: GameWhereUniqueInput
   }
 
-  export type PlatformGameCreateNestedOneWithoutDealsInput = {
-    create?: XOR<PlatformGameCreateWithoutDealsInput, PlatformGameUncheckedCreateWithoutDealsInput>
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutDealsInput
-    connect?: PlatformGameWhereUniqueInput
+  export type DealUpdateplatformIdsInput = {
+    set?: number[]
+    push?: number | number[]
   }
 
   export type GameUpdateOneRequiredWithoutDealsNestedInput = {
@@ -15603,16 +13820,6 @@ export namespace Prisma {
     upsert?: GameUpsertWithoutDealsInput
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutDealsInput, GameUpdateWithoutDealsInput>, GameUncheckedUpdateWithoutDealsInput>
-  }
-
-  export type PlatformGameUpdateOneWithoutDealsNestedInput = {
-    create?: XOR<PlatformGameCreateWithoutDealsInput, PlatformGameUncheckedCreateWithoutDealsInput>
-    connectOrCreate?: PlatformGameCreateOrConnectWithoutDealsInput
-    upsert?: PlatformGameUpsertWithoutDealsInput
-    disconnect?: PlatformGameWhereInput | boolean
-    delete?: PlatformGameWhereInput | boolean
-    connect?: PlatformGameWhereUniqueInput
-    update?: XOR<XOR<PlatformGameUpdateToOneWithWhereWithoutDealsInput, PlatformGameUpdateWithoutDealsInput>, PlatformGameUncheckedUpdateWithoutDealsInput>
   }
 
   export type UserAchievementCreateNestedManyWithoutAchievementInput = {
@@ -15975,6 +14182,7 @@ export namespace Prisma {
   }
 
   export type UserGameCreateWithoutUserInput = {
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -15987,6 +14195,7 @@ export namespace Prisma {
   export type UserGameUncheckedCreateWithoutUserInput = {
     id?: number
     gameId: number
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -16075,6 +14284,7 @@ export namespace Prisma {
     id?: IntFilter<"UserGame"> | number
     userId?: IntFilter<"UserGame"> | number
     gameId?: IntFilter<"UserGame"> | number
+    platformIds?: IntNullableListFilter<"UserGame">
     addedAt?: DateTimeFilter<"UserGame"> | Date | string
     playtimeMinutes?: IntNullableFilter<"UserGame"> | number | null
     lastPlayed?: DateTimeNullableFilter<"UserGame"> | Date | string | null
@@ -16110,6 +14320,7 @@ export namespace Prisma {
   }
 
   export type DealCreateWithoutGameInput = {
+    platformIds?: DealCreateplatformIdsInput | number[]
     title: string
     storeName: string
     price?: number | null
@@ -16123,12 +14334,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
-    platformGame?: PlatformGameCreateNestedOneWithoutDealsInput
   }
 
   export type DealUncheckedCreateWithoutGameInput = {
     id?: number
-    platformGameId?: number | null
+    platformIds?: DealCreateplatformIdsInput | number[]
     title: string
     storeName: string
     price?: number | null
@@ -16154,32 +14364,8 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type PlatformGameCreateWithoutGameInput = {
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealCreateNestedManyWithoutPlatformGameInput
-    platform: PlatformCreateNestedOneWithoutPlatformGamesInput
-  }
-
-  export type PlatformGameUncheckedCreateWithoutGameInput = {
-    id?: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealUncheckedCreateNestedManyWithoutPlatformGameInput
-  }
-
-  export type PlatformGameCreateOrConnectWithoutGameInput = {
-    where: PlatformGameWhereUniqueInput
-    create: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput>
-  }
-
-  export type PlatformGameCreateManyGameInputEnvelope = {
-    data: PlatformGameCreateManyGameInput | PlatformGameCreateManyGameInput[]
-    skipDuplicates?: boolean
-  }
-
   export type UserGameCreateWithoutGameInput = {
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -16192,6 +14378,7 @@ export namespace Prisma {
   export type UserGameUncheckedCreateWithoutGameInput = {
     id?: number
     userId: number
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -16253,7 +14440,7 @@ export namespace Prisma {
     NOT?: DealScalarWhereInput | DealScalarWhereInput[]
     id?: IntFilter<"Deal"> | number
     gameId?: IntFilter<"Deal"> | number
-    platformGameId?: IntNullableFilter<"Deal"> | number | null
+    platformIds?: IntNullableListFilter<"Deal">
     title?: StringFilter<"Deal"> | string
     storeName?: StringFilter<"Deal"> | string
     price?: FloatNullableFilter<"Deal"> | number | null
@@ -16267,33 +14454,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
-  }
-
-  export type PlatformGameUpsertWithWhereUniqueWithoutGameInput = {
-    where: PlatformGameWhereUniqueInput
-    update: XOR<PlatformGameUpdateWithoutGameInput, PlatformGameUncheckedUpdateWithoutGameInput>
-    create: XOR<PlatformGameCreateWithoutGameInput, PlatformGameUncheckedCreateWithoutGameInput>
-  }
-
-  export type PlatformGameUpdateWithWhereUniqueWithoutGameInput = {
-    where: PlatformGameWhereUniqueInput
-    data: XOR<PlatformGameUpdateWithoutGameInput, PlatformGameUncheckedUpdateWithoutGameInput>
-  }
-
-  export type PlatformGameUpdateManyWithWhereWithoutGameInput = {
-    where: PlatformGameScalarWhereInput
-    data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyWithoutGameInput>
-  }
-
-  export type PlatformGameScalarWhereInput = {
-    AND?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-    OR?: PlatformGameScalarWhereInput[]
-    NOT?: PlatformGameScalarWhereInput | PlatformGameScalarWhereInput[]
-    id?: IntFilter<"PlatformGame"> | number
-    gameId?: IntFilter<"PlatformGame"> | number
-    platformId?: IntFilter<"PlatformGame"> | number
-    platformSpecificId?: StringFilter<"PlatformGame"> | string
-    url?: StringNullableFilter<"PlatformGame"> | string | null
   }
 
   export type UserGameUpsertWithWhereUniqueWithoutGameInput = {
@@ -16328,296 +14488,6 @@ export namespace Prisma {
     data: XOR<WishlistUpdateManyMutationInput, WishlistUncheckedUpdateManyWithoutGameInput>
   }
 
-  export type PlatformGameCreateWithoutPlatformInput = {
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealCreateNestedManyWithoutPlatformGameInput
-    game: GameCreateNestedOneWithoutPlatformGamesInput
-  }
-
-  export type PlatformGameUncheckedCreateWithoutPlatformInput = {
-    id?: number
-    gameId: number
-    platformSpecificId: string
-    url?: string | null
-    deals?: DealUncheckedCreateNestedManyWithoutPlatformGameInput
-  }
-
-  export type PlatformGameCreateOrConnectWithoutPlatformInput = {
-    where: PlatformGameWhereUniqueInput
-    create: XOR<PlatformGameCreateWithoutPlatformInput, PlatformGameUncheckedCreateWithoutPlatformInput>
-  }
-
-  export type PlatformGameCreateManyPlatformInputEnvelope = {
-    data: PlatformGameCreateManyPlatformInput | PlatformGameCreateManyPlatformInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type PlatformGameUpsertWithWhereUniqueWithoutPlatformInput = {
-    where: PlatformGameWhereUniqueInput
-    update: XOR<PlatformGameUpdateWithoutPlatformInput, PlatformGameUncheckedUpdateWithoutPlatformInput>
-    create: XOR<PlatformGameCreateWithoutPlatformInput, PlatformGameUncheckedCreateWithoutPlatformInput>
-  }
-
-  export type PlatformGameUpdateWithWhereUniqueWithoutPlatformInput = {
-    where: PlatformGameWhereUniqueInput
-    data: XOR<PlatformGameUpdateWithoutPlatformInput, PlatformGameUncheckedUpdateWithoutPlatformInput>
-  }
-
-  export type PlatformGameUpdateManyWithWhereWithoutPlatformInput = {
-    where: PlatformGameScalarWhereInput
-    data: XOR<PlatformGameUpdateManyMutationInput, PlatformGameUncheckedUpdateManyWithoutPlatformInput>
-  }
-
-  export type DealCreateWithoutPlatformGameInput = {
-    title: string
-    storeName: string
-    price?: number | null
-    discountPercent?: number | null
-    originalPrice?: number | null
-    url: string
-    validFrom?: Date | string | null
-    validUntil?: Date | string | null
-    isFreebie?: boolean
-    discoveredAt?: Date | string
-    updatedAt?: Date | string
-    externalId?: string | null
-    source?: string | null
-    game: GameCreateNestedOneWithoutDealsInput
-  }
-
-  export type DealUncheckedCreateWithoutPlatformGameInput = {
-    id?: number
-    gameId: number
-    title: string
-    storeName: string
-    price?: number | null
-    discountPercent?: number | null
-    originalPrice?: number | null
-    url: string
-    validFrom?: Date | string | null
-    validUntil?: Date | string | null
-    isFreebie?: boolean
-    discoveredAt?: Date | string
-    updatedAt?: Date | string
-    externalId?: string | null
-    source?: string | null
-  }
-
-  export type DealCreateOrConnectWithoutPlatformGameInput = {
-    where: DealWhereUniqueInput
-    create: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput>
-  }
-
-  export type DealCreateManyPlatformGameInputEnvelope = {
-    data: DealCreateManyPlatformGameInput | DealCreateManyPlatformGameInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type GameCreateWithoutPlatformGamesInput = {
-    igdbId?: number | null
-    name: string
-    slug?: string | null
-    summary?: string | null
-    storyline?: string | null
-    firstReleaseDate?: Date | string | null
-    coverUrl?: string | null
-    screenshots?: GameCreatescreenshotsInput | string[]
-    totalRating?: number | null
-    totalRatingCount?: number | null
-    aggregatedRating?: number | null
-    aggregatedRatingCount?: number | null
-    genres?: GameCreategenresInput | string[]
-    themes?: GameCreatethemesInput | string[]
-    gameModes?: GameCreategameModesInput | string[]
-    keywords?: GameCreatekeywordsInput | string[]
-    developers?: GameCreatedevelopersInput | string[]
-    publishers?: GameCreatepublishersInput | string[]
-    websites?: NullableJsonNullValueInput | InputJsonValue
-    externalGames?: NullableJsonNullValueInput | InputJsonValue
-    ageRatings?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
-    deals?: DealCreateNestedManyWithoutGameInput
-    userGames?: UserGameCreateNestedManyWithoutGameInput
-    wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
-  }
-
-  export type GameUncheckedCreateWithoutPlatformGamesInput = {
-    id?: number
-    igdbId?: number | null
-    name: string
-    slug?: string | null
-    summary?: string | null
-    storyline?: string | null
-    firstReleaseDate?: Date | string | null
-    coverUrl?: string | null
-    screenshots?: GameCreatescreenshotsInput | string[]
-    totalRating?: number | null
-    totalRatingCount?: number | null
-    aggregatedRating?: number | null
-    aggregatedRatingCount?: number | null
-    genres?: GameCreategenresInput | string[]
-    themes?: GameCreatethemesInput | string[]
-    gameModes?: GameCreategameModesInput | string[]
-    keywords?: GameCreatekeywordsInput | string[]
-    developers?: GameCreatedevelopersInput | string[]
-    publishers?: GameCreatepublishersInput | string[]
-    websites?: NullableJsonNullValueInput | InputJsonValue
-    externalGames?: NullableJsonNullValueInput | InputJsonValue
-    ageRatings?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
-    deals?: DealUncheckedCreateNestedManyWithoutGameInput
-    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
-    wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
-  }
-
-  export type GameCreateOrConnectWithoutPlatformGamesInput = {
-    where: GameWhereUniqueInput
-    create: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
-  }
-
-  export type PlatformCreateWithoutPlatformGamesInput = {
-    name: string
-    slug: string
-    iconUrl?: string | null
-    siteUrl?: string | null
-  }
-
-  export type PlatformUncheckedCreateWithoutPlatformGamesInput = {
-    id?: number
-    name: string
-    slug: string
-    iconUrl?: string | null
-    siteUrl?: string | null
-  }
-
-  export type PlatformCreateOrConnectWithoutPlatformGamesInput = {
-    where: PlatformWhereUniqueInput
-    create: XOR<PlatformCreateWithoutPlatformGamesInput, PlatformUncheckedCreateWithoutPlatformGamesInput>
-  }
-
-  export type DealUpsertWithWhereUniqueWithoutPlatformGameInput = {
-    where: DealWhereUniqueInput
-    update: XOR<DealUpdateWithoutPlatformGameInput, DealUncheckedUpdateWithoutPlatformGameInput>
-    create: XOR<DealCreateWithoutPlatformGameInput, DealUncheckedCreateWithoutPlatformGameInput>
-  }
-
-  export type DealUpdateWithWhereUniqueWithoutPlatformGameInput = {
-    where: DealWhereUniqueInput
-    data: XOR<DealUpdateWithoutPlatformGameInput, DealUncheckedUpdateWithoutPlatformGameInput>
-  }
-
-  export type DealUpdateManyWithWhereWithoutPlatformGameInput = {
-    where: DealScalarWhereInput
-    data: XOR<DealUpdateManyMutationInput, DealUncheckedUpdateManyWithoutPlatformGameInput>
-  }
-
-  export type GameUpsertWithoutPlatformGamesInput = {
-    update: XOR<GameUpdateWithoutPlatformGamesInput, GameUncheckedUpdateWithoutPlatformGamesInput>
-    create: XOR<GameCreateWithoutPlatformGamesInput, GameUncheckedCreateWithoutPlatformGamesInput>
-    where?: GameWhereInput
-  }
-
-  export type GameUpdateToOneWithWhereWithoutPlatformGamesInput = {
-    where?: GameWhereInput
-    data: XOR<GameUpdateWithoutPlatformGamesInput, GameUncheckedUpdateWithoutPlatformGamesInput>
-  }
-
-  export type GameUpdateWithoutPlatformGamesInput = {
-    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    storyline?: NullableStringFieldUpdateOperationsInput | string | null
-    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    screenshots?: GameUpdatescreenshotsInput | string[]
-    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
-    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
-    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
-    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
-    genres?: GameUpdategenresInput | string[]
-    themes?: GameUpdatethemesInput | string[]
-    gameModes?: GameUpdategameModesInput | string[]
-    keywords?: GameUpdatekeywordsInput | string[]
-    developers?: GameUpdatedevelopersInput | string[]
-    publishers?: GameUpdatepublishersInput | string[]
-    websites?: NullableJsonNullValueInput | InputJsonValue
-    externalGames?: NullableJsonNullValueInput | InputJsonValue
-    ageRatings?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUpdateManyWithoutGameNestedInput
-    userGames?: UserGameUpdateManyWithoutGameNestedInput
-    wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
-  }
-
-  export type GameUncheckedUpdateWithoutPlatformGamesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    storyline?: NullableStringFieldUpdateOperationsInput | string | null
-    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    screenshots?: GameUpdatescreenshotsInput | string[]
-    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
-    totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
-    aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
-    aggregatedRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
-    genres?: GameUpdategenresInput | string[]
-    themes?: GameUpdatethemesInput | string[]
-    gameModes?: GameUpdategameModesInput | string[]
-    keywords?: GameUpdatekeywordsInput | string[]
-    developers?: GameUpdatedevelopersInput | string[]
-    publishers?: GameUpdatepublishersInput | string[]
-    websites?: NullableJsonNullValueInput | InputJsonValue
-    externalGames?: NullableJsonNullValueInput | InputJsonValue
-    ageRatings?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUncheckedUpdateManyWithoutGameNestedInput
-    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
-    wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
-  }
-
-  export type PlatformUpsertWithoutPlatformGamesInput = {
-    update: XOR<PlatformUpdateWithoutPlatformGamesInput, PlatformUncheckedUpdateWithoutPlatformGamesInput>
-    create: XOR<PlatformCreateWithoutPlatformGamesInput, PlatformUncheckedCreateWithoutPlatformGamesInput>
-    where?: PlatformWhereInput
-  }
-
-  export type PlatformUpdateToOneWithWhereWithoutPlatformGamesInput = {
-    where?: PlatformWhereInput
-    data: XOR<PlatformUpdateWithoutPlatformGamesInput, PlatformUncheckedUpdateWithoutPlatformGamesInput>
-  }
-
-  export type PlatformUpdateWithoutPlatformGamesInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type PlatformUncheckedUpdateWithoutPlatformGamesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type GameCreateWithoutUserGamesInput = {
     igdbId?: number | null
     name: string
@@ -16643,9 +14513,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
 
@@ -16675,9 +14543,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
 
@@ -16748,9 +14614,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
 
@@ -16780,9 +14644,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
 
@@ -16843,8 +14705,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
-    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
@@ -16875,8 +14735,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
@@ -16884,26 +14742,6 @@ export namespace Prisma {
   export type GameCreateOrConnectWithoutDealsInput = {
     where: GameWhereUniqueInput
     create: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
-  }
-
-  export type PlatformGameCreateWithoutDealsInput = {
-    platformSpecificId: string
-    url?: string | null
-    game: GameCreateNestedOneWithoutPlatformGamesInput
-    platform: PlatformCreateNestedOneWithoutPlatformGamesInput
-  }
-
-  export type PlatformGameUncheckedCreateWithoutDealsInput = {
-    id?: number
-    gameId: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-  }
-
-  export type PlatformGameCreateOrConnectWithoutDealsInput = {
-    where: PlatformGameWhereUniqueInput
-    create: XOR<PlatformGameCreateWithoutDealsInput, PlatformGameUncheckedCreateWithoutDealsInput>
   }
 
   export type GameUpsertWithoutDealsInput = {
@@ -16942,8 +14780,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
-    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
@@ -16974,36 +14810,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
-  }
-
-  export type PlatformGameUpsertWithoutDealsInput = {
-    update: XOR<PlatformGameUpdateWithoutDealsInput, PlatformGameUncheckedUpdateWithoutDealsInput>
-    create: XOR<PlatformGameCreateWithoutDealsInput, PlatformGameUncheckedCreateWithoutDealsInput>
-    where?: PlatformGameWhereInput
-  }
-
-  export type PlatformGameUpdateToOneWithWhereWithoutDealsInput = {
-    where?: PlatformGameWhereInput
-    data: XOR<PlatformGameUpdateWithoutDealsInput, PlatformGameUncheckedUpdateWithoutDealsInput>
-  }
-
-  export type PlatformGameUpdateWithoutDealsInput = {
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    game?: GameUpdateOneRequiredWithoutPlatformGamesNestedInput
-    platform?: PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateWithoutDealsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserAchievementCreateWithoutAchievementInput = {
@@ -17184,9 +14992,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
     deals?: DealCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
   }
 
@@ -17216,9 +15022,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
-    steamAppId?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
-    platformGames?: PlatformGameUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
   }
 
@@ -17289,9 +15093,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
   }
 
@@ -17321,9 +15123,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    steamAppId?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
-    platformGames?: PlatformGameUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
   }
 
@@ -17368,6 +15168,7 @@ export namespace Prisma {
   export type UserGameCreateManyUserInput = {
     id?: number
     gameId: number
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -17400,6 +15201,7 @@ export namespace Prisma {
   }
 
   export type UserGameUpdateWithoutUserInput = {
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17412,6 +15214,7 @@ export namespace Prisma {
   export type UserGameUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17423,6 +15226,7 @@ export namespace Prisma {
   export type UserGameUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17450,7 +15254,7 @@ export namespace Prisma {
 
   export type DealCreateManyGameInput = {
     id?: number
-    platformGameId?: number | null
+    platformIds?: DealCreateplatformIdsInput | number[]
     title: string
     storeName: string
     price?: number | null
@@ -17466,16 +15270,10 @@ export namespace Prisma {
     source?: string | null
   }
 
-  export type PlatformGameCreateManyGameInput = {
-    id?: number
-    platformId: number
-    platformSpecificId: string
-    url?: string | null
-  }
-
   export type UserGameCreateManyGameInput = {
     id?: number
     userId: number
+    platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
     playtimeMinutes?: number | null
     lastPlayed?: Date | string | null
@@ -17491,6 +15289,7 @@ export namespace Prisma {
   }
 
   export type DealUpdateWithoutGameInput = {
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -17504,12 +15303,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
-    platformGame?: PlatformGameUpdateOneWithoutDealsNestedInput
   }
 
   export type DealUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
-    platformGameId?: NullableIntFieldUpdateOperationsInput | number | null
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -17527,7 +15325,7 @@ export namespace Prisma {
 
   export type DealUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
-    platformGameId?: NullableIntFieldUpdateOperationsInput | number | null
+    platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
     price?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -17543,29 +15341,8 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type PlatformGameUpdateWithoutGameInput = {
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUpdateManyWithoutPlatformGameNestedInput
-    platform?: PlatformUpdateOneRequiredWithoutPlatformGamesNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUncheckedUpdateManyWithoutPlatformGameNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateManyWithoutGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    platformId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type UserGameUpdateWithoutGameInput = {
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17578,6 +15355,7 @@ export namespace Prisma {
   export type UserGameUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17589,6 +15367,7 @@ export namespace Prisma {
   export type UserGameUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
+    platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playtimeMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     lastPlayed?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17612,106 +15391,6 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PlatformGameCreateManyPlatformInput = {
-    id?: number
-    gameId: number
-    platformSpecificId: string
-    url?: string | null
-  }
-
-  export type PlatformGameUpdateWithoutPlatformInput = {
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUpdateManyWithoutPlatformGameNestedInput
-    game?: GameUpdateOneRequiredWithoutPlatformGamesNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateWithoutPlatformInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    deals?: DealUncheckedUpdateManyWithoutPlatformGameNestedInput
-  }
-
-  export type PlatformGameUncheckedUpdateManyWithoutPlatformInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    platformSpecificId?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type DealCreateManyPlatformGameInput = {
-    id?: number
-    gameId: number
-    title: string
-    storeName: string
-    price?: number | null
-    discountPercent?: number | null
-    originalPrice?: number | null
-    url: string
-    validFrom?: Date | string | null
-    validUntil?: Date | string | null
-    isFreebie?: boolean
-    discoveredAt?: Date | string
-    updatedAt?: Date | string
-    externalId?: string | null
-    source?: string | null
-  }
-
-  export type DealUpdateWithoutPlatformGameInput = {
-    title?: StringFieldUpdateOperationsInput | string
-    storeName?: StringFieldUpdateOperationsInput | string
-    price?: NullableFloatFieldUpdateOperationsInput | number | null
-    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
-    originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
-    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    validUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isFreebie?: BoolFieldUpdateOperationsInput | boolean
-    discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    externalId?: NullableStringFieldUpdateOperationsInput | string | null
-    source?: NullableStringFieldUpdateOperationsInput | string | null
-    game?: GameUpdateOneRequiredWithoutDealsNestedInput
-  }
-
-  export type DealUncheckedUpdateWithoutPlatformGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    storeName?: StringFieldUpdateOperationsInput | string
-    price?: NullableFloatFieldUpdateOperationsInput | number | null
-    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
-    originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
-    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    validUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isFreebie?: BoolFieldUpdateOperationsInput | boolean
-    discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    externalId?: NullableStringFieldUpdateOperationsInput | string | null
-    source?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type DealUncheckedUpdateManyWithoutPlatformGameInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    gameId?: IntFieldUpdateOperationsInput | number
-    title?: StringFieldUpdateOperationsInput | string
-    storeName?: StringFieldUpdateOperationsInput | string
-    price?: NullableFloatFieldUpdateOperationsInput | number | null
-    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
-    originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
-    url?: StringFieldUpdateOperationsInput | string
-    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    validUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isFreebie?: BoolFieldUpdateOperationsInput | boolean
-    discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    externalId?: NullableStringFieldUpdateOperationsInput | string | null
-    source?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserAchievementCreateManyAchievementInput = {

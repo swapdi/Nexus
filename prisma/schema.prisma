@@ -48,9 +48,7 @@ model Game {
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
   lastSyncedAt          DateTime?
-  steamAppId            String?
   deals                 Deal[]
-  platformGames         PlatformGame[]
   userGames             UserGame[]
   wishlistedBy          Wishlist[]
 
@@ -63,32 +61,15 @@ model Platform {
   slug          String         @unique
   iconUrl       String?
   siteUrl       String?
-  platformGames PlatformGame[]
 
   @@map("platforms")
-}
-
-model PlatformGame {
-  id                 Int      @id @default(autoincrement())
-  gameId             Int
-  platformId         Int
-  platformSpecificId String
-  url                String?
-  deals              Deal[]
-  game               Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  platform           Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
-
-  @@unique([gameId, platformId])
-  @@unique([platformId, platformSpecificId])
-  @@unique([gameId, platformId], map: "platform_games_gameid_platformid_unique")
-  @@unique([platformId, platformSpecificId], map: "platform_games_platformid_platformspecificid_unique")
-  @@map("platform_games")
 }
 
 model UserGame {
   id              Int       @id @default(autoincrement())
   userId          Int
   gameId          Int
+  platformIds     Int[]     @default([])
   addedAt         DateTime  @default(now())
   playtimeMinutes Int?      @default(0)
   lastPlayed      DateTime?
@@ -104,9 +85,9 @@ model UserGame {
 }
 
 model Deal {
-  id              Int           @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   gameId          Int
-  platformGameId  Int?
+  platformIds     Int[]    @default([])
   title           String
   storeName       String
   price           Float?
@@ -115,13 +96,12 @@ model Deal {
   url             String
   validFrom       DateTime?
   validUntil      DateTime?
-  isFreebie       Boolean       @default(false)
-  discoveredAt    DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  isFreebie       Boolean  @default(false)
+  discoveredAt    DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   externalId      String?
   source          String?
-  game            Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  platformGame    PlatformGame? @relation(fields: [platformGameId], references: [id])
+  game            Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@map("deals")
 }
