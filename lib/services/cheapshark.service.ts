@@ -109,6 +109,7 @@ export namespace CheapSharkService {
       metacritic?: number;
       steamRating?: number;
       onSale?: boolean;
+      maxAge?: number;
       output?: string;
     } = {}
   ): Promise<CheapSharkDeal[]> {
@@ -134,6 +135,8 @@ export namespace CheapSharkService {
         searchParams.append('steamRating', options.steamRating.toString());
       if (options.onSale !== undefined)
         searchParams.append('onSale', options.onSale ? '1' : '0');
+      if (options.maxAge !== undefined)
+        searchParams.append('maxAge', options.maxAge.toString());
       if (options.output) searchParams.append('output', options.output);
 
       const url = `${BASE_URL}/deals${
@@ -185,11 +188,7 @@ export namespace CheapSharkService {
 
       const url = `${BASE_URL}/games?${searchParams.toString()}`;
 
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'Nexus-Game-Manager/1.0'
-        }
-      });
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error(

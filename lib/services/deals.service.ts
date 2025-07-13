@@ -77,8 +77,9 @@ export namespace DealsService {
           where.validUntil = { lt: new Date() };
         }
       }
-      if (filters.source)
+      if (filters.source) {
         where.source = { contains: filters.source, mode: 'insensitive' };
+      }
 
       const deals = await prisma.deal.findMany({
         where,
@@ -138,9 +139,6 @@ export namespace DealsService {
             );
           if (gameResult && gameResult.success && gameResult.game) {
             finalGameId = gameResult.game.id;
-            console.log(
-              `Found/created game: ${gameResult.game.name} (ID: ${finalGameId}) for deal: ${cheapSharkDeal.title}`
-            );
           } else {
             console.warn(
               `Could not find/create game for deal: ${cheapSharkDeal.title}`
@@ -197,24 +195,16 @@ export namespace DealsService {
             source: 'CheapShark'
           }
         });
-
         if (existingDeal) {
-          console.log(
-            `Deal already exists: ${dealData.title} (${dealData.externalId})`
-          );
           continue;
         }
-
         // Grund: Neuen Deal erstellen
         const newDeal = await prisma.deal.create({
           data: dealData
         });
 
         savedDeals.push(newDeal);
-        console.log(`Saved new deal: ${newDeal.title}`);
       }
-
-      console.log(`Saved ${savedDeals.length} new deals from CheapShark`);
       return savedDeals;
     } catch (error) {
       console.error('Error saving CheapShark deals:', error);
@@ -259,7 +249,6 @@ export namespace DealsService {
         }
       });
 
-      console.log(`Cleaned up ${result.count} expired deals`);
       return result.count;
     } catch (error) {
       console.error('Error cleaning up expired deals:', error);

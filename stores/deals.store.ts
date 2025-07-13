@@ -112,6 +112,88 @@ export const useDealsStore = defineStore('deals', () => {
   }
 
   /**
+   * Lädt Deals schnell aus der Datenbank (ohne Sync)
+   * Grund: Sofortiges UI-Loading für bessere User Experience
+   */
+  async function loadDealsFromDB() {
+    return await loading(
+      'load-deals-db',
+      'Lade aktuelle Deals...',
+      async () => {
+        const notifyStore = useNotifyStore();
+        error.value = null;
+
+        try {
+          const response = await $client.deals.loadDealsFromDB.query({
+            limit: 100
+          });
+
+          deals.value = response.deals;
+
+          console.log(`${response.totalDeals} Deals aus Datenbank geladen`);
+          return response;
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Laden der Deals';
+          notifyStore.notify(error.value, 3);
+          console.error('Error loading deals from DB:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
+  }
+
+  /**
+   * Synchronisiert alle CheapShark Deals im Hintergrund
+   * Grund: Vollständige Sync ohne UI-Blockierung
+   */
+  async function syncAllDealsInBackground() {
+    // Grund: Keine Loading-UI, läuft im Hintergrund
+    const notifyStore = useNotifyStore();
+
+    try {
+      // Grund: Starte Hintergrund-Sync ohne Loading-Indikator
+      const response = await $client.deals.syncAllDealsBackground.mutate({
+        maxPages: 40, // Reduziert auf sicheren Wert (40 × 60 = 2400 Deals)
+        cleanupDays: 7,
+        stopOnEmpty: true,
+        maxEmptyPages: 3,
+        maxAge: 2500, // Nur Deals der letzten ~100 Tage
+        rateLimitDelay: 1000 // Längere Pausen für bessere Rate-Limit-Compliance
+      });
+
+      // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync
+      notifyStore.notify(
+        `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen (${response.stoppedReason})`,
+        0
+      );
+
+      // Grund: Deals nach Hintergrund-Sync neu laden
+      await loadDealsFromDB();
+
+      return response;
+    } catch (err: any) {
+      console.error('Background sync failed:', err);
+      // Grund: Stille Fehlerbehandlung - keine störende UI-Meldung
+      notifyStore.notify('Hintergrund-Synchronisation fehlgeschlagen', 2);
+    }
+  }
+
+  /**
+   * Optimierte Kombination: Schneller Load + Hintergrund-Sync
+   * Grund: Beste UX - sofortige Anzeige + vollständige Daten im Hintergrund
+   */
+  async function loadDealsWithBackgroundSync() {
+    // Schritt 1: Schnell aus DB laden für sofortige UI
+    const dbResult = await loadDealsFromDB();
+
+    // Schritt 2: Hintergrund-Sync starten (ohne await)
+    syncAllDealsInBackground().catch(console.error);
+
+    return dbResult;
+  }
+
+  /**
    * Setze Filter und lade Deals neu
    */
   async function setFilters(filters: DealSearchFilters) {
@@ -242,8 +324,11 @@ export const useDealsStore = defineStore('deals', () => {
     currentFilters: readonly(currentFilters),
     currentSortBy: readonly(currentSortBy),
 
-    // Actions - Nur die wichtigsten für den Workflow
+    // Actions - Optimiert für bessere UX
     syncAndLoadDeals,
+    loadDealsFromDB,
+    syncAllDealsInBackground,
+    loadDealsWithBackgroundSync,
     fetchDeals,
     setFilters,
     setSortBy,

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-  import type { DealWithRelations } from '~/lib/services/deals.service';
+  import type { DealWithGame } from '~/lib/services/deals.service';
   import type { DealSortOptions } from '~/stores/deals.store';
 
   const userStore = useUserStore();
   const dealsStore = useDealsStore();
   const loadingStore = useLoadingStore();
+  const { currentViewMode, getCurrentConfig } = useViewMode();
 
   definePageMeta({
     middleware: ['auth'],
@@ -25,8 +26,8 @@
   // Initialize data
   onMounted(async () => {
     await userStore.init();
-    // Grund: Neue Sync-Funktion - lädt CheapShark Deals, speichert neue in DB, gibt alle DB-Deals zurück
-    await dealsStore.syncAndLoadDeals();
+    // Grund: Lade nur Deals aus DB beim Seitenaufruf - spart API-Calls
+    await dealsStore.loadDealsFromDB();
   });
 
   // Computed properties for filters
@@ -132,27 +133,29 @@
   });
 
   // Helper functions
-  const getCoverUrl = (deal: DealWithRelations): string => {
-    return deal.game.coverUrl || '/gameplaceholder.jpg';
-  };
-
-  const getGenreDisplay = (deal: DealWithRelations): string => {
-    return deal.game.genres.slice(0, 2).join(', ') || 'Unbekannt';
-  };
-
-  const isGameOwned = (deal: DealWithRelations): boolean => {
+  const isGameOwned = (deal: DealWithGame): boolean => {
     // TODO: Implement ownership check against user's library
     return false;
   };
 
-  const handleDealClick = (deal: DealWithRelations) => {
+  const handleWishlistToggle = (deal: DealWithGame) => {
+    // TODO: Implement wishlist functionality
+    console.log('Add to wishlist:', deal.title);
+  };
+
+  const handleDealClick = (deal: DealWithGame) => {
     if (deal.url) {
       window.open(deal.url, '_blank');
     }
   };
 
   const refreshDeals = async () => {
-    // Grund: Verwende neue Sync-Funktion für komplettes Refresh
+    // Grund: Lade nur aus DB für schnelle Aktualisierung
+    await dealsStore.loadDealsFromDB();
+  };
+
+  const syncDealsFromAPI = async () => {
+    // Grund: Vollständige Sync mit CheapShark API
     await dealsStore.syncAndLoadDeals();
   };
 
@@ -171,17 +174,30 @@
           class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
           Aktuelle Angebote
         </h1>
-        <!-- Refresh Button -->
+        <!-- Refresh und Sync Buttons und View Mode Toggle -->
         <div class="flex gap-2">
+          <ViewModeToggle />
           <button
             @click="refreshDeals"
             :disabled="isLoading"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2">
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2"
+            title="Deals aus Datenbank neu laden">
             <Icon
               name="heroicons:arrow-path-20-solid"
               class="w-4 h-4"
               :class="{ 'animate-spin': isLoading }" />
-            Aktualisieren
+            <span class="hidden sm:inline">Aktualisieren</span>
+          </button>
+          <button
+            @click="syncDealsFromAPI"
+            :disabled="isLoading"
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2"
+            title="Neue Deals von CheapShark API synchronisieren">
+            <Icon
+              name="heroicons:cloud-arrow-down-20-solid"
+              class="w-4 h-4"
+              :class="{ 'animate-spin': isLoading }" />
+            <span class="hidden sm:inline">Sync API</span>
           </button>
         </div>
       </div>
@@ -228,8 +244,25 @@
         </div>
       </div>
 
+      <!-- Info-Box für DB vs API -->
+      <div
+        v-if="!isLoading && !dealsStore.error && dealsStore.deals.length > 0"
+        class="mb-4 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+        <div class="flex items-center gap-2 text-sm text-blue-300">
+          <Icon
+            name="heroicons:information-circle-20-solid"
+            class="w-4 h-4 flex-shrink-0" />
+          <span
+            >Showing deals from database. Use "Sync API" to fetch latest deals
+            from CheapShark.</span
+          >
+        </div>
+      </div>
+
       <!-- Statistics -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        v-if="!isLoading && !dealsStore.error"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div
           class="bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
           <div class="text-2xl font-bold text-white">
@@ -348,116 +381,17 @@
       </div>
     </div>
 
-    <!-- Deals Grid -->
+    <!-- Deals Grid/List -->
     <div
       v-if="!isLoading && !dealsStore.error"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <div
+      :class="getCurrentConfig().gridClass">
+      <DealCard
         v-for="deal in filteredDeals"
         :key="deal.id"
-        @click="handleDealClick(deal)"
-        class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer">
-        <!-- Cover Image -->
-        <div class="relative aspect-[3/4] overflow-hidden">
-          <img
-            :src="getCoverUrl(deal)"
-            :alt="deal.title"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-
-          <!-- Store Badge -->
-          <div
-            class="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white">
-            {{ deal.storeName }}
-          </div>
-
-          <!-- Discount Badge -->
-          <div
-            v-if="deal.discountPercent && deal.discountPercent > 0"
-            class="absolute top-2 right-2 px-2 py-1 bg-green-600 rounded text-xs text-white font-bold">
-            {{ dealsStore.formatDiscount(deal.discountPercent) }}
-          </div>
-
-          <!-- Free Badge -->
-          <div
-            v-if="deal.isFreebie"
-            class="absolute top-2 right-2 px-2 py-1 bg-green-600 rounded text-xs text-white font-bold">
-            KOSTENLOS
-          </div>
-
-          <!-- Library Badge -->
-          <div
-            v-if="isGameOwned(deal)"
-            class="absolute bottom-2 left-2 px-2 py-1 bg-purple-600/80 backdrop-blur-sm rounded text-xs text-white">
-            <Icon name="heroicons:check-20-solid" class="w-3 h-3 inline mr-1" />
-            Besitzen
-          </div>
-        </div>
-
-        <!-- Deal Info -->
-        <div class="p-4">
-          <h3
-            class="font-semibold text-white text-lg mb-2 line-clamp-2 group-hover:text-green-300 transition-colors">
-            {{ deal.title }}
-          </h3>
-
-          <div class="space-y-2 text-sm">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-400">Genre:</span>
-              <span class="text-gray-300">{{ getGenreDisplay(deal) }}</span>
-            </div>
-
-            <!-- Preise -->
-            <div class="space-y-1">
-              <div
-                v-if="!deal.isFreebie"
-                class="flex justify-between items-center">
-                <span class="text-gray-400">Preis:</span>
-                <div class="text-right">
-                  <div class="text-green-400 font-bold">
-                    {{ dealsStore.formatPrice(deal.price) }}
-                  </div>
-                  <div
-                    v-if="
-                      deal.originalPrice &&
-                      deal.originalPrice > (deal.price || 0)
-                    "
-                    class="text-gray-500 line-through text-xs">
-                    {{ dealsStore.formatPrice(deal.originalPrice) }}
-                  </div>
-                </div>
-              </div>
-              <div v-else class="text-center">
-                <div class="text-green-400 font-bold text-lg">KOSTENLOS</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="mt-4 space-y-2">
-            <button
-              v-if="!isGameOwned(deal)"
-              @click.stop="handleDealClick(deal)"
-              class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-              {{ deal.isFreebie ? 'Kostenlos holen' : 'Deal ansehen' }}
-            </button>
-            <button
-              v-else
-              disabled
-              class="w-full px-4 py-2 bg-gray-600 text-gray-300 font-medium rounded-lg cursor-not-allowed">
-              Bereits in Bibliothek
-            </button>
-
-            <button
-              @click.stop
-              class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">
-              <Icon
-                name="heroicons:heart-20-solid"
-                class="w-4 h-4 inline mr-2" />
-              Zur Wishlist
-            </button>
-          </div>
-        </div>
-      </div>
+        :deal="deal"
+        :viewMode="currentViewMode"
+        @click="handleDealClick"
+        @wishlist="handleWishlistToggle" />
     </div>
 
     <!-- Leerer Zustand -->
@@ -486,21 +420,22 @@
       <p class="text-gray-500 mb-4">
         Es sind derzeit keine Deals in der Datenbank.
       </p>
-      <button
-        @click="refreshDeals"
-        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-        Angebote laden
-      </button>
+      <div class="flex gap-2 justify-center">
+        <button
+          @click="refreshDeals"
+          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          Datenbank prüfen
+        </button>
+        <button
+          @click="syncDealsFromAPI"
+          class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+          Von API laden
+        </button>
+      </div>
+      <p class="text-sm text-gray-600 mt-3">
+        Verwenden Sie "Von API laden" um neue Deals von CheapShark zu
+        synchronisieren.
+      </p>
     </div>
   </div>
 </template>
-
-<style scoped>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-clamp: 2;
-  }
-</style>
