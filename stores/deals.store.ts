@@ -34,82 +34,9 @@ export const useDealsStore = defineStore('deals', () => {
   const error = ref<string | null>(null);
 
   // Current filters und sorting
-  const currentFilters = ref<DealSearchFilters>({});
   const currentSortBy = ref<DealSortOptions>('recent');
 
   const { $client } = useNuxtApp();
-
-  /**
-   * Synchronisiert CheapShark Deals und lädt alle Deals aus der Datenbank
-   * Grund: Hauptfunktion für DealWithGame-Seite - lädt CheapShark, speichert neue, gibt DB-Deals zurück
-   */
-  async function syncAndLoadDeals() {
-    return await loading(
-      'sync-and-load-deals',
-      'Synchronisiere Deals und lade aus Datenbank...',
-      async () => {
-        const notifyStore = useNotifyStore();
-        error.value = null;
-
-        try {
-          // Grund: Neue Router-Funktion die CheapShark sync + DB load kombiniert
-          const response = await $client.deals.syncAndLoadDeals.query({
-            pageSize: 50,
-            sortBy: 'Deal Rating',
-            desc: true,
-            cleanupDays: 7
-          });
-
-          // Grund: Deals in Store setzen
-          deals.value = response.deals;
-
-          // Grund: Erfolgreiche Synchronisation melden
-          notifyStore.notify(
-            `${response.syncedCount} Deals synchronisiert, ${response.totalDeals} Deals geladen`,
-            0
-          );
-
-          return response;
-        } catch (err: any) {
-          error.value = err.message || 'Fehler beim Synchronisieren der Deals';
-          notifyStore.notify(error.value, 3);
-          console.error('Error syncing and loading deals:', err);
-          throw err;
-        }
-      },
-      'data'
-    );
-  }
-
-  /**
-   * Fallback: Lade nur Deals aus Datenbank (ohne CheapShark sync)
-   */
-  async function fetchDeals(filters?: DealSearchFilters) {
-    return await loading(
-      'deals-fetch',
-      'Lade aktuelle Deals...',
-      async () => {
-        const notifyStore = useNotifyStore();
-        error.value = null;
-
-        try {
-          const filtersToUse = { ...filters, isActive: true };
-
-          const response = await $client.deals.getAllDeals.query(filtersToUse);
-
-          console.log(response);
-          deals.value = response;
-          currentFilters.value = filtersToUse;
-        } catch (err: any) {
-          error.value = err.message || 'Fehler beim Laden der Angebote';
-          notifyStore.notify(error.value, 3);
-          console.error('Error fetching deals:', err);
-          throw err;
-        }
-      },
-      'data'
-    );
-  }
 
   /**
    * Lädt Deals schnell aus der Datenbank (ohne Sync)
@@ -130,7 +57,6 @@ export const useDealsStore = defineStore('deals', () => {
 
           deals.value = response.deals;
 
-          console.log(`${response.totalDeals} Deals aus Datenbank geladen`);
           return response;
         } catch (err: any) {
           error.value = err.message || 'Fehler beim Laden der Deals';
@@ -186,19 +112,9 @@ export const useDealsStore = defineStore('deals', () => {
   async function loadDealsWithBackgroundSync() {
     // Schritt 1: Schnell aus DB laden für sofortige UI
     const dbResult = await loadDealsFromDB();
-
     // Schritt 2: Hintergrund-Sync starten (ohne await)
     syncAllDealsInBackground().catch(console.error);
-
     return dbResult;
-  }
-
-  /**
-   * Setze Filter und lade Deals neu
-   */
-  async function setFilters(filters: DealSearchFilters) {
-    currentFilters.value = filters;
-    await fetchDeals(filters);
   }
 
   /**
@@ -207,23 +123,6 @@ export const useDealsStore = defineStore('deals', () => {
   async function setSortBy(sortBy: DealSortOptions) {
     currentSortBy.value = sortBy;
     // Sortierung wird lokal angewendet, kein API-Call nötig
-  }
-
-  /**
-   * Lösche alle Filter
-   */
-  async function clearFilters() {
-    const emptyFilters: DealSearchFilters = {};
-    currentFilters.value = emptyFilters;
-    currentSortBy.value = 'recent';
-    await fetchDeals(emptyFilters);
-  }
-
-  /**
-   * Refresh/reload aktueller Deals
-   */
-  async function refreshDeals() {
-    await syncAndLoadDeals();
   }
 
   /**
@@ -321,25 +220,17 @@ export const useDealsStore = defineStore('deals', () => {
     freeGames: readonly(freeGames),
     availableStores: readonly(availableStores),
     error: readonly(error),
-    currentFilters: readonly(currentFilters),
-    currentSortBy: readonly(currentSortBy),
 
     // Actions - Optimiert für bessere UX
-    syncAndLoadDeals,
     loadDealsFromDB,
     syncAllDealsInBackground,
     loadDealsWithBackgroundSync,
-    fetchDeals,
-    setFilters,
     setSortBy,
-    clearFilters,
-    refreshDeals,
     updateAvailableStores,
 
     // Computed
-    searchDeals,
-    sortedDeals,
     freebies,
+    searchDeals,
 
     // Helpers
     formatPrice,

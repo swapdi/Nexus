@@ -26,7 +26,6 @@
   // Initialize data
   onMounted(async () => {
     await userStore.init();
-    // Grund: Lade nur Deals aus DB beim Seitenaufruf - spart API-Calls
     await dealsStore.loadDealsFromDB();
   });
 
@@ -138,11 +137,6 @@
     return false;
   };
 
-  const handleWishlistToggle = (deal: DealWithGame) => {
-    // TODO: Implement wishlist functionality
-    console.log('Add to wishlist:', deal.title);
-  };
-
   const handleDealClick = (deal: DealWithGame) => {
     if (deal.url) {
       window.open(deal.url, '_blank');
@@ -150,17 +144,15 @@
   };
 
   const refreshDeals = async () => {
-    // Grund: Lade nur aus DB für schnelle Aktualisierung
     await dealsStore.loadDealsFromDB();
   };
 
   const syncDealsFromAPI = async () => {
     // Grund: Vollständige Sync mit CheapShark API
-    await dealsStore.syncAndLoadDeals();
+    await dealsStore.syncAllDealsInBackground();
   };
 
   // Deal Aggregation
-  const isAggregating = ref(false);
   const aggregationMessage = ref<string | null>(null);
 </script>
 
@@ -174,20 +166,7 @@
           class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
           Aktuelle Angebote
         </h1>
-        <!-- Refresh und Sync Buttons und View Mode Toggle -->
         <div class="flex gap-2">
-          <ViewModeToggle />
-          <button
-            @click="refreshDeals"
-            :disabled="isLoading"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2"
-            title="Deals aus Datenbank neu laden">
-            <Icon
-              name="heroicons:arrow-path-20-solid"
-              class="w-4 h-4"
-              :class="{ 'animate-spin': isLoading }" />
-            <span class="hidden sm:inline">Aktualisieren</span>
-          </button>
           <button
             @click="syncDealsFromAPI"
             :disabled="isLoading"
@@ -379,6 +358,8 @@
           </div>
         </div>
       </div>
+
+      <ViewModeToggle />
     </div>
 
     <!-- Deals Grid/List -->
@@ -390,23 +371,8 @@
         :key="deal.id"
         :deal="deal"
         :viewMode="currentViewMode"
-        @click="handleDealClick"
-        @wishlist="handleWishlistToggle" />
+        @click="handleDealClick" />
     </div>
-
-    <!-- Leerer Zustand -->
-    <div
-      v-if="!isLoading && !dealsStore.error && filteredDeals.length === 0"
-      class="text-center py-12">
-      <Icon
-        name="heroicons:tag-20-solid"
-        class="w-16 h-16 text-gray-600 mx-auto mb-4" />
-      <h3 class="text-xl font-semibold text-gray-400 mb-2">
-        Keine Angebote gefunden
-      </h3>
-      <p class="text-gray-500">Versuchen Sie, Ihre Suchkriterien zu ändern.</p>
-    </div>
-
     <!-- No deals state when store is empty -->
     <div
       v-if="!isLoading && !dealsStore.error && dealsStore.deals.length === 0"
@@ -418,23 +384,24 @@
         Keine Angebote verfügbar
       </h3>
       <p class="text-gray-500 mb-4">
-        Es sind derzeit keine Deals in der Datenbank.
+        Es konnten keine passenden Deals gefunden werden.
       </p>
       <div class="flex gap-2 justify-center">
         <button
-          @click="refreshDeals"
-          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-          Datenbank prüfen
-        </button>
-        <button
           @click="syncDealsFromAPI"
-          class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-          Von API laden
+          :disabled="isLoading"
+          class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2"
+          title="Neue Deals von CheapShark API synchronisieren">
+          <Icon
+            name="heroicons:cloud-arrow-down-20-solid"
+            class="w-4 h-4"
+            :class="{ 'animate-spin': isLoading }" />
+          <span class="hidden sm:inline">Sync API</span>
         </button>
       </div>
       <p class="text-sm text-gray-600 mt-3">
-        Verwenden Sie "Von API laden" um neue Deals von CheapShark zu
-        synchronisieren.
+        Verwenden Sie "Von API laden" um neue Deals von CheapShark und
+        IsThereAnyDeal zu synchronisieren.
       </p>
     </div>
   </div>

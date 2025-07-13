@@ -1,9 +1,5 @@
 <template>
-  <component
-    :is="cardComponent"
-    :deal="deal"
-    @click="handleClick"
-    @wishlist="handleWishlist" />
+  <component :is="cardComponent" :deal="deal" @click="handleClick" />
 </template>
 
 <script setup lang="ts">
@@ -44,9 +40,5 @@
 
   const handleClick = () => {
     emit('click', props.deal);
-  };
-
-  const handleWishlist = () => {
-    emit('wishlist', props.deal);
   };
 </script>

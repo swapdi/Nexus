@@ -191,109 +191,6 @@ export const useSteamImport = () => {
   // ============================================================================
 
   /**
-   * Verarbeitet Steam-Spiele in Batches
-   * HINWEIS: Dies orchestriert den Batch-Prozess, die eigentliche Spiel-Verarbeitung erfolgt im GamesService
-   */
-  const processGamesBatch = async (
-    games: any[],
-    options: SteamImportOptions,
-    onProgress?: (progress: SteamImportProgress) => void
-  ) => {
-    const {
-      batchSize = 15,
-      withIGDBEnrichment = false,
-      userId,
-      platformId
-    } = options;
-    const totalBatches = Math.ceil(games.length / batchSize);
-
-    const importResults = {
-      imported: 0,
-      updated: 0,
-      skipped: 0,
-      errors: 0,
-      enriched: 0,
-      enrichmentErrors: 0
-    };
-
-    // Dynamischer Import des GamesService um zirkuläre Abhängigkeiten zu vermeiden
-    const { GamesService } = await import('~/lib/services/games.service');
-
-    for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-      const batchStart = batchIndex * batchSize;
-      const batchEnd = Math.min(batchStart + batchSize, games.length);
-      const batch = games.slice(batchStart, batchEnd);
-
-      // Progress Update
-      onProgress?.({
-        current: batchStart,
-        total: games.length,
-        phase: 'importing',
-        message: `Importiere Batch ${batchIndex + 1}/${totalBatches}...`
-      });
-
-      // Verarbeite jedes Spiel im Batch
-      for (const game of batch) {
-        try {
-          const result = withIGDBEnrichment
-            ? await GamesService.processSteamGameImportWithEnrichment(
-                userId,
-                game,
-                platformId,
-                true
-              )
-            : await GamesService.processSteamGameImport(
-                userId,
-                game,
-                platformId
-              );
-
-          // Ergebnisse aggregieren basierend auf Return-Type
-          if (typeof result === 'string') {
-            // processSteamGameImport gibt string zurück
-            if (result === 'imported') {
-              importResults.imported++;
-            } else if (result === 'updated') {
-              importResults.updated++;
-            } else {
-              importResults.skipped++;
-            }
-          } else {
-            // processSteamGameImportWithEnrichment gibt object zurück
-            if (result.result === 'imported') {
-              importResults.imported++;
-            } else if (result.result === 'updated') {
-              importResults.updated++;
-            } else {
-              importResults.skipped++;
-            }
-
-            // Anreicherung tracken
-            if (result.enriched) {
-              importResults.enriched++;
-            }
-          }
-        } catch (error) {
-          importResults.errors++;
-          console.error(
-            `Fehler beim Importieren von Spiel ${game.name}:`,
-            error
-          );
-        }
-      }
-
-      // Kurze Pause zwischen Batches
-      if (batchIndex < totalBatches - 1) {
-        await new Promise(resolve =>
-          setTimeout(resolve, withIGDBEnrichment ? 250 : 50)
-        );
-      }
-    }
-
-    return importResults;
-  };
-
-  /**
    * Validiert Steam Input und gibt aufbereitete Daten zurück
    */
   const validateSteamInput = async (
@@ -382,7 +279,6 @@ export const useSteamImport = () => {
     getSteamStoreUrl,
     getSteamIconUrl,
     // Steam Import Funktionen
-    processGamesBatch,
     validateSteamInput,
     calculateImportXPReward,
     createProgressCallback

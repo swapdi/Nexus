@@ -1,12 +1,16 @@
 // Deals Service - BEREINIGT
 // Grund: Nur noch die Funktionen die für den syncAndLoadDeals Workflow benötigt werden
 
+import { useGameUtils } from '~/composables/useGameUtils';
 import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
 import { GamesService } from './games.service';
 
 const prisma = new PrismaClient();
+
+// Grund: Importiere Game Utils für Titel-Bereinigung und progressive Varianten
+const { generateProgressiveVariants } = useGameUtils();
 
 export interface DealWithGame extends Deal {
   game: Game;
@@ -52,8 +56,6 @@ export namespace DealsService {
   ): Promise<DealWithGame[]> {
     try {
       const where: any = {};
-
-      // Grund: Filter nur anwenden wenn sie definiert sind
       if (filters.gameId) where.gameId = filters.gameId;
       if (filters.storeName)
         where.storeName = { contains: filters.storeName, mode: 'insensitive' };
@@ -102,6 +104,64 @@ export namespace DealsService {
     }
   }
 
+  /**
+   * Progressive Spielsuche mit systematischer Titel-Kürzung
+   * Grund: Entfernt schrittweise Wörter von rechts bis ein Spiel gefunden wird
+   */
+  export async function findGameWithVariants(dealTitle: string) {
+    console.log(`🔍 Starting progressive game search for: "${dealTitle}"`);
+
+    // Grund: Generiere progressive Varianten durch systematisches Kürzen
+    const titleVariants = generateProgressiveVariants(dealTitle);
+
+    if (titleVariants.length === 0) {
+      console.warn(`⚠️  No valid variants generated for: "${dealTitle}"`);
+      return null;
+    }
+
+    console.log(`📋 Generated ${titleVariants.length} progressive variants`);
+
+    // Grund: Versuche jede Variante progressiv - von spezifisch zu allgemein
+    for (let i = 0; i < titleVariants.length; i++) {
+      const variant = titleVariants[i];
+
+      try {
+        console.log(
+          `[${i + 1}/${
+            titleVariants.length
+          }] 🔎 Searching IGDB for: "${variant}"`
+        );
+
+        const gameResult = await GamesService.findOrCreateGameWithIGDBRelevance(
+          variant
+        );
+
+        if (gameResult && gameResult.success && gameResult.game) {
+          console.log(
+            `✅ SUCCESS! Found game "${gameResult.game.name}" using variant "${variant}"`
+          );
+          console.log(
+            `🎯 Search completed after ${i + 1}/${
+              titleVariants.length
+            } attempts`
+          );
+          return gameResult;
+        } else {
+          console.log(`❌ No match found for variant "${variant}"`);
+        }
+      } catch (error) {
+        console.warn(`⚠️  Error searching for variant "${variant}":`, error);
+        continue;
+      }
+    }
+
+    console.warn(
+      `🚫 FAILED: No game found for any of ${titleVariants.length} variants of: "${dealTitle}"`
+    );
+    console.log(`📝 All attempted variants:`, titleVariants);
+    return null;
+  }
+
   // ===== CHEAPSHARK INTEGRATION =====
 
   /**
@@ -132,11 +192,11 @@ export namespace DealsService {
       let finalGameId = gameId;
       if (!finalGameId) {
         try {
-          // Grund: Verwende verbesserte IGDB-Relevanz-Suche
-          const gameResult =
-            await GamesService.findOrCreateGameWithIGDBRelevance(
-              cheapSharkDeal.title
-            );
+          // Grund: Nutze progressive Spielsuche mit systematischen Titel-Varianten
+          const gameResult = await DealsService.findGameWithVariants(
+            cheapSharkDeal.title
+          );
+
           if (gameResult && gameResult.success && gameResult.game) {
             finalGameId = gameResult.game.id;
           } else {

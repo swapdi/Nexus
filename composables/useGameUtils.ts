@@ -75,6 +75,154 @@ export const useGameUtils = () => {
   };
 
   // ============================================================================
+  // TITLE CLEANUP & SEARCH UTILITIES
+  // ============================================================================
+  /**
+   * Generiert progressive Titel-Varianten durch systematisches Kürzen
+   * Grund: Maximale Trefferquote durch schrittweise Entfernung von Wörtern von rechts
+   */
+  const generateProgressiveVariants = (title: string): string[] => {
+    const variants: string[] = [];
+    const cleanedTitle = title.trim();
+
+    if (!cleanedTitle || cleanedTitle.length < 2) {
+      return [];
+    }
+
+    // 1. Original-Titel hinzufügen
+    variants.push(cleanedTitle);
+
+    // 2. Basis-Bereinigung für bessere Suche
+    let baseTitle = cleanedTitle
+      .replace(/[™®©]/g, '') // Markensymbole entfernen
+      .replace(/\s+/g, ' ') // Mehrfache Leerzeichen normalisieren
+      .trim();
+
+    if (baseTitle !== cleanedTitle && baseTitle.length >= 2) {
+      variants.push(baseTitle);
+    }
+
+    // 3. Progressive Wort-Entfernung von rechts nach links
+    let words = baseTitle.split(/\s+/);
+
+    // Grund: Mindestens 1 Wort behalten, maximal bis auf 1 Wort kürzen
+    while (words.length > 1) {
+      words.pop(); // Letztes Wort entfernen
+      const shortenedTitle = words.join(' ').trim();
+
+      if (shortenedTitle.length >= 2) {
+        variants.push(shortenedTitle);
+      }
+    }
+
+    // 4. Zusätzliche Bereinigungsschritte für erste Varianten
+    const firstVariants = variants.slice(0, 3); // Erste 3 Varianten
+    const additionalVariants: string[] = [];
+
+    firstVariants.forEach(variant => {
+      // Sonderzeichen entfernen
+      const withoutSpecialChars = variant
+        .replace(/[:\-–—()]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (withoutSpecialChars !== variant && withoutSpecialChars.length >= 2) {
+        additionalVariants.push(withoutSpecialChars);
+      }
+
+      // Artikel entfernen (the, a, an)
+      const withoutArticles = variant
+        .replace(/\b(the|a|an)\b/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (withoutArticles !== variant && withoutArticles.length >= 2) {
+        additionalVariants.push(withoutArticles);
+      }
+
+      // Kleinschreibung
+      const lowercase = variant.toLowerCase();
+      if (lowercase !== variant) {
+        additionalVariants.push(lowercase);
+      }
+    });
+
+    // Alle Varianten zusammenführen
+    variants.push(...additionalVariants);
+
+    // Duplikate entfernen und nach Länge sortieren (längere zuerst)
+    const uniqueVariants = [...new Set(variants)]
+      .filter(v => v.length >= 2)
+      .sort((a, b) => b.length - a.length);
+
+    console.log(
+      `🔄 Generated ${uniqueVariants.length} progressive variants for "${title}":`,
+      uniqueVariants
+    );
+
+    return uniqueVariants;
+  };
+
+  /**
+   * Optimierte IGDB-Relevanz-Bewertung mit mehrschichtiger Gewichtung
+   * Grund: Berücksichtigt Titel-Match, Popularität, Qualität und Game-Typ
+   */
+  const findMostRelevantGame = (
+    searchQuery: string,
+    searchResults: any[]
+  ): any | null => {
+    if (searchResults.length === 0) return null;
+
+    const normalizedQuery = searchQuery.toLowerCase().trim();
+    const scoredResults = searchResults.map(game => {
+      const normalizedName = game.name.toLowerCase().trim();
+      let score = 0;
+      // Grund: Hohe Gewichtung für Titel-Relevanz, aber nicht überdominant
+      if (normalizedName === normalizedQuery) {
+        score += 400; // Exakte Übereinstimmung
+      } else if (normalizedName.startsWith(normalizedQuery)) {
+        score += 300; // Beginnt mit Query
+      } else if (normalizedName.includes(normalizedQuery)) {
+        score += 200; // Enthält Query
+      } else {
+        // Grund: Wort-basierte Ähnlichkeit für partielle Treffer
+        const queryWords = normalizedQuery.split(/\s+/);
+        const nameWords = normalizedName.split(/\s+/);
+        const matchingWords = queryWords.filter((word: string) =>
+          nameWords.some(
+            (nameWord: string) =>
+              nameWord.includes(word) || word.includes(nameWord)
+          )
+        );
+        const wordMatchRatio = matchingWords.length / queryWords.length;
+        score += wordMatchRatio * 150; // Bis zu 150 Punkte für Wort-Matches
+      }
+
+      return {
+        game,
+        score: Math.round(score)
+      };
+    });
+
+    // Grund: Sortiere nach Score (höchster zuerst)
+    scoredResults.sort((a, b) => b.score - a.score);
+    const minAcceptableScore = 150;
+
+    if (
+      scoredResults.length > 0 &&
+      scoredResults[0].score >= minAcceptableScore
+    ) {
+      const winner = scoredResults[0];
+      return winner.game;
+    }
+
+    console.log(
+      `❌ No game meets minimum score threshold (${minAcceptableScore})`
+    );
+    return null;
+  };
+
+  // ============================================================================
   // IGDB GAME DATA FUNCTIONS
   // ============================================================================
 
@@ -187,18 +335,7 @@ export const useGameUtils = () => {
   const gameMatchesSearch = (game: GameData, searchTerm: string): boolean => {
     const term = searchTerm.toLowerCase();
     const name = getGameName(game).toLowerCase();
-    const description = getGameDescription(game)?.toLowerCase() || '';
-    const developer = getGameDeveloper(game)?.toLowerCase() || '';
-    const genres = getGameGenres(game)
-      .map(g => g.toLowerCase())
-      .join(' ');
-
-    return (
-      name.includes(term) ||
-      description.includes(term) ||
-      developer.includes(term) ||
-      genres.includes(term)
-    );
+    return name.includes(term);
   };
 
   /**
@@ -228,23 +365,6 @@ export const useGameUtils = () => {
     };
 
     return `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/library_${sizeMap[size]}.jpg`;
-  };
-
-  /**
-   * Normalisiert Spieltitel für Vergleiche
-   */
-  const normalizeTitle = (title: string): string => {
-    return title
-      .toLowerCase()
-      .replace(/[™®©]/g, '')
-      .replace(/[:\-–—]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .replace(/\b(the|a|an)\b/g, '')
-      .replace(
-        /\b(edition|deluxe|goty|complete|ultimate|remastered|definitive)\b/g,
-        ''
-      )
-      .trim();
   };
 
   /**
@@ -497,7 +617,6 @@ export const useGameUtils = () => {
     formatPlaytime,
     categorizePlaytime,
     generateSteamCoverUrl,
-    normalizeTitle,
     calculateGenreStats,
     calculatePlatformDistribution,
     findSimilarGames,
@@ -520,6 +639,9 @@ export const useGameUtils = () => {
     getGameGenres,
     formatGameRating,
     formatGameGenres,
-    gameMatchesSearch
+    gameMatchesSearch,
+    // Neue Funktionen für Titelbereinigung und Relevanzsuche
+    generateProgressiveVariants,
+    findMostRelevantGame
   };
 };

@@ -8,33 +8,36 @@ import { publicProcedure, router } from '../trpc';
 
 export const dealsRouter = router({
   /**
-   * Holt alle Deals aus der Datenbank mit optionalen Filtern
+   * Lädt Deals schnell aus der Datenbank (ohne CheapShark Sync)
+   * Grund: Schneller UI-Load für bessere User Experience
    */
-  getAllDeals: publicProcedure
+  loadDealsFromDB: publicProcedure
     .input(
       z
         .object({
-          gameId: z.number().optional(),
-          storeName: z.string().optional(),
-          priceMax: z.number().min(0).optional(),
-          priceMin: z.number().min(0).optional(),
-          discountMin: z.number().min(0).max(100).optional(),
-          isFreebie: z.boolean().optional(),
-          isActive: z.boolean().default(true),
-          source: z.string().optional(),
-          limit: z.number().min(1).max(100).default(50),
+          limit: z.number().min(1).max(500).default(100),
           offset: z.number().min(0).default(0)
         })
         .optional()
     )
     .query(async ({ input }) => {
       try {
-        const filters = input || {};
-        return await DealsService.searchDeals(filters);
+        const { limit = 100, offset = 0 } = input || {};
+
+        const deals = await DealsService.searchDeals({
+          isActive: true,
+          limit,
+          offset
+        });
+
+        return {
+          deals,
+          totalDeals: deals.length
+        };
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to fetch deals: ${
+          message: `Failed to load deals from database: ${
             error instanceof Error ? error.message : 'Unknown error'
           }`
         });
@@ -219,43 +222,6 @@ export const dealsRouter = router({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to sync all deals in background: ${
-            error instanceof Error ? error.message : 'Unknown error'
-          }`
-        });
-      }
-    }),
-
-  /**
-   * Lädt Deals schnell aus der Datenbank (ohne CheapShark Sync)
-   * Grund: Schneller UI-Load für bessere User Experience
-   */
-  loadDealsFromDB: publicProcedure
-    .input(
-      z
-        .object({
-          limit: z.number().min(1).max(500).default(100),
-          offset: z.number().min(0).default(0)
-        })
-        .optional()
-    )
-    .query(async ({ input }) => {
-      try {
-        const { limit = 100, offset = 0 } = input || {};
-
-        const deals = await DealsService.searchDeals({
-          isActive: true,
-          limit,
-          offset
-        });
-
-        return {
-          deals,
-          totalDeals: deals.length
-        };
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to load deals from database: ${
             error instanceof Error ? error.message : 'Unknown error'
           }`
         });

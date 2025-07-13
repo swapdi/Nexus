@@ -69,12 +69,6 @@
           <!-- Action Buttons -->
           <div class="flex-shrink-0 flex items-center gap-2">
             <button
-              @click.stop="handleWishlist"
-              class="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
-              <Icon name="heroicons:heart-20-solid" class="w-4 h-4" />
-            </button>
-
-            <button
               v-if="!isGameOwned(deal)"
               @click.stop="handleClick"
               class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
@@ -133,10 +127,6 @@
 
   const handleClick = () => {
     emit('click');
-  };
-
-  const handleWishlist = () => {
-    emit('wishlist');
   };
 
   const handleImageError = (event: Event) => {

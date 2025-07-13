@@ -38,17 +38,6 @@
         class="absolute bottom-1 left-1 px-1.5 py-0.5 bg-purple-600/80 backdrop-blur-sm rounded text-xs text-white">
         <Icon name="heroicons:check-20-solid" class="w-3 h-3 inline" />
       </div>
-
-      <!-- Wishlist Button -->
-      <div class="absolute bottom-1 right-1">
-        <button
-          @click.stop="handleWishlist"
-          class="w-6 h-6 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/wishlist">
-          <Icon
-            name="heroicons:heart-20-solid"
-            class="w-3 h-3 text-gray-400 group-hover/wishlist:text-red-400 group-hover/wishlist:scale-105 transition-all duration-200" />
-        </button>
-      </div>
     </div>
 
     <!-- Deal Info -->
@@ -123,10 +112,6 @@
 
   const handleClick = () => {
     emit('click');
-  };
-
-  const handleWishlist = () => {
-    emit('wishlist');
   };
 
   const handleImageError = (event: Event) => {
