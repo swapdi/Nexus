@@ -54,7 +54,7 @@ export const dealsRouter = router({
     .input(
       z
         .object({
-          cleanupDays: z.number().min(1).max(30).default(7),
+          cleanupDays: z.number().min(1).max(100).default(7),
           maxPages: z.number().min(1).max(60).default(45), // Reduziert auf sicheren Wert
           stopOnEmpty: z.boolean().default(true),
           maxEmptyPages: z.number().min(1).max(10).default(3),
@@ -87,7 +87,8 @@ export const dealsRouter = router({
           try {
             const cheapSharkDeals = await DealsService.getAllCheapSharkDeals({
               pageNumber: currentPage,
-              pageSize: 60, // CheapShark Maximum pro Seite
+              //pageSize: 60,
+              pageSize: 10,
               sortBy: 'Deal Rating',
               desc: true,
               maxAge: maxAge // Filter Deals älter als X Tage

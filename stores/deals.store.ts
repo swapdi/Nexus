@@ -80,12 +80,13 @@ export const useDealsStore = defineStore('deals', () => {
     try {
       // Grund: Starte Hintergrund-Sync ohne Loading-Indikator
       const response = await $client.deals.syncAllDealsBackground.mutate({
-        maxPages: 40, // Reduziert auf sicheren Wert (40 × 60 = 2400 Deals)
-        cleanupDays: 7,
+        cleanupDays: 100,
+        //maxPages = 45,
+        maxPages: 1,
         stopOnEmpty: true,
         maxEmptyPages: 3,
-        maxAge: 2500, // Nur Deals der letzten ~100 Tage
-        rateLimitDelay: 1000 // Längere Pausen für bessere Rate-Limit-Compliance
+        maxAge: 2400,
+        rateLimitDelay: 800
       });
 
       // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync

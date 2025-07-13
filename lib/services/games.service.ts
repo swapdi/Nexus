@@ -1,8 +1,7 @@
-import { useGameUtils } from '~/composables/useGameUtils';
 import { PrismaClient, type Game, type UserGame } from '~/prisma/client';
 
 const prisma = new PrismaClient();
-const { generateProgressiveVariants, findBestGameMatch } = useGameUtils();
+// Keine Game Utils mehr benötigt - nutzen zentrale IGDB-Funktion
 
 // ============================================================================
 // TYPEN & INTERFACES
@@ -107,8 +106,7 @@ export namespace GamesService {
    * Verbesserte IGDB-Suche basierend auf Relevanz, Popularität und Erscheinungsjahr
    * Grund: Wie IGDB-Webseite - nimmt das relevanteste erste Ergebnis
    * Mit Fallback-Strategien für bereinigte Titel
-   */
-  export async function findOrCreateGameWithIGDBRelevance(
+   */ export async function findOrCreateGameWithIGDBRelevance(
     gameName: string
   ): Promise<GameImportResult | undefined> {
     try {
@@ -122,69 +120,57 @@ export namespace GamesService {
           message: 'Spiel bereits in der Datenbank'
         };
       }
-      const titleVariants = generateProgressiveVariants(gameName);
-      for (const titleVariant of titleVariants) {
-        try {
-          const { IGDBService } = await import('./igdb.service');
-          const searchResults = await IGDBService.searchGames(titleVariant, 20);
-          if (searchResults.length === 0) {
-            console.log(`No IGDB results for variant: "${titleVariant}"`);
-            continue;
-          }
-          // Grund: Einfacher Relevanz-Check OHNE doppelte Titel-Varianten
-          const bestMatch = findBestGameMatch(titleVariant, searchResults);
 
-          if (!bestMatch) {
-            continue;
-          }
-          const existingByIGDB = await prisma.game.findUnique({
-            where: { igdbId: bestMatch.id }
-          });
-          if (existingByIGDB) {
-            return {
-              success: true,
-              game: existingByIGDB,
-              isNew: false,
-              message: `Spiel mit IGDB-ID bereits vorhanden (gefunden mit Variante: "${titleVariant}")`
-            };
-          }
-          const newIGDBGame = await IGDBService.getGameDetails(bestMatch.id);
-          if (!newIGDBGame) {
-            console.log(`Failed to get details for IGDB game ${bestMatch.id}`);
-            continue;
-          }
-          const igdbGameData = IGDBService.convertIGDBGame(newIGDBGame);
-          const newGame = await prisma.game.create({
-            data: {
-              igdbId: igdbGameData.id,
-              name: igdbGameData.name,
-              slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-              summary: igdbGameData.summary,
-              firstReleaseDate: igdbGameData.firstReleaseDate,
-              coverUrl: igdbGameData.coverUrl,
-              screenshots: igdbGameData.screenshotUrls || [],
-              totalRating: igdbGameData.totalRating,
-              genres: igdbGameData.genres || [],
-              developers: igdbGameData.developers || [],
-              publishers: igdbGameData.publishers || [],
-              lastSyncedAt: new Date(),
-              createdAt: new Date(),
-              updatedAt: new Date()
-            }
-          });
-          return {
-            success: true,
-            game: newGame,
-            isNew: true,
-            message: `Spiel erstellt mit IGDB-Daten (ID: ${bestMatch.id}, gefunden mit Variante: "${titleVariant}")`
-          };
-        } catch (igdbError) {
-          console.error(`IGDB Error for variant "${titleVariant}":`, igdbError);
-          continue;
-        }
+      // Grund: Nutze die zentrale IGDB-Funktion mit integrierter dynamischer Suche
+      const { IGDBService } = await import('./igdb.service');
+      const igdbGameData: import('./igdb.service').IGDBGameData | null =
+        await IGDBService.findGameByTitle(gameName);
+
+      if (!igdbGameData) {
+        console.log(`No IGDB match found for: "${gameName}"`);
+        return undefined;
       }
-      console.warn(`All title variants failed for: "${gameName}"`);
-      return undefined;
+
+      // Prüfe ob das Spiel bereits mit IGDB-ID existiert
+      const existingByIGDB = await prisma.game.findUnique({
+        where: { igdbId: igdbGameData.id }
+      });
+
+      if (existingByIGDB) {
+        return {
+          success: true,
+          game: existingByIGDB,
+          isNew: false,
+          message: `Spiel mit IGDB-ID bereits vorhanden`
+        };
+      }
+
+      // Erstelle neues Spiel mit IGDB-Daten
+      const newGame = await prisma.game.create({
+        data: {
+          igdbId: igdbGameData.id,
+          name: igdbGameData.name,
+          slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          summary: igdbGameData.summary,
+          firstReleaseDate: igdbGameData.firstReleaseDate,
+          coverUrl: igdbGameData.coverUrl,
+          screenshots: igdbGameData.screenshotUrls || [],
+          totalRating: igdbGameData.totalRating,
+          genres: igdbGameData.genres || [],
+          developers: igdbGameData.developers || [],
+          publishers: igdbGameData.publishers || [],
+          lastSyncedAt: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      return {
+        success: true,
+        game: newGame,
+        isNew: true,
+        message: `Spiel erstellt mit IGDB-Daten (ID: ${igdbGameData.id})`
+      };
     } catch (error) {
       console.error('Error in findOrCreateGameWithIGDBRelevance:', error);
       throw new Error(
@@ -226,7 +212,7 @@ export namespace GamesService {
       // Versuche IGDB-Daten zu finden (optional)
       try {
         const { IGDBService } = await import('./igdb.service');
-        const igdbGameData = await IGDBService.searchAndConvertGame(gameName);
+        const igdbGameData = await IGDBService.findGameByTitle(gameName);
 
         if (igdbGameData) {
           // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
@@ -625,14 +611,14 @@ export namespace GamesService {
       where: { name: { contains: normalizedName, mode: 'insensitive' } }
     });
     if (fuzzyMatch) return fuzzyMatch;
-    const normalizedSearchTitles = generateProgressiveVariants(normalizedName);
+    const normalizedSearchTitles = generateSimpleVariants(normalizedName);
 
     if (normalizedSearchTitles.length > 0) {
       const allGames = await prisma.game.findMany({
         select: { id: true, name: true, slug: true }
       });
       for (const game of allGames) {
-        const normalizedGameTitles = generateProgressiveVariants(game.name);
+        const normalizedGameTitles = generateSimpleVariants(game.name);
         // Prüfe auf exakte Übereinstimmung zwischen allen Varianten
         for (const searchVariant of normalizedSearchTitles) {
           for (const gameVariant of normalizedGameTitles) {
@@ -669,4 +655,26 @@ export namespace GamesService {
 
     return reverseMatch;
   }
+
+  // Hilfsfunktion für lokale DB-Suchen (vereinfacht)
+  const generateSimpleVariants = (title: string): string[] => {
+    const variants: string[] = [];
+    const cleanedTitle = title.trim();
+
+    if (!cleanedTitle) return [];
+
+    variants.push(cleanedTitle);
+
+    // Entferne Wörter von rechts
+    const words = cleanedTitle.split(/\s+/);
+    while (words.length > 1) {
+      words.pop();
+      const shortened = words.join(' ').trim();
+      if (shortened.length >= 2) {
+        variants.push(shortened);
+      }
+    }
+
+    return [...new Set(variants)];
+  };
 }

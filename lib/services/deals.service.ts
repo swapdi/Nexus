@@ -1,15 +1,11 @@
-// Deals Service - BEREINIGT
-// Grund: Nur noch die Funktionen die für den syncAndLoadDeals Workflow benötigt werden
+// Deals Service - VEREINFACHT
+// Grund: Nutzt zentrale IGDB-Funktion für alle Spielsuchen
 
-import { useGameUtils } from '~/composables/useGameUtils';
 import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
 
 const prisma = new PrismaClient();
-
-// Grund: Importiere Game Utils für Titel-Bereinigung und progressive Varianten
-const { generateProgressiveVariants } = useGameUtils();
 
 export interface DealWithGame extends Deal {
   game: Game;
@@ -104,60 +100,55 @@ export namespace DealsService {
   }
 
   /**
-   * Progressive Spielsuche mit systematischer Titel-Kürzung
-   * Grund: Entfernt schrittweise Wörter von rechts bis ein Spiel gefunden wird
+   * Findet oder erstellt ein Spiel für einen Deal-Titel
+   * Grund: Nutzt zentrale IGDB-Funktion für konsistente Spielerkennung
    */
-  export async function findGameWithVariants(dealTitle: string) {
-    console.log(`🔍 Starting progressive game search for: "${dealTitle}"`);
+  export async function findOrCreateGameForDeal(dealTitle: string) {
+    console.log(`🔍 [Deals] Finding game for deal: "${dealTitle}"`);
 
-    // Grund: Generiere progressive Varianten durch systematisches Kürzen
-    const titleVariants = generateProgressiveVariants(dealTitle);
+    try {
+      const { IGDBService } = await import('./igdb.service');
+      const igdbGameData = await IGDBService.findGameByTitle(dealTitle);
 
-    if (titleVariants.length === 0) {
-      console.warn(`⚠️  No valid variants generated for: "${dealTitle}"`);
+      if (!igdbGameData) {
+        console.log(`❌ [Deals] No IGDB game found for: "${dealTitle}"`);
+        return null;
+      }
+
+      // Grund: Prüfe ob das Spiel bereits in unserer DB existiert
+      const existingGame = await prisma.game.findUnique({
+        where: { igdbId: igdbGameData.id }
+      });
+
+      if (existingGame) {
+        console.log(`✅ [Deals] Found existing game: "${existingGame.name}"`);
+        return existingGame;
+      }
+
+      // Grund: Erstelle neues Spiel mit IGDB-Daten
+      const newGame = await prisma.game.create({
+        data: {
+          igdbId: igdbGameData.id,
+          name: igdbGameData.name,
+          slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          summary: igdbGameData.summary,
+          firstReleaseDate: igdbGameData.firstReleaseDate,
+          coverUrl: igdbGameData.coverUrl,
+          screenshots: igdbGameData.screenshotUrls || [],
+          totalRating: igdbGameData.totalRating,
+          genres: igdbGameData.genres || [],
+          developers: igdbGameData.developers || [],
+          publishers: igdbGameData.publishers || [],
+          lastSyncedAt: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+      return newGame;
+    } catch (error) {
+      console.error(`❌ [Deals] Error finding game for "${dealTitle}":`, error);
       return null;
     }
-
-    console.log(`📋 Generated ${titleVariants.length} progressive variants`);
-
-    // Grund: Versuche jede Variante progressiv - von spezifisch zu allgemein
-    for (let i = 0; i < titleVariants.length; i++) {
-      const variant = titleVariants[i];
-
-      try {
-        console.log(
-          `[${i + 1}/${
-            titleVariants.length
-          }] 🔎 Searching IGDB for: "${variant}"`
-        );
-
-        // Grund: Nutze einfache IGDB-Suche statt komplexer GamesService-Logik
-        const gameResult = await DealsService.findGameForDeal(variant);
-
-        if (gameResult && gameResult.success && gameResult.game) {
-          console.log(
-            `✅ SUCCESS! Found game "${gameResult.game.name}" using variant "${variant}"`
-          );
-          console.log(
-            `🎯 Search completed after ${i + 1}/${
-              titleVariants.length
-            } attempts`
-          );
-          return gameResult;
-        } else {
-          console.log(`❌ No match found for variant "${variant}"`);
-        }
-      } catch (error) {
-        console.warn(`⚠️  Error searching for variant "${variant}":`, error);
-        continue;
-      }
-    }
-
-    console.warn(
-      `🚫 FAILED: No game found for any of ${titleVariants.length} variants of: "${dealTitle}"`
-    );
-    console.log(`📝 All attempted variants:`, titleVariants);
-    return null;
   }
 
   // ===== CHEAPSHARK INTEGRATION =====
@@ -190,13 +181,13 @@ export namespace DealsService {
       let finalGameId = gameId;
       if (!finalGameId) {
         try {
-          // Grund: Nutze progressive Spielsuche mit systematischen Titel-Varianten
-          const gameResult = await DealsService.findGameWithVariants(
+          // Grund: Nutze zentrale Spielsuche
+          const foundGame = await DealsService.findOrCreateGameForDeal(
             cheapSharkDeal.title
           );
 
-          if (gameResult && gameResult.success && gameResult.game) {
-            finalGameId = gameResult.game.id;
+          if (foundGame) {
+            finalGameId = foundGame.id;
           } else {
             console.warn(
               `Could not find/create game for deal: ${cheapSharkDeal.title}`
@@ -207,6 +198,12 @@ export namespace DealsService {
           console.error('Error finding/creating game for deal:', error);
           return null;
         }
+      }
+
+      // Grund: Prüfe ob gameId gefunden wurde
+      if (!finalGameId) {
+        console.warn(`No valid gameId found for deal: ${cheapSharkDeal.title}`);
+        return null;
       }
 
       return {
@@ -242,20 +239,20 @@ export namespace DealsService {
 
     try {
       for (const cheapSharkDeal of cheapSharkDeals) {
-        // Grund: Deal-Daten konvertieren (jetzt async)
-        const dealData = await convertCheapSharkDeal(cheapSharkDeal, gameId);
-        if (!dealData) continue;
-
         // Grund: Prüfen ob Deal bereits existiert (basierend auf externalId)
         const existingDeal = await prisma.deal.findFirst({
           where: {
-            externalId: dealData.externalId,
+            externalId: cheapSharkDeal.dealID,
             source: 'CheapShark'
           }
         });
         if (existingDeal) {
           continue;
         }
+        // Grund: Deal-Daten konvertieren (jetzt async)
+        const dealData = await convertCheapSharkDeal(cheapSharkDeal, gameId);
+        if (!dealData) continue;
+
         // Grund: Neuen Deal erstellen
         const newDeal = await prisma.deal.create({
           data: dealData
@@ -325,87 +322,5 @@ export namespace DealsService {
    */
   export async function getAllCheapSharkDeals(options: any = {}) {
     return await CheapSharkService.getAllDeals(options);
-  }
-
-  /**
-   * Vereinfachte IGDB-Spielsuche nur für DealsService
-   * Grund: Vermeidet doppelte Komplexität zwischen GamesService und DealsService
-   */
-  export async function findGameForDeal(dealTitle: string) {
-    console.log(`🔍 Simple IGDB search for deal: "${dealTitle}"`);
-
-    try {
-      // Grund: Direkte IGDB-Suche ohne komplexe Logik
-      const { IGDBService } = await import('./igdb.service');
-      const searchResults = await IGDBService.searchGames(dealTitle, 10);
-
-      if (searchResults.length === 0) {
-        console.log(`❌ No IGDB results for deal title: "${dealTitle}"`);
-        return null;
-      }
-
-      // Grund: Nimm einfach das erste, best-bewertete Ergebnis
-      const bestResult = searchResults[0];
-      console.log(
-        `✅ Found IGDB game for deal: "${bestResult.name}" (ID: ${bestResult.id})`
-      );
-
-      // Grund: Prüfe ob bereits in der Datenbank
-      const existingGame = await prisma.game.findUnique({
-        where: { igdbId: bestResult.id }
-      });
-
-      if (existingGame) {
-        console.log(`🎯 Game already exists in DB: "${existingGame.name}"`);
-        return {
-          success: true,
-          game: existingGame,
-          isNew: false,
-          message: 'Spiel bereits vorhanden'
-        };
-      }
-
-      // Grund: Hole detaillierte Spiel-Daten und erstelle neues Spiel
-      const gameDetails = await IGDBService.getGameDetails(bestResult.id);
-      if (!gameDetails) {
-        console.log(
-          `❌ Could not get game details for IGDB ID: ${bestResult.id}`
-        );
-        return null;
-      }
-
-      const gameData = IGDBService.convertIGDBGame(gameDetails);
-      const newGame = await prisma.game.create({
-        data: {
-          igdbId: gameData.id,
-          name: gameData.name,
-          slug: gameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          summary: gameData.summary,
-          firstReleaseDate: gameData.firstReleaseDate,
-          coverUrl: gameData.coverUrl,
-          screenshots: gameData.screenshotUrls || [],
-          totalRating: gameData.totalRating,
-          genres: gameData.genres || [],
-          developers: gameData.developers || [],
-          publishers: gameData.publishers || [],
-          lastSyncedAt: new Date(),
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      });
-
-      console.log(
-        `🎉 Created new game for deal: "${newGame.name}" (ID: ${newGame.id})`
-      );
-      return {
-        success: true,
-        game: newGame,
-        isNew: true,
-        message: 'Spiel erstellt'
-      };
-    } catch (error) {
-      console.error(`❌ Error finding game for deal "${dealTitle}":`, error);
-      return null;
-    }
   }
 }

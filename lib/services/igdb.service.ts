@@ -249,98 +249,197 @@ export namespace IGDBService {
   };
 
   /**
-   * Spiel nach Namen suchen und beste Übereinstimmung finden
+   * ZENTRALE FUNKTION: Spiel anhand Titel finden mit dynamischer Titel-Anpassung
+   * Grund: Einzige Schnittstelle für alle Spielsuchen (Steam-Import, Deal-Sync, etc.)
    */
-  export const findBestMatch = async (
-    gameName: string
-  ): Promise<IGDBGame | null> => {
-    try {
-      // Suche nach Spielen
-      const searchResults = await searchGames(gameName, 10);
+  export const findGameByTitle = async (
+    gameTitle: string
+  ): Promise<IGDBGameData | null> => {
+    console.log(`🔍 [IGDB] Starting search for: "${gameTitle}"`);
 
-      if (searchResults.length === 0) {
-        return null;
+    const maxAttempts = 8;
+    let bestResult: IGDBGameData | null = null;
+    let bestScore = 0;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      // Grund: Dynamische Titel-Varianten erstellen
+      const searchVariant = generateTitleVariant(gameTitle, attempt);
+
+      if (!searchVariant) {
+        console.log(
+          `❌ [IGDB] No more variant for current attempt: ${attempt}`
+        );
+        continue;
       }
 
-      // Finde beste Übereinstimmung basierend auf Name
-      const normalizedSearchName = gameName.toLowerCase().trim();
+      console.log(
+        `🔄 [IGDB] Attempt ${attempt + 1}: Searching for "${searchVariant}"`
+      );
 
-      let bestMatch = searchResults[0];
-      let bestScore = 0;
+      try {
+        // Grund: IGDB API Suche mit aktueller Variante
+        const searchResults = await searchGames(searchVariant, 20);
 
-      for (const result of searchResults) {
-        const normalizedResultName = result.name.toLowerCase().trim();
-
-        // Exakte Übereinstimmung
-        if (normalizedResultName === normalizedSearchName) {
-          bestMatch = result;
-          break;
+        if (searchResults.length === 0) {
+          console.log(`❌ [IGDB] No results for "${searchVariant}"`);
+          continue;
         }
 
-        // Ähnlichkeit berechnen (einfache Implementierung)
-        const similarity = calculateSimilarity(
-          normalizedSearchName,
-          normalizedResultName
+        // Grund: Prüfe auf exakte Übereinstimmung
+        const exactMatch = searchResults.find(
+          game =>
+            game.name.toLowerCase().trim() ===
+            searchVariant.toLowerCase().trim()
         );
 
-        if (similarity > bestScore) {
-          bestScore = similarity;
-          bestMatch = result;
+        if (exactMatch) {
+          console.log(`✅ [IGDB] Exact match found: ${exactMatch.name}`);
+          const gameDetails = await getGameDetails(exactMatch.id);
+          if (gameDetails) {
+            return convertIGDBGame(gameDetails);
+          }
         }
-      }
 
-      // Hole detaillierte Informationen für das beste Match
-      return await getGameDetails(bestMatch.id);
-    } catch (error) {
-      console.error('Fehler beim Suchen des besten Matches:', error);
-      return null;
-    }
-  };
+        // Grund: Bewerte das beste Ergebnis dieser Suche
+        let topResult = searchResults[0];
+        let topScore = 0;
 
-  /**
-   * Einfache Ähnlichkeitsberechnung zwischen zwei Strings
-   */
-  const calculateSimilarity = (str1: string, str2: string): number => {
-    if (str1 === str2) return 1;
+        // Finde bestes Match in den Ergebnissen
+        for (const result of searchResults) {
+          const normalizedQuery = searchVariant.toLowerCase().trim();
+          const normalizedName = result.name.toLowerCase().trim();
 
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
+          let score = 0;
+          if (normalizedName === normalizedQuery) {
+            score = 1.0;
+          } else if (normalizedName.startsWith(normalizedQuery)) {
+            score = 0.9;
+          } else if (normalizedName.includes(normalizedQuery)) {
+            score = 0.8;
+          } else {
+            // Wort-basierte Ähnlichkeit
+            const queryWords = normalizedQuery.split(/\s+/);
+            const nameWords = normalizedName.split(/\s+/);
+            const matchingWords = queryWords.filter(word =>
+              nameWords.some(
+                nameWord => nameWord.includes(word) || word.includes(nameWord)
+              )
+            );
+            score = matchingWords.length / queryWords.length;
+          }
 
-    if (longer.length === 0) return 1;
+          if (score > topScore) {
+            topScore = score;
+            topResult = result;
+          }
+        }
 
-    const editDistance = getEditDistance(longer, shorter);
-    return (longer.length - editDistance) / longer.length;
-  };
-
-  /**
-   * Levenshtein-Distanz zwischen zwei Strings
-   */
-  const getEditDistance = (str1: string, str2: string): number => {
-    const matrix: number[][] = [];
-
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
+        if (topResult && topScore > bestScore) {
+          console.log(
+            `📈 [IGDB] New best result: "${
+              topResult.name
+            }" (Score: ${topScore.toFixed(2)})`
           );
+
+          // Hole Details für das beste Ergebnis
+          const gameDetails = await getGameDetails(topResult.id);
+          if (gameDetails) {
+            bestResult = convertIGDBGame(gameDetails);
+            bestScore = topScore;
+          }
+
+          // Grund: Bei sehr gutem Score (>80%) direkt zurückgeben
+          if (topScore > 0.8) {
+            console.log(
+              `✅ [IGDB] High confidence match found: ${topResult.name}`
+            );
+            return bestResult;
+          }
         }
+      } catch (error) {
+        console.error(
+          `❌ [IGDB] Error searching for "${searchVariant}":`,
+          error
+        );
+        continue;
       }
     }
 
-    return matrix[str2.length][str1.length];
+    if (bestResult) {
+      console.log(
+        `✅ [IGDB] Best match found: "${
+          bestResult.name
+        }" (Score: ${bestScore.toFixed(2)})`
+      );
+    } else {
+      console.log(
+        `❌ [IGDB] No suitable match found for "${gameTitle}" after ${maxAttempts} attempts`
+      );
+    }
+
+    return bestResult;
+  };
+
+  /**
+   * Erstellt Titel-Varianten für progressive Suche
+   * Grund: Interne Logik für dynamische Titel-Anpassung
+   */
+  const generateTitleVariant = (
+    originalTitle: string,
+    attemptNumber: number
+  ): string | null => {
+    const cleanedTitle = originalTitle.trim();
+
+    if (attemptNumber === 0) {
+      return cleanedTitle;
+    }
+
+    if (attemptNumber === 1) {
+      // Entferne Edition-Zusätze
+      const editionRegex =
+        /\s*[-:]?\s*(Gold|Deluxe|Ultimate|Complete|GOTY|Premium|Special|Enhanced|Definitive|Remastered|HD|Director's Cut|Game of the Year|Collector's|Digital)\s*(Edition)?$/gi;
+      const cleaned = cleanedTitle.replace(editionRegex, '').trim();
+      if (cleaned.length >= 3 && cleaned !== cleanedTitle) {
+        return cleaned;
+      }
+    }
+
+    if (attemptNumber === 2) {
+      // Entferne Text nach Doppelpunkt oder Bindestrich
+      const colonIndex = cleanedTitle.indexOf(': ');
+      if (colonIndex > 0) {
+        const beforeColon = cleanedTitle.substring(0, colonIndex).trim();
+        if (beforeColon.length >= 3) return beforeColon;
+      }
+
+      const dashIndex = cleanedTitle.indexOf(' - ');
+      if (dashIndex > 0) {
+        const beforeDash = cleanedTitle.substring(0, dashIndex).trim();
+        if (beforeDash.length >= 3) return beforeDash;
+      }
+    }
+
+    if (attemptNumber === 3) {
+      // Entferne Jahreszahlen in Klammern
+      const withoutYear = cleanedTitle.replace(/\s*\(\d{4}\)\s*/g, '').trim();
+      if (withoutYear.length >= 3 && withoutYear !== cleanedTitle) {
+        return withoutYear;
+      }
+    }
+
+    if (attemptNumber >= 4) {
+      // Progressive Wort-Entfernung von rechts
+      const words = cleanedTitle.split(/\s+/);
+      const wordsToRemove = attemptNumber - 3;
+
+      if (words.length > wordsToRemove) {
+        const shortenedWords = words.slice(0, words.length - wordsToRemove);
+        const shortened = shortenedWords.join(' ').trim();
+        if (shortened.length >= 2) return shortened;
+      }
+    }
+
+    return null;
   };
 
   /**
@@ -397,33 +496,5 @@ export namespace IGDBService {
       totalRating,
       platforms
     };
-  };
-
-  /**
-   * Spiel bei IGDB suchen und als standardisierte Daten zurückgeben
-   */
-  export const searchAndConvertGame = async (
-    gameName: string
-  ): Promise<IGDBGameData | null> => {
-    try {
-      // Suche nach dem besten Match bei IGDB
-      const igdbGame = await findBestMatch(gameName);
-
-      if (!igdbGame) {
-        console.log(`[IGDB] Kein Match gefunden für: ${gameName}`);
-        return null;
-      }
-
-      // Konvertiere IGDB-Daten zu standardisiertem Format
-      const gameData = convertIGDBGame(igdbGame);
-
-      console.log(
-        `[IGDB] Spiel gefunden: ${gameData.name} (ID: ${gameData.id})`
-      );
-      return gameData;
-    } catch (error) {
-      console.error('Fehler beim Suchen/Konvertieren des Spiels:', error);
-      return null;
-    }
   };
 }
