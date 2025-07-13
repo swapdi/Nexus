@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\components\DealCard\DealCard.vue -->
 <template>
   <component
     :is="cardComponent"

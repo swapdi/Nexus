@@ -24,9 +24,9 @@
       <div class="w-full pl-[78px] pr-[200px] h-full flex items-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div class="flex items-center">
-            <!-- Platzhalter für zukünftige Suchleiste -->
-            <div class="flex-1">
-              <!-- Hier wird später die Suchleiste integriert -->
+            <!-- Global Search -->
+            <div class="flex-1 max-w-lg">
+              <GlobalSearch />
             </div>
           </div>
         </div>
