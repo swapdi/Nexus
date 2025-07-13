@@ -1,7 +1,7 @@
 <!-- filepath: c:\Users\jgram\git\Nexus\components\ViewModeToggle.vue -->
 <template>
   <div
-    class="flex items-center gap-1 bg-gray-800/50 rounded-lg p-1 border border-gray-700/50">
+    class="flex justify-between items-center gap-1 bg-gray-800/50 rounded-lg p-1 border border-gray-700/50">
     <button
       v-for="mode in VIEW_MODES"
       :key="mode.id"

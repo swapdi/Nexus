@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  const userStore = useUserStore();
-  const user = computed(() => userStore.user);
   const emit = defineEmits<{
     hoverChange: [isHovered: boolean];
   }>();
@@ -15,7 +13,7 @@
     }
     hoverTimeout = setTimeout(() => {
       isHovered.value = true;
-    }, 300); // 300ms Verzögerung
+    }, 750); // 300ms Verzögerung
   };
 
   const handleMouseLeave = () => {
@@ -37,38 +35,27 @@
     {
       name: 'Dashboard',
       path: '/dashboard',
-      icon: 'heroicons:home-20-solid',
-      subItems: []
+      icon: 'heroicons:home-20-solid'
     },
     {
       name: 'Meine Spiele',
       path: '/my-games',
-      icon: 'heroicons:puzzle-piece-20-solid',
-      subItems: []
+      icon: 'heroicons:puzzle-piece-20-solid'
     },
     {
       name: 'Angebote',
       path: '/deals',
-      icon: 'heroicons:tag-20-solid',
-      subItems: []
+      icon: 'heroicons:tag-20-solid'
     },
     {
       name: 'Wishlist',
       path: '/wishlist',
-      icon: 'heroicons:heart-20-solid',
-      subItems: []
+      icon: 'heroicons:heart-20-solid'
     },
     {
       name: 'Profil',
-      path: '/profile',
-      icon: 'heroicons:user-20-solid',
-      subItems: []
-    },
-    {
-      name: 'Einstellungen',
       path: '/settings',
-      icon: 'heroicons:cog-6-tooth-20-solid',
-      subItems: []
+      icon: 'heroicons:user-20-solid'
     }
   ];
   // Überprüfe ob ein Pfad aktiv ist
@@ -148,106 +135,6 @@
           </ul>
         </div>
       </nav>
-      <!-- Benutzerinformationen (fest am unteren Rand) -->
-      <div
-        class="flex-shrink-0 p-4 bg-gradient-to-t from-gray-900/90 to-transparent border-t border-gray-700/30">
-        <div v-if="user" class="flex items-center group/user">
-          <!-- Avatar mit futuristischem Design -->
-          <div class="relative flex-shrink-0">
-            <div
-              class="w-10 h-10 bg-gradient-to-br from-purple-500 via-blue-500 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-purple-500/30 transform transition-all duration-300 group-hover/user:scale-110 relative z-10">
-              {{ user.display_name?.charAt(0).toUpperCase() || 'U' }}
-            </div>
-            <!-- Avatar Glow Ring -->
-            <div
-              class="absolute inset-0 bg-gradient-to-br from-purple-500 via-blue-500 to-green-500 rounded-full blur-md opacity-20 animate-pulse-slow"></div>
-            <!-- Status Indicator -->
-            <div
-              class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900 shadow-sm"></div>
-          </div>
-          <!-- User Info mit Animation (nur bei erweitert) -->
-          <div
-            v-if="showExpanded"
-            class="ml-3 min-w-0 transition-all duration-300 flex-1 overflow-hidden"
-            :class="
-              showExpanded
-                ? 'translate-x-0 opacity-100'
-                : '-translate-x-4 opacity-0'
-            ">
-            <div class="flex flex-col min-w-0 overflow-hidden">
-              <!-- Name -->
-              <p class="text-sm font-medium text-white truncate mb-1 min-w-0">
-                {{ user.display_name || 'User' }}
-              </p>
-              <!-- Level und XP -->
-              <div
-                class="flex items-center justify-between text-xs mb-2 min-w-0 overflow-hidden">
-                <div
-                  class="flex items-center space-x-2 min-w-0 overflow-hidden">
-                  <span
-                    class="text-purple-300 font-medium whitespace-nowrap flex-shrink-0"
-                    >Level {{ user.level }}</span
-                  >
-                  <span class="text-gray-500 flex-shrink-0">•</span>
-                  <span class="text-blue-300 whitespace-nowrap flex-shrink-0"
-                    >{{ user.xp }} XP</span
-                  >
-                </div>
-                <span
-                  class="text-gray-400 text-xs whitespace-nowrap flex-shrink-0"
-                  >{{ user.credits }} Credits</span
-                >
-              </div>
-              <!-- XP Progress Bar -->
-              <div class="w-full bg-gray-700/50 rounded-full h-1.5 mb-1">
-                <div
-                  class="bg-gradient-to-r from-purple-500 to-blue-500 h-1.5 rounded-full shadow-glow transition-all duration-1000 relative"
-                  :style="`width: ${(user.xp % 1000) / 10}%`">
-                  <!-- Progress Glow Effect -->
-                  <div
-                    class="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full opacity-50 animate-pulse-slow"></div>
-                </div>
-              </div>
-              <!-- Next Level Info -->
-              <div
-                class="text-xs text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
-                {{ Math.max(0, 1000 - (user.xp % 1000)) }} XP bis Level
-                {{ user.level + 1 }}
-              </div>
-            </div>
-          </div>
-          <!-- Collapsed State - nur Avatar mit Tooltip -->
-          <div v-else class="relative">
-            <!-- Tooltip bei Hover im collapsed Modus -->
-            <div
-              class="absolute left-12 top-1/2 -translate-y-1/2 bg-gray-800/95 text-white text-xs rounded-lg px-3 py-2 backdrop-blur-sm border border-purple-500/20 opacity-0 group-hover/user:opacity-100 transition-all duration-300 pointer-events-none z-50 whitespace-nowrap">
-              <div class="font-medium">
-                {{ user.display_name || 'User' }}
-              </div>
-              <div class="text-purple-300">
-                Level {{ user.level }} • {{ user.xp }} XP
-              </div>
-              <!-- Tooltip Arrow -->
-              <div
-                class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 border-l border-b border-purple-500/20 rotate-45"></div>
-            </div>
-          </div>
-        </div>
-        <!-- Fallback wenn kein User -->
-        <div v-else class="flex items-center justify-center">
-          <div
-            class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-            <Icon
-              name="heroicons:user-20-solid"
-              class="w-5 h-5 text-gray-400" />
-          </div>
-          <span
-            v-if="showExpanded"
-            class="ml-3 text-sm text-gray-400 whitespace-nowrap"
-            >Nicht angemeldet</span
-          >
-        </div>
-      </div>
     </div>
   </aside>
 </template>

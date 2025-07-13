@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
+  import DealCard from '~/components/DealCard/DealCard.vue';
+  import type { DealWithGame } from '~/lib/services/deals.service';
   import type { UserGameWithDetails } from '~/lib/services/games.service';
+  import type { Game } from '~/prisma/client';
 
   // Route Parameter (Game ID, nicht UserGame ID)
   const route = useRoute();
@@ -8,10 +11,14 @@
 
   // Stores
   const gamesStore = useGamesStore();
+  const dealsStore = useDealsStore();
 
   // State
-  const game = ref<UserGameWithDetails | null>(null);
+  const userGame = ref<UserGameWithDetails | null>(null);
+  const gameData = ref<Game | null>(null);
+  const relatedDeals = ref<DealWithGame[]>([]);
   const isLoading = ref(true);
+  const isLoadingDeals = ref(false);
   const error = ref<string | null>(null);
 
   // Notes editing state
@@ -25,36 +32,91 @@
     layout: 'authenticated'
   });
 
+  // Helper to get current game data (muss vor useHead definiert werden)
+  const currentGame = computed(() => userGame.value?.game || gameData.value);
+  const isInLibrary = computed(() => !!userGame.value);
+
+  // Update page title when game data is loaded
+  useHead(() => ({
+    title: currentGame.value
+      ? `${currentGame.value.name} - Nexus`
+      : 'Spiel laden... - Nexus'
+  }));
+
   // Lade Spiel-Details
   onMounted(async () => {
     try {
       await gamesStore.init();
 
       // Suche das Spiel in der Bibliothek des Users anhand der Game ID
-      const existingGame = gamesStore.games.find(
+      const existingUserGame = gamesStore.games.find(
         g => g.game.id === gameId.value
       );
-      if (existingGame) {
-        game.value = existingGame;
-        isLoading.value = false;
+      if (existingUserGame) {
+        userGame.value = existingUserGame;
+        gameData.value = existingUserGame.game;
       } else {
-        // Falls nicht im Store, lade es über den Store (mit UserGame ID)
-        // Fallback: Versuche alle Spiele zu laden und dann zu finden
-        await gamesStore.loadGames();
-        const gameData = gamesStore.games.find(g => g.game.id === gameId.value);
-        if (gameData) {
-          game.value = gameData;
-        } else {
-          error.value = 'Spiel nicht gefunden oder nicht in deiner Bibliothek';
-        }
-        isLoading.value = false;
+        // Falls nicht im Store, versuche das Spiel direkt zu laden
+        await loadGameDirectly();
       }
+
+      // Lade verwandte Deals
+      await loadRelatedDeals();
+
+      isLoading.value = false;
     } catch (err) {
       console.error('Fehler beim Laden des Spiels:', err);
       error.value = 'Fehler beim Laden des Spiels';
       isLoading.value = false;
     }
   });
+
+  // tRPC client
+  const { $client } = useNuxtApp();
+
+  // Lade Spiel direkt wenn nicht in Bibliothek
+  const loadGameDirectly = async () => {
+    try {
+      const response = await $client.games.getGameById.query({
+        gameId: gameId.value
+      });
+      if (response) {
+        gameData.value = response;
+      } else {
+        error.value = 'Spiel nicht gefunden';
+      }
+    } catch (err) {
+      console.error('Fehler beim direkten Laden des Spiels:', err);
+      error.value = 'Spiel nicht gefunden';
+    }
+  };
+
+  // Lade verwandte Deals für das Spiel
+  const loadRelatedDeals = async () => {
+    if (!gameData.value) return;
+
+    isLoadingDeals.value = true;
+    try {
+      await dealsStore.loadDealsFromDB();
+
+      // Finde Deals die zum aktuellen Spiel gehören
+      const gameDeals = dealsStore.deals.filter(
+        deal =>
+          deal.gameId === gameData.value!.id ||
+          deal.title
+            .toLowerCase()
+            .includes(gameData.value!.name.toLowerCase()) ||
+          (gameData.value!.slug &&
+            deal.title.toLowerCase().includes(gameData.value!.slug))
+      );
+
+      relatedDeals.value = gameDeals.slice(0, 6) as DealWithGame[]; // Limitiere auf 6 Deals
+    } catch (err) {
+      console.error('Fehler beim Laden der Deals:', err);
+    } finally {
+      isLoadingDeals.value = false;
+    }
+  };
 
   // Helper Functions
   const formatPlayTime = (minutes: number): string => {
@@ -111,28 +173,6 @@
     return new Date(date).getFullYear();
   };
 
-  const formatGenreList = (genres: string[]) => {
-    if (!genres || genres.length === 0) return 'Keine Genres';
-    if (genres.length <= 3) return genres.join(', ');
-    return `${genres.slice(0, 3).join(', ')} +${genres.length - 3} weitere`;
-  };
-
-  const formatDeveloperList = (developers: string[]) => {
-    if (!developers || developers.length === 0) return 'Unbekannt';
-    if (developers.length <= 2) return developers.join(', ');
-    return `${developers.slice(0, 2).join(', ')} +${
-      developers.length - 2
-    } weitere`;
-  };
-
-  const formatPublisherList = (publishers: string[]) => {
-    if (!publishers || publishers.length === 0) return 'Unbekannt';
-    if (publishers.length <= 2) return publishers.join(', ');
-    return `${publishers.slice(0, 2).join(', ')} +${
-      publishers.length - 2
-    } weitere`;
-  };
-
   const getRatingColor = (rating: number) => {
     if (rating >= 80) return 'text-green-400';
     if (rating >= 60) return 'text-yellow-400';
@@ -147,26 +187,15 @@
     return 'bg-red-500/20 border-red-500/40';
   };
 
-  const hasGameData = computed(() => {
-    return (
-      game.value &&
-      (game.value.game.summary ||
-        game.value.game.genres?.length ||
-        game.value.game.developers?.length ||
-        game.value.game.publishers?.length ||
-        game.value.game.firstReleaseDate ||
-        game.value.game.totalRating)
-    );
-  });
-
   // Zurück zur Bibliothek
   const goBack = () => {
     navigateTo('/my-games');
   };
 
-  // Notes editing functions
+  // Notes editing functions (nur für Spiele in der Bibliothek)
   const startEditingNotes = () => {
-    notesText.value = game.value?.notes || '';
+    if (!userGame.value) return;
+    notesText.value = userGame.value?.notes || '';
     isEditingNotes.value = true;
   };
 
@@ -176,7 +205,7 @@
   };
 
   const saveNotes = async () => {
-    if (!game.value) return;
+    if (!userGame.value) return;
 
     try {
       isSavingNotes.value = true;
@@ -185,12 +214,12 @@
       const notifyStore = useNotifyStore();
 
       const updatedGame = await $client.games.updateGameNotes.mutate({
-        userGameId: game.value.id,
+        userGameId: userGame.value.id,
         notes: notesText.value.trim() || null
       });
 
       if (updatedGame) {
-        game.value = updatedGame;
+        userGame.value = updatedGame;
         // Auch im Store aktualisieren
         await gamesStore.refreshData();
         notifyStore.notify('Notizen erfolgreich gespeichert', 1);
@@ -224,7 +253,7 @@
     </div>
 
     <!-- Game Detail -->
-    <div v-else-if="game" class="relative">
+    <div v-else-if="userGame || gameData" class="relative">
       <!-- Full-width Hero Background mit Parallax-Effekt -->
       <div class="fixed inset-0 z-0">
         <div
@@ -286,8 +315,8 @@
                     <div
                       class="aspect-[3/4] bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl overflow-hidden relative shadow-2xl transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-purple-500/20">
                       <img
-                        :src="game.game.coverUrl || '/gameplaceholder.jpg'"
-                        :alt="game.game.name"
+                        :src="currentGame.coverUrl || '/gameplaceholder.jpg'"
+                        :alt="currentGame.name"
                         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                         loading="lazy" />
 
@@ -315,54 +344,48 @@
                       class="text-4xl lg:text-6xl font-black mb-4 leading-tight">
                       <span
                         class="bg-gradient-to-r from-purple-400 via-pink-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-300">
-                        {{ game.game.name }}
+                        {{ currentGame.name }}
                       </span>
                     </h1>
 
                     <!-- Release Year & Rating Badge -->
                     <div class="flex items-center gap-3 mb-6">
                       <div
-                        v-if="formatReleaseYear(game.game.firstReleaseDate)"
+                        v-if="formatReleaseYear(currentGame.firstReleaseDate)"
                         class="px-3 py-1 bg-gray-800/50 text-gray-300 text-sm rounded-full border border-gray-700/40 font-medium">
-                        {{ formatReleaseYear(game.game.firstReleaseDate) }}
+                        {{ formatReleaseYear(currentGame.firstReleaseDate) }}
                       </div>
                       <div
-                        v-if="game.game.totalRating"
-                        :class="getRatingBgColor(game.game.totalRating)"
-                        class="px-3 py-1 text-sm rounded-full border font-medium flex items-center gap-1">
-                        <Icon name="heroicons:star-20-solid" class="w-4 h-4" />
-                        <span :class="getRatingColor(game.game.totalRating)">{{
-                          formatRating(game.game.totalRating)
-                        }}</span>
+                        v-if="
+                          currentGame.genres && currentGame.genres.length > 0
+                        ">
+                        <span
+                          v-for="genre in currentGame.genres.slice(0, 5)"
+                          :key="genre"
+                          class="px-3 mr-3 py-1.5 bg-gradient-to-r from-purple-600/30 to-purple-700/30 text-purple-200 text-sm rounded-full border border-purple-500/40 font-medium backdrop-blur-sm hover:from-purple-500/40 hover:to-purple-600/40 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20">
+                          {{ genre }}
+                        </span>
+                        <span
+                          v-if="
+                            currentGame.genres && currentGame.genres.length > 5
+                          "
+                          class="px-3 py-1.5 bg-gray-800/50 text-gray-400 text-sm rounded-full border border-gray-700/40 font-medium">
+                          +{{ currentGame.genres.length - 5 }} weitere
+                        </span>
                       </div>
-                    </div>
-
-                    <!-- Enhanced genres with glow -->
-                    <div
-                      v-if="game.game.genres && game.game.genres.length > 0"
-                      class="flex flex-wrap gap-2 mb-8">
-                      <span
-                        v-for="genre in game.game.genres.slice(0, 5)"
-                        :key="genre"
-                        class="px-3 py-1.5 bg-gradient-to-r from-purple-600/30 to-purple-700/30 text-purple-200 text-sm rounded-full border border-purple-500/40 font-medium backdrop-blur-sm hover:from-purple-500/40 hover:to-purple-600/40 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20">
-                        {{ genre }}
-                      </span>
-                      <span
-                        v-if="game.game.genres.length > 5"
-                        class="px-3 py-1.5 bg-gray-800/50 text-gray-400 text-sm rounded-full border border-gray-700/40 font-medium">
-                        +{{ game.game.genres.length - 5 }} weitere
-                      </span>
                     </div>
 
                     <!-- Game Summary -->
-                    <div v-if="game.game.summary" class="mb-6">
+                    <div v-if="currentGame.summary" class="mb-6">
                       <p class="text-gray-300 leading-relaxed text-base">
-                        {{ game.game.summary }}
+                        {{ currentGame.summary }}
                       </p>
                     </div>
                   </div>
-                  <!-- Enhanced Stats Grid mit Animationen - 2x2 Layout -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Enhanced Stats Grid mit Animationen - 2x2 Layout (nur für Bibliotheksspiele) -->
+                  <div
+                    v-if="isInLibrary"
+                    class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Spielzeit Card -->
                     <div class="group relative h-28">
                       <div
@@ -382,7 +405,7 @@
                         <div class="flex-1 flex flex-col justify-center">
                           <div
                             class="text-2xl font-bold text-white leading-tight">
-                            {{ formatPlayTime(game.playtimeMinutes || 0) }}
+                            {{ formatPlayTime(userGame?.playtimeMinutes || 0) }}
                           </div>
                         </div>
                       </div>
@@ -407,7 +430,7 @@
                         <div class="flex-1 flex flex-col justify-center">
                           <div
                             class="text-2xl font-bold text-white leading-tight">
-                            {{ formatRelativeTime(game.lastPlayed) }}
+                            {{ formatRelativeTime(userGame?.lastPlayed) }}
                           </div>
                         </div>
                       </div>
@@ -432,7 +455,7 @@
                         <div class="flex-1 flex flex-col justify-center">
                           <div
                             class="text-2xl font-bold text-white leading-tight">
-                            {{ formatRelativeTime(game.addedAt) }}
+                            {{ formatRelativeTime(userGame?.addedAt) }}
                           </div>
                         </div>
                       </div>
@@ -458,8 +481,8 @@
                           <div
                             class="text-2xl font-bold text-white leading-tight">
                             {{
-                              game.game.totalRating
-                                ? `${formatRating(game.game.totalRating)}/100`
+                              currentGame?.totalRating
+                                ? `${formatRating(currentGame.totalRating)}/100`
                                 : '—'
                             }}
                           </div>
@@ -475,7 +498,7 @@
 
         <!-- Screenshots Section -->
         <div
-          v-if="game.game.screenshots && game.game.screenshots.length > 0"
+          v-if="currentGame?.screenshots && currentGame.screenshots.length > 0"
           class="mx-4 lg:mx-8">
           <div class="group relative">
             <div
@@ -495,7 +518,7 @@
               <!-- Screenshots Grid -->
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
-                  v-for="(screenshot, index) in game.game.screenshots.slice(
+                  v-for="(screenshot, index) in currentGame.screenshots.slice(
                     0,
                     6
                   )"
@@ -510,18 +533,18 @@
                     class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div
                     class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {{ index + 1 }} / {{ game.game.screenshots.length }}
+                    {{ index + 1 }} / {{ currentGame.screenshots.length }}
                   </div>
                 </div>
               </div>
 
               <!-- Show More Button -->
               <div
-                v-if="game.game.screenshots.length > 6"
+                v-if="currentGame.screenshots.length > 6"
                 class="text-center mt-6">
                 <button
                   class="px-6 py-3 bg-gradient-to-r from-purple-600/80 to-purple-700/80 hover:from-purple-500/90 hover:to-purple-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25">
-                  Alle {{ game.game.screenshots.length }} Screenshots anzeigen
+                  Alle {{ currentGame.screenshots.length }} Screenshots anzeigen
                 </button>
               </div>
             </div>
@@ -553,7 +576,8 @@
                   <!-- Developer -->
                   <div
                     v-if="
-                      game.game.developers && game.game.developers.length > 0
+                      currentGame?.developers &&
+                      currentGame.developers.length > 0
                     "
                     class="group">
                     <div
@@ -562,7 +586,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                       <span
-                        v-for="dev in game.game.developers"
+                        v-for="dev in currentGame.developers"
                         :key="dev"
                         class="px-3 py-1.5 bg-blue-500/10 text-blue-300 text-sm rounded-lg border border-blue-500/20 font-medium hover:bg-blue-500/20 hover:border-blue-400/30 transition-all duration-300">
                         {{ dev }}
@@ -573,7 +597,8 @@
                   <!-- Publisher -->
                   <div
                     v-if="
-                      game.game.publishers && game.game.publishers.length > 0
+                      currentGame?.publishers &&
+                      currentGame.publishers.length > 0
                     "
                     class="group">
                     <div
@@ -582,7 +607,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                       <span
-                        v-for="pub in game.game.publishers"
+                        v-for="pub in currentGame.publishers"
                         :key="pub"
                         class="px-3 py-1.5 bg-green-500/10 text-green-300 text-sm rounded-lg border border-green-500/20 font-medium hover:bg-green-500/20 hover:border-green-400/30 transition-all duration-300">
                         {{ pub }}
@@ -591,7 +616,7 @@
                   </div>
 
                   <!-- Release Date -->
-                  <div v-if="game.game.firstReleaseDate" class="group">
+                  <div v-if="currentGame?.firstReleaseDate" class="group">
                     <div
                       class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
                       Veröffentlichung
@@ -601,23 +626,7 @@
                         name="heroicons:calendar-20-solid"
                         class="w-4 h-4 text-gray-400" />
                       <span class="text-white font-medium">
-                        {{ formatDate(game.game.firstReleaseDate) }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Last Synced -->
-                  <div v-if="game.game.lastSyncedAt" class="group">
-                    <div
-                      class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
-                      Letzte Synchronisation
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <Icon
-                        name="heroicons:arrow-path-20-solid"
-                        class="w-4 h-4 text-gray-400" />
-                      <span class="text-white font-medium">
-                        {{ formatRelativeTime(game.game.lastSyncedAt) }}
+                        {{ formatDate(currentGame.firstReleaseDate) }}
                       </span>
                     </div>
                   </div>
@@ -627,7 +636,7 @@
                 <div class="space-y-6">
                   <!-- Genres -->
                   <div
-                    v-if="game.game.genres && game.game.genres.length > 0"
+                    v-if="currentGame?.genres && currentGame.genres.length > 0"
                     class="group">
                     <div
                       class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
@@ -635,7 +644,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                       <span
-                        v-for="genre in game.game.genres"
+                        v-for="genre in currentGame.genres"
                         :key="genre"
                         class="px-3 py-1.5 bg-purple-500/10 text-purple-300 text-sm rounded-lg border border-purple-500/20 font-medium hover:bg-purple-500/20 hover:border-purple-400/30 transition-all duration-300">
                         {{ genre }}
@@ -643,19 +652,8 @@
                     </div>
                   </div>
 
-                  <!-- Description -->
-                  <div v-if="game.game.summary" class="space-y-1">
-                    <div
-                      class="text-xs text-gray-400/60 font-medium uppercase tracking-wider">
-                      Beschreibung
-                    </div>
-                    <div class="text-gray-300/80 leading-relaxed text-sm">
-                      {{ game.game.summary }}
-                    </div>
-                  </div>
-
                   <!-- Rating Details -->
-                  <div v-if="game.game.totalRating" class="group">
+                  <div v-if="currentGame?.totalRating" class="group">
                     <div
                       class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
                       Community Bewertung
@@ -664,7 +662,7 @@
                       <div class="flex items-center">
                         <Icon
                           v-for="(filled, index) in getStars(
-                            game.game.totalRating
+                            currentGame.totalRating
                           )"
                           :key="index"
                           name="heroicons:star-20-solid"
@@ -672,26 +670,25 @@
                           class="w-5 h-5" />
                       </div>
                       <span
-                        :class="getRatingColor(game.game.totalRating)"
+                        :class="getRatingColor(currentGame.totalRating)"
                         class="font-bold text-lg">
-                        {{ formatRating(game.game.totalRating) }}/100
+                        {{ formatRating(currentGame.totalRating) }}/100
                       </span>
                     </div>
                   </div>
 
-                  <!-- Platform -->
-                  <div class="group">
+                  <!-- Last Synced -->
+                  <div v-if="currentGame?.lastSyncedAt" class="group">
                     <div
                       class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">
-                      Plattform
+                      Letzte Synchronisation
                     </div>
                     <div class="flex items-center gap-2">
                       <Icon
-                        name="heroicons:computer-desktop-20-solid"
+                        name="heroicons:arrow-path-20-solid"
                         class="w-4 h-4 text-gray-400" />
-                      <span
-                        class="px-3 py-1.5 bg-gray-800/50 text-gray-200 text-sm rounded-lg border border-gray-700/40 font-medium">
-                        Steam
+                      <span class="text-white font-medium">
+                        {{ formatRelativeTime(currentGame.lastSyncedAt) }}
                       </span>
                     </div>
                   </div>
@@ -701,9 +698,8 @@
           </div>
         </div>
 
-        <!-- Game Details Section -->
-        <div class="mx-4 lg:mx-8">
-          <!-- Personal Notes -->
+        <!-- Personal Notes (nur für Spiele in der Bibliothek) -->
+        <div v-if="isInLibrary" class="mx-4 lg:mx-8">
           <div class="mt-4 group relative">
             <div
               class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
@@ -729,7 +725,7 @@
                     @click="startEditingNotes"
                     class="px-3 py-1.5 bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white text-xs rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 flex items-center gap-1.5">
                     <Icon name="heroicons:pencil-20-solid" class="w-3 h-3" />
-                    {{ game.notes ? 'Bearbeiten' : 'Hinzufügen' }}
+                    {{ userGame?.notes ? 'Bearbeiten' : 'Hinzufügen' }}
                   </button>
 
                   <template v-else>
@@ -762,9 +758,9 @@
               <!-- Notes Content -->
               <div v-if="!isEditingNotes">
                 <div
-                  v-if="game.notes"
+                  v-if="userGame?.notes"
                   class="text-gray-300/80 leading-relaxed text-sm whitespace-pre-wrap">
-                  {{ game.notes }}
+                  {{ userGame.notes }}
                 </div>
                 <div v-else class="text-gray-500 text-sm italic">
                   Keine Notizen vorhanden. Klicke auf "Hinzufügen" um Notizen zu
@@ -796,6 +792,70 @@
           </div>
         </div>
 
+        <!-- Related Deals Section -->
+        <div v-if="relatedDeals.length > 0" class="mx-4 lg:mx-8 mb-12">
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
+            <div
+              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300">
+              <!-- Header -->
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-green-700/30 rounded-lg">
+                    <Icon
+                      name="heroicons:tag-20-solid"
+                      class="w-5 h-5 text-green-300" />
+                  </div>
+                  <h2 class="text-xl font-bold text-white">
+                    Aktuelle Angebote
+                  </h2>
+                </div>
+                <span class="text-sm text-gray-400"
+                  >{{ relatedDeals.length }} Deals gefunden</span
+                >
+              </div>
+
+              <!-- Loading state for deals -->
+              <div v-if="isLoadingDeals" class="text-center py-8">
+                <div
+                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mx-auto mb-4"></div>
+                <p class="text-gray-400">Lade Angebote...</p>
+              </div>
+
+              <!-- Deals Grid -->
+              <div
+                v-else
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <DealCard
+                  v-for="deal in relatedDeals"
+                  :key="deal.id"
+                  :deal="deal"
+                  :viewMode="'medium'"
+                  @click="
+                    navigateTo(
+                      `/deals?search=${encodeURIComponent(deal.title)}`
+                    )
+                  " />
+              </div>
+
+              <!-- View all deals link -->
+              <div class="mt-6 text-center">
+                <button
+                  @click="
+                    navigateTo(
+                      `/deals?search=${encodeURIComponent(
+                        currentGame?.name || ''
+                      )}`
+                    )
+                  "
+                  class="px-6 py-3 bg-gradient-to-r from-green-600/80 to-green-700/80 hover:from-green-500/90 hover:to-green-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
+                  Alle Angebote zu diesem Spiel anzeigen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Bottom Spacing -->
         <div class="h-20"></div>
       </div>

@@ -15,7 +15,7 @@ model User {
   xp               Int               @default(0)
   level            Int               @default(1)
   credits          Int               @default(0)
-  steamId          String?           // Steam Profil ID für Bibliotheksimport
+  steamId          String?          
   userAchievements UserAchievement[]
   userGames        UserGame[]
   wishlistItems    Wishlist[]

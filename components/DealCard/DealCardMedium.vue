@@ -13,8 +13,12 @@
         @error="handleImageError" />
       <!-- Store Badge -->
       <div
-        class="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-xs text-white">
-        {{ deal.storeName }}
+        class="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-xs text-white flex items-center gap-1">
+        <Icon
+          :name="getStoreIcon(deal.storeName)"
+          class="w-3 h-3"
+          :title="deal.storeName" />
+        <span>{{ deal.storeName }}</span>
       </div>
       <!-- Discount Badge -->
       <div
@@ -65,6 +69,7 @@
   </div>
 </template>
 <script setup lang="ts">
+  import { CheapSharkService } from '~/lib/services/cheapshark.service';
   import type { DealWithGame } from '~/lib/services/deals.service';
   interface Props {
     deal: DealWithGame;
@@ -78,6 +83,35 @@
   const dealsStore = useDealsStore();
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
+  };
+
+  const getStoreIcon = (storeName: string): string => {
+    // Store Namen zu IDs mapping (vereinfacht)
+    const storeNameToId: Record<string, string> = {
+      Steam: '1',
+      GamersGate: '2',
+      'Green Man Gaming': '3',
+      GOG: '7',
+      Origin: '8',
+      'Humble Store': '11',
+      Uplay: '13',
+      Fanatical: '15',
+      WinGameStore: '21',
+      GameBillet: '23',
+      'Epic Games Store': '25',
+      Gamesplanet: '27',
+      Gamesload: '28',
+      SquareEnix: '29',
+      'Razer Game Store': '30',
+      'Gamesplanet FR': '31',
+      'Gamesplanet DE': '32',
+      'Gamesplanet UK': '33',
+      Battlenet: '34',
+      Voidu: '35'
+    };
+
+    const storeId = storeNameToId[storeName];
+    return storeId ? CheapSharkService.getStoreIcon(storeId) : 'mdi:store';
   };
   const getGenreDisplay = (deal: DealWithGame): string => {
     return deal.game.genres.slice(0, 1).join(', ') || 'Unbekannt';

@@ -14,35 +14,125 @@
         </div>
       </div>
       <!-- Search Input -->
-      <div class="relative max-w-md">
-        <Icon
-          name="heroicons:magnifying-glass-20-solid"
-          class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-        <input
-          v-model="newSearchQuery"
-          @keydown.enter="performNewSearch"
-          type="text"
-          placeholder="Neue Suche..."
-          class="w-full pl-10 pr-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
+      <div class="space-y-4">
+        <div class="relative max-w-md">
+          <Icon
+            name="heroicons:magnifying-glass-20-solid"
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            v-model="newSearchQuery"
+            @keydown.enter="performNewSearch"
+            type="text"
+            placeholder="Neue Suche..."
+            class="w-full pl-10 pr-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
+        </div>
+
+        <!-- Advanced Search Toggle -->
+        <button
+          @click="showAdvancedSearch = !showAdvancedSearch"
+          class="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors">
+          <Icon
+            :name="
+              showAdvancedSearch
+                ? 'heroicons:chevron-up-20-solid'
+                : 'heroicons:chevron-down-20-solid'
+            "
+            class="w-4 h-4" />
+          Erweiterte Suche
+        </button>
+
+        <!-- Advanced Search Filters -->
+        <div
+          v-if="showAdvancedSearch"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
+          <!-- Genre Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2"
+              >Genre</label
+            >
+            <select
+              v-model="selectedGenre"
+              @change="applyFilters"
+              class="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">Alle Genres</option>
+              <option
+                v-for="genre in availableGenres"
+                :key="genre"
+                :value="genre">
+                {{ genre }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Platform Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2"
+              >Plattform</label
+            >
+            <select
+              v-model="selectedPlatform"
+              @change="applyFilters"
+              class="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">Alle Plattformen</option>
+              <option value="Steam">Steam</option>
+              <option value="Epic">Epic Games</option>
+              <option value="GOG">GOG</option>
+              <option value="Other">Andere</option>
+            </select>
+          </div>
+
+          <!-- Release Year Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2"
+              >Jahr</label
+            >
+            <select
+              v-model="selectedYear"
+              @change="applyFilters"
+              class="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">Alle Jahre</option>
+              <option v-for="year in availableYears" :key="year" :value="year">
+                {{ year }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Sort By -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2"
+              >Sortierung</label
+            >
+            <select
+              v-model="sortBy"
+              @change="applyFilters"
+              class="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="year-desc">Neuste zuerst</option>
+              <option value="year-asc">Älteste zuerst</option>
+              <option value="rating-desc">Bewertung (hoch-niedrig)</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     <!-- Database Results Section -->
     <div
-      v-if="dbResults.length > 0"
+      v-if="filteredDbResults.length > 0"
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-white flex items-center gap-2">
           <Icon
             name="heroicons:server-20-solid"
             class="w-5 h-5 text-purple-400" />
-          Spiele in der Datenbank ({{ dbResults.length }})
+          Spiele in der Datenbank ({{ filteredDbResults.length }})
         </h2>
         <ViewModeToggle />
       </div>
       <!-- DB Results Grid -->
       <div :class="getCurrentConfig().gridClass">
         <GameCardSimple
-          v-for="game in dbResults"
+          v-for="game in filteredDbResults"
           :key="game.id"
           :game="game"
           :viewMode="currentViewMode"
@@ -141,24 +231,9 @@
               <!-- Actions -->
               <div class="flex-shrink-0 flex items-center gap-2">
                 <button
-                  @click="importGame(igdbGame, false)"
-                  :disabled="isImporting === igdbGame.id"
-                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm rounded-lg transition-colors">
-                  {{
-                    isImporting === igdbGame.id
-                      ? 'Importiere...'
-                      : 'Zur DB hinzufügen'
-                  }}
-                </button>
-                <button
-                  @click="importGame(igdbGame, true)"
-                  :disabled="isImporting === igdbGame.id"
-                  class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm rounded-lg transition-colors">
-                  {{
-                    isImporting === igdbGame.id
-                      ? 'Importiere...'
-                      : 'Zur Bibliothek'
-                  }}
+                  @click="navigateToIGDBGame(igdbGame)"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
+                  Details anzeigen
                 </button>
               </div>
             </div>
@@ -183,7 +258,7 @@
     <!-- No Results at all -->
     <div
       v-if="
-        dbResults.length === 0 &&
+        filteredDbResults.length === 0 &&
         igdbSearched &&
         igdbResults.length === 0 &&
         !isIgdbLoading
@@ -224,12 +299,105 @@
   const searchQuery = ref((route.query.q as string) || '');
   const newSearchQuery = ref('');
   const dbResults = ref<Game[]>([]);
+  const filteredDbResults = ref<Game[]>([]);
   const igdbResults = ref<IGDBGame[]>([]);
   const igdbSearched = ref(false);
   const isIgdbLoading = ref(false);
-  const isImporting = ref<number | null>(null);
+
+  // Advanced search state
+  const showAdvancedSearch = ref(false);
+  const selectedGenre = ref('');
+  const selectedPlatform = ref('');
+  const selectedYear = ref('');
+  const sortBy = ref('name-asc');
   // tRPC client
   const { $client } = useNuxtApp();
+
+  // Computed properties for filters
+  const availableGenres = computed(() => {
+    const genres = new Set<string>();
+    dbResults.value.forEach(game => {
+      game.genres.forEach(genre => genres.add(genre));
+    });
+    return Array.from(genres).sort();
+  });
+
+  const availableYears = computed(() => {
+    const years = new Set<number>();
+    dbResults.value.forEach(game => {
+      if (game.firstReleaseDate) {
+        const year = new Date(game.firstReleaseDate).getFullYear();
+        years.add(year);
+      }
+    });
+    return Array.from(years).sort((a, b) => b - a); // Newest first
+  });
+
+  // Filter and sort games
+  const applyFilters = () => {
+    let filtered = [...dbResults.value];
+
+    // Apply genre filter
+    if (selectedGenre.value) {
+      filtered = filtered.filter(game =>
+        game.genres.includes(selectedGenre.value)
+      );
+    }
+
+    // Apply platform filter (assuming we have platform info in the game data)
+    if (selectedPlatform.value) {
+      // This would need to be implemented based on how platform data is stored
+      // For now, we'll skip this filter or implement a basic version
+    }
+
+    // Apply year filter
+    if (selectedYear.value) {
+      const targetYear = parseInt(selectedYear.value);
+      filtered = filtered.filter(game => {
+        if (!game.firstReleaseDate) return false;
+        const gameYear = new Date(game.firstReleaseDate).getFullYear();
+        return gameYear === targetYear;
+      });
+    }
+
+    // Apply sorting
+    switch (sortBy.value) {
+      case 'name-asc':
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'year-desc':
+        filtered.sort((a, b) => {
+          const dateA = a.firstReleaseDate
+            ? new Date(a.firstReleaseDate).getTime()
+            : 0;
+          const dateB = b.firstReleaseDate
+            ? new Date(b.firstReleaseDate).getTime()
+            : 0;
+          return dateB - dateA;
+        });
+        break;
+      case 'year-asc':
+        filtered.sort((a, b) => {
+          const dateA = a.firstReleaseDate
+            ? new Date(a.firstReleaseDate).getTime()
+            : 0;
+          const dateB = b.firstReleaseDate
+            ? new Date(b.firstReleaseDate).getTime()
+            : 0;
+          return dateA - dateB;
+        });
+        break;
+      case 'rating-desc':
+        // This would need rating data, for now we'll sort by name
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+    }
+
+    filteredDbResults.value = filtered;
+  };
   // Initialize search
   onMounted(async () => {
     if (searchQuery.value) {
@@ -244,6 +412,11 @@
         searchQuery.value = newQuery as string;
         igdbSearched.value = false;
         igdbResults.value = [];
+        // Reset filters on new search
+        selectedGenre.value = '';
+        selectedPlatform.value = '';
+        selectedYear.value = '';
+        sortBy.value = 'name-asc';
         searchDatabase();
       }
     }
@@ -256,9 +429,12 @@
         limit: 50
       });
       dbResults.value = response.games;
+      // Apply filters after loading results
+      applyFilters();
     } catch (error) {
       console.error('Database search error:', error);
       dbResults.value = [];
+      filteredDbResults.value = [];
     }
   };
   const searchIGDB = async () => {
@@ -279,26 +455,16 @@
       isIgdbLoading.value = false;
     }
   };
-  const importGame = async (igdbGame: IGDBGame, addToLibrary: boolean) => {
-    if (isImporting.value === igdbGame.id) return;
-    isImporting.value = igdbGame.id;
-    try {
-      const response = await $client.games.importFromIGDB.mutate({
-        igdbId: igdbGame.id,
-        addToLibrary
-      });
-      if (response.success && response.game) {
-        // Navigate to the game page
-        router.push(`/game/${response.game.id}`);
-      }
-    } catch (error) {
-      console.error('Import error:', error);
-    } finally {
-      isImporting.value = null;
-    }
-  };
   const navigateToGame = (game: Game) => {
     router.push(`/game/${game.id}`);
+  };
+
+  const navigateToIGDBGame = (igdbGame: IGDBGame) => {
+    // Für IGDB-Spiele könnte man eine separate Seite erstellen oder zur Suche zurückleiten
+    // Für jetzt zeigen wir einfach eine Nachricht
+    alert(
+      `IGDB-Spiel: ${igdbGame.name}. Diese Funktion ist noch nicht implementiert.`
+    );
   };
   const performNewSearch = () => {
     if (newSearchQuery.value.trim()) {

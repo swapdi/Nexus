@@ -95,7 +95,7 @@
       <!-- Show All Results Footer -->
       <div v-if="suggestions.length > 0" class="border-t border-gray-600 p-3">
         <button
-          @mousedown="performSearch"
+          @mousedown="showAllResults"
           class="w-full text-left text-sm text-green-400 hover:text-green-300 transition-colors">
           Alle Ergebnisse für "{{ searchQuery }}" anzeigen →
         </button>
@@ -190,6 +190,12 @@
     ) {
       selectSuggestion(suggestions.value[highlightedIndex.value]);
     } else if (searchQuery.value.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.value.trim())}`);
+      clearSearch();
+    }
+  };
+  const showAllResults = () => {
+    if (searchQuery.value.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.value.trim())}`);
       clearSearch();
     }

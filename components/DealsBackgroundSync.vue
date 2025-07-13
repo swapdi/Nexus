@@ -78,4 +78,7 @@
   const hideLastSync = () => {
     showLastSyncInfo.value = false;
   };
+  onMounted(() => {
+    hideLastSync();
+  });
 </script>

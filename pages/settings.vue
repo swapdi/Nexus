@@ -27,6 +27,12 @@
   const authProvider = computed(
     () => account.value?.app_metadata?.provider || 'N/A'
   );
+  const showSteamLinking = ref(false);
+  const steamProfileId = ref('');
+  const linkingResult = ref<{
+    success: boolean;
+    message?: string;
+  } | null>(null);
   // Initialize display name with current value when user data loads
   watch(
     userDisplayName,
@@ -93,6 +99,41 @@
       isLoadingNameChange.value = false;
     }
   }
+  const linkSteamProfile = async () => {
+    if (!steamProfileId.value.trim()) return;
+    linkingResult.value = null;
+    loadingStore.startOperation(
+      'steam-link',
+      'Steam-Profil wird verknüpft...',
+      'process'
+    );
+    try {
+      const { $client } = useNuxtApp();
+      const result = await $client.user.linkSteamProfile.mutate({
+        steamId: steamProfileId.value.trim()
+      });
+      loadingStore.finishOperation('steam-link');
+      linkingResult.value = result;
+      if (result.success) {
+        notifyStore.notify('Steam-Profil erfolgreich verknüpft!', 1);
+        showSteamLinking.value = false;
+        steamProfileId.value = '';
+        await userStore.init();
+      } else {
+        notifyStore.notify(
+          result.message || 'Fehler beim Verknüpfen des Steam-Profils',
+          2
+        );
+      }
+    } catch (error: any) {
+      loadingStore.finishOperation('steam-link');
+      linkingResult.value = {
+        success: false,
+        message: error.message || 'Ein unerwarteter Fehler ist aufgetreten'
+      };
+      notifyStore.notify('Verknüpfung fehlgeschlagen', 3);
+    }
+  };
 </script>
 <template>
   <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -275,6 +316,156 @@
             </div>
           </div>
         </div>
+        <!-- Library Management Card -->
+        <div
+          class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+          <div class="p-6">
+            <h2
+              class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
+              Bibliotheken verwalten
+            </h2>
+
+            <!-- Steam Connection -->
+            <div class="space-y-4">
+              <div
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <svg
+                      class="w-8 h-8 text-white"
+                      viewBox="0 0 24 24"
+                      fill="currentColor">
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                      <path d="M12 7v5l4 2-1 1.7-5-3V7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+                      Steam
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ isSteamConnected ? 'Verbunden' : 'Nicht verbunden' }}
+                    </p>
+                    <p
+                      v-if="isSteamConnected && user?.steam_id"
+                      class="text-xs text-gray-400">
+                      Steam ID: {{ user.steam_id }}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button
+                    v-if="!isSteamConnected"
+                    @click="showSteamLinking = true"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    Verbinden
+                  </button>
+                  <button
+                    v-else
+                    @click="disconnectSteamProfile"
+                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                    Trennen
+                  </button>
+                </div>
+              </div>
+
+              <!-- Epic Games (Coming Soon) -->
+              <div
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-50">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
+                    <svg
+                      class="w-8 h-8 text-white"
+                      viewBox="0 0 24 24"
+                      fill="currentColor">
+                      <path
+                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+                      Epic Games
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      Bald verfügbar
+                    </p>
+                  </div>
+                </div>
+                <button
+                  disabled
+                  class="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed">
+                  Bald verfügbar
+                </button>
+              </div>
+
+              <!-- GOG (Coming Soon) -->
+              <div
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-50">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
+                    <svg
+                      class="w-8 h-8 text-white"
+                      viewBox="0 0 24 24"
+                      fill="currentColor">
+                      <path
+                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+                      GOG
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      Bald verfügbar
+                    </p>
+                  </div>
+                </div>
+                <button
+                  disabled
+                  class="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed">
+                  Bald verfügbar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="showSteamLinking"
+          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3
+              class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              Steam-Profil verknüpfen
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Geben Sie Ihre Steam-ID oder Ihren Steam-Benutzernamen ein:
+            </p>
+            <input
+              v-model="steamProfileId"
+              type="text"
+              placeholder="Steam-ID oder Benutzername"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100 mb-4"
+              @keyup.enter="linkSteamProfile" />
+            <div class="flex justify-end space-x-2">
+              <button
+                @click="showSteamLinking = false"
+                class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                Abbrechen
+              </button>
+              <button
+                @click="linkSteamProfile"
+                :disabled="!steamProfileId.trim()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Verknüpfen
+              </button>
+            </div>
+          </div>
+        </div>
         <!-- Preferences Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -326,27 +517,6 @@
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
               </div>
-              <!-- Achievement Notifications -->
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3
-                    class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Achievement Notifications
-                  </h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Get notified when you unlock new achievements
-                  </p>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="sr-only peer"
-                    checked
-                    aria-label="Toggle achievement notifications" />
-                  <div
-                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                </label>
-              </div>
             </div>
           </div>
         </div>
@@ -368,7 +538,7 @@
                     Password
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Last changed: Never
+                    <!-- TODO: last changed-->
                   </p>
                 </div>
                 <NuxtLink
@@ -393,58 +563,6 @@
                   class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150">
                   Enable 2FA
                 </button>
-              </div>
-              <!-- Connected Platforms -->
-              <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <h3
-                  class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
-                  Connected Gaming Platforms
-                </h3>
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <div
-                        class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded flex items-center justify-center">
-                        <span class="text-white text-xs font-bold">S</span>
-                      </div>
-                      <span class="text-gray-900 dark:text-gray-100"
-                        >Steam</span
-                      >
-                    </div>
-                    <button
-                      class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
-                      Connect
-                    </button>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <div
-                        class="w-8 h-8 bg-gray-800 rounded flex items-center justify-center">
-                        <span class="text-white text-xs font-bold">E</span>
-                      </div>
-                      <span class="text-gray-900 dark:text-gray-100"
-                        >Epic Games</span
-                      >
-                    </div>
-                    <button
-                      class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
-                      Connect
-                    </button>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <div
-                        class="w-8 h-8 bg-purple-600 rounded flex items-center justify-center">
-                        <span class="text-white text-xs font-bold">G</span>
-                      </div>
-                      <span class="text-gray-900 dark:text-gray-100">GOG</span>
-                    </div>
-                    <button
-                      class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
-                      Connect
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
