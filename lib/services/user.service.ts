@@ -44,7 +44,7 @@ export interface UserUpdateData {
   xp?: number;
   level?: number;
   credits?: number;
-  steamId?: string;
+  steamId?: string | null;
 }
 export interface UserStats {
   totalGames: number;

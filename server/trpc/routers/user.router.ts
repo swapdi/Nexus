@@ -134,8 +134,8 @@ export const userRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        // Steam ID validieren (sehr einfache Validierung)
-        const steamIdPattern = /^7656119\d{10}$|^[a-zA-Z0-9_-]+$/;
+        // Steam ID validieren (erweiterte Validierung)
+        const steamIdPattern = /^(7656119\d{10}|[a-zA-Z0-9_-]+)$/;
         if (!steamIdPattern.test(input.steamId)) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
@@ -161,6 +161,26 @@ export const userRouter = router({
         });
       }
     }),
+  // Steam Profil trennen
+  unlinkSteamProfile: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      const updatedUser = await UserService.updateUser(ctx.dbUser.id, {
+        steamId: null
+      });
+
+      return {
+        success: true,
+        message: 'Steam Profil erfolgreich getrennt',
+        user: updatedUser
+      };
+    } catch (error) {
+      console.error('Error unlinking Steam profile:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Fehler beim Trennen des Steam Profils'
+      });
+    }
+  }),
   // Benutzer löschen (Auth)
   deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
     try {

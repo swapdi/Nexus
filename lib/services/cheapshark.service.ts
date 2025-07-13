@@ -267,6 +267,19 @@ export namespace CheapSharkService {
       );
     }
   }
+
+  export async function getAllStores(): Promise<CheapSharkStore[]> {
+    try {
+      const response = await fetch(`${BASE_URL}/stores`);
+      if (!response.ok) {
+        throw new Error(`CheapShark API Error: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Fehler beim Laden der Stores:', error);
+      throw error;
+    }
+  }
   /**
    * Hilfsfunktion: Gibt den Store-Namen basierend auf der storeID zurück
    * Grund: Benutzerfreundliche Anzeige der Store-Namen
@@ -295,74 +308,6 @@ export namespace CheapSharkService {
       '35': 'Voidu'
     };
     return storeMap[storeID] || `Store ${storeID}`;
-  }
-
-  /**
-   * Hilfsfunktion: Gibt Store-Icon basierend auf der storeID zurück
-   * Grund: Visuelle Darstellung der Stores
-   */
-  export function getStoreIcon(storeID: string): string {
-    const iconMap: Record<string, string> = {
-      '1': 'simple-icons:steam',
-      '2': 'mdi:gamepad-variant',
-      '3': 'mdi:gamepad-variant',
-      '7': 'simple-icons:gog-dot-com',
-      '8': 'simple-icons:origin',
-      '11': 'simple-icons:humblebundle',
-      '13': 'simple-icons:ubisoft',
-      '15': 'mdi:gamepad-variant',
-      '21': 'mdi:microsoft-windows',
-      '23': 'mdi:gamepad-variant',
-      '25': 'simple-icons:epicgames',
-      '27': 'mdi:earth',
-      '28': 'mdi:gamepad-variant',
-      '29': 'simple-icons:square',
-      '30': 'simple-icons:razer',
-      '31': 'mdi:earth',
-      '32': 'mdi:earth',
-      '33': 'mdi:earth',
-      '34': 'simple-icons:blizzard',
-      '35': 'mdi:gamepad-variant'
-    };
-    return iconMap[storeID] || 'mdi:store';
-  }
-
-  /**
-   * Hilfsfunktion: Gibt alle verfügbaren Stores zurück
-   * Grund: Filter-Dropdown auf der Deal-Seite
-   */
-  export function getAllStores(): Array<{
-    id: string;
-    name: string;
-    icon: string;
-  }> {
-    const storeIds = [
-      '1',
-      '2',
-      '3',
-      '7',
-      '8',
-      '11',
-      '13',
-      '15',
-      '21',
-      '23',
-      '25',
-      '27',
-      '28',
-      '29',
-      '30',
-      '31',
-      '32',
-      '33',
-      '34',
-      '35'
-    ];
-    return storeIds.map(id => ({
-      id,
-      name: getStoreName(id),
-      icon: getStoreIcon(id)
-    }));
   }
 
   /**

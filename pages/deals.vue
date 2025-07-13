@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { CheapSharkService } from '~/lib/services/cheapshark.service';
   import type { DealWithGame } from '~/lib/services/deals.service';
   import type { DealSortOptions } from '~/stores/deals.store';
   const userStore = useUserStore();
@@ -24,49 +23,26 @@
   onMounted(async () => {
     await userStore.init();
     await dealsStore.loadDealsFromDB();
+    dealsStore.updateAvailableStores();
   });
   // Computed properties for filters
-  const availableStores = computed(() => {
-    // Hole alle verfügbaren Stores aus CheapShark API
-    const cheapSharkStores = CheapSharkService.getAllStores();
-    // Filtere nur die Stores, die tatsächlich Deals haben
-    const activeStores = cheapSharkStores.filter(store =>
-      dealsStore.deals.some(deal => {
-        const storeNameToId: Record<string, string> = {
-          Steam: '1',
-          GamersGate: '2',
-          'Green Man Gaming': '3',
-          GOG: '7',
-          Origin: '8',
-          'Humble Store': '11',
-          Uplay: '13',
-          Fanatical: '15',
-          WinGameStore: '21',
-          GameBillet: '23',
-          'Epic Games Store': '25',
-          Gamesplanet: '27',
-          Gamesload: '28',
-          SquareEnix: '29',
-          'Razer Game Store': '30',
-          'Gamesplanet FR': '31',
-          'Gamesplanet DE': '32',
-          'Gamesplanet UK': '33',
-          Battlenet: '34',
-          Voidu: '35'
-        };
-        return storeNameToId[deal.storeName] === store.id;
-      })
-    );
 
+  const availableStores = computed(() => {
+    const stores = new Set<string>();
+    dealsStore.deals.forEach(deal => {
+      if (deal.storeName) {
+        stores.add(deal.storeName);
+      }
+    });
     return [
-      { value: 'all', label: 'Alle Stores', icon: 'mdi:store' },
-      ...activeStores.map(store => ({
-        value: store.name,
-        label: store.name,
-        icon: store.icon
+      { value: 'all', label: 'Alle Stores' },
+      ...Array.from(stores).map((storeName: string) => ({
+        value: storeName,
+        label: storeName
       }))
     ];
   });
+
   const availableGenres = computed(() => {
     const genres = new Set<string>();
     dealsStore.deals.forEach(deal => {

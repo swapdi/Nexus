@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { NotificationType } from '~/stores/notify.store';
+
   const userStore = useUserStore();
   const notifyStore = useNotifyStore();
   const loadingStore = useLoadingStore();
@@ -132,6 +134,42 @@
         message: error.message || 'Ein unerwarteter Fehler ist aufgetreten'
       };
       notifyStore.notify('Verknüpfung fehlgeschlagen', 3);
+    }
+  };
+  // Steam connection status
+  const isSteamConnected = computed(() => {
+    return !!user.value?.steamId;
+  });
+
+  // Steam profile disconnect function
+  const disconnectSteamProfile = async () => {
+    if (!user.value) return;
+
+    try {
+      loadingStore.startOperation(
+        'steam-unlink',
+        'Steam-Profil wird getrennt...',
+        'process'
+      );
+
+      const { $client } = useNuxtApp();
+      const result = await $client.user.unlinkSteamProfile.mutate();
+
+      loadingStore.finishOperation('steam-unlink');
+
+      if (result.success) {
+        notifyStore.notify('Steam-Profil erfolgreich getrennt!', 1);
+        await userStore.init(); // Refresh user data
+      } else {
+        notifyStore.notify(
+          result.message || 'Fehler beim Trennen des Steam-Profils',
+          2
+        );
+      }
+    } catch (error: any) {
+      loadingStore.finishOperation('steam-unlink');
+      console.error('Fehler beim Trennen des Steam-Profils:', error);
+      notifyStore.notify('Trennung fehlgeschlagen', 3);
     }
   };
 </script>
@@ -349,9 +387,9 @@
                       {{ isSteamConnected ? 'Verbunden' : 'Nicht verbunden' }}
                     </p>
                     <p
-                      v-if="isSteamConnected && user?.steam_id"
+                      v-if="isSteamConnected && user?.steamId"
                       class="text-xs text-gray-400">
-                      Steam ID: {{ user.steam_id }}
+                      Steam ID: {{ user.steamId }}
                     </p>
                   </div>
                 </div>

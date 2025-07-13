@@ -117,75 +117,15 @@
 
     isLoadingDeals.value = true;
     try {
-      // Lade zuerst Deals aus der Datenbank
-      await dealsStore.loadDealsFromDB();
+      console.log(currentGame.value.id);
+      // Nutze tRPC für die Deal-Suche statt direkten Service-Aufruf
+      const gameDeals = await $client.deals.searchGameDeals.query({
+        gameId: currentGame.value.id,
+        gameName: currentGame.value.name,
+        slug: currentGame.value.slug || undefined
+      });
 
-      // Finde bereits gespeicherte Deals
-      let gameDeals = dealsStore.deals.filter(
-        deal =>
-          deal.gameId === currentGame.value!.id ||
-          deal.title
-            .toLowerCase()
-            .includes(currentGame.value!.name.toLowerCase()) ||
-          (currentGame.value!.slug &&
-            deal.title.toLowerCase().includes(currentGame.value!.slug))
-      );
-
-      // Suche zusätzlich nach neuen Deals über CheapShark API
-      try {
-        // Importiere CheapShark Service
-        const { CheapSharkService } = await import(
-          '~/lib/services/cheapshark.service'
-        );
-
-        // Suche Game ID bei CheapShark
-        const gameSearchResults = await CheapSharkService.searchGameByTitle(
-          currentGame.value!.name
-        );
-
-        if (gameSearchResults.length > 0) {
-          const cheapSharkGameId = gameSearchResults[0].gameID;
-
-          // Lade aktuelle Deals für das Spiel
-          const gameInfo = await CheapSharkService.getGameDeals(
-            cheapSharkGameId
-          );
-
-          // Konvertiere CheapShark Deals zu unserer Deal-Struktur (als separate externe Deals)
-          const newDeals = gameInfo.deals.map(deal => ({
-            id: Math.floor(Math.random() * 1000000), // Temporäre ID für externe Deals
-            gameId: currentGame.value!.id,
-            title: gameInfo.info.title,
-            storeName: CheapSharkService.getStoreName(deal.storeID),
-            price: parseFloat(deal.price),
-            originalPrice: parseFloat(deal.retailPrice),
-            discountPercent: parseFloat(deal.savings),
-            url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
-            validFrom: new Date(),
-            validUntil: null,
-            isFreebie: false,
-            discoveredAt: new Date(),
-            updatedAt: new Date(),
-            externalId: deal.dealID,
-            source: 'cheapshark',
-            platformIds: [],
-            game: currentGame.value!
-          }));
-
-          // Füge neue Deals zu bestehenden hinzu (vermeidet Duplikate)
-          const existingDealIds = new Set(gameDeals.map(d => d.externalId));
-          const uniqueNewDeals = newDeals.filter(
-            d => !existingDealIds.has(d.externalId)
-          );
-
-          gameDeals = [...gameDeals, ...uniqueNewDeals] as DealWithGame[];
-        }
-      } catch (apiError) {
-        console.warn('CheapShark API Fehler:', apiError);
-        // Fahre mit vorhandenen Deals fort, auch wenn API fehlschlägt
-      }
-
-      relatedDeals.value = gameDeals.slice(0, 6) as DealWithGame[]; // Limitiere auf 6 Deals
+      relatedDeals.value = gameDeals as DealWithGame[];
     } catch (err) {
       console.error('Fehler beim Laden der Deals:', err);
     } finally {
@@ -325,6 +265,19 @@
     } else {
       navigateTo(`/deals?search=${encodeURIComponent(deal.title)}`);
     }
+  };
+  const getGenreDisplay = (deal: DealWithGame): string => {
+    return deal?.game?.genres.slice(0, 1).join(', ') || 'Unbekannt';
+  };
+  const isGameOwned = (deal: DealWithGame): boolean => {
+    // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
+    const gamesStore = useGamesStore();
+    return gamesStore.games.some(
+      (userGame: any) => userGame.gameId === deal.gameId
+    );
+  };
+  const formatPrice = (price: number | null): string => {
+    return dealsStore.formatPrice(price);
   };
 </script>
 
@@ -936,18 +889,44 @@
               <div
                 v-else
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <DealCardMedium
-                  v-for="deal in relatedDeals"
-                  :key="deal.id"
-                  :deal="deal"
-                  :viewMode="'medium'"
-                  @click="navToLink(deal)" />
+                <!-- Deal Info -->
+                <div class="p-2" v-for="deal in relatedDeals">
+                  <div
+                    class="bg-gray-800/50 p-4 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer"
+                    @click="navToLink(deal)">
+                    <h3
+                      class="font-medium text-white text-sm mb-1 line-clamp-2 group-hover:text-green-300 transition-colors">
+                      {{ deal.title }}
+                    </h3>
+                    <div class="space-y-1 text-xs">
+                      <!-- Price -->
+                      <div
+                        v-if="!deal.isFreebie"
+                        class="flex justify-between items-center">
+                        <div class="text-green-400 font-bold">
+                          {{ formatPrice(deal.price) }}
+                        </div>
+                        <div
+                          v-if="
+                            deal.originalPrice &&
+                            deal.originalPrice > (deal.price || 0)
+                          "
+                          class="text-gray-500 line-through">
+                          {{ formatPrice(deal.originalPrice) }}
+                        </div>
+                      </div>
+                      <div v-else class="text-center">
+                        <div class="text-green-400 font-bold">KOSTENLOS</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
         <!-- Bottom Spacing -->
-        <div class="h-20"></div>
+        <div class="min-h-20"></div>
       </div>
 
       <!-- Media Carousel -->
