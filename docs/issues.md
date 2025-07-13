@@ -1,6 +1,5 @@
 TO-DO-LISTE:
 
-- Über die Cheapshark API kann man alle verfügbaren Stores laden und anhand der Namen abgleichen. Diese bieten ebenfalls Icons der Stores Die Deal karten haben in der oberen linken Ecke den Namen des Stores. Dies soll aber durch das Icon des Stores ausgetauscht werden.
 - Bei dem Laden der Spiele über IGDB können ebenfalls videos (links) übetragen werden. diese würde ich wenn verfügbar auch gerne einbinden. dazu soll der link als weiteres attribut in der datenbank gespeichert werden un zusätzlich in der screenshot sektion des [id].vue abspielbar eingebunden werden. weiterhin sollen screenshots und ggf. videos beim klicken eine vergrößerte ansicht öffnen (carussel).
 - Auf der Detailseite der spiele werden die Deals nur eingefügt, falls sie in der Datenbank sind. Hier soll aber nicht nur die Datenbank durchsucht werden, sondern ebenfalls eine API-Abfrage nach neuen Deals für den bestimmten Titel des Spiels stattfinden. Dafür muss zunächst die gameID herausgefunden werden über https://www.cheapshark.com/api/1.0/games?title={title} und anschließend ein gamelookup https://www.cheapshark.com/api/1.0/games?id={gameID} stattfinden, um eine antwort wie diese zu erhalten: {
   "info": {
@@ -64,3 +63,4 @@ TO-DO-LISTE:
   }
   ]
   }. Für jeden der erhaltenen Deals soll eine Abfrage: https://www.cheapshark.com/api/1.0/deals?id={dealID} stattfinden, um die daraus erhaltenen Deals einerseits in der Datenbank zu speichern und mit dem Spiel zu verknüpfen sowie auf der SpieleDetailseite anzuzeigen und eine kleine Statistik der Preishistorie zu erstellen (cheapestPrice, etc.)
+- Über die Cheapshark API kann man alle verfügbaren Stores laden und anhand der Namen abgleichen. Diese bieten ebenfalls Icons der Stores Die Deal karten haben in der oberen linken Ecke den Namen des Stores. Dies soll aber durch das Icon des Stores ausgetauscht werden.

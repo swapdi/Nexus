@@ -1,13 +1,18 @@
+
 /**
  * Client
 **/
+
 import * as runtime from './runtime/library.js';
 import $Types = runtime.Types // general types
 import $Public = runtime.Types.Public
 import $Utils = runtime.Types.Utils
 import $Extensions = runtime.Types.Extensions
 import $Result = runtime.Types.Result
+
 export type PrismaPromise<T> = $Public.PrismaPromise<T>
+
+
 /**
  * Model User
  * 
@@ -48,6 +53,7 @@ export type UserAchievement = $Result.DefaultSelection<Prisma.$UserAchievementPa
  * 
  */
 export type Wishlist = $Result.DefaultSelection<Prisma.$WishlistPayload>
+
 /**
  * ##  Prisma Client ʲˢ
  *
@@ -68,6 +74,7 @@ export class PrismaClient<
   ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
+
     /**
    * ##  Prisma Client ʲˢ
    *
@@ -82,22 +89,27 @@ export class PrismaClient<
    *
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
    */
+
   constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
   $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): PrismaClient;
+
   /**
    * Connect with the database
    */
   $connect(): $Utils.JsPromise<void>;
+
   /**
    * Disconnect from the database
    */
   $disconnect(): $Utils.JsPromise<void>;
+
   /**
    * Add a middleware
    * @deprecated since 4.16.0. For new code, prefer client extensions instead.
    * @see https://pris.ly/d/extensions
    */
   $use(cb: Prisma.Middleware): void
+
 /**
    * Executes a prepared raw query and returns the number of affected rows.
    * @example
@@ -108,6 +120,7 @@ export class PrismaClient<
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
+
   /**
    * Executes a raw query and returns the number of affected rows.
    * Susceptible to SQL injections, see documentation.
@@ -119,6 +132,7 @@ export class PrismaClient<
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
+
   /**
    * Performs a prepared raw query and returns the `SELECT` data.
    * @example
@@ -129,6 +143,7 @@ export class PrismaClient<
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
+
   /**
    * Performs a raw query and returns the `SELECT` data.
    * Susceptible to SQL injections, see documentation.
@@ -140,6 +155,8 @@ export class PrismaClient<
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
+
+
   /**
    * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.
    * @example
@@ -154,10 +171,14 @@ export class PrismaClient<
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
+
+
   $extends: $Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<ClientOptions>, ExtArgs, $Utils.Call<Prisma.TypeMapCb<ClientOptions>, {
     extArgs: ExtArgs
   }>>
+
       /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
     * Example usage:
@@ -167,6 +188,7 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.game`: Exposes CRUD operations for the **Game** model.
     * Example usage:
@@ -176,6 +198,7 @@ export class PrismaClient<
     * ```
     */
   get game(): Prisma.GameDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.platform`: Exposes CRUD operations for the **Platform** model.
     * Example usage:
@@ -185,6 +208,7 @@ export class PrismaClient<
     * ```
     */
   get platform(): Prisma.PlatformDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.userGame`: Exposes CRUD operations for the **UserGame** model.
     * Example usage:
@@ -194,6 +218,7 @@ export class PrismaClient<
     * ```
     */
   get userGame(): Prisma.UserGameDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.deal`: Exposes CRUD operations for the **Deal** model.
     * Example usage:
@@ -203,6 +228,7 @@ export class PrismaClient<
     * ```
     */
   get deal(): Prisma.DealDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.achievement`: Exposes CRUD operations for the **Achievement** model.
     * Example usage:
@@ -212,6 +238,7 @@ export class PrismaClient<
     * ```
     */
   get achievement(): Prisma.AchievementDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.userAchievement`: Exposes CRUD operations for the **UserAchievement** model.
     * Example usage:
@@ -221,6 +248,7 @@ export class PrismaClient<
     * ```
     */
   get userAchievement(): Prisma.UserAchievementDelegate<ExtArgs, ClientOptions>;
+
   /**
    * `prisma.wishlist`: Exposes CRUD operations for the **Wishlist** model.
     * Example usage:
@@ -231,13 +259,17 @@ export class PrismaClient<
     */
   get wishlist(): Prisma.WishlistDelegate<ExtArgs, ClientOptions>;
 }
+
 export namespace Prisma {
   export import DMMF = runtime.DMMF
+
   export type PrismaPromise<T> = $Public.PrismaPromise<T>
+
   /**
    * Validator
    */
   export import validator = runtime.Public.validator
+
   /**
    * Prisma Errors
    */
@@ -246,6 +278,7 @@ export namespace Prisma {
   export import PrismaClientRustPanicError = runtime.PrismaClientRustPanicError
   export import PrismaClientInitializationError = runtime.PrismaClientInitializationError
   export import PrismaClientValidationError = runtime.PrismaClientValidationError
+
   /**
    * Re-export of sql-template-tag
    */
@@ -254,11 +287,16 @@ export namespace Prisma {
   export import join = runtime.join
   export import raw = runtime.raw
   export import Sql = runtime.Sql
+
+
+
   /**
    * Decimal.js
    */
   export import Decimal = runtime.Decimal
+
   export type DecimalJsLike = runtime.DecimalJsLike
+
   /**
    * Metrics
    */
@@ -266,6 +304,7 @@ export namespace Prisma {
   export type Metric<T> = runtime.Metric<T>
   export type MetricHistogram = runtime.MetricHistogram
   export type MetricHistogramBucket = runtime.MetricHistogramBucket
+
   /**
   * Extensions
   */
@@ -275,6 +314,7 @@ export namespace Prisma {
   export import Payload = $Public.Payload
   export import Result = $Public.Result
   export import Exact = $Public.Exact
+
   /**
    * Prisma Client JS version: 6.8.2
    * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
@@ -282,16 +322,21 @@ export namespace Prisma {
   export type PrismaVersion = {
     client: string
   }
+
   export const prismaVersion: PrismaVersion
+
   /**
    * Utility Types
    */
+
+
   export import JsonObject = runtime.JsonObject
   export import JsonArray = runtime.JsonArray
   export import JsonValue = runtime.JsonValue
   export import InputJsonObject = runtime.InputJsonObject
   export import InputJsonArray = runtime.InputJsonArray
   export import InputJsonValue = runtime.InputJsonValue
+
   /**
    * Types of the values used to represent different kinds of `null` values when working with JSON fields.
    *
@@ -309,6 +354,7 @@ export namespace Prisma {
       private DbNull: never
       private constructor()
     }
+
     /**
     * Type of `Prisma.JsonNull`.
     *
@@ -320,6 +366,7 @@ export namespace Prisma {
       private JsonNull: never
       private constructor()
     }
+
     /**
     * Type of `Prisma.AnyNull`.
     *
@@ -332,54 +379,68 @@ export namespace Prisma {
       private constructor()
     }
   }
+
   /**
    * Helper for filtering JSON entries that have `null` on the database (empty on the db)
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   export const DbNull: NullTypes.DbNull
+
   /**
    * Helper for filtering JSON entries that have JSON `null` values (not empty on the db)
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   export const JsonNull: NullTypes.JsonNull
+
   /**
    * Helper for filtering JSON entries that are `Prisma.DbNull` or `Prisma.JsonNull`
    *
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   export const AnyNull: NullTypes.AnyNull
+
   type SelectAndInclude = {
     select: any
     include: any
   }
+
   type SelectAndOmit = {
     select: any
     omit: any
   }
+
   /**
    * Get the type of the value, that the Promise holds.
    */
   export type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<infer U> ? U : T;
+
   /**
    * Get the return type of a function which returns a Promise.
    */
   export type PromiseReturnType<T extends (...args: any) => $Utils.JsPromise<any>> = PromiseType<ReturnType<T>>
+
   /**
    * From T, pick a set of properties whose keys are in the union K
    */
   type Prisma__Pick<T, K extends keyof T> = {
       [P in K]: T[P];
   };
+
+
   export type Enumerable<T> = T | Array<T>;
+
   export type RequiredKeys<T> = {
     [K in keyof T]-?: {} extends Prisma__Pick<T, K> ? never : K
   }[keyof T]
+
   export type TruthyKeys<T> = keyof {
     [K in keyof T as T[K] extends false | undefined | null ? never : K]: K
   }
+
   export type TrueKeys<T> = TruthyKeys<Prisma__Pick<T, RequiredKeys<T>>>
+
   /**
    * Subset
    * @desc From `T` pick properties that exist in `U`. Simple version of Intersection
@@ -387,6 +448,7 @@ export namespace Prisma {
   export type Subset<T, U> = {
     [key in keyof T]: key extends keyof U ? T[key] : never;
   };
+
   /**
    * SelectSubset
    * @desc From `T` pick properties that exist in `U`. Simple version of Intersection.
@@ -400,6 +462,7 @@ export namespace Prisma {
       : T extends SelectAndOmit
         ? 'Please either choose `select` or `omit`.'
         : {})
+
   /**
    * Subset + Intersection
    * @desc From `T` pick properties that exist in `U` and intersect `K`
@@ -408,7 +471,9 @@ export namespace Prisma {
     [key in keyof T]: key extends keyof U ? T[key] : never
   } &
     K
+
   type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+
   /**
    * XOR is needed to have a real mutually exclusive union type
    * https://stackoverflow.com/questions/42123407/does-typescript-support-mutually-exclusive-types
@@ -418,6 +483,8 @@ export namespace Prisma {
     U extends object ?
       (Without<T, U> & U) | (Without<U, T> & T)
     : U : T
+
+
   /**
    * Is T a Record?
    */
@@ -432,20 +499,27 @@ export namespace Prisma {
   : T extends object
   ? True
   : False
+
+
   /**
    * If it's T[], return T
    */
   export type UnEnumerate<T extends unknown> = T extends Array<infer U> ? U : T
+
   /**
    * From ts-toolbelt
    */
+
   type __Either<O extends object, K extends Key> = Omit<O, K> &
     {
       // Merge all but K
       [P in K]: Prisma__Pick<O, P & keyof O> // With K possibilities
     }[K]
+
   type EitherStrict<O extends object, K extends Key> = Strict<__Either<O, K>>
+
   type EitherLoose<O extends object, K extends Key> = ComputeRaw<__Either<O, K>>
+
   type _Either<
     O extends object,
     K extends Key,
@@ -454,27 +528,34 @@ export namespace Prisma {
     1: EitherStrict<O, K>
     0: EitherLoose<O, K>
   }[strict]
+
   type Either<
     O extends object,
     K extends Key,
     strict extends Boolean = 1
   > = O extends unknown ? _Either<O, K, strict> : never
+
   export type Union = any
+
   type PatchUndefined<O extends object, O1 extends object> = {
     [K in keyof O]: O[K] extends undefined ? At<O1, K> : O[K]
   } & {}
+
   /** Helper Types for "Merge" **/
   export type IntersectOf<U extends Union> = (
     U extends unknown ? (k: U) => void : never
   ) extends (k: infer I) => void
     ? I
     : never
+
   export type Overwrite<O extends object, O1 extends object> = {
       [K in keyof O]: K extends keyof O1 ? O1[K] : O[K];
   } & {};
+
   type _Merge<U extends object> = IntersectOf<Overwrite<U, {
       [K in keyof U]-?: At<U, K>;
   }>>;
+
   type Key = string | number | symbol;
   type AtBasic<O extends object, K extends Key> = K extends keyof O ? O[K] : never;
   type AtStrict<O extends object, K extends Key> = O[K & keyof O];
@@ -483,51 +564,66 @@ export namespace Prisma {
       1: AtStrict<O, K>;
       0: AtLoose<O, K>;
   }[strict];
+
   export type ComputeRaw<A extends any> = A extends Function ? A : {
     [K in keyof A]: A[K];
   } & {};
+
   export type OptionalFlat<O> = {
     [K in keyof O]?: O[K];
   } & {};
+
   type _Record<K extends keyof any, T> = {
     [P in K]: T;
   };
+
   // cause typescript not to expand types and preserve names
   type NoExpand<T> = T extends unknown ? T : never;
+
   // this type assumes the passed object is entirely optional
   type AtLeast<O extends object, K extends string> = NoExpand<
     O extends unknown
     ? | (K extends keyof O ? { [P in K]: O[P] } & O : O)
       | {[P in keyof O as P extends K ? P : never]-?: O[P]} & O
     : never>;
+
   type _Strict<U, _U = U> = U extends unknown ? U & OptionalFlat<_Record<Exclude<Keys<_U>, keyof U>, never>> : never;
+
   export type Strict<U extends object> = ComputeRaw<_Strict<U>>;
   /** End Helper Types for "Merge" **/
+
   export type Merge<U extends object> = ComputeRaw<_Merge<Strict<U>>>;
+
   /**
   A [[Boolean]]
   */
   export type Boolean = True | False
+
   // /**
   // 1
   // */
   export type True = 1
+
   /**
   0
   */
   export type False = 0
+
   export type Not<B extends Boolean> = {
     0: 1
     1: 0
   }[B]
+
   export type Extends<A1 extends any, A2 extends any> = [A1] extends [never]
     ? 0 // anything `never` is false
     : A1 extends A2
     ? 1
     : 0
+
   export type Has<U extends Union, U1 extends Union> = Not<
     Extends<Exclude<U1, U>, U1>
   >
+
   export type Or<B1 extends Boolean, B2 extends Boolean> = {
     0: {
       0: 0
@@ -538,21 +634,30 @@ export namespace Prisma {
       1: 1
     }
   }[B1][B2]
+
   export type Keys<U extends Union> = U extends unknown ? keyof U : never
+
   type Cast<A, B> = A extends B ? A : B;
+
   export const type: unique symbol;
+
+
+
   /**
    * Used by group by
    */
+
   export type GetScalarType<T, O> = O extends object ? {
     [P in keyof T]: P extends keyof O
       ? O[P]
       : never
   } : never
+
   type FieldPaths<
     T,
     U = Omit<T, '_avg' | '_sum' | '_count' | '_min' | '_max'>
   > = IsObject<T> extends True ? U : T
+
   type GetHavingFields<T> = {
     [K in keyof T]: Or<
       Or<Extends<'OR', K>, Extends<'AND', K>>,
@@ -568,22 +673,30 @@ export namespace Prisma {
       ? never
       : K
   }[keyof T]
+
   /**
    * Convert tuple to union
    */
   type _TupleToUnion<T> = T extends (infer E)[] ? E : never
   type TupleToUnion<K extends readonly any[]> = _TupleToUnion<K>
   type MaybeTupleToUnion<T> = T extends any[] ? TupleToUnion<T> : T
+
   /**
    * Like `Pick`, but additionally can also accept an array of keys
    */
   type PickEnumerable<T, K extends Enumerable<keyof T> | keyof T> = Prisma__Pick<T, MaybeTupleToUnion<K>>
+
   /**
    * Exclude all keys with underscores
    */
   type ExcludeUnderscoreKeys<T extends string> = T extends `_${string}` ? never : T
+
+
   export type FieldRef<Model, FieldType> = runtime.FieldRef<Model, FieldType>
+
   type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>
+
+
   export const ModelName: {
     User: 'User',
     Game: 'Game',
@@ -594,13 +707,18 @@ export namespace Prisma {
     UserAchievement: 'UserAchievement',
     Wishlist: 'Wishlist'
   };
+
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
+
+
   export type Datasources = {
     db?: Datasource
   }
+
   interface TypeMapCb<ClientOptions = {}> extends $Utils.Fn<{extArgs: $Extensions.InternalArgs }, $Utils.Record<string, any>> {
     returns: Prisma.TypeMap<this['params']['extArgs'], ClientOptions extends { omit: infer OmitOptions } ? OmitOptions : {}>
   }
+
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> = {
     globalOmitOptions: {
       omit: GlobalOmitOptions
@@ -1295,16 +1413,19 @@ export namespace Prisma {
     userAchievement?: UserAchievementOmit
     wishlist?: WishlistOmit
   }
+
   /* Types for Logging */
   export type LogLevel = 'info' | 'query' | 'warn' | 'error'
   export type LogDefinition = {
     level: LogLevel
     emit: 'stdout' | 'event'
   }
+
   export type GetLogType<T extends LogLevel | LogDefinition> = T extends LogDefinition ? T['emit'] extends 'event' ? T['level'] : never : never
   export type GetEvents<T extends any> = T extends Array<LogLevel | LogDefinition> ?
     GetLogType<T[0]> | GetLogType<T[1]> | GetLogType<T[2]> | GetLogType<T[3]>
     : never
+
   export type QueryEvent = {
     timestamp: Date
     query: string
@@ -1312,12 +1433,15 @@ export namespace Prisma {
     duration: number
     target: string
   }
+
   export type LogEvent = {
     timestamp: Date
     message: string
     target: string
   }
   /* End Types for Logging */
+
+
   export type PrismaAction =
     | 'findUnique'
     | 'findUniqueOrThrow'
@@ -1340,6 +1464,7 @@ export namespace Prisma {
     | 'runCommandRaw'
     | 'findRaw'
     | 'groupBy'
+
   /**
    * These options are being passed into the middleware as "params"
    */
@@ -1350,6 +1475,7 @@ export namespace Prisma {
     dataPath: string[]
     runInTransaction: boolean
   }
+
   /**
    * The `T` type makes sure, that the `return proceed` is not forgotten in the middleware implementation
    */
@@ -1357,31 +1483,40 @@ export namespace Prisma {
     params: MiddlewareParams,
     next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
   ) => $Utils.JsPromise<T>
+
   // tested in getLogLevel.test.ts
   export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
+
   /**
    * `PrismaClient` proxy available in interactive transactions.
    */
   export type TransactionClient = Omit<Prisma.DefaultPrismaClient, runtime.ITXClientDenyList>
+
   export type Datasource = {
     url?: string
   }
+
   /**
    * Count Types
    */
+
+
   /**
    * Count Type UserCountOutputType
    */
+
   export type UserCountOutputType = {
     userAchievements: number
     userGames: number
     wishlistItems: number
   }
+
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userAchievements?: boolean | UserCountOutputTypeCountUserAchievementsArgs
     userGames?: boolean | UserCountOutputTypeCountUserGamesArgs
     wishlistItems?: boolean | UserCountOutputTypeCountWishlistItemsArgs
   }
+
   // Custom InputTypes
   /**
    * UserCountOutputType without action
@@ -1392,37 +1527,45 @@ export namespace Prisma {
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
   }
+
   /**
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountUserAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserAchievementWhereInput
   }
+
   /**
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserGameWhereInput
   }
+
   /**
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountWishlistItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WishlistWhereInput
   }
+
+
   /**
    * Count Type GameCountOutputType
    */
+
   export type GameCountOutputType = {
     deals: number
     userGames: number
     wishlistedBy: number
   }
+
   export type GameCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | GameCountOutputTypeCountDealsArgs
     userGames?: boolean | GameCountOutputTypeCountUserGamesArgs
     wishlistedBy?: boolean | GameCountOutputTypeCountWishlistedByArgs
   }
+
   // Custom InputTypes
   /**
    * GameCountOutputType without action
@@ -1433,33 +1576,41 @@ export namespace Prisma {
      */
     select?: GameCountOutputTypeSelect<ExtArgs> | null
   }
+
   /**
    * GameCountOutputType without action
    */
   export type GameCountOutputTypeCountDealsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DealWhereInput
   }
+
   /**
    * GameCountOutputType without action
    */
   export type GameCountOutputTypeCountUserGamesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserGameWhereInput
   }
+
   /**
    * GameCountOutputType without action
    */
   export type GameCountOutputTypeCountWishlistedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WishlistWhereInput
   }
+
+
   /**
    * Count Type AchievementCountOutputType
    */
+
   export type AchievementCountOutputType = {
     userAchievements: number
   }
+
   export type AchievementCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userAchievements?: boolean | AchievementCountOutputTypeCountUserAchievementsArgs
   }
+
   // Custom InputTypes
   /**
    * AchievementCountOutputType without action
@@ -1470,18 +1621,23 @@ export namespace Prisma {
      */
     select?: AchievementCountOutputTypeSelect<ExtArgs> | null
   }
+
   /**
    * AchievementCountOutputType without action
    */
   export type AchievementCountOutputTypeCountUserAchievementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserAchievementWhereInput
   }
+
+
   /**
    * Models
    */
+
   /**
    * Model User
    */
+
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
@@ -1489,18 +1645,21 @@ export namespace Prisma {
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
+
   export type UserAvgAggregateOutputType = {
     id: number | null
     xp: number | null
     level: number | null
     credits: number | null
   }
+
   export type UserSumAggregateOutputType = {
     id: number | null
     xp: number | null
     level: number | null
     credits: number | null
   }
+
   export type UserMinAggregateOutputType = {
     id: number | null
     supabase_uid: string | null
@@ -1510,6 +1669,7 @@ export namespace Prisma {
     credits: number | null
     steamId: string | null
   }
+
   export type UserMaxAggregateOutputType = {
     id: number | null
     supabase_uid: string | null
@@ -1519,6 +1679,7 @@ export namespace Prisma {
     credits: number | null
     steamId: string | null
   }
+
   export type UserCountAggregateOutputType = {
     id: number
     supabase_uid: number
@@ -1529,18 +1690,22 @@ export namespace Prisma {
     steamId: number
     _all: number
   }
+
+
   export type UserAvgAggregateInputType = {
     id?: true
     xp?: true
     level?: true
     credits?: true
   }
+
   export type UserSumAggregateInputType = {
     id?: true
     xp?: true
     level?: true
     credits?: true
   }
+
   export type UserMinAggregateInputType = {
     id?: true
     supabase_uid?: true
@@ -1550,6 +1715,7 @@ export namespace Prisma {
     credits?: true
     steamId?: true
   }
+
   export type UserMaxAggregateInputType = {
     id?: true
     supabase_uid?: true
@@ -1559,6 +1725,7 @@ export namespace Prisma {
     credits?: true
     steamId?: true
   }
+
   export type UserCountAggregateInputType = {
     id?: true
     supabase_uid?: true
@@ -1569,6 +1736,7 @@ export namespace Prisma {
     steamId?: true
     _all?: true
   }
+
   export type UserAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which User to aggregate.
@@ -1629,6 +1797,7 @@ export namespace Prisma {
     **/
     _max?: UserMaxAggregateInputType
   }
+
   export type GetUserAggregateType<T extends UserAggregateArgs> = {
         [P in keyof T & keyof AggregateUser]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -1636,6 +1805,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateUser[P]>
       : GetScalarType<T[P], AggregateUser[P]>
   }
+
+
+
+
   export type UserGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserWhereInput
     orderBy?: UserOrderByWithAggregationInput | UserOrderByWithAggregationInput[]
@@ -1649,6 +1822,7 @@ export namespace Prisma {
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
+
   export type UserGroupByOutputType = {
     id: number
     supabase_uid: string
@@ -1663,6 +1837,7 @@ export namespace Prisma {
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
+
   type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<UserGroupByOutputType, T['by']> &
@@ -1675,6 +1850,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     supabase_uid?: boolean
@@ -1688,6 +1865,7 @@ export namespace Prisma {
     wishlistItems?: boolean | User$wishlistItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
+
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     supabase_uid?: boolean
@@ -1697,6 +1875,7 @@ export namespace Prisma {
     credits?: boolean
     steamId?: boolean
   }, ExtArgs["result"]["user"]>
+
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     supabase_uid?: boolean
@@ -1706,6 +1885,7 @@ export namespace Prisma {
     credits?: boolean
     steamId?: boolean
   }, ExtArgs["result"]["user"]>
+
   export type UserSelectScalar = {
     id?: boolean
     supabase_uid?: boolean
@@ -1715,6 +1895,7 @@ export namespace Prisma {
     credits?: boolean
     steamId?: boolean
   }
+
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supabase_uid" | "display_name" | "xp" | "level" | "credits" | "steamId", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userAchievements?: boolean | User$userAchievementsArgs<ExtArgs>
@@ -1724,6 +1905,7 @@ export namespace Prisma {
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
   export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
@@ -1742,11 +1924,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
+
   type UserGetPayload<S extends boolean | null | undefined | UserDefaultArgs> = $Result.GetResult<Prisma.$UserPayload, S>
+
   type UserCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<UserFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: UserCountAggregateInputType | true
     }
+
   export interface UserDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['User'], meta: { name: 'User' } }
     /**
@@ -1761,6 +1946,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one User that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -1774,6 +1960,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(args: SelectSubset<T, UserFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first User that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -1788,6 +1975,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends UserFindFirstArgs>(args?: SelectSubset<T, UserFindFirstArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first User that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -1803,6 +1991,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(args?: SelectSubset<T, UserFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more Users that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -1820,6 +2009,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a User.
      * @param {UserCreateArgs} args - Arguments to create a User.
@@ -1833,6 +2023,7 @@ export namespace Prisma {
      * 
      */
     create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many Users.
      * @param {UserCreateManyArgs} args - Arguments to create many Users.
@@ -1846,6 +2037,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends UserCreateManyArgs>(args?: SelectSubset<T, UserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many Users and returns the data saved in the database.
      * @param {UserCreateManyAndReturnArgs} args - Arguments to create many Users.
@@ -1869,6 +2061,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a User.
      * @param {UserDeleteArgs} args - Arguments to delete one User.
@@ -1882,6 +2075,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one User.
      * @param {UserUpdateArgs} args - Arguments to update one User.
@@ -1898,6 +2092,7 @@ export namespace Prisma {
      * 
      */
     update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more Users.
      * @param {UserDeleteManyArgs} args - Arguments to filter Users to delete.
@@ -1911,6 +2106,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends UserDeleteManyArgs>(args?: SelectSubset<T, UserDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Users.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -1929,6 +2125,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends UserUpdateManyArgs>(args: SelectSubset<T, UserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Users and returns the data updated in the database.
      * @param {UserUpdateManyAndReturnArgs} args - Arguments to update many Users.
@@ -1958,6 +2155,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends UserUpdateManyAndReturnArgs>(args: SelectSubset<T, UserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one User.
      * @param {UserUpsertArgs} args - Arguments to update or create a User.
@@ -1976,6 +2174,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends UserUpsertArgs>(args: SelectSubset<T, UserUpsertArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of Users.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -1998,6 +2198,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], UserCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a User.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -2023,6 +2224,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): Prisma.PrismaPromise<GetUserAggregateType<T>>
+
     /**
      * Group by User.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -2104,6 +2306,7 @@ export namespace Prisma {
    */
   readonly fields: UserFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for User.
    * Why is this prefixed with `Prisma__`?
@@ -2136,6 +2339,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the User model
    */
@@ -2148,6 +2355,8 @@ export namespace Prisma {
     readonly credits: FieldRef<"User", 'Int'>
     readonly steamId: FieldRef<"User", 'String'>
   }
+    
+
   // Custom InputTypes
   /**
    * User findUnique
@@ -2170,6 +2379,7 @@ export namespace Prisma {
      */
     where: UserWhereUniqueInput
   }
+
   /**
    * User findUniqueOrThrow
    */
@@ -2191,6 +2401,7 @@ export namespace Prisma {
      */
     where: UserWhereUniqueInput
   }
+
   /**
    * User findFirst
    */
@@ -2242,6 +2453,7 @@ export namespace Prisma {
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
+
   /**
    * User findFirstOrThrow
    */
@@ -2293,6 +2505,7 @@ export namespace Prisma {
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
+
   /**
    * User findMany
    */
@@ -2339,6 +2552,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
+
   /**
    * User create
    */
@@ -2360,6 +2574,7 @@ export namespace Prisma {
      */
     data: XOR<UserCreateInput, UserUncheckedCreateInput>
   }
+
   /**
    * User createMany
    */
@@ -2370,6 +2585,7 @@ export namespace Prisma {
     data: UserCreateManyInput | UserCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * User createManyAndReturn
    */
@@ -2388,6 +2604,7 @@ export namespace Prisma {
     data: UserCreateManyInput | UserCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * User update
    */
@@ -2413,6 +2630,7 @@ export namespace Prisma {
      */
     where: UserWhereUniqueInput
   }
+
   /**
    * User updateMany
    */
@@ -2430,6 +2648,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * User updateManyAndReturn
    */
@@ -2455,6 +2674,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * User upsert
    */
@@ -2484,6 +2704,7 @@ export namespace Prisma {
      */
     update: XOR<UserUpdateInput, UserUncheckedUpdateInput>
   }
+
   /**
    * User delete
    */
@@ -2505,6 +2726,7 @@ export namespace Prisma {
      */
     where: UserWhereUniqueInput
   }
+
   /**
    * User deleteMany
    */
@@ -2518,6 +2740,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * User.userAchievements
    */
@@ -2541,6 +2764,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
+
   /**
    * User.userGames
    */
@@ -2564,6 +2788,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
   }
+
   /**
    * User.wishlistItems
    */
@@ -2587,6 +2812,7 @@ export namespace Prisma {
     skip?: number
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
   }
+
   /**
    * User without action
    */
@@ -2604,9 +2830,12 @@ export namespace Prisma {
      */
     include?: UserInclude<ExtArgs> | null
   }
+
+
   /**
    * Model Game
    */
+
   export type AggregateGame = {
     _count: GameCountAggregateOutputType | null
     _avg: GameAvgAggregateOutputType | null
@@ -2614,6 +2843,7 @@ export namespace Prisma {
     _min: GameMinAggregateOutputType | null
     _max: GameMaxAggregateOutputType | null
   }
+
   export type GameAvgAggregateOutputType = {
     id: number | null
     igdbId: number | null
@@ -2622,6 +2852,7 @@ export namespace Prisma {
     aggregatedRating: number | null
     aggregatedRatingCount: number | null
   }
+
   export type GameSumAggregateOutputType = {
     id: number | null
     igdbId: number | null
@@ -2630,6 +2861,7 @@ export namespace Prisma {
     aggregatedRating: number | null
     aggregatedRatingCount: number | null
   }
+
   export type GameMinAggregateOutputType = {
     id: number | null
     igdbId: number | null
@@ -2647,6 +2879,7 @@ export namespace Prisma {
     updatedAt: Date | null
     lastSyncedAt: Date | null
   }
+
   export type GameMaxAggregateOutputType = {
     id: number | null
     igdbId: number | null
@@ -2664,6 +2897,7 @@ export namespace Prisma {
     updatedAt: Date | null
     lastSyncedAt: Date | null
   }
+
   export type GameCountAggregateOutputType = {
     id: number
     igdbId: number
@@ -2674,6 +2908,7 @@ export namespace Prisma {
     firstReleaseDate: number
     coverUrl: number
     screenshots: number
+    videos: number
     totalRating: number
     totalRatingCount: number
     aggregatedRating: number
@@ -2692,6 +2927,8 @@ export namespace Prisma {
     lastSyncedAt: number
     _all: number
   }
+
+
   export type GameAvgAggregateInputType = {
     id?: true
     igdbId?: true
@@ -2700,6 +2937,7 @@ export namespace Prisma {
     aggregatedRating?: true
     aggregatedRatingCount?: true
   }
+
   export type GameSumAggregateInputType = {
     id?: true
     igdbId?: true
@@ -2708,6 +2946,7 @@ export namespace Prisma {
     aggregatedRating?: true
     aggregatedRatingCount?: true
   }
+
   export type GameMinAggregateInputType = {
     id?: true
     igdbId?: true
@@ -2725,6 +2964,7 @@ export namespace Prisma {
     updatedAt?: true
     lastSyncedAt?: true
   }
+
   export type GameMaxAggregateInputType = {
     id?: true
     igdbId?: true
@@ -2742,6 +2982,7 @@ export namespace Prisma {
     updatedAt?: true
     lastSyncedAt?: true
   }
+
   export type GameCountAggregateInputType = {
     id?: true
     igdbId?: true
@@ -2752,6 +2993,7 @@ export namespace Prisma {
     firstReleaseDate?: true
     coverUrl?: true
     screenshots?: true
+    videos?: true
     totalRating?: true
     totalRatingCount?: true
     aggregatedRating?: true
@@ -2770,6 +3012,7 @@ export namespace Prisma {
     lastSyncedAt?: true
     _all?: true
   }
+
   export type GameAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Game to aggregate.
@@ -2830,6 +3073,7 @@ export namespace Prisma {
     **/
     _max?: GameMaxAggregateInputType
   }
+
   export type GetGameAggregateType<T extends GameAggregateArgs> = {
         [P in keyof T & keyof AggregateGame]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -2837,6 +3081,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateGame[P]>
       : GetScalarType<T[P], AggregateGame[P]>
   }
+
+
+
+
   export type GameGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GameWhereInput
     orderBy?: GameOrderByWithAggregationInput | GameOrderByWithAggregationInput[]
@@ -2850,6 +3098,7 @@ export namespace Prisma {
     _min?: GameMinAggregateInputType
     _max?: GameMaxAggregateInputType
   }
+
   export type GameGroupByOutputType = {
     id: number
     igdbId: number | null
@@ -2860,6 +3109,7 @@ export namespace Prisma {
     firstReleaseDate: Date | null
     coverUrl: string | null
     screenshots: string[]
+    videos: string[]
     totalRating: number | null
     totalRatingCount: number | null
     aggregatedRating: number | null
@@ -2882,6 +3132,7 @@ export namespace Prisma {
     _min: GameMinAggregateOutputType | null
     _max: GameMaxAggregateOutputType | null
   }
+
   type GetGameGroupByPayload<T extends GameGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<GameGroupByOutputType, T['by']> &
@@ -2894,6 +3145,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type GameSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     igdbId?: boolean
@@ -2904,6 +3157,7 @@ export namespace Prisma {
     firstReleaseDate?: boolean
     coverUrl?: boolean
     screenshots?: boolean
+    videos?: boolean
     totalRating?: boolean
     totalRatingCount?: boolean
     aggregatedRating?: boolean
@@ -2925,6 +3179,7 @@ export namespace Prisma {
     wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["game"]>
+
   export type GameSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     igdbId?: boolean
@@ -2935,6 +3190,7 @@ export namespace Prisma {
     firstReleaseDate?: boolean
     coverUrl?: boolean
     screenshots?: boolean
+    videos?: boolean
     totalRating?: boolean
     totalRatingCount?: boolean
     aggregatedRating?: boolean
@@ -2952,6 +3208,7 @@ export namespace Prisma {
     updatedAt?: boolean
     lastSyncedAt?: boolean
   }, ExtArgs["result"]["game"]>
+
   export type GameSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     igdbId?: boolean
@@ -2962,6 +3219,7 @@ export namespace Prisma {
     firstReleaseDate?: boolean
     coverUrl?: boolean
     screenshots?: boolean
+    videos?: boolean
     totalRating?: boolean
     totalRatingCount?: boolean
     aggregatedRating?: boolean
@@ -2979,6 +3237,7 @@ export namespace Prisma {
     updatedAt?: boolean
     lastSyncedAt?: boolean
   }, ExtArgs["result"]["game"]>
+
   export type GameSelectScalar = {
     id?: boolean
     igdbId?: boolean
@@ -2989,6 +3248,7 @@ export namespace Prisma {
     firstReleaseDate?: boolean
     coverUrl?: boolean
     screenshots?: boolean
+    videos?: boolean
     totalRating?: boolean
     totalRatingCount?: boolean
     aggregatedRating?: boolean
@@ -3006,7 +3266,8 @@ export namespace Prisma {
     updatedAt?: boolean
     lastSyncedAt?: boolean
   }
-  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt", ExtArgs["result"]["game"]>
+
+  export type GameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "igdbId" | "name" | "slug" | "summary" | "storyline" | "firstReleaseDate" | "coverUrl" | "screenshots" | "videos" | "totalRating" | "totalRatingCount" | "aggregatedRating" | "aggregatedRatingCount" | "genres" | "themes" | "gameModes" | "keywords" | "developers" | "publishers" | "websites" | "externalGames" | "ageRatings" | "createdAt" | "updatedAt" | "lastSyncedAt", ExtArgs["result"]["game"]>
   export type GameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | Game$dealsArgs<ExtArgs>
     userGames?: boolean | Game$userGamesArgs<ExtArgs>
@@ -3015,6 +3276,7 @@ export namespace Prisma {
   }
   export type GameIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
   export type GameIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
   export type $GamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Game"
     objects: {
@@ -3032,6 +3294,7 @@ export namespace Prisma {
       firstReleaseDate: Date | null
       coverUrl: string | null
       screenshots: string[]
+      videos: string[]
       totalRating: number | null
       totalRatingCount: number | null
       aggregatedRating: number | null
@@ -3051,11 +3314,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["game"]>
     composites: {}
   }
+
   type GameGetPayload<S extends boolean | null | undefined | GameDefaultArgs> = $Result.GetResult<Prisma.$GamePayload, S>
+
   type GameCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<GameFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: GameCountAggregateInputType | true
     }
+
   export interface GameDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Game'], meta: { name: 'Game' } }
     /**
@@ -3070,6 +3336,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends GameFindUniqueArgs>(args: SelectSubset<T, GameFindUniqueArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one Game that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -3083,6 +3350,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends GameFindUniqueOrThrowArgs>(args: SelectSubset<T, GameFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Game that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -3097,6 +3365,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends GameFindFirstArgs>(args?: SelectSubset<T, GameFindFirstArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Game that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -3112,6 +3381,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends GameFindFirstOrThrowArgs>(args?: SelectSubset<T, GameFindFirstOrThrowArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more Games that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -3129,6 +3399,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends GameFindManyArgs>(args?: SelectSubset<T, GameFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a Game.
      * @param {GameCreateArgs} args - Arguments to create a Game.
@@ -3142,6 +3413,7 @@ export namespace Prisma {
      * 
      */
     create<T extends GameCreateArgs>(args: SelectSubset<T, GameCreateArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many Games.
      * @param {GameCreateManyArgs} args - Arguments to create many Games.
@@ -3155,6 +3427,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends GameCreateManyArgs>(args?: SelectSubset<T, GameCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many Games and returns the data saved in the database.
      * @param {GameCreateManyAndReturnArgs} args - Arguments to create many Games.
@@ -3178,6 +3451,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends GameCreateManyAndReturnArgs>(args?: SelectSubset<T, GameCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a Game.
      * @param {GameDeleteArgs} args - Arguments to delete one Game.
@@ -3191,6 +3465,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends GameDeleteArgs>(args: SelectSubset<T, GameDeleteArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one Game.
      * @param {GameUpdateArgs} args - Arguments to update one Game.
@@ -3207,6 +3482,7 @@ export namespace Prisma {
      * 
      */
     update<T extends GameUpdateArgs>(args: SelectSubset<T, GameUpdateArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more Games.
      * @param {GameDeleteManyArgs} args - Arguments to filter Games to delete.
@@ -3220,6 +3496,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends GameDeleteManyArgs>(args?: SelectSubset<T, GameDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Games.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -3238,6 +3515,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends GameUpdateManyArgs>(args: SelectSubset<T, GameUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Games and returns the data updated in the database.
      * @param {GameUpdateManyAndReturnArgs} args - Arguments to update many Games.
@@ -3267,6 +3545,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends GameUpdateManyAndReturnArgs>(args: SelectSubset<T, GameUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one Game.
      * @param {GameUpsertArgs} args - Arguments to update or create a Game.
@@ -3285,6 +3564,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends GameUpsertArgs>(args: SelectSubset<T, GameUpsertArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of Games.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -3307,6 +3588,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], GameCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a Game.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -3332,6 +3614,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends GameAggregateArgs>(args: Subset<T, GameAggregateArgs>): Prisma.PrismaPromise<GetGameAggregateType<T>>
+
     /**
      * Group by Game.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -3413,6 +3696,7 @@ export namespace Prisma {
    */
   readonly fields: GameFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for Game.
    * Why is this prefixed with `Prisma__`?
@@ -3445,6 +3729,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the Game model
    */
@@ -3458,6 +3746,7 @@ export namespace Prisma {
     readonly firstReleaseDate: FieldRef<"Game", 'DateTime'>
     readonly coverUrl: FieldRef<"Game", 'String'>
     readonly screenshots: FieldRef<"Game", 'String[]'>
+    readonly videos: FieldRef<"Game", 'String[]'>
     readonly totalRating: FieldRef<"Game", 'Float'>
     readonly totalRatingCount: FieldRef<"Game", 'Int'>
     readonly aggregatedRating: FieldRef<"Game", 'Float'>
@@ -3475,6 +3764,8 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Game", 'DateTime'>
     readonly lastSyncedAt: FieldRef<"Game", 'DateTime'>
   }
+    
+
   // Custom InputTypes
   /**
    * Game findUnique
@@ -3497,6 +3788,7 @@ export namespace Prisma {
      */
     where: GameWhereUniqueInput
   }
+
   /**
    * Game findUniqueOrThrow
    */
@@ -3518,6 +3810,7 @@ export namespace Prisma {
      */
     where: GameWhereUniqueInput
   }
+
   /**
    * Game findFirst
    */
@@ -3569,6 +3862,7 @@ export namespace Prisma {
      */
     distinct?: GameScalarFieldEnum | GameScalarFieldEnum[]
   }
+
   /**
    * Game findFirstOrThrow
    */
@@ -3620,6 +3914,7 @@ export namespace Prisma {
      */
     distinct?: GameScalarFieldEnum | GameScalarFieldEnum[]
   }
+
   /**
    * Game findMany
    */
@@ -3666,6 +3961,7 @@ export namespace Prisma {
     skip?: number
     distinct?: GameScalarFieldEnum | GameScalarFieldEnum[]
   }
+
   /**
    * Game create
    */
@@ -3687,6 +3983,7 @@ export namespace Prisma {
      */
     data: XOR<GameCreateInput, GameUncheckedCreateInput>
   }
+
   /**
    * Game createMany
    */
@@ -3697,6 +3994,7 @@ export namespace Prisma {
     data: GameCreateManyInput | GameCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Game createManyAndReturn
    */
@@ -3715,6 +4013,7 @@ export namespace Prisma {
     data: GameCreateManyInput | GameCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Game update
    */
@@ -3740,6 +4039,7 @@ export namespace Prisma {
      */
     where: GameWhereUniqueInput
   }
+
   /**
    * Game updateMany
    */
@@ -3757,6 +4057,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Game updateManyAndReturn
    */
@@ -3782,6 +4083,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Game upsert
    */
@@ -3811,6 +4113,7 @@ export namespace Prisma {
      */
     update: XOR<GameUpdateInput, GameUncheckedUpdateInput>
   }
+
   /**
    * Game delete
    */
@@ -3832,6 +4135,7 @@ export namespace Prisma {
      */
     where: GameWhereUniqueInput
   }
+
   /**
    * Game deleteMany
    */
@@ -3845,6 +4149,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Game.deals
    */
@@ -3868,6 +4173,7 @@ export namespace Prisma {
     skip?: number
     distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
   }
+
   /**
    * Game.userGames
    */
@@ -3891,6 +4197,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
   }
+
   /**
    * Game.wishlistedBy
    */
@@ -3914,6 +4221,7 @@ export namespace Prisma {
     skip?: number
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
   }
+
   /**
    * Game without action
    */
@@ -3931,9 +4239,12 @@ export namespace Prisma {
      */
     include?: GameInclude<ExtArgs> | null
   }
+
+
   /**
    * Model Platform
    */
+
   export type AggregatePlatform = {
     _count: PlatformCountAggregateOutputType | null
     _avg: PlatformAvgAggregateOutputType | null
@@ -3941,12 +4252,15 @@ export namespace Prisma {
     _min: PlatformMinAggregateOutputType | null
     _max: PlatformMaxAggregateOutputType | null
   }
+
   export type PlatformAvgAggregateOutputType = {
     id: number | null
   }
+
   export type PlatformSumAggregateOutputType = {
     id: number | null
   }
+
   export type PlatformMinAggregateOutputType = {
     id: number | null
     name: string | null
@@ -3954,6 +4268,7 @@ export namespace Prisma {
     iconUrl: string | null
     siteUrl: string | null
   }
+
   export type PlatformMaxAggregateOutputType = {
     id: number | null
     name: string | null
@@ -3961,6 +4276,7 @@ export namespace Prisma {
     iconUrl: string | null
     siteUrl: string | null
   }
+
   export type PlatformCountAggregateOutputType = {
     id: number
     name: number
@@ -3969,12 +4285,16 @@ export namespace Prisma {
     siteUrl: number
     _all: number
   }
+
+
   export type PlatformAvgAggregateInputType = {
     id?: true
   }
+
   export type PlatformSumAggregateInputType = {
     id?: true
   }
+
   export type PlatformMinAggregateInputType = {
     id?: true
     name?: true
@@ -3982,6 +4302,7 @@ export namespace Prisma {
     iconUrl?: true
     siteUrl?: true
   }
+
   export type PlatformMaxAggregateInputType = {
     id?: true
     name?: true
@@ -3989,6 +4310,7 @@ export namespace Prisma {
     iconUrl?: true
     siteUrl?: true
   }
+
   export type PlatformCountAggregateInputType = {
     id?: true
     name?: true
@@ -3997,6 +4319,7 @@ export namespace Prisma {
     siteUrl?: true
     _all?: true
   }
+
   export type PlatformAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Platform to aggregate.
@@ -4057,6 +4380,7 @@ export namespace Prisma {
     **/
     _max?: PlatformMaxAggregateInputType
   }
+
   export type GetPlatformAggregateType<T extends PlatformAggregateArgs> = {
         [P in keyof T & keyof AggregatePlatform]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -4064,6 +4388,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregatePlatform[P]>
       : GetScalarType<T[P], AggregatePlatform[P]>
   }
+
+
+
+
   export type PlatformGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlatformWhereInput
     orderBy?: PlatformOrderByWithAggregationInput | PlatformOrderByWithAggregationInput[]
@@ -4077,6 +4405,7 @@ export namespace Prisma {
     _min?: PlatformMinAggregateInputType
     _max?: PlatformMaxAggregateInputType
   }
+
   export type PlatformGroupByOutputType = {
     id: number
     name: string
@@ -4089,6 +4418,7 @@ export namespace Prisma {
     _min: PlatformMinAggregateOutputType | null
     _max: PlatformMaxAggregateOutputType | null
   }
+
   type GetPlatformGroupByPayload<T extends PlatformGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<PlatformGroupByOutputType, T['by']> &
@@ -4101,6 +4431,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type PlatformSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
@@ -4108,6 +4440,7 @@ export namespace Prisma {
     iconUrl?: boolean
     siteUrl?: boolean
   }, ExtArgs["result"]["platform"]>
+
   export type PlatformSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
@@ -4115,6 +4448,7 @@ export namespace Prisma {
     iconUrl?: boolean
     siteUrl?: boolean
   }, ExtArgs["result"]["platform"]>
+
   export type PlatformSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
@@ -4122,6 +4456,7 @@ export namespace Prisma {
     iconUrl?: boolean
     siteUrl?: boolean
   }, ExtArgs["result"]["platform"]>
+
   export type PlatformSelectScalar = {
     id?: boolean
     name?: boolean
@@ -4129,7 +4464,9 @@ export namespace Prisma {
     iconUrl?: boolean
     siteUrl?: boolean
   }
+
   export type PlatformOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "iconUrl" | "siteUrl", ExtArgs["result"]["platform"]>
+
   export type $PlatformPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Platform"
     objects: {}
@@ -4142,11 +4479,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["platform"]>
     composites: {}
   }
+
   type PlatformGetPayload<S extends boolean | null | undefined | PlatformDefaultArgs> = $Result.GetResult<Prisma.$PlatformPayload, S>
+
   type PlatformCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<PlatformFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: PlatformCountAggregateInputType | true
     }
+
   export interface PlatformDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Platform'], meta: { name: 'Platform' } }
     /**
@@ -4161,6 +4501,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends PlatformFindUniqueArgs>(args: SelectSubset<T, PlatformFindUniqueArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one Platform that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -4174,6 +4515,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends PlatformFindUniqueOrThrowArgs>(args: SelectSubset<T, PlatformFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Platform that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -4188,6 +4530,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends PlatformFindFirstArgs>(args?: SelectSubset<T, PlatformFindFirstArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Platform that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -4203,6 +4546,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends PlatformFindFirstOrThrowArgs>(args?: SelectSubset<T, PlatformFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more Platforms that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -4220,6 +4564,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends PlatformFindManyArgs>(args?: SelectSubset<T, PlatformFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a Platform.
      * @param {PlatformCreateArgs} args - Arguments to create a Platform.
@@ -4233,6 +4578,7 @@ export namespace Prisma {
      * 
      */
     create<T extends PlatformCreateArgs>(args: SelectSubset<T, PlatformCreateArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many Platforms.
      * @param {PlatformCreateManyArgs} args - Arguments to create many Platforms.
@@ -4246,6 +4592,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends PlatformCreateManyArgs>(args?: SelectSubset<T, PlatformCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many Platforms and returns the data saved in the database.
      * @param {PlatformCreateManyAndReturnArgs} args - Arguments to create many Platforms.
@@ -4269,6 +4616,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends PlatformCreateManyAndReturnArgs>(args?: SelectSubset<T, PlatformCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a Platform.
      * @param {PlatformDeleteArgs} args - Arguments to delete one Platform.
@@ -4282,6 +4630,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends PlatformDeleteArgs>(args: SelectSubset<T, PlatformDeleteArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one Platform.
      * @param {PlatformUpdateArgs} args - Arguments to update one Platform.
@@ -4298,6 +4647,7 @@ export namespace Prisma {
      * 
      */
     update<T extends PlatformUpdateArgs>(args: SelectSubset<T, PlatformUpdateArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more Platforms.
      * @param {PlatformDeleteManyArgs} args - Arguments to filter Platforms to delete.
@@ -4311,6 +4661,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends PlatformDeleteManyArgs>(args?: SelectSubset<T, PlatformDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Platforms.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -4329,6 +4680,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends PlatformUpdateManyArgs>(args: SelectSubset<T, PlatformUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Platforms and returns the data updated in the database.
      * @param {PlatformUpdateManyAndReturnArgs} args - Arguments to update many Platforms.
@@ -4358,6 +4710,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends PlatformUpdateManyAndReturnArgs>(args: SelectSubset<T, PlatformUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one Platform.
      * @param {PlatformUpsertArgs} args - Arguments to update or create a Platform.
@@ -4376,6 +4729,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends PlatformUpsertArgs>(args: SelectSubset<T, PlatformUpsertArgs<ExtArgs>>): Prisma__PlatformClient<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of Platforms.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -4398,6 +4753,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], PlatformCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a Platform.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -4423,6 +4779,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends PlatformAggregateArgs>(args: Subset<T, PlatformAggregateArgs>): Prisma.PrismaPromise<GetPlatformAggregateType<T>>
+
     /**
      * Group by Platform.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -4504,6 +4861,7 @@ export namespace Prisma {
    */
   readonly fields: PlatformFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for Platform.
    * Why is this prefixed with `Prisma__`?
@@ -4533,6 +4891,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the Platform model
    */
@@ -4543,6 +4905,8 @@ export namespace Prisma {
     readonly iconUrl: FieldRef<"Platform", 'String'>
     readonly siteUrl: FieldRef<"Platform", 'String'>
   }
+    
+
   // Custom InputTypes
   /**
    * Platform findUnique
@@ -4561,6 +4925,7 @@ export namespace Prisma {
      */
     where: PlatformWhereUniqueInput
   }
+
   /**
    * Platform findUniqueOrThrow
    */
@@ -4578,6 +4943,7 @@ export namespace Prisma {
      */
     where: PlatformWhereUniqueInput
   }
+
   /**
    * Platform findFirst
    */
@@ -4625,6 +4991,7 @@ export namespace Prisma {
      */
     distinct?: PlatformScalarFieldEnum | PlatformScalarFieldEnum[]
   }
+
   /**
    * Platform findFirstOrThrow
    */
@@ -4672,6 +5039,7 @@ export namespace Prisma {
      */
     distinct?: PlatformScalarFieldEnum | PlatformScalarFieldEnum[]
   }
+
   /**
    * Platform findMany
    */
@@ -4714,6 +5082,7 @@ export namespace Prisma {
     skip?: number
     distinct?: PlatformScalarFieldEnum | PlatformScalarFieldEnum[]
   }
+
   /**
    * Platform create
    */
@@ -4731,6 +5100,7 @@ export namespace Prisma {
      */
     data: XOR<PlatformCreateInput, PlatformUncheckedCreateInput>
   }
+
   /**
    * Platform createMany
    */
@@ -4741,6 +5111,7 @@ export namespace Prisma {
     data: PlatformCreateManyInput | PlatformCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Platform createManyAndReturn
    */
@@ -4759,6 +5130,7 @@ export namespace Prisma {
     data: PlatformCreateManyInput | PlatformCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Platform update
    */
@@ -4780,6 +5152,7 @@ export namespace Prisma {
      */
     where: PlatformWhereUniqueInput
   }
+
   /**
    * Platform updateMany
    */
@@ -4797,6 +5170,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Platform updateManyAndReturn
    */
@@ -4822,6 +5196,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Platform upsert
    */
@@ -4847,6 +5222,7 @@ export namespace Prisma {
      */
     update: XOR<PlatformUpdateInput, PlatformUncheckedUpdateInput>
   }
+
   /**
    * Platform delete
    */
@@ -4864,6 +5240,7 @@ export namespace Prisma {
      */
     where: PlatformWhereUniqueInput
   }
+
   /**
    * Platform deleteMany
    */
@@ -4877,6 +5254,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Platform without action
    */
@@ -4890,9 +5268,12 @@ export namespace Prisma {
      */
     omit?: PlatformOmit<ExtArgs> | null
   }
+
+
   /**
    * Model UserGame
    */
+
   export type AggregateUserGame = {
     _count: UserGameCountAggregateOutputType | null
     _avg: UserGameAvgAggregateOutputType | null
@@ -4900,6 +5281,7 @@ export namespace Prisma {
     _min: UserGameMinAggregateOutputType | null
     _max: UserGameMaxAggregateOutputType | null
   }
+
   export type UserGameAvgAggregateOutputType = {
     id: number | null
     userId: number | null
@@ -4907,6 +5289,7 @@ export namespace Prisma {
     platformIds: number | null
     playtimeMinutes: number | null
   }
+
   export type UserGameSumAggregateOutputType = {
     id: number | null
     userId: number | null
@@ -4914,6 +5297,7 @@ export namespace Prisma {
     platformIds: number[]
     playtimeMinutes: number | null
   }
+
   export type UserGameMinAggregateOutputType = {
     id: number | null
     userId: number | null
@@ -4925,6 +5309,7 @@ export namespace Prisma {
     isFavorite: boolean | null
     notes: string | null
   }
+
   export type UserGameMaxAggregateOutputType = {
     id: number | null
     userId: number | null
@@ -4936,6 +5321,7 @@ export namespace Prisma {
     isFavorite: boolean | null
     notes: string | null
   }
+
   export type UserGameCountAggregateOutputType = {
     id: number
     userId: number
@@ -4949,6 +5335,8 @@ export namespace Prisma {
     notes: number
     _all: number
   }
+
+
   export type UserGameAvgAggregateInputType = {
     id?: true
     userId?: true
@@ -4956,6 +5344,7 @@ export namespace Prisma {
     platformIds?: true
     playtimeMinutes?: true
   }
+
   export type UserGameSumAggregateInputType = {
     id?: true
     userId?: true
@@ -4963,6 +5352,7 @@ export namespace Prisma {
     platformIds?: true
     playtimeMinutes?: true
   }
+
   export type UserGameMinAggregateInputType = {
     id?: true
     userId?: true
@@ -4974,6 +5364,7 @@ export namespace Prisma {
     isFavorite?: true
     notes?: true
   }
+
   export type UserGameMaxAggregateInputType = {
     id?: true
     userId?: true
@@ -4985,6 +5376,7 @@ export namespace Prisma {
     isFavorite?: true
     notes?: true
   }
+
   export type UserGameCountAggregateInputType = {
     id?: true
     userId?: true
@@ -4998,6 +5390,7 @@ export namespace Prisma {
     notes?: true
     _all?: true
   }
+
   export type UserGameAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which UserGame to aggregate.
@@ -5058,6 +5451,7 @@ export namespace Prisma {
     **/
     _max?: UserGameMaxAggregateInputType
   }
+
   export type GetUserGameAggregateType<T extends UserGameAggregateArgs> = {
         [P in keyof T & keyof AggregateUserGame]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -5065,6 +5459,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateUserGame[P]>
       : GetScalarType<T[P], AggregateUserGame[P]>
   }
+
+
+
+
   export type UserGameGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserGameWhereInput
     orderBy?: UserGameOrderByWithAggregationInput | UserGameOrderByWithAggregationInput[]
@@ -5078,6 +5476,7 @@ export namespace Prisma {
     _min?: UserGameMinAggregateInputType
     _max?: UserGameMaxAggregateInputType
   }
+
   export type UserGameGroupByOutputType = {
     id: number
     userId: number
@@ -5095,6 +5494,7 @@ export namespace Prisma {
     _min: UserGameMinAggregateOutputType | null
     _max: UserGameMaxAggregateOutputType | null
   }
+
   type GetUserGameGroupByPayload<T extends UserGameGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<UserGameGroupByOutputType, T['by']> &
@@ -5107,6 +5507,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type UserGameSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -5121,6 +5523,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
+
   export type UserGameSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -5135,6 +5538,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
+
   export type UserGameSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -5149,6 +5553,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
+
   export type UserGameSelectScalar = {
     id?: boolean
     userId?: boolean
@@ -5161,6 +5566,7 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: boolean
   }
+
   export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "platformIds" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "isFavorite" | "notes", ExtArgs["result"]["userGame"]>
   export type UserGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
@@ -5174,6 +5580,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
+
   export type $UserGamePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserGame"
     objects: {
@@ -5194,11 +5601,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["userGame"]>
     composites: {}
   }
+
   type UserGameGetPayload<S extends boolean | null | undefined | UserGameDefaultArgs> = $Result.GetResult<Prisma.$UserGamePayload, S>
+
   type UserGameCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<UserGameFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: UserGameCountAggregateInputType | true
     }
+
   export interface UserGameDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserGame'], meta: { name: 'UserGame' } }
     /**
@@ -5213,6 +5623,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends UserGameFindUniqueArgs>(args: SelectSubset<T, UserGameFindUniqueArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one UserGame that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -5226,6 +5637,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends UserGameFindUniqueOrThrowArgs>(args: SelectSubset<T, UserGameFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first UserGame that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -5240,6 +5652,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends UserGameFindFirstArgs>(args?: SelectSubset<T, UserGameFindFirstArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first UserGame that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -5255,6 +5668,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends UserGameFindFirstOrThrowArgs>(args?: SelectSubset<T, UserGameFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more UserGames that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -5272,6 +5686,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends UserGameFindManyArgs>(args?: SelectSubset<T, UserGameFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a UserGame.
      * @param {UserGameCreateArgs} args - Arguments to create a UserGame.
@@ -5285,6 +5700,7 @@ export namespace Prisma {
      * 
      */
     create<T extends UserGameCreateArgs>(args: SelectSubset<T, UserGameCreateArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many UserGames.
      * @param {UserGameCreateManyArgs} args - Arguments to create many UserGames.
@@ -5298,6 +5714,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends UserGameCreateManyArgs>(args?: SelectSubset<T, UserGameCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many UserGames and returns the data saved in the database.
      * @param {UserGameCreateManyAndReturnArgs} args - Arguments to create many UserGames.
@@ -5321,6 +5738,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends UserGameCreateManyAndReturnArgs>(args?: SelectSubset<T, UserGameCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a UserGame.
      * @param {UserGameDeleteArgs} args - Arguments to delete one UserGame.
@@ -5334,6 +5752,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends UserGameDeleteArgs>(args: SelectSubset<T, UserGameDeleteArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one UserGame.
      * @param {UserGameUpdateArgs} args - Arguments to update one UserGame.
@@ -5350,6 +5769,7 @@ export namespace Prisma {
      * 
      */
     update<T extends UserGameUpdateArgs>(args: SelectSubset<T, UserGameUpdateArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more UserGames.
      * @param {UserGameDeleteManyArgs} args - Arguments to filter UserGames to delete.
@@ -5363,6 +5783,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends UserGameDeleteManyArgs>(args?: SelectSubset<T, UserGameDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more UserGames.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -5381,6 +5802,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends UserGameUpdateManyArgs>(args: SelectSubset<T, UserGameUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more UserGames and returns the data updated in the database.
      * @param {UserGameUpdateManyAndReturnArgs} args - Arguments to update many UserGames.
@@ -5410,6 +5832,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends UserGameUpdateManyAndReturnArgs>(args: SelectSubset<T, UserGameUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one UserGame.
      * @param {UserGameUpsertArgs} args - Arguments to update or create a UserGame.
@@ -5428,6 +5851,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends UserGameUpsertArgs>(args: SelectSubset<T, UserGameUpsertArgs<ExtArgs>>): Prisma__UserGameClient<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of UserGames.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -5450,6 +5875,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], UserGameCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a UserGame.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -5475,6 +5901,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends UserGameAggregateArgs>(args: Subset<T, UserGameAggregateArgs>): Prisma.PrismaPromise<GetUserGameAggregateType<T>>
+
     /**
      * Group by UserGame.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -5556,6 +5983,7 @@ export namespace Prisma {
    */
   readonly fields: UserGameFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for UserGame.
    * Why is this prefixed with `Prisma__`?
@@ -5587,6 +6015,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the UserGame model
    */
@@ -5602,6 +6034,8 @@ export namespace Prisma {
     readonly isFavorite: FieldRef<"UserGame", 'Boolean'>
     readonly notes: FieldRef<"UserGame", 'String'>
   }
+    
+
   // Custom InputTypes
   /**
    * UserGame findUnique
@@ -5624,6 +6058,7 @@ export namespace Prisma {
      */
     where: UserGameWhereUniqueInput
   }
+
   /**
    * UserGame findUniqueOrThrow
    */
@@ -5645,6 +6080,7 @@ export namespace Prisma {
      */
     where: UserGameWhereUniqueInput
   }
+
   /**
    * UserGame findFirst
    */
@@ -5696,6 +6132,7 @@ export namespace Prisma {
      */
     distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
   }
+
   /**
    * UserGame findFirstOrThrow
    */
@@ -5747,6 +6184,7 @@ export namespace Prisma {
      */
     distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
   }
+
   /**
    * UserGame findMany
    */
@@ -5793,6 +6231,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserGameScalarFieldEnum | UserGameScalarFieldEnum[]
   }
+
   /**
    * UserGame create
    */
@@ -5814,6 +6253,7 @@ export namespace Prisma {
      */
     data: XOR<UserGameCreateInput, UserGameUncheckedCreateInput>
   }
+
   /**
    * UserGame createMany
    */
@@ -5824,6 +6264,7 @@ export namespace Prisma {
     data: UserGameCreateManyInput | UserGameCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * UserGame createManyAndReturn
    */
@@ -5846,6 +6287,7 @@ export namespace Prisma {
      */
     include?: UserGameIncludeCreateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * UserGame update
    */
@@ -5871,6 +6313,7 @@ export namespace Prisma {
      */
     where: UserGameWhereUniqueInput
   }
+
   /**
    * UserGame updateMany
    */
@@ -5888,6 +6331,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * UserGame updateManyAndReturn
    */
@@ -5917,6 +6361,7 @@ export namespace Prisma {
      */
     include?: UserGameIncludeUpdateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * UserGame upsert
    */
@@ -5946,6 +6391,7 @@ export namespace Prisma {
      */
     update: XOR<UserGameUpdateInput, UserGameUncheckedUpdateInput>
   }
+
   /**
    * UserGame delete
    */
@@ -5967,6 +6413,7 @@ export namespace Prisma {
      */
     where: UserGameWhereUniqueInput
   }
+
   /**
    * UserGame deleteMany
    */
@@ -5980,6 +6427,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * UserGame without action
    */
@@ -5997,9 +6445,12 @@ export namespace Prisma {
      */
     include?: UserGameInclude<ExtArgs> | null
   }
+
+
   /**
    * Model Deal
    */
+
   export type AggregateDeal = {
     _count: DealCountAggregateOutputType | null
     _avg: DealAvgAggregateOutputType | null
@@ -6007,6 +6458,7 @@ export namespace Prisma {
     _min: DealMinAggregateOutputType | null
     _max: DealMaxAggregateOutputType | null
   }
+
   export type DealAvgAggregateOutputType = {
     id: number | null
     gameId: number | null
@@ -6015,6 +6467,7 @@ export namespace Prisma {
     discountPercent: number | null
     originalPrice: number | null
   }
+
   export type DealSumAggregateOutputType = {
     id: number | null
     gameId: number | null
@@ -6023,6 +6476,7 @@ export namespace Prisma {
     discountPercent: number | null
     originalPrice: number | null
   }
+
   export type DealMinAggregateOutputType = {
     id: number | null
     gameId: number | null
@@ -6040,6 +6494,7 @@ export namespace Prisma {
     externalId: string | null
     source: string | null
   }
+
   export type DealMaxAggregateOutputType = {
     id: number | null
     gameId: number | null
@@ -6057,6 +6512,7 @@ export namespace Prisma {
     externalId: string | null
     source: string | null
   }
+
   export type DealCountAggregateOutputType = {
     id: number
     gameId: number
@@ -6076,6 +6532,8 @@ export namespace Prisma {
     source: number
     _all: number
   }
+
+
   export type DealAvgAggregateInputType = {
     id?: true
     gameId?: true
@@ -6084,6 +6542,7 @@ export namespace Prisma {
     discountPercent?: true
     originalPrice?: true
   }
+
   export type DealSumAggregateInputType = {
     id?: true
     gameId?: true
@@ -6092,6 +6551,7 @@ export namespace Prisma {
     discountPercent?: true
     originalPrice?: true
   }
+
   export type DealMinAggregateInputType = {
     id?: true
     gameId?: true
@@ -6109,6 +6569,7 @@ export namespace Prisma {
     externalId?: true
     source?: true
   }
+
   export type DealMaxAggregateInputType = {
     id?: true
     gameId?: true
@@ -6126,6 +6587,7 @@ export namespace Prisma {
     externalId?: true
     source?: true
   }
+
   export type DealCountAggregateInputType = {
     id?: true
     gameId?: true
@@ -6145,6 +6607,7 @@ export namespace Prisma {
     source?: true
     _all?: true
   }
+
   export type DealAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Deal to aggregate.
@@ -6205,6 +6668,7 @@ export namespace Prisma {
     **/
     _max?: DealMaxAggregateInputType
   }
+
   export type GetDealAggregateType<T extends DealAggregateArgs> = {
         [P in keyof T & keyof AggregateDeal]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -6212,6 +6676,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateDeal[P]>
       : GetScalarType<T[P], AggregateDeal[P]>
   }
+
+
+
+
   export type DealGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DealWhereInput
     orderBy?: DealOrderByWithAggregationInput | DealOrderByWithAggregationInput[]
@@ -6225,6 +6693,7 @@ export namespace Prisma {
     _min?: DealMinAggregateInputType
     _max?: DealMaxAggregateInputType
   }
+
   export type DealGroupByOutputType = {
     id: number
     gameId: number | null
@@ -6248,6 +6717,7 @@ export namespace Prisma {
     _min: DealMinAggregateOutputType | null
     _max: DealMaxAggregateOutputType | null
   }
+
   type GetDealGroupByPayload<T extends DealGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<DealGroupByOutputType, T['by']> &
@@ -6260,6 +6730,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type DealSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     gameId?: boolean
@@ -6279,6 +6751,7 @@ export namespace Prisma {
     source?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
+
   export type DealSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     gameId?: boolean
@@ -6298,6 +6771,7 @@ export namespace Prisma {
     source?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
+
   export type DealSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     gameId?: boolean
@@ -6317,6 +6791,7 @@ export namespace Prisma {
     source?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
+
   export type DealSelectScalar = {
     id?: boolean
     gameId?: boolean
@@ -6335,6 +6810,7 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
   }
+
   export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "platformIds" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source", ExtArgs["result"]["deal"]>
   export type DealInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | Deal$gameArgs<ExtArgs>
@@ -6345,6 +6821,7 @@ export namespace Prisma {
   export type DealIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | Deal$gameArgs<ExtArgs>
   }
+
   export type $DealPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Deal"
     objects: {
@@ -6370,11 +6847,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["deal"]>
     composites: {}
   }
+
   type DealGetPayload<S extends boolean | null | undefined | DealDefaultArgs> = $Result.GetResult<Prisma.$DealPayload, S>
+
   type DealCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<DealFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: DealCountAggregateInputType | true
     }
+
   export interface DealDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Deal'], meta: { name: 'Deal' } }
     /**
@@ -6389,6 +6869,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends DealFindUniqueArgs>(args: SelectSubset<T, DealFindUniqueArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one Deal that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -6402,6 +6883,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends DealFindUniqueOrThrowArgs>(args: SelectSubset<T, DealFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Deal that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -6416,6 +6898,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends DealFindFirstArgs>(args?: SelectSubset<T, DealFindFirstArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Deal that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -6431,6 +6914,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends DealFindFirstOrThrowArgs>(args?: SelectSubset<T, DealFindFirstOrThrowArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more Deals that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -6448,6 +6932,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends DealFindManyArgs>(args?: SelectSubset<T, DealFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a Deal.
      * @param {DealCreateArgs} args - Arguments to create a Deal.
@@ -6461,6 +6946,7 @@ export namespace Prisma {
      * 
      */
     create<T extends DealCreateArgs>(args: SelectSubset<T, DealCreateArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many Deals.
      * @param {DealCreateManyArgs} args - Arguments to create many Deals.
@@ -6474,6 +6960,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends DealCreateManyArgs>(args?: SelectSubset<T, DealCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many Deals and returns the data saved in the database.
      * @param {DealCreateManyAndReturnArgs} args - Arguments to create many Deals.
@@ -6497,6 +6984,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends DealCreateManyAndReturnArgs>(args?: SelectSubset<T, DealCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a Deal.
      * @param {DealDeleteArgs} args - Arguments to delete one Deal.
@@ -6510,6 +6998,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends DealDeleteArgs>(args: SelectSubset<T, DealDeleteArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one Deal.
      * @param {DealUpdateArgs} args - Arguments to update one Deal.
@@ -6526,6 +7015,7 @@ export namespace Prisma {
      * 
      */
     update<T extends DealUpdateArgs>(args: SelectSubset<T, DealUpdateArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more Deals.
      * @param {DealDeleteManyArgs} args - Arguments to filter Deals to delete.
@@ -6539,6 +7029,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends DealDeleteManyArgs>(args?: SelectSubset<T, DealDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Deals.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -6557,6 +7048,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends DealUpdateManyArgs>(args: SelectSubset<T, DealUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Deals and returns the data updated in the database.
      * @param {DealUpdateManyAndReturnArgs} args - Arguments to update many Deals.
@@ -6586,6 +7078,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends DealUpdateManyAndReturnArgs>(args: SelectSubset<T, DealUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one Deal.
      * @param {DealUpsertArgs} args - Arguments to update or create a Deal.
@@ -6604,6 +7097,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends DealUpsertArgs>(args: SelectSubset<T, DealUpsertArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of Deals.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -6626,6 +7121,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], DealCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a Deal.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -6651,6 +7147,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends DealAggregateArgs>(args: Subset<T, DealAggregateArgs>): Prisma.PrismaPromise<GetDealAggregateType<T>>
+
     /**
      * Group by Deal.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -6732,6 +7229,7 @@ export namespace Prisma {
    */
   readonly fields: DealFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for Deal.
    * Why is this prefixed with `Prisma__`?
@@ -6762,6 +7260,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the Deal model
    */
@@ -6783,6 +7285,8 @@ export namespace Prisma {
     readonly externalId: FieldRef<"Deal", 'String'>
     readonly source: FieldRef<"Deal", 'String'>
   }
+    
+
   // Custom InputTypes
   /**
    * Deal findUnique
@@ -6805,6 +7309,7 @@ export namespace Prisma {
      */
     where: DealWhereUniqueInput
   }
+
   /**
    * Deal findUniqueOrThrow
    */
@@ -6826,6 +7331,7 @@ export namespace Prisma {
      */
     where: DealWhereUniqueInput
   }
+
   /**
    * Deal findFirst
    */
@@ -6877,6 +7383,7 @@ export namespace Prisma {
      */
     distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
   }
+
   /**
    * Deal findFirstOrThrow
    */
@@ -6928,6 +7435,7 @@ export namespace Prisma {
      */
     distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
   }
+
   /**
    * Deal findMany
    */
@@ -6974,6 +7482,7 @@ export namespace Prisma {
     skip?: number
     distinct?: DealScalarFieldEnum | DealScalarFieldEnum[]
   }
+
   /**
    * Deal create
    */
@@ -6995,6 +7504,7 @@ export namespace Prisma {
      */
     data: XOR<DealCreateInput, DealUncheckedCreateInput>
   }
+
   /**
    * Deal createMany
    */
@@ -7005,6 +7515,7 @@ export namespace Prisma {
     data: DealCreateManyInput | DealCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Deal createManyAndReturn
    */
@@ -7027,6 +7538,7 @@ export namespace Prisma {
      */
     include?: DealIncludeCreateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * Deal update
    */
@@ -7052,6 +7564,7 @@ export namespace Prisma {
      */
     where: DealWhereUniqueInput
   }
+
   /**
    * Deal updateMany
    */
@@ -7069,6 +7582,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Deal updateManyAndReturn
    */
@@ -7098,6 +7612,7 @@ export namespace Prisma {
      */
     include?: DealIncludeUpdateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * Deal upsert
    */
@@ -7127,6 +7642,7 @@ export namespace Prisma {
      */
     update: XOR<DealUpdateInput, DealUncheckedUpdateInput>
   }
+
   /**
    * Deal delete
    */
@@ -7148,6 +7664,7 @@ export namespace Prisma {
      */
     where: DealWhereUniqueInput
   }
+
   /**
    * Deal deleteMany
    */
@@ -7161,6 +7678,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Deal.game
    */
@@ -7179,6 +7697,7 @@ export namespace Prisma {
     include?: GameInclude<ExtArgs> | null
     where?: GameWhereInput
   }
+
   /**
    * Deal without action
    */
@@ -7196,9 +7715,12 @@ export namespace Prisma {
      */
     include?: DealInclude<ExtArgs> | null
   }
+
+
   /**
    * Model Achievement
    */
+
   export type AggregateAchievement = {
     _count: AchievementCountAggregateOutputType | null
     _avg: AchievementAvgAggregateOutputType | null
@@ -7206,16 +7728,19 @@ export namespace Prisma {
     _min: AchievementMinAggregateOutputType | null
     _max: AchievementMaxAggregateOutputType | null
   }
+
   export type AchievementAvgAggregateOutputType = {
     id: number | null
     xpReward: number | null
     creditsReward: number | null
   }
+
   export type AchievementSumAggregateOutputType = {
     id: number | null
     xpReward: number | null
     creditsReward: number | null
   }
+
   export type AchievementMinAggregateOutputType = {
     id: number | null
     name: string | null
@@ -7226,6 +7751,7 @@ export namespace Prisma {
     creditsReward: number | null
     createdAt: Date | null
   }
+
   export type AchievementMaxAggregateOutputType = {
     id: number | null
     name: string | null
@@ -7236,6 +7762,7 @@ export namespace Prisma {
     creditsReward: number | null
     createdAt: Date | null
   }
+
   export type AchievementCountAggregateOutputType = {
     id: number
     name: number
@@ -7247,16 +7774,20 @@ export namespace Prisma {
     createdAt: number
     _all: number
   }
+
+
   export type AchievementAvgAggregateInputType = {
     id?: true
     xpReward?: true
     creditsReward?: true
   }
+
   export type AchievementSumAggregateInputType = {
     id?: true
     xpReward?: true
     creditsReward?: true
   }
+
   export type AchievementMinAggregateInputType = {
     id?: true
     name?: true
@@ -7267,6 +7798,7 @@ export namespace Prisma {
     creditsReward?: true
     createdAt?: true
   }
+
   export type AchievementMaxAggregateInputType = {
     id?: true
     name?: true
@@ -7277,6 +7809,7 @@ export namespace Prisma {
     creditsReward?: true
     createdAt?: true
   }
+
   export type AchievementCountAggregateInputType = {
     id?: true
     name?: true
@@ -7288,6 +7821,7 @@ export namespace Prisma {
     createdAt?: true
     _all?: true
   }
+
   export type AchievementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Achievement to aggregate.
@@ -7348,6 +7882,7 @@ export namespace Prisma {
     **/
     _max?: AchievementMaxAggregateInputType
   }
+
   export type GetAchievementAggregateType<T extends AchievementAggregateArgs> = {
         [P in keyof T & keyof AggregateAchievement]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -7355,6 +7890,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateAchievement[P]>
       : GetScalarType<T[P], AggregateAchievement[P]>
   }
+
+
+
+
   export type AchievementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AchievementWhereInput
     orderBy?: AchievementOrderByWithAggregationInput | AchievementOrderByWithAggregationInput[]
@@ -7368,6 +7907,7 @@ export namespace Prisma {
     _min?: AchievementMinAggregateInputType
     _max?: AchievementMaxAggregateInputType
   }
+
   export type AchievementGroupByOutputType = {
     id: number
     name: string
@@ -7383,6 +7923,7 @@ export namespace Prisma {
     _min: AchievementMinAggregateOutputType | null
     _max: AchievementMaxAggregateOutputType | null
   }
+
   type GetAchievementGroupByPayload<T extends AchievementGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<AchievementGroupByOutputType, T['by']> &
@@ -7395,6 +7936,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type AchievementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
@@ -7407,6 +7950,7 @@ export namespace Prisma {
     userAchievements?: boolean | Achievement$userAchievementsArgs<ExtArgs>
     _count?: boolean | AchievementCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["achievement"]>
+
   export type AchievementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
@@ -7417,6 +7961,7 @@ export namespace Prisma {
     creditsReward?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["achievement"]>
+
   export type AchievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
@@ -7427,6 +7972,7 @@ export namespace Prisma {
     creditsReward?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["achievement"]>
+
   export type AchievementSelectScalar = {
     id?: boolean
     name?: boolean
@@ -7437,6 +7983,7 @@ export namespace Prisma {
     creditsReward?: boolean
     createdAt?: boolean
   }
+
   export type AchievementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "iconUrl" | "criteria" | "xpReward" | "creditsReward" | "createdAt", ExtArgs["result"]["achievement"]>
   export type AchievementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userAchievements?: boolean | Achievement$userAchievementsArgs<ExtArgs>
@@ -7444,6 +7991,7 @@ export namespace Prisma {
   }
   export type AchievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
   export type AchievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
   export type $AchievementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Achievement"
     objects: {
@@ -7461,11 +8009,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["achievement"]>
     composites: {}
   }
+
   type AchievementGetPayload<S extends boolean | null | undefined | AchievementDefaultArgs> = $Result.GetResult<Prisma.$AchievementPayload, S>
+
   type AchievementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<AchievementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: AchievementCountAggregateInputType | true
     }
+
   export interface AchievementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Achievement'], meta: { name: 'Achievement' } }
     /**
@@ -7480,6 +8031,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends AchievementFindUniqueArgs>(args: SelectSubset<T, AchievementFindUniqueArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one Achievement that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -7493,6 +8045,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends AchievementFindUniqueOrThrowArgs>(args: SelectSubset<T, AchievementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Achievement that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -7507,6 +8060,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends AchievementFindFirstArgs>(args?: SelectSubset<T, AchievementFindFirstArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Achievement that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -7522,6 +8076,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends AchievementFindFirstOrThrowArgs>(args?: SelectSubset<T, AchievementFindFirstOrThrowArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more Achievements that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -7539,6 +8094,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends AchievementFindManyArgs>(args?: SelectSubset<T, AchievementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a Achievement.
      * @param {AchievementCreateArgs} args - Arguments to create a Achievement.
@@ -7552,6 +8108,7 @@ export namespace Prisma {
      * 
      */
     create<T extends AchievementCreateArgs>(args: SelectSubset<T, AchievementCreateArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many Achievements.
      * @param {AchievementCreateManyArgs} args - Arguments to create many Achievements.
@@ -7565,6 +8122,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends AchievementCreateManyArgs>(args?: SelectSubset<T, AchievementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many Achievements and returns the data saved in the database.
      * @param {AchievementCreateManyAndReturnArgs} args - Arguments to create many Achievements.
@@ -7588,6 +8146,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends AchievementCreateManyAndReturnArgs>(args?: SelectSubset<T, AchievementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a Achievement.
      * @param {AchievementDeleteArgs} args - Arguments to delete one Achievement.
@@ -7601,6 +8160,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends AchievementDeleteArgs>(args: SelectSubset<T, AchievementDeleteArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one Achievement.
      * @param {AchievementUpdateArgs} args - Arguments to update one Achievement.
@@ -7617,6 +8177,7 @@ export namespace Prisma {
      * 
      */
     update<T extends AchievementUpdateArgs>(args: SelectSubset<T, AchievementUpdateArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more Achievements.
      * @param {AchievementDeleteManyArgs} args - Arguments to filter Achievements to delete.
@@ -7630,6 +8191,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends AchievementDeleteManyArgs>(args?: SelectSubset<T, AchievementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Achievements.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -7648,6 +8210,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends AchievementUpdateManyArgs>(args: SelectSubset<T, AchievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Achievements and returns the data updated in the database.
      * @param {AchievementUpdateManyAndReturnArgs} args - Arguments to update many Achievements.
@@ -7677,6 +8240,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends AchievementUpdateManyAndReturnArgs>(args: SelectSubset<T, AchievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one Achievement.
      * @param {AchievementUpsertArgs} args - Arguments to update or create a Achievement.
@@ -7695,6 +8259,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends AchievementUpsertArgs>(args: SelectSubset<T, AchievementUpsertArgs<ExtArgs>>): Prisma__AchievementClient<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of Achievements.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -7717,6 +8283,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], AchievementCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a Achievement.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -7742,6 +8309,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends AchievementAggregateArgs>(args: Subset<T, AchievementAggregateArgs>): Prisma.PrismaPromise<GetAchievementAggregateType<T>>
+
     /**
      * Group by Achievement.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -7823,6 +8391,7 @@ export namespace Prisma {
    */
   readonly fields: AchievementFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for Achievement.
    * Why is this prefixed with `Prisma__`?
@@ -7853,6 +8422,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the Achievement model
    */
@@ -7866,6 +8439,8 @@ export namespace Prisma {
     readonly creditsReward: FieldRef<"Achievement", 'Int'>
     readonly createdAt: FieldRef<"Achievement", 'DateTime'>
   }
+    
+
   // Custom InputTypes
   /**
    * Achievement findUnique
@@ -7888,6 +8463,7 @@ export namespace Prisma {
      */
     where: AchievementWhereUniqueInput
   }
+
   /**
    * Achievement findUniqueOrThrow
    */
@@ -7909,6 +8485,7 @@ export namespace Prisma {
      */
     where: AchievementWhereUniqueInput
   }
+
   /**
    * Achievement findFirst
    */
@@ -7960,6 +8537,7 @@ export namespace Prisma {
      */
     distinct?: AchievementScalarFieldEnum | AchievementScalarFieldEnum[]
   }
+
   /**
    * Achievement findFirstOrThrow
    */
@@ -8011,6 +8589,7 @@ export namespace Prisma {
      */
     distinct?: AchievementScalarFieldEnum | AchievementScalarFieldEnum[]
   }
+
   /**
    * Achievement findMany
    */
@@ -8057,6 +8636,7 @@ export namespace Prisma {
     skip?: number
     distinct?: AchievementScalarFieldEnum | AchievementScalarFieldEnum[]
   }
+
   /**
    * Achievement create
    */
@@ -8078,6 +8658,7 @@ export namespace Prisma {
      */
     data: XOR<AchievementCreateInput, AchievementUncheckedCreateInput>
   }
+
   /**
    * Achievement createMany
    */
@@ -8088,6 +8669,7 @@ export namespace Prisma {
     data: AchievementCreateManyInput | AchievementCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Achievement createManyAndReturn
    */
@@ -8106,6 +8688,7 @@ export namespace Prisma {
     data: AchievementCreateManyInput | AchievementCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Achievement update
    */
@@ -8131,6 +8714,7 @@ export namespace Prisma {
      */
     where: AchievementWhereUniqueInput
   }
+
   /**
    * Achievement updateMany
    */
@@ -8148,6 +8732,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Achievement updateManyAndReturn
    */
@@ -8173,6 +8758,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Achievement upsert
    */
@@ -8202,6 +8788,7 @@ export namespace Prisma {
      */
     update: XOR<AchievementUpdateInput, AchievementUncheckedUpdateInput>
   }
+
   /**
    * Achievement delete
    */
@@ -8223,6 +8810,7 @@ export namespace Prisma {
      */
     where: AchievementWhereUniqueInput
   }
+
   /**
    * Achievement deleteMany
    */
@@ -8236,6 +8824,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Achievement.userAchievements
    */
@@ -8259,6 +8848,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
+
   /**
    * Achievement without action
    */
@@ -8276,9 +8866,12 @@ export namespace Prisma {
      */
     include?: AchievementInclude<ExtArgs> | null
   }
+
+
   /**
    * Model UserAchievement
    */
+
   export type AggregateUserAchievement = {
     _count: UserAchievementCountAggregateOutputType | null
     _avg: UserAchievementAvgAggregateOutputType | null
@@ -8286,28 +8879,33 @@ export namespace Prisma {
     _min: UserAchievementMinAggregateOutputType | null
     _max: UserAchievementMaxAggregateOutputType | null
   }
+
   export type UserAchievementAvgAggregateOutputType = {
     id: number | null
     userId: number | null
     achievementId: number | null
   }
+
   export type UserAchievementSumAggregateOutputType = {
     id: number | null
     userId: number | null
     achievementId: number | null
   }
+
   export type UserAchievementMinAggregateOutputType = {
     id: number | null
     userId: number | null
     achievementId: number | null
     unlockedAt: Date | null
   }
+
   export type UserAchievementMaxAggregateOutputType = {
     id: number | null
     userId: number | null
     achievementId: number | null
     unlockedAt: Date | null
   }
+
   export type UserAchievementCountAggregateOutputType = {
     id: number
     userId: number
@@ -8315,28 +8913,34 @@ export namespace Prisma {
     unlockedAt: number
     _all: number
   }
+
+
   export type UserAchievementAvgAggregateInputType = {
     id?: true
     userId?: true
     achievementId?: true
   }
+
   export type UserAchievementSumAggregateInputType = {
     id?: true
     userId?: true
     achievementId?: true
   }
+
   export type UserAchievementMinAggregateInputType = {
     id?: true
     userId?: true
     achievementId?: true
     unlockedAt?: true
   }
+
   export type UserAchievementMaxAggregateInputType = {
     id?: true
     userId?: true
     achievementId?: true
     unlockedAt?: true
   }
+
   export type UserAchievementCountAggregateInputType = {
     id?: true
     userId?: true
@@ -8344,6 +8948,7 @@ export namespace Prisma {
     unlockedAt?: true
     _all?: true
   }
+
   export type UserAchievementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which UserAchievement to aggregate.
@@ -8404,6 +9009,7 @@ export namespace Prisma {
     **/
     _max?: UserAchievementMaxAggregateInputType
   }
+
   export type GetUserAchievementAggregateType<T extends UserAchievementAggregateArgs> = {
         [P in keyof T & keyof AggregateUserAchievement]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -8411,6 +9017,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateUserAchievement[P]>
       : GetScalarType<T[P], AggregateUserAchievement[P]>
   }
+
+
+
+
   export type UserAchievementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserAchievementWhereInput
     orderBy?: UserAchievementOrderByWithAggregationInput | UserAchievementOrderByWithAggregationInput[]
@@ -8424,6 +9034,7 @@ export namespace Prisma {
     _min?: UserAchievementMinAggregateInputType
     _max?: UserAchievementMaxAggregateInputType
   }
+
   export type UserAchievementGroupByOutputType = {
     id: number
     userId: number
@@ -8435,6 +9046,7 @@ export namespace Prisma {
     _min: UserAchievementMinAggregateOutputType | null
     _max: UserAchievementMaxAggregateOutputType | null
   }
+
   type GetUserAchievementGroupByPayload<T extends UserAchievementGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<UserAchievementGroupByOutputType, T['by']> &
@@ -8447,6 +9059,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type UserAchievementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -8455,6 +9069,7 @@ export namespace Prisma {
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userAchievement"]>
+
   export type UserAchievementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -8463,6 +9078,7 @@ export namespace Prisma {
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userAchievement"]>
+
   export type UserAchievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -8471,12 +9087,14 @@ export namespace Prisma {
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userAchievement"]>
+
   export type UserAchievementSelectScalar = {
     id?: boolean
     userId?: boolean
     achievementId?: boolean
     unlockedAt?: boolean
   }
+
   export type UserAchievementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "achievementId" | "unlockedAt", ExtArgs["result"]["userAchievement"]>
   export type UserAchievementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
@@ -8490,6 +9108,7 @@ export namespace Prisma {
     achievement?: boolean | AchievementDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
+
   export type $UserAchievementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserAchievement"
     objects: {
@@ -8504,11 +9123,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["userAchievement"]>
     composites: {}
   }
+
   type UserAchievementGetPayload<S extends boolean | null | undefined | UserAchievementDefaultArgs> = $Result.GetResult<Prisma.$UserAchievementPayload, S>
+
   type UserAchievementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<UserAchievementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: UserAchievementCountAggregateInputType | true
     }
+
   export interface UserAchievementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserAchievement'], meta: { name: 'UserAchievement' } }
     /**
@@ -8523,6 +9145,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends UserAchievementFindUniqueArgs>(args: SelectSubset<T, UserAchievementFindUniqueArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one UserAchievement that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -8536,6 +9159,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends UserAchievementFindUniqueOrThrowArgs>(args: SelectSubset<T, UserAchievementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first UserAchievement that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -8550,6 +9174,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends UserAchievementFindFirstArgs>(args?: SelectSubset<T, UserAchievementFindFirstArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first UserAchievement that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -8565,6 +9190,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends UserAchievementFindFirstOrThrowArgs>(args?: SelectSubset<T, UserAchievementFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more UserAchievements that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -8582,6 +9208,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends UserAchievementFindManyArgs>(args?: SelectSubset<T, UserAchievementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a UserAchievement.
      * @param {UserAchievementCreateArgs} args - Arguments to create a UserAchievement.
@@ -8595,6 +9222,7 @@ export namespace Prisma {
      * 
      */
     create<T extends UserAchievementCreateArgs>(args: SelectSubset<T, UserAchievementCreateArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many UserAchievements.
      * @param {UserAchievementCreateManyArgs} args - Arguments to create many UserAchievements.
@@ -8608,6 +9236,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends UserAchievementCreateManyArgs>(args?: SelectSubset<T, UserAchievementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many UserAchievements and returns the data saved in the database.
      * @param {UserAchievementCreateManyAndReturnArgs} args - Arguments to create many UserAchievements.
@@ -8631,6 +9260,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends UserAchievementCreateManyAndReturnArgs>(args?: SelectSubset<T, UserAchievementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a UserAchievement.
      * @param {UserAchievementDeleteArgs} args - Arguments to delete one UserAchievement.
@@ -8644,6 +9274,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends UserAchievementDeleteArgs>(args: SelectSubset<T, UserAchievementDeleteArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one UserAchievement.
      * @param {UserAchievementUpdateArgs} args - Arguments to update one UserAchievement.
@@ -8660,6 +9291,7 @@ export namespace Prisma {
      * 
      */
     update<T extends UserAchievementUpdateArgs>(args: SelectSubset<T, UserAchievementUpdateArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more UserAchievements.
      * @param {UserAchievementDeleteManyArgs} args - Arguments to filter UserAchievements to delete.
@@ -8673,6 +9305,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends UserAchievementDeleteManyArgs>(args?: SelectSubset<T, UserAchievementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more UserAchievements.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -8691,6 +9324,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends UserAchievementUpdateManyArgs>(args: SelectSubset<T, UserAchievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more UserAchievements and returns the data updated in the database.
      * @param {UserAchievementUpdateManyAndReturnArgs} args - Arguments to update many UserAchievements.
@@ -8720,6 +9354,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends UserAchievementUpdateManyAndReturnArgs>(args: SelectSubset<T, UserAchievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one UserAchievement.
      * @param {UserAchievementUpsertArgs} args - Arguments to update or create a UserAchievement.
@@ -8738,6 +9373,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends UserAchievementUpsertArgs>(args: SelectSubset<T, UserAchievementUpsertArgs<ExtArgs>>): Prisma__UserAchievementClient<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of UserAchievements.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -8760,6 +9397,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], UserAchievementCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a UserAchievement.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -8785,6 +9423,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends UserAchievementAggregateArgs>(args: Subset<T, UserAchievementAggregateArgs>): Prisma.PrismaPromise<GetUserAchievementAggregateType<T>>
+
     /**
      * Group by UserAchievement.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -8866,6 +9505,7 @@ export namespace Prisma {
    */
   readonly fields: UserAchievementFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for UserAchievement.
    * Why is this prefixed with `Prisma__`?
@@ -8897,6 +9537,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the UserAchievement model
    */
@@ -8906,6 +9550,8 @@ export namespace Prisma {
     readonly achievementId: FieldRef<"UserAchievement", 'Int'>
     readonly unlockedAt: FieldRef<"UserAchievement", 'DateTime'>
   }
+    
+
   // Custom InputTypes
   /**
    * UserAchievement findUnique
@@ -8928,6 +9574,7 @@ export namespace Prisma {
      */
     where: UserAchievementWhereUniqueInput
   }
+
   /**
    * UserAchievement findUniqueOrThrow
    */
@@ -8949,6 +9596,7 @@ export namespace Prisma {
      */
     where: UserAchievementWhereUniqueInput
   }
+
   /**
    * UserAchievement findFirst
    */
@@ -9000,6 +9648,7 @@ export namespace Prisma {
      */
     distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
+
   /**
    * UserAchievement findFirstOrThrow
    */
@@ -9051,6 +9700,7 @@ export namespace Prisma {
      */
     distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
+
   /**
    * UserAchievement findMany
    */
@@ -9097,6 +9747,7 @@ export namespace Prisma {
     skip?: number
     distinct?: UserAchievementScalarFieldEnum | UserAchievementScalarFieldEnum[]
   }
+
   /**
    * UserAchievement create
    */
@@ -9118,6 +9769,7 @@ export namespace Prisma {
      */
     data: XOR<UserAchievementCreateInput, UserAchievementUncheckedCreateInput>
   }
+
   /**
    * UserAchievement createMany
    */
@@ -9128,6 +9780,7 @@ export namespace Prisma {
     data: UserAchievementCreateManyInput | UserAchievementCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * UserAchievement createManyAndReturn
    */
@@ -9150,6 +9803,7 @@ export namespace Prisma {
      */
     include?: UserAchievementIncludeCreateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * UserAchievement update
    */
@@ -9175,6 +9829,7 @@ export namespace Prisma {
      */
     where: UserAchievementWhereUniqueInput
   }
+
   /**
    * UserAchievement updateMany
    */
@@ -9192,6 +9847,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * UserAchievement updateManyAndReturn
    */
@@ -9221,6 +9877,7 @@ export namespace Prisma {
      */
     include?: UserAchievementIncludeUpdateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * UserAchievement upsert
    */
@@ -9250,6 +9907,7 @@ export namespace Prisma {
      */
     update: XOR<UserAchievementUpdateInput, UserAchievementUncheckedUpdateInput>
   }
+
   /**
    * UserAchievement delete
    */
@@ -9271,6 +9929,7 @@ export namespace Prisma {
      */
     where: UserAchievementWhereUniqueInput
   }
+
   /**
    * UserAchievement deleteMany
    */
@@ -9284,6 +9943,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * UserAchievement without action
    */
@@ -9301,9 +9961,12 @@ export namespace Prisma {
      */
     include?: UserAchievementInclude<ExtArgs> | null
   }
+
+
   /**
    * Model Wishlist
    */
+
   export type AggregateWishlist = {
     _count: WishlistCountAggregateOutputType | null
     _avg: WishlistAvgAggregateOutputType | null
@@ -9311,28 +9974,33 @@ export namespace Prisma {
     _min: WishlistMinAggregateOutputType | null
     _max: WishlistMaxAggregateOutputType | null
   }
+
   export type WishlistAvgAggregateOutputType = {
     id: number | null
     userId: number | null
     gameId: number | null
   }
+
   export type WishlistSumAggregateOutputType = {
     id: number | null
     userId: number | null
     gameId: number | null
   }
+
   export type WishlistMinAggregateOutputType = {
     id: number | null
     userId: number | null
     gameId: number | null
     addedAt: Date | null
   }
+
   export type WishlistMaxAggregateOutputType = {
     id: number | null
     userId: number | null
     gameId: number | null
     addedAt: Date | null
   }
+
   export type WishlistCountAggregateOutputType = {
     id: number
     userId: number
@@ -9340,28 +10008,34 @@ export namespace Prisma {
     addedAt: number
     _all: number
   }
+
+
   export type WishlistAvgAggregateInputType = {
     id?: true
     userId?: true
     gameId?: true
   }
+
   export type WishlistSumAggregateInputType = {
     id?: true
     userId?: true
     gameId?: true
   }
+
   export type WishlistMinAggregateInputType = {
     id?: true
     userId?: true
     gameId?: true
     addedAt?: true
   }
+
   export type WishlistMaxAggregateInputType = {
     id?: true
     userId?: true
     gameId?: true
     addedAt?: true
   }
+
   export type WishlistCountAggregateInputType = {
     id?: true
     userId?: true
@@ -9369,6 +10043,7 @@ export namespace Prisma {
     addedAt?: true
     _all?: true
   }
+
   export type WishlistAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Wishlist to aggregate.
@@ -9429,6 +10104,7 @@ export namespace Prisma {
     **/
     _max?: WishlistMaxAggregateInputType
   }
+
   export type GetWishlistAggregateType<T extends WishlistAggregateArgs> = {
         [P in keyof T & keyof AggregateWishlist]: P extends '_count' | 'count'
       ? T[P] extends true
@@ -9436,6 +10112,10 @@ export namespace Prisma {
         : GetScalarType<T[P], AggregateWishlist[P]>
       : GetScalarType<T[P], AggregateWishlist[P]>
   }
+
+
+
+
   export type WishlistGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WishlistWhereInput
     orderBy?: WishlistOrderByWithAggregationInput | WishlistOrderByWithAggregationInput[]
@@ -9449,6 +10129,7 @@ export namespace Prisma {
     _min?: WishlistMinAggregateInputType
     _max?: WishlistMaxAggregateInputType
   }
+
   export type WishlistGroupByOutputType = {
     id: number
     userId: number
@@ -9460,6 +10141,7 @@ export namespace Prisma {
     _min: WishlistMinAggregateOutputType | null
     _max: WishlistMaxAggregateOutputType | null
   }
+
   type GetWishlistGroupByPayload<T extends WishlistGroupByArgs> = Prisma.PrismaPromise<
     Array<
       PickEnumerable<WishlistGroupByOutputType, T['by']> &
@@ -9472,6 +10154,8 @@ export namespace Prisma {
         }
       >
     >
+
+
   export type WishlistSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -9480,6 +10164,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wishlist"]>
+
   export type WishlistSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -9488,6 +10173,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wishlist"]>
+
   export type WishlistSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
@@ -9496,12 +10182,14 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wishlist"]>
+
   export type WishlistSelectScalar = {
     id?: boolean
     userId?: boolean
     gameId?: boolean
     addedAt?: boolean
   }
+
   export type WishlistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt", ExtArgs["result"]["wishlist"]>
   export type WishlistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
@@ -9515,6 +10203,7 @@ export namespace Prisma {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
+
   export type $WishlistPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Wishlist"
     objects: {
@@ -9529,11 +10218,14 @@ export namespace Prisma {
     }, ExtArgs["result"]["wishlist"]>
     composites: {}
   }
+
   type WishlistGetPayload<S extends boolean | null | undefined | WishlistDefaultArgs> = $Result.GetResult<Prisma.$WishlistPayload, S>
+
   type WishlistCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     Omit<WishlistFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
       select?: WishlistCountAggregateInputType | true
     }
+
   export interface WishlistDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Wishlist'], meta: { name: 'Wishlist' } }
     /**
@@ -9548,6 +10240,7 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends WishlistFindUniqueArgs>(args: SelectSubset<T, WishlistFindUniqueArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find one Wishlist that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
@@ -9561,6 +10254,7 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends WishlistFindUniqueOrThrowArgs>(args: SelectSubset<T, WishlistFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Wishlist that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -9575,6 +10269,7 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends WishlistFindFirstArgs>(args?: SelectSubset<T, WishlistFindFirstArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find the first Wishlist that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
@@ -9590,6 +10285,7 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends WishlistFindFirstOrThrowArgs>(args?: SelectSubset<T, WishlistFindFirstOrThrowArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Find zero or more Wishlists that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -9607,6 +10303,7 @@ export namespace Prisma {
      * 
      */
     findMany<T extends WishlistFindManyArgs>(args?: SelectSubset<T, WishlistFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
     /**
      * Create a Wishlist.
      * @param {WishlistCreateArgs} args - Arguments to create a Wishlist.
@@ -9620,6 +10317,7 @@ export namespace Prisma {
      * 
      */
     create<T extends WishlistCreateArgs>(args: SelectSubset<T, WishlistCreateArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Create many Wishlists.
      * @param {WishlistCreateManyArgs} args - Arguments to create many Wishlists.
@@ -9633,6 +10331,7 @@ export namespace Prisma {
      *     
      */
     createMany<T extends WishlistCreateManyArgs>(args?: SelectSubset<T, WishlistCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Create many Wishlists and returns the data saved in the database.
      * @param {WishlistCreateManyAndReturnArgs} args - Arguments to create many Wishlists.
@@ -9656,6 +10355,7 @@ export namespace Prisma {
      * 
      */
     createManyAndReturn<T extends WishlistCreateManyAndReturnArgs>(args?: SelectSubset<T, WishlistCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Delete a Wishlist.
      * @param {WishlistDeleteArgs} args - Arguments to delete one Wishlist.
@@ -9669,6 +10369,7 @@ export namespace Prisma {
      * 
      */
     delete<T extends WishlistDeleteArgs>(args: SelectSubset<T, WishlistDeleteArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Update one Wishlist.
      * @param {WishlistUpdateArgs} args - Arguments to update one Wishlist.
@@ -9685,6 +10386,7 @@ export namespace Prisma {
      * 
      */
     update<T extends WishlistUpdateArgs>(args: SelectSubset<T, WishlistUpdateArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
     /**
      * Delete zero or more Wishlists.
      * @param {WishlistDeleteManyArgs} args - Arguments to filter Wishlists to delete.
@@ -9698,6 +10400,7 @@ export namespace Prisma {
      * 
      */
     deleteMany<T extends WishlistDeleteManyArgs>(args?: SelectSubset<T, WishlistDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Wishlists.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -9716,6 +10419,7 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends WishlistUpdateManyArgs>(args: SelectSubset<T, WishlistUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
     /**
      * Update zero or more Wishlists and returns the data updated in the database.
      * @param {WishlistUpdateManyAndReturnArgs} args - Arguments to update many Wishlists.
@@ -9745,6 +10449,7 @@ export namespace Prisma {
      * 
      */
     updateManyAndReturn<T extends WishlistUpdateManyAndReturnArgs>(args: SelectSubset<T, WishlistUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
     /**
      * Create or update one Wishlist.
      * @param {WishlistUpsertArgs} args - Arguments to update or create a Wishlist.
@@ -9763,6 +10468,8 @@ export namespace Prisma {
      * })
      */
     upsert<T extends WishlistUpsertArgs>(args: SelectSubset<T, WishlistUpsertArgs<ExtArgs>>): Prisma__WishlistClient<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
     /**
      * Count the number of Wishlists.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -9785,6 +10492,7 @@ export namespace Prisma {
           : GetScalarType<T['select'], WishlistCountAggregateOutputType>
         : number
     >
+
     /**
      * Allows you to perform aggregations operations on a Wishlist.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -9810,6 +10518,7 @@ export namespace Prisma {
      * })
     **/
     aggregate<T extends WishlistAggregateArgs>(args: Subset<T, WishlistAggregateArgs>): Prisma.PrismaPromise<GetWishlistAggregateType<T>>
+
     /**
      * Group by Wishlist.
      * Note, that providing `undefined` is treated as the value not being there.
@@ -9891,6 +10600,7 @@ export namespace Prisma {
    */
   readonly fields: WishlistFieldRefs;
   }
+
   /**
    * The delegate class that acts as a "Promise-like" for Wishlist.
    * Why is this prefixed with `Prisma__`?
@@ -9922,6 +10632,10 @@ export namespace Prisma {
      */
     finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
   }
+
+
+
+
   /**
    * Fields of the Wishlist model
    */
@@ -9931,6 +10645,8 @@ export namespace Prisma {
     readonly gameId: FieldRef<"Wishlist", 'Int'>
     readonly addedAt: FieldRef<"Wishlist", 'DateTime'>
   }
+    
+
   // Custom InputTypes
   /**
    * Wishlist findUnique
@@ -9953,6 +10669,7 @@ export namespace Prisma {
      */
     where: WishlistWhereUniqueInput
   }
+
   /**
    * Wishlist findUniqueOrThrow
    */
@@ -9974,6 +10691,7 @@ export namespace Prisma {
      */
     where: WishlistWhereUniqueInput
   }
+
   /**
    * Wishlist findFirst
    */
@@ -10025,6 +10743,7 @@ export namespace Prisma {
      */
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
   }
+
   /**
    * Wishlist findFirstOrThrow
    */
@@ -10076,6 +10795,7 @@ export namespace Prisma {
      */
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
   }
+
   /**
    * Wishlist findMany
    */
@@ -10122,6 +10842,7 @@ export namespace Prisma {
     skip?: number
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
   }
+
   /**
    * Wishlist create
    */
@@ -10143,6 +10864,7 @@ export namespace Prisma {
      */
     data: XOR<WishlistCreateInput, WishlistUncheckedCreateInput>
   }
+
   /**
    * Wishlist createMany
    */
@@ -10153,6 +10875,7 @@ export namespace Prisma {
     data: WishlistCreateManyInput | WishlistCreateManyInput[]
     skipDuplicates?: boolean
   }
+
   /**
    * Wishlist createManyAndReturn
    */
@@ -10175,6 +10898,7 @@ export namespace Prisma {
      */
     include?: WishlistIncludeCreateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * Wishlist update
    */
@@ -10200,6 +10924,7 @@ export namespace Prisma {
      */
     where: WishlistWhereUniqueInput
   }
+
   /**
    * Wishlist updateMany
    */
@@ -10217,6 +10942,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Wishlist updateManyAndReturn
    */
@@ -10246,6 +10972,7 @@ export namespace Prisma {
      */
     include?: WishlistIncludeUpdateManyAndReturn<ExtArgs> | null
   }
+
   /**
    * Wishlist upsert
    */
@@ -10275,6 +11002,7 @@ export namespace Prisma {
      */
     update: XOR<WishlistUpdateInput, WishlistUncheckedUpdateInput>
   }
+
   /**
    * Wishlist delete
    */
@@ -10296,6 +11024,7 @@ export namespace Prisma {
      */
     where: WishlistWhereUniqueInput
   }
+
   /**
    * Wishlist deleteMany
    */
@@ -10309,6 +11038,7 @@ export namespace Prisma {
      */
     limit?: number
   }
+
   /**
    * Wishlist without action
    */
@@ -10326,16 +11056,22 @@ export namespace Prisma {
      */
     include?: WishlistInclude<ExtArgs> | null
   }
+
+
   /**
    * Enums
    */
+
   export const TransactionIsolationLevel: {
     ReadUncommitted: 'ReadUncommitted',
     ReadCommitted: 'ReadCommitted',
     RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
+
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
   export const UserScalarFieldEnum: {
     id: 'id',
     supabase_uid: 'supabase_uid',
@@ -10345,7 +11081,10 @@ export namespace Prisma {
     credits: 'credits',
     steamId: 'steamId'
   };
+
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
   export const GameScalarFieldEnum: {
     id: 'id',
     igdbId: 'igdbId',
@@ -10356,6 +11095,7 @@ export namespace Prisma {
     firstReleaseDate: 'firstReleaseDate',
     coverUrl: 'coverUrl',
     screenshots: 'screenshots',
+    videos: 'videos',
     totalRating: 'totalRating',
     totalRatingCount: 'totalRatingCount',
     aggregatedRating: 'aggregatedRating',
@@ -10373,7 +11113,10 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     lastSyncedAt: 'lastSyncedAt'
   };
+
   export type GameScalarFieldEnum = (typeof GameScalarFieldEnum)[keyof typeof GameScalarFieldEnum]
+
+
   export const PlatformScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -10381,7 +11124,10 @@ export namespace Prisma {
     iconUrl: 'iconUrl',
     siteUrl: 'siteUrl'
   };
+
   export type PlatformScalarFieldEnum = (typeof PlatformScalarFieldEnum)[keyof typeof PlatformScalarFieldEnum]
+
+
   export const UserGameScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -10394,7 +11140,10 @@ export namespace Prisma {
     isFavorite: 'isFavorite',
     notes: 'notes'
   };
+
   export type UserGameScalarFieldEnum = (typeof UserGameScalarFieldEnum)[keyof typeof UserGameScalarFieldEnum]
+
+
   export const DealScalarFieldEnum: {
     id: 'id',
     gameId: 'gameId',
@@ -10413,7 +11162,10 @@ export namespace Prisma {
     externalId: 'externalId',
     source: 'source'
   };
+
   export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
+
+
   export const AchievementScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -10424,97 +11176,156 @@ export namespace Prisma {
     creditsReward: 'creditsReward',
     createdAt: 'createdAt'
   };
+
   export type AchievementScalarFieldEnum = (typeof AchievementScalarFieldEnum)[keyof typeof AchievementScalarFieldEnum]
+
+
   export const UserAchievementScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
     achievementId: 'achievementId',
     unlockedAt: 'unlockedAt'
   };
+
   export type UserAchievementScalarFieldEnum = (typeof UserAchievementScalarFieldEnum)[keyof typeof UserAchievementScalarFieldEnum]
+
+
   export const WishlistScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
     gameId: 'gameId',
     addedAt: 'addedAt'
   };
+
   export type WishlistScalarFieldEnum = (typeof WishlistScalarFieldEnum)[keyof typeof WishlistScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
+
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
   export const NullableJsonNullValueInput: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull
   };
+
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
   };
+
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
   };
+
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
   export const JsonNullValueFilter: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull,
     AnyNull: typeof AnyNull
   };
+
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
   /**
    * Field references
    */
+
+
   /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
   /**
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
   /**
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
+    
+
+
   /**
    * Reference to a field of type 'String[]'
    */
   export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
   /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
   /**
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
   /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
   /**
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
   /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
   /**
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
   /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
   /**
    * Deep Input Types
    */
+
+
   export type UserWhereInput = {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
@@ -10530,6 +11341,7 @@ export namespace Prisma {
     userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
   }
+
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
@@ -10542,6 +11354,7 @@ export namespace Prisma {
     userGames?: UserGameOrderByRelationAggregateInput
     wishlistItems?: WishlistOrderByRelationAggregateInput
   }
+
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     supabase_uid?: string
@@ -10557,6 +11370,7 @@ export namespace Prisma {
     userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
   }, "id" | "supabase_uid">
+
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
@@ -10571,6 +11385,7 @@ export namespace Prisma {
     _min?: UserMinOrderByAggregateInput
     _sum?: UserSumOrderByAggregateInput
   }
+
   export type UserScalarWhereWithAggregatesInput = {
     AND?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     OR?: UserScalarWhereWithAggregatesInput[]
@@ -10583,6 +11398,7 @@ export namespace Prisma {
     credits?: IntWithAggregatesFilter<"User"> | number
     steamId?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
+
   export type GameWhereInput = {
     AND?: GameWhereInput | GameWhereInput[]
     OR?: GameWhereInput[]
@@ -10596,6 +11412,7 @@ export namespace Prisma {
     firstReleaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
     coverUrl?: StringNullableFilter<"Game"> | string | null
     screenshots?: StringNullableListFilter<"Game">
+    videos?: StringNullableListFilter<"Game">
     totalRating?: FloatNullableFilter<"Game"> | number | null
     totalRatingCount?: IntNullableFilter<"Game"> | number | null
     aggregatedRating?: FloatNullableFilter<"Game"> | number | null
@@ -10616,6 +11433,7 @@ export namespace Prisma {
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
   }
+
   export type GameOrderByWithRelationInput = {
     id?: SortOrder
     igdbId?: SortOrderInput | SortOrder
@@ -10626,6 +11444,7 @@ export namespace Prisma {
     firstReleaseDate?: SortOrderInput | SortOrder
     coverUrl?: SortOrderInput | SortOrder
     screenshots?: SortOrder
+    videos?: SortOrder
     totalRating?: SortOrderInput | SortOrder
     totalRatingCount?: SortOrderInput | SortOrder
     aggregatedRating?: SortOrderInput | SortOrder
@@ -10646,6 +11465,7 @@ export namespace Prisma {
     userGames?: UserGameOrderByRelationAggregateInput
     wishlistedBy?: WishlistOrderByRelationAggregateInput
   }
+
   export type GameWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     igdbId?: number
@@ -10659,6 +11479,7 @@ export namespace Prisma {
     firstReleaseDate?: DateTimeNullableFilter<"Game"> | Date | string | null
     coverUrl?: StringNullableFilter<"Game"> | string | null
     screenshots?: StringNullableListFilter<"Game">
+    videos?: StringNullableListFilter<"Game">
     totalRating?: FloatNullableFilter<"Game"> | number | null
     totalRatingCount?: IntNullableFilter<"Game"> | number | null
     aggregatedRating?: FloatNullableFilter<"Game"> | number | null
@@ -10679,6 +11500,7 @@ export namespace Prisma {
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
   }, "id" | "igdbId">
+
   export type GameOrderByWithAggregationInput = {
     id?: SortOrder
     igdbId?: SortOrderInput | SortOrder
@@ -10689,6 +11511,7 @@ export namespace Prisma {
     firstReleaseDate?: SortOrderInput | SortOrder
     coverUrl?: SortOrderInput | SortOrder
     screenshots?: SortOrder
+    videos?: SortOrder
     totalRating?: SortOrderInput | SortOrder
     totalRatingCount?: SortOrderInput | SortOrder
     aggregatedRating?: SortOrderInput | SortOrder
@@ -10711,6 +11534,7 @@ export namespace Prisma {
     _min?: GameMinOrderByAggregateInput
     _sum?: GameSumOrderByAggregateInput
   }
+
   export type GameScalarWhereWithAggregatesInput = {
     AND?: GameScalarWhereWithAggregatesInput | GameScalarWhereWithAggregatesInput[]
     OR?: GameScalarWhereWithAggregatesInput[]
@@ -10724,6 +11548,7 @@ export namespace Prisma {
     firstReleaseDate?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
     coverUrl?: StringNullableWithAggregatesFilter<"Game"> | string | null
     screenshots?: StringNullableListFilter<"Game">
+    videos?: StringNullableListFilter<"Game">
     totalRating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
     totalRatingCount?: IntNullableWithAggregatesFilter<"Game"> | number | null
     aggregatedRating?: FloatNullableWithAggregatesFilter<"Game"> | number | null
@@ -10741,6 +11566,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Game"> | Date | string
     lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"Game"> | Date | string | null
   }
+
   export type PlatformWhereInput = {
     AND?: PlatformWhereInput | PlatformWhereInput[]
     OR?: PlatformWhereInput[]
@@ -10751,6 +11577,7 @@ export namespace Prisma {
     iconUrl?: StringNullableFilter<"Platform"> | string | null
     siteUrl?: StringNullableFilter<"Platform"> | string | null
   }
+
   export type PlatformOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
@@ -10758,6 +11585,7 @@ export namespace Prisma {
     iconUrl?: SortOrderInput | SortOrder
     siteUrl?: SortOrderInput | SortOrder
   }
+
   export type PlatformWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     name?: string
@@ -10768,6 +11596,7 @@ export namespace Prisma {
     iconUrl?: StringNullableFilter<"Platform"> | string | null
     siteUrl?: StringNullableFilter<"Platform"> | string | null
   }, "id" | "name" | "slug">
+
   export type PlatformOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
@@ -10780,6 +11609,7 @@ export namespace Prisma {
     _min?: PlatformMinOrderByAggregateInput
     _sum?: PlatformSumOrderByAggregateInput
   }
+
   export type PlatformScalarWhereWithAggregatesInput = {
     AND?: PlatformScalarWhereWithAggregatesInput | PlatformScalarWhereWithAggregatesInput[]
     OR?: PlatformScalarWhereWithAggregatesInput[]
@@ -10790,6 +11620,7 @@ export namespace Prisma {
     iconUrl?: StringNullableWithAggregatesFilter<"Platform"> | string | null
     siteUrl?: StringNullableWithAggregatesFilter<"Platform"> | string | null
   }
+
   export type UserGameWhereInput = {
     AND?: UserGameWhereInput | UserGameWhereInput[]
     OR?: UserGameWhereInput[]
@@ -10807,6 +11638,7 @@ export namespace Prisma {
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
+
   export type UserGameOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -10821,6 +11653,7 @@ export namespace Prisma {
     game?: GameOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
+
   export type UserGameWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     userId_gameId?: UserGameUserIdGameIdCompoundUniqueInput
@@ -10839,6 +11672,7 @@ export namespace Prisma {
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_gameId" | "userId_gameId">
+
   export type UserGameOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -10856,6 +11690,7 @@ export namespace Prisma {
     _min?: UserGameMinOrderByAggregateInput
     _sum?: UserGameSumOrderByAggregateInput
   }
+
   export type UserGameScalarWhereWithAggregatesInput = {
     AND?: UserGameScalarWhereWithAggregatesInput | UserGameScalarWhereWithAggregatesInput[]
     OR?: UserGameScalarWhereWithAggregatesInput[]
@@ -10871,6 +11706,7 @@ export namespace Prisma {
     isFavorite?: BoolWithAggregatesFilter<"UserGame"> | boolean
     notes?: StringNullableWithAggregatesFilter<"UserGame"> | string | null
   }
+
   export type DealWhereInput = {
     AND?: DealWhereInput | DealWhereInput[]
     OR?: DealWhereInput[]
@@ -10893,6 +11729,7 @@ export namespace Prisma {
     source?: StringNullableFilter<"Deal"> | string | null
     game?: XOR<GameNullableScalarRelationFilter, GameWhereInput> | null
   }
+
   export type DealOrderByWithRelationInput = {
     id?: SortOrder
     gameId?: SortOrderInput | SortOrder
@@ -10912,6 +11749,7 @@ export namespace Prisma {
     source?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
   }
+
   export type DealWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     AND?: DealWhereInput | DealWhereInput[]
@@ -10934,6 +11772,7 @@ export namespace Prisma {
     source?: StringNullableFilter<"Deal"> | string | null
     game?: XOR<GameNullableScalarRelationFilter, GameWhereInput> | null
   }, "id">
+
   export type DealOrderByWithAggregationInput = {
     id?: SortOrder
     gameId?: SortOrderInput | SortOrder
@@ -10957,6 +11796,7 @@ export namespace Prisma {
     _min?: DealMinOrderByAggregateInput
     _sum?: DealSumOrderByAggregateInput
   }
+
   export type DealScalarWhereWithAggregatesInput = {
     AND?: DealScalarWhereWithAggregatesInput | DealScalarWhereWithAggregatesInput[]
     OR?: DealScalarWhereWithAggregatesInput[]
@@ -10978,6 +11818,7 @@ export namespace Prisma {
     externalId?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     source?: StringNullableWithAggregatesFilter<"Deal"> | string | null
   }
+
   export type AchievementWhereInput = {
     AND?: AchievementWhereInput | AchievementWhereInput[]
     OR?: AchievementWhereInput[]
@@ -10992,6 +11833,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Achievement"> | Date | string
     userAchievements?: UserAchievementListRelationFilter
   }
+
   export type AchievementOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
@@ -11003,6 +11845,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     userAchievements?: UserAchievementOrderByRelationAggregateInput
   }
+
   export type AchievementWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     name?: string
@@ -11017,6 +11860,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Achievement"> | Date | string
     userAchievements?: UserAchievementListRelationFilter
   }, "id" | "name">
+
   export type AchievementOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
@@ -11032,6 +11876,7 @@ export namespace Prisma {
     _min?: AchievementMinOrderByAggregateInput
     _sum?: AchievementSumOrderByAggregateInput
   }
+
   export type AchievementScalarWhereWithAggregatesInput = {
     AND?: AchievementScalarWhereWithAggregatesInput | AchievementScalarWhereWithAggregatesInput[]
     OR?: AchievementScalarWhereWithAggregatesInput[]
@@ -11045,6 +11890,7 @@ export namespace Prisma {
     creditsReward?: IntWithAggregatesFilter<"Achievement"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Achievement"> | Date | string
   }
+
   export type UserAchievementWhereInput = {
     AND?: UserAchievementWhereInput | UserAchievementWhereInput[]
     OR?: UserAchievementWhereInput[]
@@ -11056,6 +11902,7 @@ export namespace Prisma {
     achievement?: XOR<AchievementScalarRelationFilter, AchievementWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
+
   export type UserAchievementOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -11064,6 +11911,7 @@ export namespace Prisma {
     achievement?: AchievementOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
+
   export type UserAchievementWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     userId_achievementId?: UserAchievementUserIdAchievementIdCompoundUniqueInput
@@ -11076,6 +11924,7 @@ export namespace Prisma {
     achievement?: XOR<AchievementScalarRelationFilter, AchievementWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_achievementId" | "userId_achievementId">
+
   export type UserAchievementOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -11087,6 +11936,7 @@ export namespace Prisma {
     _min?: UserAchievementMinOrderByAggregateInput
     _sum?: UserAchievementSumOrderByAggregateInput
   }
+
   export type UserAchievementScalarWhereWithAggregatesInput = {
     AND?: UserAchievementScalarWhereWithAggregatesInput | UserAchievementScalarWhereWithAggregatesInput[]
     OR?: UserAchievementScalarWhereWithAggregatesInput[]
@@ -11096,6 +11946,7 @@ export namespace Prisma {
     achievementId?: IntWithAggregatesFilter<"UserAchievement"> | number
     unlockedAt?: DateTimeWithAggregatesFilter<"UserAchievement"> | Date | string
   }
+
   export type WishlistWhereInput = {
     AND?: WishlistWhereInput | WishlistWhereInput[]
     OR?: WishlistWhereInput[]
@@ -11107,6 +11958,7 @@ export namespace Prisma {
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
+
   export type WishlistOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -11115,6 +11967,7 @@ export namespace Prisma {
     game?: GameOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
+
   export type WishlistWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     userId_gameId?: WishlistUserIdGameIdCompoundUniqueInput
@@ -11127,6 +11980,7 @@ export namespace Prisma {
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_gameId" | "userId_gameId">
+
   export type WishlistOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -11138,6 +11992,7 @@ export namespace Prisma {
     _min?: WishlistMinOrderByAggregateInput
     _sum?: WishlistSumOrderByAggregateInput
   }
+
   export type WishlistScalarWhereWithAggregatesInput = {
     AND?: WishlistScalarWhereWithAggregatesInput | WishlistScalarWhereWithAggregatesInput[]
     OR?: WishlistScalarWhereWithAggregatesInput[]
@@ -11147,6 +12002,7 @@ export namespace Prisma {
     gameId?: IntWithAggregatesFilter<"Wishlist"> | number
     addedAt?: DateTimeWithAggregatesFilter<"Wishlist"> | Date | string
   }
+
   export type UserCreateInput = {
     supabase_uid: string
     display_name?: string | null
@@ -11158,6 +12014,7 @@ export namespace Prisma {
     userGames?: UserGameCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
   }
+
   export type UserUncheckedCreateInput = {
     id?: number
     supabase_uid: string
@@ -11170,6 +12027,7 @@ export namespace Prisma {
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
   }
+
   export type UserUpdateInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11181,6 +12039,7 @@ export namespace Prisma {
     userGames?: UserGameUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
   }
+
   export type UserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
@@ -11193,6 +12052,7 @@ export namespace Prisma {
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
+
   export type UserCreateManyInput = {
     id?: number
     supabase_uid: string
@@ -11202,6 +12062,7 @@ export namespace Prisma {
     credits?: number
     steamId?: string | null
   }
+
   export type UserUpdateManyMutationInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11210,6 +12071,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     steamId?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
@@ -11219,6 +12081,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     steamId?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type GameCreateInput = {
     igdbId?: number | null
     name: string
@@ -11228,6 +12091,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -11248,6 +12112,7 @@ export namespace Prisma {
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
+
   export type GameUncheckedCreateInput = {
     id?: number
     igdbId?: number | null
@@ -11258,6 +12123,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -11278,6 +12144,7 @@ export namespace Prisma {
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
+
   export type GameUpdateInput = {
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
@@ -11287,6 +12154,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11307,6 +12175,7 @@ export namespace Prisma {
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
+
   export type GameUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11317,6 +12186,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11337,6 +12207,7 @@ export namespace Prisma {
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
+
   export type GameCreateManyInput = {
     id?: number
     igdbId?: number | null
@@ -11347,6 +12218,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -11364,6 +12236,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     lastSyncedAt?: Date | string | null
   }
+
   export type GameUpdateManyMutationInput = {
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
@@ -11373,6 +12246,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11390,6 +12264,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
+
   export type GameUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11400,6 +12275,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11417,12 +12293,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
+
   export type PlatformCreateInput = {
     name: string
     slug: string
     iconUrl?: string | null
     siteUrl?: string | null
   }
+
   export type PlatformUncheckedCreateInput = {
     id?: number
     name: string
@@ -11430,12 +12308,14 @@ export namespace Prisma {
     iconUrl?: string | null
     siteUrl?: string | null
   }
+
   export type PlatformUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type PlatformUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -11443,6 +12323,7 @@ export namespace Prisma {
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type PlatformCreateManyInput = {
     id?: number
     name: string
@@ -11450,12 +12331,14 @@ export namespace Prisma {
     iconUrl?: string | null
     siteUrl?: string | null
   }
+
   export type PlatformUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type PlatformUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -11463,6 +12346,7 @@ export namespace Prisma {
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     siteUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserGameCreateInput = {
     platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
@@ -11474,6 +12358,7 @@ export namespace Prisma {
     game: GameCreateNestedOneWithoutUserGamesInput
     user: UserCreateNestedOneWithoutUserGamesInput
   }
+
   export type UserGameUncheckedCreateInput = {
     id?: number
     userId: number
@@ -11486,6 +12371,7 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: string | null
   }
+
   export type UserGameUpdateInput = {
     platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11497,6 +12383,7 @@ export namespace Prisma {
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
+
   export type UserGameUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
@@ -11509,6 +12396,7 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserGameCreateManyInput = {
     id?: number
     userId: number
@@ -11521,6 +12409,7 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: string | null
   }
+
   export type UserGameUpdateManyMutationInput = {
     platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11530,6 +12419,7 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserGameUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
@@ -11542,6 +12432,7 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type DealCreateInput = {
     platformIds?: DealCreateplatformIdsInput | number[]
     title: string
@@ -11559,6 +12450,7 @@ export namespace Prisma {
     source?: string | null
     game?: GameCreateNestedOneWithoutDealsInput
   }
+
   export type DealUncheckedCreateInput = {
     id?: number
     gameId?: number | null
@@ -11577,6 +12469,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
   }
+
   export type DealUpdateInput = {
     platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
@@ -11594,6 +12487,7 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneWithoutDealsNestedInput
   }
+
   export type DealUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11612,6 +12506,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type DealCreateManyInput = {
     id?: number
     gameId?: number | null
@@ -11630,6 +12525,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
   }
+
   export type DealUpdateManyMutationInput = {
     platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
@@ -11646,6 +12542,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type DealUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11664,6 +12561,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type AchievementCreateInput = {
     name: string
     description: string
@@ -11674,6 +12572,7 @@ export namespace Prisma {
     createdAt?: Date | string
     userAchievements?: UserAchievementCreateNestedManyWithoutAchievementInput
   }
+
   export type AchievementUncheckedCreateInput = {
     id?: number
     name: string
@@ -11685,6 +12584,7 @@ export namespace Prisma {
     createdAt?: Date | string
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutAchievementInput
   }
+
   export type AchievementUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -11695,6 +12595,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userAchievements?: UserAchievementUpdateManyWithoutAchievementNestedInput
   }
+
   export type AchievementUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -11706,6 +12607,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutAchievementNestedInput
   }
+
   export type AchievementCreateManyInput = {
     id?: number
     name: string
@@ -11716,6 +12618,7 @@ export namespace Prisma {
     creditsReward?: number
     createdAt?: Date | string
   }
+
   export type AchievementUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -11725,6 +12628,7 @@ export namespace Prisma {
     creditsReward?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type AchievementUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -11735,80 +12639,95 @@ export namespace Prisma {
     creditsReward?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserAchievementCreateInput = {
     unlockedAt?: Date | string
     achievement: AchievementCreateNestedOneWithoutUserAchievementsInput
     user: UserCreateNestedOneWithoutUserAchievementsInput
   }
+
   export type UserAchievementUncheckedCreateInput = {
     id?: number
     userId: number
     achievementId: number
     unlockedAt?: Date | string
   }
+
   export type UserAchievementUpdateInput = {
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     achievement?: AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput
     user?: UserUpdateOneRequiredWithoutUserAchievementsNestedInput
   }
+
   export type UserAchievementUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     achievementId?: IntFieldUpdateOperationsInput | number
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserAchievementCreateManyInput = {
     id?: number
     userId: number
     achievementId: number
     unlockedAt?: Date | string
   }
+
   export type UserAchievementUpdateManyMutationInput = {
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserAchievementUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     achievementId?: IntFieldUpdateOperationsInput | number
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type WishlistCreateInput = {
     addedAt?: Date | string
     game: GameCreateNestedOneWithoutWishlistedByInput
     user: UserCreateNestedOneWithoutWishlistItemsInput
   }
+
   export type WishlistUncheckedCreateInput = {
     id?: number
     userId: number
     gameId: number
     addedAt?: Date | string
   }
+
   export type WishlistUpdateInput = {
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     game?: GameUpdateOneRequiredWithoutWishlistedByNestedInput
     user?: UserUpdateOneRequiredWithoutWishlistItemsNestedInput
   }
+
   export type WishlistUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type WishlistCreateManyInput = {
     id?: number
     userId: number
     gameId: number
     addedAt?: Date | string
   }
+
   export type WishlistUpdateManyMutationInput = {
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type WishlistUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -11819,6 +12738,7 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
   }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -11833,6 +12753,7 @@ export namespace Prisma {
     mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
+
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -11847,34 +12768,42 @@ export namespace Prisma {
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
+
   export type UserAchievementListRelationFilter = {
     every?: UserAchievementWhereInput
     some?: UserAchievementWhereInput
     none?: UserAchievementWhereInput
   }
+
   export type UserGameListRelationFilter = {
     every?: UserGameWhereInput
     some?: UserGameWhereInput
     none?: UserGameWhereInput
   }
+
   export type WishlistListRelationFilter = {
     every?: WishlistWhereInput
     some?: WishlistWhereInput
     none?: WishlistWhereInput
   }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
+
   export type UserAchievementOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
+
   export type UserGameOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
+
   export type WishlistOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
@@ -11884,12 +12813,14 @@ export namespace Prisma {
     credits?: SortOrder
     steamId?: SortOrder
   }
+
   export type UserAvgOrderByAggregateInput = {
     id?: SortOrder
     xp?: SortOrder
     level?: SortOrder
     credits?: SortOrder
   }
+
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
@@ -11899,6 +12830,7 @@ export namespace Prisma {
     credits?: SortOrder
     steamId?: SortOrder
   }
+
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     supabase_uid?: SortOrder
@@ -11908,12 +12840,14 @@ export namespace Prisma {
     credits?: SortOrder
     steamId?: SortOrder
   }
+
   export type UserSumOrderByAggregateInput = {
     id?: SortOrder
     xp?: SortOrder
     level?: SortOrder
     credits?: SortOrder
   }
+
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -11929,6 +12863,7 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
+
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -11946,6 +12881,7 @@ export namespace Prisma {
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
   }
+
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -11963,6 +12899,7 @@ export namespace Prisma {
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -11973,6 +12910,7 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -11983,6 +12921,7 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
+
   export type StringNullableListFilter<$PrismaModel = never> = {
     equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     has?: string | StringFieldRefInput<$PrismaModel> | null
@@ -11990,6 +12929,7 @@ export namespace Prisma {
     hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
     isEmpty?: boolean
   }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -12006,6 +12946,7 @@ export namespace Prisma {
         Required<JsonNullableFilterBase<$PrismaModel>>
       >
     | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
   export type JsonNullableFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
     path?: string[]
@@ -12022,6 +12963,7 @@ export namespace Prisma {
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -12032,14 +12974,17 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
+
   export type DealListRelationFilter = {
     every?: DealWhereInput
     some?: DealWhereInput
     none?: DealWhereInput
   }
+
   export type DealOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
+
   export type GameCountOrderByAggregateInput = {
     id?: SortOrder
     igdbId?: SortOrder
@@ -12050,6 +12995,7 @@ export namespace Prisma {
     firstReleaseDate?: SortOrder
     coverUrl?: SortOrder
     screenshots?: SortOrder
+    videos?: SortOrder
     totalRating?: SortOrder
     totalRatingCount?: SortOrder
     aggregatedRating?: SortOrder
@@ -12067,6 +13013,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
   }
+
   export type GameAvgOrderByAggregateInput = {
     id?: SortOrder
     igdbId?: SortOrder
@@ -12075,6 +13022,7 @@ export namespace Prisma {
     aggregatedRating?: SortOrder
     aggregatedRatingCount?: SortOrder
   }
+
   export type GameMaxOrderByAggregateInput = {
     id?: SortOrder
     igdbId?: SortOrder
@@ -12092,6 +13040,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
   }
+
   export type GameMinOrderByAggregateInput = {
     id?: SortOrder
     igdbId?: SortOrder
@@ -12109,6 +13058,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     lastSyncedAt?: SortOrder
   }
+
   export type GameSumOrderByAggregateInput = {
     id?: SortOrder
     igdbId?: SortOrder
@@ -12117,6 +13067,7 @@ export namespace Prisma {
     aggregatedRating?: SortOrder
     aggregatedRatingCount?: SortOrder
   }
+
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -12132,6 +13083,7 @@ export namespace Prisma {
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
+
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -12145,6 +13097,7 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -12166,6 +13119,7 @@ export namespace Prisma {
         Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
       >
     | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
   export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
     path?: string[]
@@ -12185,6 +13139,7 @@ export namespace Prisma {
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
+
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -12198,6 +13153,7 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+
   export type PlatformCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12205,9 +13161,11 @@ export namespace Prisma {
     iconUrl?: SortOrder
     siteUrl?: SortOrder
   }
+
   export type PlatformAvgOrderByAggregateInput = {
     id?: SortOrder
   }
+
   export type PlatformMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12215,6 +13173,7 @@ export namespace Prisma {
     iconUrl?: SortOrder
     siteUrl?: SortOrder
   }
+
   export type PlatformMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12222,9 +13181,11 @@ export namespace Prisma {
     iconUrl?: SortOrder
     siteUrl?: SortOrder
   }
+
   export type PlatformSumOrderByAggregateInput = {
     id?: SortOrder
   }
+
   export type IntNullableListFilter<$PrismaModel = never> = {
     equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
     has?: number | IntFieldRefInput<$PrismaModel> | null
@@ -12232,22 +13193,27 @@ export namespace Prisma {
     hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
     isEmpty?: boolean
   }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
+
   export type GameScalarRelationFilter = {
     is?: GameWhereInput
     isNot?: GameWhereInput
   }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
   }
+
   export type UserGameUserIdGameIdCompoundUniqueInput = {
     userId: number
     gameId: number
   }
+
   export type UserGameCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -12260,6 +13226,7 @@ export namespace Prisma {
     isFavorite?: SortOrder
     notes?: SortOrder
   }
+
   export type UserGameAvgOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -12267,6 +13234,7 @@ export namespace Prisma {
     platformIds?: SortOrder
     playtimeMinutes?: SortOrder
   }
+
   export type UserGameMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -12278,6 +13246,7 @@ export namespace Prisma {
     isFavorite?: SortOrder
     notes?: SortOrder
   }
+
   export type UserGameMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -12289,6 +13258,7 @@ export namespace Prisma {
     isFavorite?: SortOrder
     notes?: SortOrder
   }
+
   export type UserGameSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -12296,6 +13266,7 @@ export namespace Prisma {
     platformIds?: SortOrder
     playtimeMinutes?: SortOrder
   }
+
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -12303,10 +13274,12 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+
   export type GameNullableScalarRelationFilter = {
     is?: GameWhereInput | null
     isNot?: GameWhereInput | null
   }
+
   export type DealCountOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
@@ -12325,6 +13298,7 @@ export namespace Prisma {
     externalId?: SortOrder
     source?: SortOrder
   }
+
   export type DealAvgOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
@@ -12333,6 +13307,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     originalPrice?: SortOrder
   }
+
   export type DealMaxOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
@@ -12350,6 +13325,7 @@ export namespace Prisma {
     externalId?: SortOrder
     source?: SortOrder
   }
+
   export type DealMinOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
@@ -12367,6 +13343,7 @@ export namespace Prisma {
     externalId?: SortOrder
     source?: SortOrder
   }
+
   export type DealSumOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
@@ -12375,6 +13352,7 @@ export namespace Prisma {
     discountPercent?: SortOrder
     originalPrice?: SortOrder
   }
+
   export type AchievementCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12385,11 +13363,13 @@ export namespace Prisma {
     creditsReward?: SortOrder
     createdAt?: SortOrder
   }
+
   export type AchievementAvgOrderByAggregateInput = {
     id?: SortOrder
     xpReward?: SortOrder
     creditsReward?: SortOrder
   }
+
   export type AchievementMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12400,6 +13380,7 @@ export namespace Prisma {
     creditsReward?: SortOrder
     createdAt?: SortOrder
   }
+
   export type AchievementMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12410,121 +13391,144 @@ export namespace Prisma {
     creditsReward?: SortOrder
     createdAt?: SortOrder
   }
+
   export type AchievementSumOrderByAggregateInput = {
     id?: SortOrder
     xpReward?: SortOrder
     creditsReward?: SortOrder
   }
+
   export type AchievementScalarRelationFilter = {
     is?: AchievementWhereInput
     isNot?: AchievementWhereInput
   }
+
   export type UserAchievementUserIdAchievementIdCompoundUniqueInput = {
     userId: number
     achievementId: number
   }
+
   export type UserAchievementCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     achievementId?: SortOrder
     unlockedAt?: SortOrder
   }
+
   export type UserAchievementAvgOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     achievementId?: SortOrder
   }
+
   export type UserAchievementMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     achievementId?: SortOrder
     unlockedAt?: SortOrder
   }
+
   export type UserAchievementMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     achievementId?: SortOrder
     unlockedAt?: SortOrder
   }
+
   export type UserAchievementSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     achievementId?: SortOrder
   }
+
   export type WishlistUserIdGameIdCompoundUniqueInput = {
     userId: number
     gameId: number
   }
+
   export type WishlistCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
     addedAt?: SortOrder
   }
+
   export type WishlistAvgOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
   }
+
   export type WishlistMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
     addedAt?: SortOrder
   }
+
   export type WishlistMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
     addedAt?: SortOrder
   }
+
   export type WishlistSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     gameId?: SortOrder
   }
+
   export type UserAchievementCreateNestedManyWithoutUserInput = {
     create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
     createMany?: UserAchievementCreateManyUserInputEnvelope
     connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
+
   export type UserGameCreateNestedManyWithoutUserInput = {
     create?: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput> | UserGameCreateWithoutUserInput[] | UserGameUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
     createMany?: UserGameCreateManyUserInputEnvelope
     connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
   }
+
   export type WishlistCreateNestedManyWithoutUserInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
     createMany?: WishlistCreateManyUserInputEnvelope
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
+
   export type UserAchievementUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
     createMany?: UserAchievementCreateManyUserInputEnvelope
     connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
+
   export type UserGameUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput> | UserGameCreateWithoutUserInput[] | UserGameUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
     createMany?: UserGameCreateManyUserInputEnvelope
     connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
   }
+
   export type WishlistUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
     createMany?: WishlistCreateManyUserInputEnvelope
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
+
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -12532,6 +13536,7 @@ export namespace Prisma {
     multiply?: number
     divide?: number
   }
+
   export type UserAchievementUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
@@ -12545,6 +13550,7 @@ export namespace Prisma {
     updateMany?: UserAchievementUpdateManyWithWhereWithoutUserInput | UserAchievementUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
+
   export type UserGameUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput> | UserGameCreateWithoutUserInput[] | UserGameUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
@@ -12558,6 +13564,7 @@ export namespace Prisma {
     updateMany?: UserGameUpdateManyWithWhereWithoutUserInput | UserGameUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
   }
+
   export type WishlistUpdateManyWithoutUserNestedInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
@@ -12571,6 +13578,7 @@ export namespace Prisma {
     updateMany?: WishlistUpdateManyWithWhereWithoutUserInput | WishlistUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
+
   export type UserAchievementUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput> | UserAchievementCreateWithoutUserInput[] | UserAchievementUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutUserInput | UserAchievementCreateOrConnectWithoutUserInput[]
@@ -12584,6 +13592,7 @@ export namespace Prisma {
     updateMany?: UserAchievementUpdateManyWithWhereWithoutUserInput | UserAchievementUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
+
   export type UserGameUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput> | UserGameCreateWithoutUserInput[] | UserGameUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutUserInput | UserGameCreateOrConnectWithoutUserInput[]
@@ -12597,6 +13606,7 @@ export namespace Prisma {
     updateMany?: UserGameUpdateManyWithWhereWithoutUserInput | UserGameUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
   }
+
   export type WishlistUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput> | WishlistCreateWithoutUserInput[] | WishlistUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
@@ -12610,63 +13620,81 @@ export namespace Prisma {
     updateMany?: WishlistUpdateManyWithWhereWithoutUserInput | WishlistUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
+
   export type GameCreatescreenshotsInput = {
     set: string[]
   }
+
+  export type GameCreatevideosInput = {
+    set: string[]
+  }
+
   export type GameCreategenresInput = {
     set: string[]
   }
+
   export type GameCreatethemesInput = {
     set: string[]
   }
+
   export type GameCreategameModesInput = {
     set: string[]
   }
+
   export type GameCreatekeywordsInput = {
     set: string[]
   }
+
   export type GameCreatedevelopersInput = {
     set: string[]
   }
+
   export type GameCreatepublishersInput = {
     set: string[]
   }
+
   export type DealCreateNestedManyWithoutGameInput = {
     create?: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput> | DealCreateWithoutGameInput[] | DealUncheckedCreateWithoutGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
     createMany?: DealCreateManyGameInputEnvelope
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
   }
+
   export type UserGameCreateNestedManyWithoutGameInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
     createMany?: UserGameCreateManyGameInputEnvelope
     connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
   }
+
   export type WishlistCreateNestedManyWithoutGameInput = {
     create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
     createMany?: WishlistCreateManyGameInputEnvelope
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
+
   export type DealUncheckedCreateNestedManyWithoutGameInput = {
     create?: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput> | DealCreateWithoutGameInput[] | DealUncheckedCreateWithoutGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
     createMany?: DealCreateManyGameInputEnvelope
     connect?: DealWhereUniqueInput | DealWhereUniqueInput[]
   }
+
   export type UserGameUncheckedCreateNestedManyWithoutGameInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
     createMany?: UserGameCreateManyGameInputEnvelope
     connect?: UserGameWhereUniqueInput | UserGameWhereUniqueInput[]
   }
+
   export type WishlistUncheckedCreateNestedManyWithoutGameInput = {
     create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
     createMany?: WishlistCreateManyGameInputEnvelope
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -12674,13 +13702,21 @@ export namespace Prisma {
     multiply?: number
     divide?: number
   }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
   }
+
   export type GameUpdatescreenshotsInput = {
     set?: string[]
     push?: string | string[]
   }
+
+  export type GameUpdatevideosInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type NullableFloatFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -12688,33 +13724,41 @@ export namespace Prisma {
     multiply?: number
     divide?: number
   }
+
   export type GameUpdategenresInput = {
     set?: string[]
     push?: string | string[]
   }
+
   export type GameUpdatethemesInput = {
     set?: string[]
     push?: string | string[]
   }
+
   export type GameUpdategameModesInput = {
     set?: string[]
     push?: string | string[]
   }
+
   export type GameUpdatekeywordsInput = {
     set?: string[]
     push?: string | string[]
   }
+
   export type GameUpdatedevelopersInput = {
     set?: string[]
     push?: string | string[]
   }
+
   export type GameUpdatepublishersInput = {
     set?: string[]
     push?: string | string[]
   }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
+
   export type DealUpdateManyWithoutGameNestedInput = {
     create?: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput> | DealCreateWithoutGameInput[] | DealUncheckedCreateWithoutGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
@@ -12728,6 +13772,7 @@ export namespace Prisma {
     updateMany?: DealUpdateManyWithWhereWithoutGameInput | DealUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
+
   export type UserGameUpdateManyWithoutGameNestedInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
@@ -12741,6 +13786,7 @@ export namespace Prisma {
     updateMany?: UserGameUpdateManyWithWhereWithoutGameInput | UserGameUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
   }
+
   export type WishlistUpdateManyWithoutGameNestedInput = {
     create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
@@ -12754,6 +13800,7 @@ export namespace Prisma {
     updateMany?: WishlistUpdateManyWithWhereWithoutGameInput | WishlistUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
+
   export type DealUncheckedUpdateManyWithoutGameNestedInput = {
     create?: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput> | DealCreateWithoutGameInput[] | DealUncheckedCreateWithoutGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
@@ -12767,6 +13814,7 @@ export namespace Prisma {
     updateMany?: DealUpdateManyWithWhereWithoutGameInput | DealUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: DealScalarWhereInput | DealScalarWhereInput[]
   }
+
   export type UserGameUncheckedUpdateManyWithoutGameNestedInput = {
     create?: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput> | UserGameCreateWithoutGameInput[] | UserGameUncheckedCreateWithoutGameInput[]
     connectOrCreate?: UserGameCreateOrConnectWithoutGameInput | UserGameCreateOrConnectWithoutGameInput[]
@@ -12780,6 +13828,7 @@ export namespace Prisma {
     updateMany?: UserGameUpdateManyWithWhereWithoutGameInput | UserGameUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
   }
+
   export type WishlistUncheckedUpdateManyWithoutGameNestedInput = {
     create?: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput> | WishlistCreateWithoutGameInput[] | WishlistUncheckedCreateWithoutGameInput[]
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
@@ -12793,26 +13842,32 @@ export namespace Prisma {
     updateMany?: WishlistUpdateManyWithWhereWithoutGameInput | WishlistUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
+
   export type UserGameCreateplatformIdsInput = {
     set: number[]
   }
+
   export type GameCreateNestedOneWithoutUserGamesInput = {
     create?: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: GameCreateOrConnectWithoutUserGamesInput
     connect?: GameWhereUniqueInput
   }
+
   export type UserCreateNestedOneWithoutUserGamesInput = {
     create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
     connect?: UserWhereUniqueInput
   }
+
   export type UserGameUpdateplatformIdsInput = {
     set?: number[]
     push?: number | number[]
   }
+
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
   }
+
   export type GameUpdateOneRequiredWithoutUserGamesNestedInput = {
     create?: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: GameCreateOrConnectWithoutUserGamesInput
@@ -12820,6 +13875,7 @@ export namespace Prisma {
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutUserGamesInput, GameUpdateWithoutUserGamesInput>, GameUncheckedUpdateWithoutUserGamesInput>
   }
+
   export type UserUpdateOneRequiredWithoutUserGamesNestedInput = {
     create?: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserGamesInput
@@ -12827,18 +13883,22 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserGamesInput, UserUpdateWithoutUserGamesInput>, UserUncheckedUpdateWithoutUserGamesInput>
   }
+
   export type DealCreateplatformIdsInput = {
     set: number[]
   }
+
   export type GameCreateNestedOneWithoutDealsInput = {
     create?: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
     connectOrCreate?: GameCreateOrConnectWithoutDealsInput
     connect?: GameWhereUniqueInput
   }
+
   export type DealUpdateplatformIdsInput = {
     set?: number[]
     push?: number | number[]
   }
+
   export type GameUpdateOneWithoutDealsNestedInput = {
     create?: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
     connectOrCreate?: GameCreateOrConnectWithoutDealsInput
@@ -12848,18 +13908,21 @@ export namespace Prisma {
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutDealsInput, GameUpdateWithoutDealsInput>, GameUncheckedUpdateWithoutDealsInput>
   }
+
   export type UserAchievementCreateNestedManyWithoutAchievementInput = {
     create?: XOR<UserAchievementCreateWithoutAchievementInput, UserAchievementUncheckedCreateWithoutAchievementInput> | UserAchievementCreateWithoutAchievementInput[] | UserAchievementUncheckedCreateWithoutAchievementInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutAchievementInput | UserAchievementCreateOrConnectWithoutAchievementInput[]
     createMany?: UserAchievementCreateManyAchievementInputEnvelope
     connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
+
   export type UserAchievementUncheckedCreateNestedManyWithoutAchievementInput = {
     create?: XOR<UserAchievementCreateWithoutAchievementInput, UserAchievementUncheckedCreateWithoutAchievementInput> | UserAchievementCreateWithoutAchievementInput[] | UserAchievementUncheckedCreateWithoutAchievementInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutAchievementInput | UserAchievementCreateOrConnectWithoutAchievementInput[]
     createMany?: UserAchievementCreateManyAchievementInputEnvelope
     connect?: UserAchievementWhereUniqueInput | UserAchievementWhereUniqueInput[]
   }
+
   export type UserAchievementUpdateManyWithoutAchievementNestedInput = {
     create?: XOR<UserAchievementCreateWithoutAchievementInput, UserAchievementUncheckedCreateWithoutAchievementInput> | UserAchievementCreateWithoutAchievementInput[] | UserAchievementUncheckedCreateWithoutAchievementInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutAchievementInput | UserAchievementCreateOrConnectWithoutAchievementInput[]
@@ -12873,6 +13936,7 @@ export namespace Prisma {
     updateMany?: UserAchievementUpdateManyWithWhereWithoutAchievementInput | UserAchievementUpdateManyWithWhereWithoutAchievementInput[]
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
+
   export type UserAchievementUncheckedUpdateManyWithoutAchievementNestedInput = {
     create?: XOR<UserAchievementCreateWithoutAchievementInput, UserAchievementUncheckedCreateWithoutAchievementInput> | UserAchievementCreateWithoutAchievementInput[] | UserAchievementUncheckedCreateWithoutAchievementInput[]
     connectOrCreate?: UserAchievementCreateOrConnectWithoutAchievementInput | UserAchievementCreateOrConnectWithoutAchievementInput[]
@@ -12886,16 +13950,19 @@ export namespace Prisma {
     updateMany?: UserAchievementUpdateManyWithWhereWithoutAchievementInput | UserAchievementUpdateManyWithWhereWithoutAchievementInput[]
     deleteMany?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
   }
+
   export type AchievementCreateNestedOneWithoutUserAchievementsInput = {
     create?: XOR<AchievementCreateWithoutUserAchievementsInput, AchievementUncheckedCreateWithoutUserAchievementsInput>
     connectOrCreate?: AchievementCreateOrConnectWithoutUserAchievementsInput
     connect?: AchievementWhereUniqueInput
   }
+
   export type UserCreateNestedOneWithoutUserAchievementsInput = {
     create?: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserAchievementsInput
     connect?: UserWhereUniqueInput
   }
+
   export type AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput = {
     create?: XOR<AchievementCreateWithoutUserAchievementsInput, AchievementUncheckedCreateWithoutUserAchievementsInput>
     connectOrCreate?: AchievementCreateOrConnectWithoutUserAchievementsInput
@@ -12903,6 +13970,7 @@ export namespace Prisma {
     connect?: AchievementWhereUniqueInput
     update?: XOR<XOR<AchievementUpdateToOneWithWhereWithoutUserAchievementsInput, AchievementUpdateWithoutUserAchievementsInput>, AchievementUncheckedUpdateWithoutUserAchievementsInput>
   }
+
   export type UserUpdateOneRequiredWithoutUserAchievementsNestedInput = {
     create?: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
     connectOrCreate?: UserCreateOrConnectWithoutUserAchievementsInput
@@ -12910,16 +13978,19 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserAchievementsInput, UserUpdateWithoutUserAchievementsInput>, UserUncheckedUpdateWithoutUserAchievementsInput>
   }
+
   export type GameCreateNestedOneWithoutWishlistedByInput = {
     create?: XOR<GameCreateWithoutWishlistedByInput, GameUncheckedCreateWithoutWishlistedByInput>
     connectOrCreate?: GameCreateOrConnectWithoutWishlistedByInput
     connect?: GameWhereUniqueInput
   }
+
   export type UserCreateNestedOneWithoutWishlistItemsInput = {
     create?: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
     connectOrCreate?: UserCreateOrConnectWithoutWishlistItemsInput
     connect?: UserWhereUniqueInput
   }
+
   export type GameUpdateOneRequiredWithoutWishlistedByNestedInput = {
     create?: XOR<GameCreateWithoutWishlistedByInput, GameUncheckedCreateWithoutWishlistedByInput>
     connectOrCreate?: GameCreateOrConnectWithoutWishlistedByInput
@@ -12927,6 +13998,7 @@ export namespace Prisma {
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutWishlistedByInput, GameUpdateWithoutWishlistedByInput>, GameUncheckedUpdateWithoutWishlistedByInput>
   }
+
   export type UserUpdateOneRequiredWithoutWishlistItemsNestedInput = {
     create?: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
     connectOrCreate?: UserCreateOrConnectWithoutWishlistItemsInput
@@ -12934,6 +14006,7 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWishlistItemsInput, UserUpdateWithoutWishlistItemsInput>, UserUncheckedUpdateWithoutWishlistItemsInput>
   }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -12944,6 +14017,7 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
   }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12957,6 +14031,7 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringFilter<$PrismaModel> | string
   }
+
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -12970,6 +14045,7 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -12985,6 +14061,7 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
+
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -12995,6 +14072,7 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -13011,6 +14089,7 @@ export namespace Prisma {
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
   }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -13027,6 +14106,7 @@ export namespace Prisma {
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
+
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -13037,6 +14117,7 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -13047,6 +14128,7 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
+
   export type NestedFloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -13057,6 +14139,7 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -13067,6 +14150,7 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -13082,6 +14166,7 @@ export namespace Prisma {
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
+
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -13095,6 +14180,7 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -13116,6 +14202,7 @@ export namespace Prisma {
         Required<NestedJsonNullableFilterBase<$PrismaModel>>
       >
     | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
   export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
     path?: string[]
@@ -13132,6 +14219,7 @@ export namespace Prisma {
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -13145,10 +14233,12 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -13156,23 +14246,28 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+
   export type UserAchievementCreateWithoutUserInput = {
     unlockedAt?: Date | string
     achievement: AchievementCreateNestedOneWithoutUserAchievementsInput
   }
+
   export type UserAchievementUncheckedCreateWithoutUserInput = {
     id?: number
     achievementId: number
     unlockedAt?: Date | string
   }
+
   export type UserAchievementCreateOrConnectWithoutUserInput = {
     where: UserAchievementWhereUniqueInput
     create: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput>
   }
+
   export type UserAchievementCreateManyUserInputEnvelope = {
     data: UserAchievementCreateManyUserInput | UserAchievementCreateManyUserInput[]
     skipDuplicates?: boolean
   }
+
   export type UserGameCreateWithoutUserInput = {
     platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
@@ -13183,6 +14278,7 @@ export namespace Prisma {
     notes?: string | null
     game: GameCreateNestedOneWithoutUserGamesInput
   }
+
   export type UserGameUncheckedCreateWithoutUserInput = {
     id?: number
     gameId: number
@@ -13194,44 +14290,54 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: string | null
   }
+
   export type UserGameCreateOrConnectWithoutUserInput = {
     where: UserGameWhereUniqueInput
     create: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput>
   }
+
   export type UserGameCreateManyUserInputEnvelope = {
     data: UserGameCreateManyUserInput | UserGameCreateManyUserInput[]
     skipDuplicates?: boolean
   }
+
   export type WishlistCreateWithoutUserInput = {
     addedAt?: Date | string
     game: GameCreateNestedOneWithoutWishlistedByInput
   }
+
   export type WishlistUncheckedCreateWithoutUserInput = {
     id?: number
     gameId: number
     addedAt?: Date | string
   }
+
   export type WishlistCreateOrConnectWithoutUserInput = {
     where: WishlistWhereUniqueInput
     create: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput>
   }
+
   export type WishlistCreateManyUserInputEnvelope = {
     data: WishlistCreateManyUserInput | WishlistCreateManyUserInput[]
     skipDuplicates?: boolean
   }
+
   export type UserAchievementUpsertWithWhereUniqueWithoutUserInput = {
     where: UserAchievementWhereUniqueInput
     update: XOR<UserAchievementUpdateWithoutUserInput, UserAchievementUncheckedUpdateWithoutUserInput>
     create: XOR<UserAchievementCreateWithoutUserInput, UserAchievementUncheckedCreateWithoutUserInput>
   }
+
   export type UserAchievementUpdateWithWhereUniqueWithoutUserInput = {
     where: UserAchievementWhereUniqueInput
     data: XOR<UserAchievementUpdateWithoutUserInput, UserAchievementUncheckedUpdateWithoutUserInput>
   }
+
   export type UserAchievementUpdateManyWithWhereWithoutUserInput = {
     where: UserAchievementScalarWhereInput
     data: XOR<UserAchievementUpdateManyMutationInput, UserAchievementUncheckedUpdateManyWithoutUserInput>
   }
+
   export type UserAchievementScalarWhereInput = {
     AND?: UserAchievementScalarWhereInput | UserAchievementScalarWhereInput[]
     OR?: UserAchievementScalarWhereInput[]
@@ -13241,19 +14347,23 @@ export namespace Prisma {
     achievementId?: IntFilter<"UserAchievement"> | number
     unlockedAt?: DateTimeFilter<"UserAchievement"> | Date | string
   }
+
   export type UserGameUpsertWithWhereUniqueWithoutUserInput = {
     where: UserGameWhereUniqueInput
     update: XOR<UserGameUpdateWithoutUserInput, UserGameUncheckedUpdateWithoutUserInput>
     create: XOR<UserGameCreateWithoutUserInput, UserGameUncheckedCreateWithoutUserInput>
   }
+
   export type UserGameUpdateWithWhereUniqueWithoutUserInput = {
     where: UserGameWhereUniqueInput
     data: XOR<UserGameUpdateWithoutUserInput, UserGameUncheckedUpdateWithoutUserInput>
   }
+
   export type UserGameUpdateManyWithWhereWithoutUserInput = {
     where: UserGameScalarWhereInput
     data: XOR<UserGameUpdateManyMutationInput, UserGameUncheckedUpdateManyWithoutUserInput>
   }
+
   export type UserGameScalarWhereInput = {
     AND?: UserGameScalarWhereInput | UserGameScalarWhereInput[]
     OR?: UserGameScalarWhereInput[]
@@ -13269,19 +14379,23 @@ export namespace Prisma {
     isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
   }
+
   export type WishlistUpsertWithWhereUniqueWithoutUserInput = {
     where: WishlistWhereUniqueInput
     update: XOR<WishlistUpdateWithoutUserInput, WishlistUncheckedUpdateWithoutUserInput>
     create: XOR<WishlistCreateWithoutUserInput, WishlistUncheckedCreateWithoutUserInput>
   }
+
   export type WishlistUpdateWithWhereUniqueWithoutUserInput = {
     where: WishlistWhereUniqueInput
     data: XOR<WishlistUpdateWithoutUserInput, WishlistUncheckedUpdateWithoutUserInput>
   }
+
   export type WishlistUpdateManyWithWhereWithoutUserInput = {
     where: WishlistScalarWhereInput
     data: XOR<WishlistUpdateManyMutationInput, WishlistUncheckedUpdateManyWithoutUserInput>
   }
+
   export type WishlistScalarWhereInput = {
     AND?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
     OR?: WishlistScalarWhereInput[]
@@ -13291,6 +14405,7 @@ export namespace Prisma {
     gameId?: IntFilter<"Wishlist"> | number
     addedAt?: DateTimeFilter<"Wishlist"> | Date | string
   }
+
   export type DealCreateWithoutGameInput = {
     platformIds?: DealCreateplatformIdsInput | number[]
     title: string
@@ -13307,6 +14422,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
   }
+
   export type DealUncheckedCreateWithoutGameInput = {
     id?: number
     platformIds?: DealCreateplatformIdsInput | number[]
@@ -13324,14 +14440,17 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
   }
+
   export type DealCreateOrConnectWithoutGameInput = {
     where: DealWhereUniqueInput
     create: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput>
   }
+
   export type DealCreateManyGameInputEnvelope = {
     data: DealCreateManyGameInput | DealCreateManyGameInput[]
     skipDuplicates?: boolean
   }
+
   export type UserGameCreateWithoutGameInput = {
     platformIds?: UserGameCreateplatformIdsInput | number[]
     addedAt?: Date | string
@@ -13342,6 +14461,7 @@ export namespace Prisma {
     notes?: string | null
     user: UserCreateNestedOneWithoutUserGamesInput
   }
+
   export type UserGameUncheckedCreateWithoutGameInput = {
     id?: number
     userId: number
@@ -13353,44 +14473,54 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: string | null
   }
+
   export type UserGameCreateOrConnectWithoutGameInput = {
     where: UserGameWhereUniqueInput
     create: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput>
   }
+
   export type UserGameCreateManyGameInputEnvelope = {
     data: UserGameCreateManyGameInput | UserGameCreateManyGameInput[]
     skipDuplicates?: boolean
   }
+
   export type WishlistCreateWithoutGameInput = {
     addedAt?: Date | string
     user: UserCreateNestedOneWithoutWishlistItemsInput
   }
+
   export type WishlistUncheckedCreateWithoutGameInput = {
     id?: number
     userId: number
     addedAt?: Date | string
   }
+
   export type WishlistCreateOrConnectWithoutGameInput = {
     where: WishlistWhereUniqueInput
     create: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput>
   }
+
   export type WishlistCreateManyGameInputEnvelope = {
     data: WishlistCreateManyGameInput | WishlistCreateManyGameInput[]
     skipDuplicates?: boolean
   }
+
   export type DealUpsertWithWhereUniqueWithoutGameInput = {
     where: DealWhereUniqueInput
     update: XOR<DealUpdateWithoutGameInput, DealUncheckedUpdateWithoutGameInput>
     create: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput>
   }
+
   export type DealUpdateWithWhereUniqueWithoutGameInput = {
     where: DealWhereUniqueInput
     data: XOR<DealUpdateWithoutGameInput, DealUncheckedUpdateWithoutGameInput>
   }
+
   export type DealUpdateManyWithWhereWithoutGameInput = {
     where: DealScalarWhereInput
     data: XOR<DealUpdateManyMutationInput, DealUncheckedUpdateManyWithoutGameInput>
   }
+
   export type DealScalarWhereInput = {
     AND?: DealScalarWhereInput | DealScalarWhereInput[]
     OR?: DealScalarWhereInput[]
@@ -13412,32 +14542,39 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
   }
+
   export type UserGameUpsertWithWhereUniqueWithoutGameInput = {
     where: UserGameWhereUniqueInput
     update: XOR<UserGameUpdateWithoutGameInput, UserGameUncheckedUpdateWithoutGameInput>
     create: XOR<UserGameCreateWithoutGameInput, UserGameUncheckedCreateWithoutGameInput>
   }
+
   export type UserGameUpdateWithWhereUniqueWithoutGameInput = {
     where: UserGameWhereUniqueInput
     data: XOR<UserGameUpdateWithoutGameInput, UserGameUncheckedUpdateWithoutGameInput>
   }
+
   export type UserGameUpdateManyWithWhereWithoutGameInput = {
     where: UserGameScalarWhereInput
     data: XOR<UserGameUpdateManyMutationInput, UserGameUncheckedUpdateManyWithoutGameInput>
   }
+
   export type WishlistUpsertWithWhereUniqueWithoutGameInput = {
     where: WishlistWhereUniqueInput
     update: XOR<WishlistUpdateWithoutGameInput, WishlistUncheckedUpdateWithoutGameInput>
     create: XOR<WishlistCreateWithoutGameInput, WishlistUncheckedCreateWithoutGameInput>
   }
+
   export type WishlistUpdateWithWhereUniqueWithoutGameInput = {
     where: WishlistWhereUniqueInput
     data: XOR<WishlistUpdateWithoutGameInput, WishlistUncheckedUpdateWithoutGameInput>
   }
+
   export type WishlistUpdateManyWithWhereWithoutGameInput = {
     where: WishlistScalarWhereInput
     data: XOR<WishlistUpdateManyMutationInput, WishlistUncheckedUpdateManyWithoutGameInput>
   }
+
   export type GameCreateWithoutUserGamesInput = {
     igdbId?: number | null
     name: string
@@ -13447,6 +14584,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -13466,6 +14604,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
+
   export type GameUncheckedCreateWithoutUserGamesInput = {
     id?: number
     igdbId?: number | null
@@ -13476,6 +14615,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -13495,10 +14635,12 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
+
   export type GameCreateOrConnectWithoutUserGamesInput = {
     where: GameWhereUniqueInput
     create: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
   }
+
   export type UserCreateWithoutUserGamesInput = {
     supabase_uid: string
     display_name?: string | null
@@ -13509,6 +14651,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
   }
+
   export type UserUncheckedCreateWithoutUserGamesInput = {
     id?: number
     supabase_uid: string
@@ -13520,19 +14663,23 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
   }
+
   export type UserCreateOrConnectWithoutUserGamesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
   }
+
   export type GameUpsertWithoutUserGamesInput = {
     update: XOR<GameUpdateWithoutUserGamesInput, GameUncheckedUpdateWithoutUserGamesInput>
     create: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
     where?: GameWhereInput
   }
+
   export type GameUpdateToOneWithWhereWithoutUserGamesInput = {
     where?: GameWhereInput
     data: XOR<GameUpdateWithoutUserGamesInput, GameUncheckedUpdateWithoutUserGamesInput>
   }
+
   export type GameUpdateWithoutUserGamesInput = {
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
@@ -13542,6 +14689,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -13561,6 +14709,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
+
   export type GameUncheckedUpdateWithoutUserGamesInput = {
     id?: IntFieldUpdateOperationsInput | number
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -13571,6 +14720,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -13590,15 +14740,18 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
+
   export type UserUpsertWithoutUserGamesInput = {
     update: XOR<UserUpdateWithoutUserGamesInput, UserUncheckedUpdateWithoutUserGamesInput>
     create: XOR<UserCreateWithoutUserGamesInput, UserUncheckedCreateWithoutUserGamesInput>
     where?: UserWhereInput
   }
+
   export type UserUpdateToOneWithWhereWithoutUserGamesInput = {
     where?: UserWhereInput
     data: XOR<UserUpdateWithoutUserGamesInput, UserUncheckedUpdateWithoutUserGamesInput>
   }
+
   export type UserUpdateWithoutUserGamesInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13609,6 +14762,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
   }
+
   export type UserUncheckedUpdateWithoutUserGamesInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
@@ -13620,6 +14774,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
+
   export type GameCreateWithoutDealsInput = {
     igdbId?: number | null
     name: string
@@ -13629,6 +14784,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -13648,6 +14804,7 @@ export namespace Prisma {
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
   }
+
   export type GameUncheckedCreateWithoutDealsInput = {
     id?: number
     igdbId?: number | null
@@ -13658,6 +14815,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -13677,19 +14835,23 @@ export namespace Prisma {
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
   }
+
   export type GameCreateOrConnectWithoutDealsInput = {
     where: GameWhereUniqueInput
     create: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
   }
+
   export type GameUpsertWithoutDealsInput = {
     update: XOR<GameUpdateWithoutDealsInput, GameUncheckedUpdateWithoutDealsInput>
     create: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
     where?: GameWhereInput
   }
+
   export type GameUpdateToOneWithWhereWithoutDealsInput = {
     where?: GameWhereInput
     data: XOR<GameUpdateWithoutDealsInput, GameUncheckedUpdateWithoutDealsInput>
   }
+
   export type GameUpdateWithoutDealsInput = {
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
@@ -13699,6 +14861,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -13718,6 +14881,7 @@ export namespace Prisma {
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
   }
+
   export type GameUncheckedUpdateWithoutDealsInput = {
     id?: IntFieldUpdateOperationsInput | number
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -13728,6 +14892,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -13747,36 +14912,44 @@ export namespace Prisma {
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
   }
+
   export type UserAchievementCreateWithoutAchievementInput = {
     unlockedAt?: Date | string
     user: UserCreateNestedOneWithoutUserAchievementsInput
   }
+
   export type UserAchievementUncheckedCreateWithoutAchievementInput = {
     id?: number
     userId: number
     unlockedAt?: Date | string
   }
+
   export type UserAchievementCreateOrConnectWithoutAchievementInput = {
     where: UserAchievementWhereUniqueInput
     create: XOR<UserAchievementCreateWithoutAchievementInput, UserAchievementUncheckedCreateWithoutAchievementInput>
   }
+
   export type UserAchievementCreateManyAchievementInputEnvelope = {
     data: UserAchievementCreateManyAchievementInput | UserAchievementCreateManyAchievementInput[]
     skipDuplicates?: boolean
   }
+
   export type UserAchievementUpsertWithWhereUniqueWithoutAchievementInput = {
     where: UserAchievementWhereUniqueInput
     update: XOR<UserAchievementUpdateWithoutAchievementInput, UserAchievementUncheckedUpdateWithoutAchievementInput>
     create: XOR<UserAchievementCreateWithoutAchievementInput, UserAchievementUncheckedCreateWithoutAchievementInput>
   }
+
   export type UserAchievementUpdateWithWhereUniqueWithoutAchievementInput = {
     where: UserAchievementWhereUniqueInput
     data: XOR<UserAchievementUpdateWithoutAchievementInput, UserAchievementUncheckedUpdateWithoutAchievementInput>
   }
+
   export type UserAchievementUpdateManyWithWhereWithoutAchievementInput = {
     where: UserAchievementScalarWhereInput
     data: XOR<UserAchievementUpdateManyMutationInput, UserAchievementUncheckedUpdateManyWithoutAchievementInput>
   }
+
   export type AchievementCreateWithoutUserAchievementsInput = {
     name: string
     description: string
@@ -13786,6 +14959,7 @@ export namespace Prisma {
     creditsReward?: number
     createdAt?: Date | string
   }
+
   export type AchievementUncheckedCreateWithoutUserAchievementsInput = {
     id?: number
     name: string
@@ -13796,10 +14970,12 @@ export namespace Prisma {
     creditsReward?: number
     createdAt?: Date | string
   }
+
   export type AchievementCreateOrConnectWithoutUserAchievementsInput = {
     where: AchievementWhereUniqueInput
     create: XOR<AchievementCreateWithoutUserAchievementsInput, AchievementUncheckedCreateWithoutUserAchievementsInput>
   }
+
   export type UserCreateWithoutUserAchievementsInput = {
     supabase_uid: string
     display_name?: string | null
@@ -13810,6 +14986,7 @@ export namespace Prisma {
     userGames?: UserGameCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
   }
+
   export type UserUncheckedCreateWithoutUserAchievementsInput = {
     id?: number
     supabase_uid: string
@@ -13821,19 +14998,23 @@ export namespace Prisma {
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
   }
+
   export type UserCreateOrConnectWithoutUserAchievementsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
   }
+
   export type AchievementUpsertWithoutUserAchievementsInput = {
     update: XOR<AchievementUpdateWithoutUserAchievementsInput, AchievementUncheckedUpdateWithoutUserAchievementsInput>
     create: XOR<AchievementCreateWithoutUserAchievementsInput, AchievementUncheckedCreateWithoutUserAchievementsInput>
     where?: AchievementWhereInput
   }
+
   export type AchievementUpdateToOneWithWhereWithoutUserAchievementsInput = {
     where?: AchievementWhereInput
     data: XOR<AchievementUpdateWithoutUserAchievementsInput, AchievementUncheckedUpdateWithoutUserAchievementsInput>
   }
+
   export type AchievementUpdateWithoutUserAchievementsInput = {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -13843,6 +15024,7 @@ export namespace Prisma {
     creditsReward?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type AchievementUncheckedUpdateWithoutUserAchievementsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -13853,15 +15035,18 @@ export namespace Prisma {
     creditsReward?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserUpsertWithoutUserAchievementsInput = {
     update: XOR<UserUpdateWithoutUserAchievementsInput, UserUncheckedUpdateWithoutUserAchievementsInput>
     create: XOR<UserCreateWithoutUserAchievementsInput, UserUncheckedCreateWithoutUserAchievementsInput>
     where?: UserWhereInput
   }
+
   export type UserUpdateToOneWithWhereWithoutUserAchievementsInput = {
     where?: UserWhereInput
     data: XOR<UserUpdateWithoutUserAchievementsInput, UserUncheckedUpdateWithoutUserAchievementsInput>
   }
+
   export type UserUpdateWithoutUserAchievementsInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13872,6 +15057,7 @@ export namespace Prisma {
     userGames?: UserGameUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
   }
+
   export type UserUncheckedUpdateWithoutUserAchievementsInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
@@ -13883,6 +15069,7 @@ export namespace Prisma {
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
   }
+
   export type GameCreateWithoutWishlistedByInput = {
     igdbId?: number | null
     name: string
@@ -13892,6 +15079,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -13911,6 +15099,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
   }
+
   export type GameUncheckedCreateWithoutWishlistedByInput = {
     id?: number
     igdbId?: number | null
@@ -13921,6 +15110,7 @@ export namespace Prisma {
     firstReleaseDate?: Date | string | null
     coverUrl?: string | null
     screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
     totalRating?: number | null
     totalRatingCount?: number | null
     aggregatedRating?: number | null
@@ -13940,10 +15130,12 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
   }
+
   export type GameCreateOrConnectWithoutWishlistedByInput = {
     where: GameWhereUniqueInput
     create: XOR<GameCreateWithoutWishlistedByInput, GameUncheckedCreateWithoutWishlistedByInput>
   }
+
   export type UserCreateWithoutWishlistItemsInput = {
     supabase_uid: string
     display_name?: string | null
@@ -13954,6 +15146,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userGames?: UserGameCreateNestedManyWithoutUserInput
   }
+
   export type UserUncheckedCreateWithoutWishlistItemsInput = {
     id?: number
     supabase_uid: string
@@ -13965,19 +15158,23 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
   }
+
   export type UserCreateOrConnectWithoutWishlistItemsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
   }
+
   export type GameUpsertWithoutWishlistedByInput = {
     update: XOR<GameUpdateWithoutWishlistedByInput, GameUncheckedUpdateWithoutWishlistedByInput>
     create: XOR<GameCreateWithoutWishlistedByInput, GameUncheckedCreateWithoutWishlistedByInput>
     where?: GameWhereInput
   }
+
   export type GameUpdateToOneWithWhereWithoutWishlistedByInput = {
     where?: GameWhereInput
     data: XOR<GameUpdateWithoutWishlistedByInput, GameUncheckedUpdateWithoutWishlistedByInput>
   }
+
   export type GameUpdateWithoutWishlistedByInput = {
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
     name?: StringFieldUpdateOperationsInput | string
@@ -13987,6 +15184,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14006,6 +15204,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
   }
+
   export type GameUncheckedUpdateWithoutWishlistedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     igdbId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -14016,6 +15215,7 @@ export namespace Prisma {
     firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
     totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
     aggregatedRating?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14035,15 +15235,18 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
   }
+
   export type UserUpsertWithoutWishlistItemsInput = {
     update: XOR<UserUpdateWithoutWishlistItemsInput, UserUncheckedUpdateWithoutWishlistItemsInput>
     create: XOR<UserCreateWithoutWishlistItemsInput, UserUncheckedCreateWithoutWishlistItemsInput>
     where?: UserWhereInput
   }
+
   export type UserUpdateToOneWithWhereWithoutWishlistItemsInput = {
     where?: UserWhereInput
     data: XOR<UserUpdateWithoutWishlistItemsInput, UserUncheckedUpdateWithoutWishlistItemsInput>
   }
+
   export type UserUpdateWithoutWishlistItemsInput = {
     supabase_uid?: StringFieldUpdateOperationsInput | string
     display_name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14054,6 +15257,7 @@ export namespace Prisma {
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userGames?: UserGameUpdateManyWithoutUserNestedInput
   }
+
   export type UserUncheckedUpdateWithoutWishlistItemsInput = {
     id?: IntFieldUpdateOperationsInput | number
     supabase_uid?: StringFieldUpdateOperationsInput | string
@@ -14065,11 +15269,13 @@ export namespace Prisma {
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
   }
+
   export type UserAchievementCreateManyUserInput = {
     id?: number
     achievementId: number
     unlockedAt?: Date | string
   }
+
   export type UserGameCreateManyUserInput = {
     id?: number
     gameId: number
@@ -14081,25 +15287,30 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: string | null
   }
+
   export type WishlistCreateManyUserInput = {
     id?: number
     gameId: number
     addedAt?: Date | string
   }
+
   export type UserAchievementUpdateWithoutUserInput = {
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     achievement?: AchievementUpdateOneRequiredWithoutUserAchievementsNestedInput
   }
+
   export type UserAchievementUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     achievementId?: IntFieldUpdateOperationsInput | number
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserAchievementUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     achievementId?: IntFieldUpdateOperationsInput | number
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserGameUpdateWithoutUserInput = {
     platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14110,6 +15321,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
   }
+
   export type UserGameUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
@@ -14121,6 +15333,7 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserGameUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
@@ -14132,20 +15345,24 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type WishlistUpdateWithoutUserInput = {
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     game?: GameUpdateOneRequiredWithoutWishlistedByNestedInput
   }
+
   export type WishlistUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type WishlistUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type DealCreateManyGameInput = {
     id?: number
     platformIds?: DealCreateplatformIdsInput | number[]
@@ -14163,6 +15380,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
   }
+
   export type UserGameCreateManyGameInput = {
     id?: number
     userId: number
@@ -14174,11 +15392,13 @@ export namespace Prisma {
     isFavorite?: boolean
     notes?: string | null
   }
+
   export type WishlistCreateManyGameInput = {
     id?: number
     userId: number
     addedAt?: Date | string
   }
+
   export type DealUpdateWithoutGameInput = {
     platformIds?: DealUpdateplatformIdsInput | number[]
     title?: StringFieldUpdateOperationsInput | string
@@ -14195,6 +15415,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type DealUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     platformIds?: DealUpdateplatformIdsInput | number[]
@@ -14212,6 +15433,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type DealUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     platformIds?: DealUpdateplatformIdsInput | number[]
@@ -14229,6 +15451,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserGameUpdateWithoutGameInput = {
     platformIds?: UserGameUpdateplatformIdsInput | number[]
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14239,6 +15462,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
+
   export type UserGameUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
@@ -14250,6 +15474,7 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type UserGameUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
@@ -14261,45 +15486,57 @@ export namespace Prisma {
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
+
   export type WishlistUpdateWithoutGameInput = {
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutWishlistItemsNestedInput
   }
+
   export type WishlistUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type WishlistUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserAchievementCreateManyAchievementInput = {
     id?: number
     userId: number
     unlockedAt?: Date | string
   }
+
   export type UserAchievementUpdateWithoutAchievementInput = {
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutUserAchievementsNestedInput
   }
+
   export type UserAchievementUncheckedUpdateWithoutAchievementInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
   export type UserAchievementUncheckedUpdateManyWithoutAchievementInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     unlockedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
+
+
+
   /**
    * Batch Payload for updateMany & deleteMany & createMany
    */
+
   export type BatchPayload = {
     count: number
   }
+
   /**
    * DMMF
    */

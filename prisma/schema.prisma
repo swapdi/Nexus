@@ -33,6 +33,7 @@ model Game {
   firstReleaseDate      DateTime?
   coverUrl              String?
   screenshots           String[]
+  videos                String[]       @default([])
   totalRating           Float?
   totalRatingCount      Int?
   aggregatedRating      Float?

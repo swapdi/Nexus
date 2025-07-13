@@ -12,6 +12,12 @@ export interface IGDBGame {
     id: number;
     url: string;
   }>;
+  videos?: Array<{
+    id: number;
+    name?: string;
+    video_id: string;
+    checksum?: string;
+  }>;
   genres?: Array<{
     id: number;
     name: string;
@@ -58,6 +64,7 @@ export interface IGDBGameData {
   summary?: string;
   coverUrl?: string;
   screenshotUrls?: string[];
+  videoUrls?: string[];
   genres?: string[];
   developers?: string[];
   publishers?: string[];
@@ -174,7 +181,7 @@ export namespace IGDBService {
     try {
       const headers = await getHeaders();
       const body = `
-        fields id, name, summary, cover.url, screenshots.url, 
+        fields id, name, summary, cover.url, screenshots.url, videos.video_id, videos.name,
                genres.name, platforms.name, platforms.abbreviation,
                involved_companies.company.name, involved_companies.developer, involved_companies.publisher,
                release_dates.date, release_dates.platform,
@@ -379,6 +386,13 @@ export namespace IGDBService {
       igdbGame.screenshots
         ?.map(screenshot => getImageUrl(screenshot.url, 'screenshot_big'))
         .filter(url => url) || [];
+
+    // Videos zu YouTube URLs konvertieren
+    const videoUrls =
+      igdbGame.videos
+        ?.map(video => `https://www.youtube.com/watch?v=${video.video_id}`)
+        .filter(url => url) || [];
+
     // Cover-URL konvertieren
     const coverUrl = igdbGame.cover
       ? getImageUrl(igdbGame.cover.url, 'cover_big')
@@ -395,6 +409,7 @@ export namespace IGDBService {
       summary: igdbGame.summary,
       coverUrl,
       screenshotUrls,
+      videoUrls,
       genres,
       developers,
       publishers,

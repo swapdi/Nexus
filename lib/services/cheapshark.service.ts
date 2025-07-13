@@ -21,6 +21,16 @@ export interface CheapSharkDeal {
   dealRating: string;
   thumb: string;
 }
+export interface CheapSharkStore {
+  storeID: string;
+  storeName: string;
+  isActive: number;
+  images: {
+    banner: string;
+    logo: string;
+    icon: string;
+  };
+}
 export interface CheapSharkGameSearch {
   gameID: string;
   steamAppID: string | null;
@@ -43,6 +53,10 @@ export interface CheapSharkGameInfo {
     title: string;
     steamAppID: string | null;
     thumb: string;
+  };
+  cheapestPriceEver?: {
+    price: string;
+    date: number;
   };
 }
 export interface CheapSharkDealDetails {
@@ -349,5 +363,58 @@ export namespace CheapSharkService {
       name: getStoreName(id),
       icon: getStoreIcon(id)
     }));
+  }
+
+  /**
+   * Lädt alle verfügbaren Stores von der CheapShark API
+   * Grund: Aktuelle Store-Liste mit Icons für Deal-Anzeige
+   */
+  export async function fetchStores(): Promise<CheapSharkStore[]> {
+    try {
+      const response = await fetch(`${BASE_URL}/stores`);
+      if (!response.ok) {
+        throw new Error(`CheapShark API Error: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Fehler beim Laden der Stores:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sucht nach einem Spiel über den Titel
+   * Grund: Game-ID für Deal-Suche ermitteln
+   */
+  export async function searchGameByTitle(
+    title: string
+  ): Promise<CheapSharkGameSearch[]> {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/games?title=${encodeURIComponent(title)}&limit=1`
+      );
+      if (!response.ok) {
+        throw new Error(`CheapShark API Error: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Fehler bei der Spiel-Suche:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Hilfsfunktion: Store-Icon per API abrufen
+   * Grund: Dynamische Store-Icons statt statischer Zuordnung
+   */
+  export async function getStoreIconUrl(storeID: string): Promise<string> {
+    try {
+      const stores = await fetchStores();
+      const store = stores.find(s => s.storeID === storeID);
+      return store?.images?.icon || '';
+    } catch (error) {
+      console.error('Fehler beim Laden des Store-Icons:', error);
+      return '';
+    }
   }
 }

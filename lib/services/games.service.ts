@@ -137,6 +137,7 @@ export namespace GamesService {
           firstReleaseDate: igdbGameData.firstReleaseDate,
           coverUrl: igdbGameData.coverUrl,
           screenshots: igdbGameData.screenshotUrls || [],
+          videos: igdbGameData.videoUrls || [],
           totalRating: igdbGameData.totalRating,
           genres: igdbGameData.genres || [],
           developers: igdbGameData.developers || [],
@@ -223,6 +224,7 @@ export namespace GamesService {
               firstReleaseDate: igdbGameData.firstReleaseDate,
               coverUrl: steamCoverUrl, // Steam Cover bevorzugt über IGDB Cover
               screenshots: igdbGameData.screenshotUrls || [],
+              videos: igdbGameData.videoUrls || [],
               totalRating: igdbGameData.totalRating,
               genres: igdbGameData.genres || [],
               developers: igdbGameData.developers || [],

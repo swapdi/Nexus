@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
-  import DealCard from '~/components/DealCard/DealCard.vue';
+  import MediaCarousel from '~/components/MediaCarousel.vue';
   import type { DealWithGame } from '~/lib/services/deals.service';
   import type { UserGameWithDetails } from '~/lib/services/games.service';
   import type { Game } from '~/prisma/client';
@@ -25,6 +25,26 @@
   const isEditingNotes = ref(false);
   const notesText = ref('');
   const isSavingNotes = ref(false);
+
+  // Media carousel state
+  const showMediaCarousel = ref(false);
+  const mediaItems = computed(() => {
+    if (!currentGame.value) return [];
+    const items: string[] = [];
+
+    // Füge Videos hinzu
+    if (currentGame.value.videos) {
+      items.push(...currentGame.value.videos);
+    }
+
+    // Füge Screenshots hinzu
+    if (currentGame.value.screenshots) {
+      items.push(...currentGame.value.screenshots);
+    }
+
+    return items;
+  });
+  const initialCarouselIndex = ref(0);
 
   // Page Meta
   definePageMeta({
@@ -93,22 +113,77 @@
 
   // Lade verwandte Deals für das Spiel
   const loadRelatedDeals = async () => {
-    if (!gameData.value) return;
+    if (!currentGame.value) return;
 
     isLoadingDeals.value = true;
     try {
+      // Lade zuerst Deals aus der Datenbank
       await dealsStore.loadDealsFromDB();
 
-      // Finde Deals die zum aktuellen Spiel gehören
-      const gameDeals = dealsStore.deals.filter(
+      // Finde bereits gespeicherte Deals
+      let gameDeals = dealsStore.deals.filter(
         deal =>
-          deal.gameId === gameData.value!.id ||
+          deal.gameId === currentGame.value!.id ||
           deal.title
             .toLowerCase()
-            .includes(gameData.value!.name.toLowerCase()) ||
-          (gameData.value!.slug &&
-            deal.title.toLowerCase().includes(gameData.value!.slug))
+            .includes(currentGame.value!.name.toLowerCase()) ||
+          (currentGame.value!.slug &&
+            deal.title.toLowerCase().includes(currentGame.value!.slug))
       );
+
+      // Suche zusätzlich nach neuen Deals über CheapShark API
+      try {
+        // Importiere CheapShark Service
+        const { CheapSharkService } = await import(
+          '~/lib/services/cheapshark.service'
+        );
+
+        // Suche Game ID bei CheapShark
+        const gameSearchResults = await CheapSharkService.searchGameByTitle(
+          currentGame.value!.name
+        );
+
+        if (gameSearchResults.length > 0) {
+          const cheapSharkGameId = gameSearchResults[0].gameID;
+
+          // Lade aktuelle Deals für das Spiel
+          const gameInfo = await CheapSharkService.getGameDeals(
+            cheapSharkGameId
+          );
+
+          // Konvertiere CheapShark Deals zu unserer Deal-Struktur (als separate externe Deals)
+          const newDeals = gameInfo.deals.map(deal => ({
+            id: Math.floor(Math.random() * 1000000), // Temporäre ID für externe Deals
+            gameId: currentGame.value!.id,
+            title: gameInfo.info.title,
+            storeName: CheapSharkService.getStoreName(deal.storeID),
+            price: parseFloat(deal.price),
+            originalPrice: parseFloat(deal.retailPrice),
+            discountPercent: parseFloat(deal.savings),
+            url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+            validFrom: new Date(),
+            validUntil: null,
+            isFreebie: false,
+            discoveredAt: new Date(),
+            updatedAt: new Date(),
+            externalId: deal.dealID,
+            source: 'cheapshark',
+            platformIds: [],
+            game: currentGame.value!
+          }));
+
+          // Füge neue Deals zu bestehenden hinzu (vermeidet Duplikate)
+          const existingDealIds = new Set(gameDeals.map(d => d.externalId));
+          const uniqueNewDeals = newDeals.filter(
+            d => !existingDealIds.has(d.externalId)
+          );
+
+          gameDeals = [...gameDeals, ...uniqueNewDeals] as DealWithGame[];
+        }
+      } catch (apiError) {
+        console.warn('CheapShark API Fehler:', apiError);
+        // Fahre mit vorhandenen Deals fort, auch wenn API fehlschlägt
+      }
 
       relatedDeals.value = gameDeals.slice(0, 6) as DealWithGame[]; // Limitiere auf 6 Deals
     } catch (err) {
@@ -144,7 +219,7 @@
     return rating.toFixed(1);
   };
 
-  const formatRelativeTime = (date: Date | null) => {
+  const formatRelativeTime = (date: Date | null | undefined) => {
     if (!date) return 'Nie gespielt';
 
     const now = new Date();
@@ -171,20 +246,6 @@
   const formatReleaseYear = (date: Date | string | null) => {
     if (!date) return null;
     return new Date(date).getFullYear();
-  };
-
-  const getRatingColor = (rating: number) => {
-    if (rating >= 80) return 'text-green-400';
-    if (rating >= 60) return 'text-yellow-400';
-    if (rating >= 40) return 'text-orange-400';
-    return 'text-red-400';
-  };
-
-  const getRatingBgColor = (rating: number) => {
-    if (rating >= 80) return 'bg-green-500/20 border-green-500/40';
-    if (rating >= 60) return 'bg-yellow-500/20 border-yellow-500/40';
-    if (rating >= 40) return 'bg-orange-500/20 border-orange-500/40';
-    return 'bg-red-500/20 border-red-500/40';
   };
 
   // Zurück zur Bibliothek
@@ -232,6 +293,37 @@
       notifyStore.notify('Fehler beim Speichern der Notizen', 3);
     } finally {
       isSavingNotes.value = false;
+    }
+  };
+
+  const hasGameData = computed(() => {
+    const currentGame = userGame.value?.game || gameData.value;
+    return (
+      currentGame &&
+      (currentGame.summary ||
+        currentGame.genres?.length ||
+        currentGame.developers?.length ||
+        currentGame.publishers?.length ||
+        currentGame.firstReleaseDate ||
+        currentGame.totalRating)
+    );
+  });
+
+  // Media carousel functions
+  const openMediaCarousel = (index = 0) => {
+    initialCarouselIndex.value = index;
+    showMediaCarousel.value = true;
+  };
+
+  const closeMediaCarousel = () => {
+    showMediaCarousel.value = false;
+  };
+  // Navigation helper for DealCard clicks
+  const navToLink = (deal: DealWithGame) => {
+    if (deal.url) {
+      window.open(deal.url, '_blank');
+    } else {
+      navigateTo(`/deals?search=${encodeURIComponent(deal.title)}`);
     }
   };
 </script>
@@ -315,8 +407,8 @@
                     <div
                       class="aspect-[3/4] bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl overflow-hidden relative shadow-2xl transform transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-purple-500/20">
                       <img
-                        :src="currentGame.coverUrl || '/gameplaceholder.jpg'"
-                        :alt="currentGame.name"
+                        :src="currentGame?.coverUrl || '/gameplaceholder.jpg'"
+                        :alt="currentGame?.name || 'Game Cover'"
                         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                         loading="lazy" />
 
@@ -344,20 +436,23 @@
                       class="text-4xl lg:text-6xl font-black mb-4 leading-tight">
                       <span
                         class="bg-gradient-to-r from-purple-400 via-pink-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x bg-300">
-                        {{ currentGame.name }}
+                        {{ currentGame?.name || 'Unbekanntes Spiel' }}
                       </span>
                     </h1>
 
                     <!-- Release Year & Rating Badge -->
                     <div class="flex items-center gap-3 mb-6">
                       <div
-                        v-if="formatReleaseYear(currentGame.firstReleaseDate)"
+                        v-if="
+                          currentGame?.firstReleaseDate &&
+                          formatReleaseYear(currentGame.firstReleaseDate)
+                        "
                         class="px-3 py-1 bg-gray-800/50 text-gray-300 text-sm rounded-full border border-gray-700/40 font-medium">
                         {{ formatReleaseYear(currentGame.firstReleaseDate) }}
                       </div>
                       <div
                         v-if="
-                          currentGame.genres && currentGame.genres.length > 0
+                          currentGame?.genres && currentGame.genres.length > 0
                         ">
                         <span
                           v-for="genre in currentGame.genres.slice(0, 5)"
@@ -367,7 +462,7 @@
                         </span>
                         <span
                           v-if="
-                            currentGame.genres && currentGame.genres.length > 5
+                            currentGame?.genres && currentGame.genres.length > 5
                           "
                           class="px-3 py-1.5 bg-gray-800/50 text-gray-400 text-sm rounded-full border border-gray-700/40 font-medium">
                           +{{ currentGame.genres.length - 5 }} weitere
@@ -376,9 +471,9 @@
                     </div>
 
                     <!-- Game Summary -->
-                    <div v-if="currentGame.summary" class="mb-6">
+                    <div v-if="currentGame?.summary" class="mb-6">
                       <p class="text-gray-300 leading-relaxed text-base">
-                        {{ currentGame.summary }}
+                        {{ currentGame?.summary }}
                       </p>
                     </div>
                   </div>
@@ -496,10 +591,8 @@
           </div>
         </div>
 
-        <!-- Screenshots Section -->
-        <div
-          v-if="currentGame?.screenshots && currentGame.screenshots.length > 0"
-          class="mx-4 lg:mx-8">
+        <!-- Media Section (Screenshots & Videos) -->
+        <div v-if="mediaItems.length > 0" class="mx-4 lg:mx-8">
           <div class="group relative">
             <div
               class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
@@ -512,39 +605,57 @@
                     name="heroicons:photo-20-solid"
                     class="w-5 h-5 text-gray-300" />
                 </div>
-                <h2 class="text-xl font-bold text-white">Screenshots</h2>
+                <h2 class="text-xl font-bold text-white">
+                  Screenshots & Videos
+                </h2>
+                <span class="text-sm text-gray-400"
+                  >{{ mediaItems.length }} Medien</span
+                >
               </div>
 
-              <!-- Screenshots Grid -->
+              <!-- Media Grid -->
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
-                  v-for="(screenshot, index) in currentGame.screenshots.slice(
-                    0,
-                    6
-                  )"
+                  v-for="(item, index) in mediaItems.slice(0, 6)"
                   :key="index"
-                  class="group relative aspect-video bg-gray-800/50 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                  @click="openMediaCarousel(index)"
+                  class="group relative aspect-video bg-gray-800/50 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer">
+                  <!-- Video Thumbnail -->
+                  <div
+                    v-if="item.includes('youtube.com')"
+                    class="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center relative">
+                    <Icon
+                      name="heroicons:play-circle-20-solid"
+                      class="w-16 h-16 text-white group-hover:scale-110 transition-transform duration-300" />
+                    <div
+                      class="absolute top-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
+                      Video
+                    </div>
+                  </div>
+
+                  <!-- Screenshot -->
                   <img
-                    :src="screenshot"
+                    v-else
+                    :src="item"
                     :alt="`Screenshot ${index + 1}`"
                     class="w-full h-full object-cover"
                     loading="lazy" />
+
                   <div
                     class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div
                     class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {{ index + 1 }} / {{ currentGame.screenshots.length }}
+                    {{ index + 1 }} / {{ mediaItems.length }}
                   </div>
                 </div>
               </div>
 
               <!-- Show More Button -->
-              <div
-                v-if="currentGame.screenshots.length > 6"
-                class="text-center mt-6">
+              <div v-if="mediaItems.length > 6" class="text-center mt-6">
                 <button
+                  @click="openMediaCarousel(0)"
                   class="px-6 py-3 bg-gradient-to-r from-purple-600/80 to-purple-700/80 hover:from-purple-500/90 hover:to-purple-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25">
-                  Alle {{ currentGame.screenshots.length }} Screenshots anzeigen
+                  Alle {{ mediaItems.length }} Medien anzeigen
                 </button>
               </div>
             </div>
@@ -669,9 +780,7 @@
                           :class="filled ? 'text-yellow-400' : 'text-gray-600'"
                           class="w-5 h-5" />
                       </div>
-                      <span
-                        :class="getRatingColor(currentGame.totalRating)"
-                        class="font-bold text-lg">
+                      <span class="font-bold text-lg">
                         {{ formatRating(currentGame.totalRating) }}/100
                       </span>
                     </div>
@@ -827,31 +936,12 @@
               <div
                 v-else
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <DealCard
+                <DealCardMedium
                   v-for="deal in relatedDeals"
                   :key="deal.id"
                   :deal="deal"
                   :viewMode="'medium'"
-                  @click="
-                    navigateTo(
-                      `/deals?search=${encodeURIComponent(deal.title)}`
-                    )
-                  " />
-              </div>
-
-              <!-- View all deals link -->
-              <div class="mt-6 text-center">
-                <button
-                  @click="
-                    navigateTo(
-                      `/deals?search=${encodeURIComponent(
-                        currentGame?.name || ''
-                      )}`
-                    )
-                  "
-                  class="px-6 py-3 bg-gradient-to-r from-green-600/80 to-green-700/80 hover:from-green-500/90 hover:to-green-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
-                  Alle Angebote zu diesem Spiel anzeigen
-                </button>
+                  @click="navToLink(deal)" />
               </div>
             </div>
           </div>
@@ -859,6 +949,13 @@
         <!-- Bottom Spacing -->
         <div class="h-20"></div>
       </div>
+
+      <!-- Media Carousel -->
+      <MediaCarousel
+        :items="mediaItems"
+        :initialIndex="initialCarouselIndex"
+        :isOpen="showMediaCarousel"
+        @close="closeMediaCarousel" />
     </div>
   </div>
 </template>
