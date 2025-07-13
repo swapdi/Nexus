@@ -5,7 +5,6 @@ import { useGameUtils } from '~/composables/useGameUtils';
 import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
-import { GamesService } from './games.service';
 
 const prisma = new PrismaClient();
 
@@ -132,9 +131,8 @@ export namespace DealsService {
           }] 🔎 Searching IGDB for: "${variant}"`
         );
 
-        const gameResult = await GamesService.findOrCreateGameWithIGDBRelevance(
-          variant
-        );
+        // Grund: Nutze einfache IGDB-Suche statt komplexer GamesService-Logik
+        const gameResult = await DealsService.findGameForDeal(variant);
 
         if (gameResult && gameResult.success && gameResult.game) {
           console.log(
@@ -327,5 +325,87 @@ export namespace DealsService {
    */
   export async function getAllCheapSharkDeals(options: any = {}) {
     return await CheapSharkService.getAllDeals(options);
+  }
+
+  /**
+   * Vereinfachte IGDB-Spielsuche nur für DealsService
+   * Grund: Vermeidet doppelte Komplexität zwischen GamesService und DealsService
+   */
+  export async function findGameForDeal(dealTitle: string) {
+    console.log(`🔍 Simple IGDB search for deal: "${dealTitle}"`);
+
+    try {
+      // Grund: Direkte IGDB-Suche ohne komplexe Logik
+      const { IGDBService } = await import('./igdb.service');
+      const searchResults = await IGDBService.searchGames(dealTitle, 10);
+
+      if (searchResults.length === 0) {
+        console.log(`❌ No IGDB results for deal title: "${dealTitle}"`);
+        return null;
+      }
+
+      // Grund: Nimm einfach das erste, best-bewertete Ergebnis
+      const bestResult = searchResults[0];
+      console.log(
+        `✅ Found IGDB game for deal: "${bestResult.name}" (ID: ${bestResult.id})`
+      );
+
+      // Grund: Prüfe ob bereits in der Datenbank
+      const existingGame = await prisma.game.findUnique({
+        where: { igdbId: bestResult.id }
+      });
+
+      if (existingGame) {
+        console.log(`🎯 Game already exists in DB: "${existingGame.name}"`);
+        return {
+          success: true,
+          game: existingGame,
+          isNew: false,
+          message: 'Spiel bereits vorhanden'
+        };
+      }
+
+      // Grund: Hole detaillierte Spiel-Daten und erstelle neues Spiel
+      const gameDetails = await IGDBService.getGameDetails(bestResult.id);
+      if (!gameDetails) {
+        console.log(
+          `❌ Could not get game details for IGDB ID: ${bestResult.id}`
+        );
+        return null;
+      }
+
+      const gameData = IGDBService.convertIGDBGame(gameDetails);
+      const newGame = await prisma.game.create({
+        data: {
+          igdbId: gameData.id,
+          name: gameData.name,
+          slug: gameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          summary: gameData.summary,
+          firstReleaseDate: gameData.firstReleaseDate,
+          coverUrl: gameData.coverUrl,
+          screenshots: gameData.screenshotUrls || [],
+          totalRating: gameData.totalRating,
+          genres: gameData.genres || [],
+          developers: gameData.developers || [],
+          publishers: gameData.publishers || [],
+          lastSyncedAt: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      console.log(
+        `🎉 Created new game for deal: "${newGame.name}" (ID: ${newGame.id})`
+      );
+      return {
+        success: true,
+        game: newGame,
+        isNew: true,
+        message: 'Spiel erstellt'
+      };
+    } catch (error) {
+      console.error(`❌ Error finding game for deal "${dealTitle}":`, error);
+      return null;
+    }
   }
 }

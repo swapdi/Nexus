@@ -164,20 +164,23 @@ export const useGameUtils = () => {
   };
 
   /**
-   * Optimierte IGDB-Relevanz-Bewertung mit mehrschichtiger Gewichtung
-   * Grund: Berücksichtigt Titel-Match, Popularität, Qualität und Game-Typ
+   * Einfache Relevanz-Bewertung OHNE Titel-Varianten (für GamesService)
+   * Grund: Vermeidet doppelte Titel-Bereinigung wenn bereits Varianten getestet werden
    */
-  const findMostRelevantGame = (
+  const findBestGameMatch = (
     searchQuery: string,
     searchResults: any[]
   ): any | null => {
     if (searchResults.length === 0) return null;
 
     const normalizedQuery = searchQuery.toLowerCase().trim();
+
+    // Grund: Bewerte jedes Spiel nach optimierten Kriterien (OHNE Titel-Varianten)
     const scoredResults = searchResults.map(game => {
       const normalizedName = game.name.toLowerCase().trim();
       let score = 0;
-      // Grund: Hohe Gewichtung für Titel-Relevanz, aber nicht überdominant
+
+      // ===== TITEL-MATCHING (max 400 Punkte) =====
       if (normalizedName === normalizedQuery) {
         score += 400; // Exakte Übereinstimmung
       } else if (normalizedName.startsWith(normalizedQuery)) {
@@ -185,7 +188,7 @@ export const useGameUtils = () => {
       } else if (normalizedName.includes(normalizedQuery)) {
         score += 200; // Enthält Query
       } else {
-        // Grund: Wort-basierte Ähnlichkeit für partielle Treffer
+        // Grund: Wort-basierte Ähnlichkeit
         const queryWords = normalizedQuery.split(/\s+/);
         const nameWords = normalizedName.split(/\s+/);
         const matchingWords = queryWords.filter((word: string) =>
@@ -195,29 +198,31 @@ export const useGameUtils = () => {
           )
         );
         const wordMatchRatio = matchingWords.length / queryWords.length;
-        score += wordMatchRatio * 150; // Bis zu 150 Punkte für Wort-Matches
+        score += wordMatchRatio * 150; // Bis zu 150 Punkte
       }
 
-      return {
-        game,
-        score: Math.round(score)
-      };
+      return { game, score: Math.round(score) };
     });
 
     // Grund: Sortiere nach Score (höchster zuerst)
     scoredResults.sort((a, b) => b.score - a.score);
-    const minAcceptableScore = 150;
+
+    const minAcceptableScore = 100; // Niedriger als bei findMostRelevantGame
 
     if (
       scoredResults.length > 0 &&
       scoredResults[0].score >= minAcceptableScore
     ) {
-      const winner = scoredResults[0];
-      return winner.game;
+      console.log(
+        `🎯 IGDB Match for "${searchQuery}": "${scoredResults[0].game.name}" (Score: ${scoredResults[0].score})`
+      );
+      return scoredResults[0].game;
     }
 
     console.log(
-      `❌ No game meets minimum score threshold (${minAcceptableScore})`
+      `❌ No IGDB match for "${searchQuery}" (best score: ${
+        scoredResults[0]?.score || 0
+      }, threshold: ${minAcceptableScore})`
     );
     return null;
   };
@@ -411,39 +416,6 @@ export const useGameUtils = () => {
   };
 
   /**
-   * Findet ähnliche Spiele basierend auf Genres
-   */
-  const findSimilarGames = (
-    targetGame: { genres: string[] },
-    allGames: Array<{ id: number; name: string; genres: string[] }>,
-    limit: number = 5
-  ): Array<{ id: number; name: string; similarity: number }> => {
-    const targetGenres = new Set(targetGame.genres);
-
-    const similarities = allGames
-      .map(game => {
-        const gameGenres = new Set(game.genres);
-        const intersection = new Set(
-          [...targetGenres].filter(x => gameGenres.has(x))
-        );
-        const union = new Set([...targetGenres, ...gameGenres]);
-
-        const similarity = intersection.size / union.size;
-
-        return {
-          id: game.id,
-          name: game.name,
-          similarity
-        };
-      })
-      .filter(item => item.similarity > 0)
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, limit);
-
-    return similarities;
-  };
-
-  /**
    * Berechnet Spiel-Bewertungsklassen
    */
   const calculateRatingClass = (
@@ -619,7 +591,6 @@ export const useGameUtils = () => {
     generateSteamCoverUrl,
     calculateGenreStats,
     calculatePlatformDistribution,
-    findSimilarGames,
     calculateRatingClass,
     formatReleaseDate,
     calculateTimeSinceLastPlayed,
@@ -642,6 +613,6 @@ export const useGameUtils = () => {
     gameMatchesSearch,
     // Neue Funktionen für Titelbereinigung und Relevanzsuche
     generateProgressiveVariants,
-    findMostRelevantGame
+    findBestGameMatch
   };
 };

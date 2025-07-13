@@ -47,78 +47,6 @@ export const dealsRouter = router({
   // ===== CHEAPSHARK INTEGRATION =====
 
   /**
-   * Lädt aktuelle CheapShark Deals, speichert neue in DB und gibt alle DB-Deals zurück
-   * Grund: Kompletter Workflow für Deal-Seite - CheapShark sync + DB laden
-   */
-  syncAndLoadDeals: publicProcedure
-    .input(
-      z
-        .object({
-          pageSize: z.number().min(1).max(200).default(100),
-          sortBy: z
-            .enum([
-              'Deal Rating',
-              'Title',
-              'Savings',
-              'Price',
-              'Metacritic',
-              'Reviews',
-              'Release',
-              'Store',
-              'Recent'
-            ])
-            .default('Deal Rating'),
-          desc: z.boolean().default(true),
-          cleanupDays: z.number().min(1).max(30).default(7)
-        })
-        .optional()
-    )
-    .query(async ({ input }) => {
-      try {
-        const {
-          pageSize = 100,
-          sortBy = 'Deal Rating',
-          desc = true,
-          cleanupDays = 7
-        } = input || {};
-
-        // Schritt 1: Veraltete Deals bereinigen
-        await DealsService.cleanupExpiredDeals(cleanupDays);
-
-        // Schritt 2: Aktuelle CheapShark Deals laden
-        const cheapSharkDeals = await DealsService.getAllCheapSharkDeals({
-          pageSize,
-          sortBy,
-          desc
-        });
-
-        // Schritt 3: Neue Deals in Datenbank speichern (ohne gameId für globale Deals)
-        if (cheapSharkDeals && cheapSharkDeals.length > 0) {
-          await DealsService.saveCheapSharkDeals(cheapSharkDeals, null);
-        }
-
-        // Schritt 4: Alle aktuellen Deals aus Datenbank laden und zurückgeben
-        const allDeals = await DealsService.searchDeals({
-          isActive: true,
-          limit: 100
-        });
-
-        return {
-          deals: allDeals,
-          syncedCount: cheapSharkDeals?.length || 0,
-          totalDeals: allDeals.length
-        };
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to sync and load deals: ${
-            error instanceof Error ? error.message : 'Unknown error'
-          }`
-        });
-      }
-    }),
-
-  /**
    * Lädt alle verfügbaren CheapShark Deals im Hintergrund (ohne Limit)
    * Grund: Vollständige Synchronisation aller Deals für maximale Abdeckung
    */
@@ -139,7 +67,8 @@ export const dealsRouter = router({
       try {
         const {
           cleanupDays = 100,
-          maxPages = 45,
+          //maxPages = 45,
+          maxPages = 1,
           stopOnEmpty = true,
           maxEmptyPages = 3,
           maxAge = 2400,

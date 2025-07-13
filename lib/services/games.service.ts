@@ -2,7 +2,7 @@ import { useGameUtils } from '~/composables/useGameUtils';
 import { PrismaClient, type Game, type UserGame } from '~/prisma/client';
 
 const prisma = new PrismaClient();
-const { generateProgressiveVariants, findMostRelevantGame } = useGameUtils();
+const { generateProgressiveVariants, findBestGameMatch } = useGameUtils();
 
 // ============================================================================
 // TYPEN & INTERFACES
@@ -131,7 +131,8 @@ export namespace GamesService {
             console.log(`No IGDB results for variant: "${titleVariant}"`);
             continue;
           }
-          const bestMatch = findMostRelevantGame(titleVariant, searchResults);
+          // Grund: Einfacher Relevanz-Check OHNE doppelte Titel-Varianten
+          const bestMatch = findBestGameMatch(titleVariant, searchResults);
 
           if (!bestMatch) {
             continue;
