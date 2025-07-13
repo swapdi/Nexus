@@ -143,21 +143,15 @@
     }
   };
 
-  const refreshDeals = async () => {
-    await dealsStore.loadDealsFromDB();
-  };
-
-  const syncDealsFromAPI = async () => {
-    // Grund: Vollständige Sync mit CheapShark API
-    await dealsStore.syncAllDealsInBackground();
-  };
-
   // Deal Aggregation
   const aggregationMessage = ref<string | null>(null);
 </script>
 
 <template>
   <div class="space-y-6">
+    <!-- Background Sync Status -->
+    <DealsBackgroundSync />
+
     <!-- Header mit Statistiken -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
@@ -166,19 +160,8 @@
           class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
           Aktuelle Angebote
         </h1>
-        <div class="flex gap-2">
-          <button
-            @click="syncDealsFromAPI"
-            :disabled="isLoading"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2"
-            title="Neue Deals von CheapShark API synchronisieren">
-            <Icon
-              name="heroicons:cloud-arrow-down-20-solid"
-              class="w-4 h-4"
-              :class="{ 'animate-spin': isLoading }" />
-            <span class="hidden sm:inline">Sync API</span>
-          </button>
-        </div>
+        <!-- Neue Refresh Controls -->
+        <DealsRefreshControls :deals-count="filteredDeals.length" />
       </div>
 
       <!-- Loading State -->
@@ -196,7 +179,7 @@
           class="w-8 h-8 text-red-400 mx-auto mb-2" />
         <p class="text-red-400">{{ dealsStore.error }}</p>
         <button
-          @click="refreshDeals"
+          @click="() => dealsStore.refreshAllDeals()"
           class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
           Erneut versuchen
         </button>
@@ -388,7 +371,7 @@
       </p>
       <div class="flex gap-2 justify-center">
         <button
-          @click="syncDealsFromAPI"
+          @click="() => dealsStore.syncAllDealsInBackground()"
           :disabled="isLoading"
           class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center gap-2"
           title="Neue Deals von CheapShark API synchronisieren">

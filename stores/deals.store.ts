@@ -36,6 +36,15 @@ export const useDealsStore = defineStore('deals', () => {
   // Current filters und sorting
   const currentSortBy = ref<DealSortOptions>('recent');
 
+  // State für Background-Sync und UI
+  const isBackgroundSyncing = ref(false);
+  const lastSyncTime = ref<Date | null>(null);
+  const syncProgress = ref<{
+    current: number;
+    total: number;
+    message: string;
+  } | null>(null);
+
   const { $client } = useNuxtApp();
 
   /**
@@ -71,17 +80,23 @@ export const useDealsStore = defineStore('deals', () => {
 
   /**
    * Synchronisiert alle CheapShark Deals im Hintergrund
-   * Grund: Vollständige Sync ohne UI-Blockierung
+   * Grund: Vollständige Sync ohne UI-Blockierung mit Fortschrittsanzeige
    */
   async function syncAllDealsInBackground() {
-    // Grund: Keine Loading-UI, läuft im Hintergrund
+    if (isBackgroundSyncing.value) {
+      console.log('Background sync bereits aktiv, überspringe');
+      return;
+    }
+
     const notifyStore = useNotifyStore();
+    isBackgroundSyncing.value = true;
+    syncProgress.value = { current: 0, total: 0, message: 'Starte Sync...' };
 
     try {
-      // Grund: Starte Hintergrund-Sync ohne Loading-Indikator
+      notifyStore.notify('Deals-Synchronisation im Hintergrund gestartet', 0);
+
       const response = await $client.deals.syncAllDealsBackground.mutate({
         cleanupDays: 100,
-        //maxPages = 45,
         maxPages: 1,
         stopOnEmpty: true,
         maxEmptyPages: 3,
@@ -89,9 +104,11 @@ export const useDealsStore = defineStore('deals', () => {
         rateLimitDelay: 800
       });
 
+      lastSyncTime.value = new Date();
+
       // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync
       notifyStore.notify(
-        `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen (${response.stoppedReason})`,
+        `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen`,
         0
       );
 
@@ -101,8 +118,10 @@ export const useDealsStore = defineStore('deals', () => {
       return response;
     } catch (err: any) {
       console.error('Background sync failed:', err);
-      // Grund: Stille Fehlerbehandlung - keine störende UI-Meldung
       notifyStore.notify('Hintergrund-Synchronisation fehlgeschlagen', 2);
+    } finally {
+      isBackgroundSyncing.value = false;
+      syncProgress.value = null;
     }
   }
 
@@ -133,6 +152,37 @@ export const useDealsStore = defineStore('deals', () => {
     const stores = new Set<string>();
     deals.value.forEach(deal => stores.add(deal.storeName));
     availableStores.value = Array.from(stores).sort();
+  }
+
+  /**
+   * Manuelle Aktualisierung aller Deals
+   * Grund: Benutzer kann explizit alle Deals neu laden
+   */
+  async function refreshAllDeals() {
+    return await loading(
+      'refresh-all-deals',
+      'Aktualisiere alle Deals...',
+      async () => {
+        const notifyStore = useNotifyStore();
+
+        try {
+          // Schritt 1: Aktuelle Deals aus DB laden
+          await loadDealsFromDB();
+
+          // Schritt 2: Hintergrund-Sync für neue Deals starten
+          syncAllDealsInBackground().catch(console.error);
+
+          notifyStore.notify('Deals erfolgreich aktualisiert', 0);
+
+          return { success: true };
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Aktualisieren der Deals';
+          notifyStore.notify(error.value, 3);
+          throw err;
+        }
+      },
+      'data'
+    );
   }
 
   // Computed Properties
@@ -221,17 +271,22 @@ export const useDealsStore = defineStore('deals', () => {
     freeGames: readonly(freeGames),
     availableStores: readonly(availableStores),
     error: readonly(error),
+    isBackgroundSyncing: readonly(isBackgroundSyncing),
+    lastSyncTime: readonly(lastSyncTime),
+    syncProgress: readonly(syncProgress),
 
     // Actions - Optimiert für bessere UX
     loadDealsFromDB,
     syncAllDealsInBackground,
     loadDealsWithBackgroundSync,
+    refreshAllDeals,
     setSortBy,
     updateAvailableStores,
 
     // Computed
     freebies,
     searchDeals,
+    sortedDeals,
 
     // Helpers
     formatPrice,
