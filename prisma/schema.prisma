@@ -15,6 +15,7 @@ model User {
   xp               Int               @default(0)
   level            Int               @default(1)
   credits          Int               @default(0)
+  steamId          String?           // Steam Profil ID für Bibliotheksimport
   userAchievements UserAchievement[]
   userGames        UserGame[]
   wishlistItems    Wishlist[]
@@ -101,7 +102,7 @@ model Deal {
   updatedAt       DateTime @updatedAt
   externalId      String?
   source          String?
-  game            Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  game            Game?    @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@map("deals")
 }

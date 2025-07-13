@@ -1,10 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-
 async function main() {
-  console.log('Seeding database...');
 }
-
 main()
   .then(async () => {
     await prisma.$disconnect();

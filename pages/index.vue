@@ -14,7 +14,6 @@
         <div
           class="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-1/2 w-full bg-gradient-to-t from-green-500/20 via-transparent to-transparent animate-pulse-vertical-slow opacity-30" />
       </div>
-
       <div class="container mx-auto px-4 py-12 relative z-10 text-center">
         <img
           src="/favicon.ico"
@@ -49,7 +48,6 @@
         </div>
       </div>
     </section>
-
     <!-- Features-Bereich -->
     <section class="py-24 bg-gray-800/60 relative backdrop-blur-sm">
       <div
@@ -110,7 +108,6 @@
       <div
         class="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 animate-border-flow-reverse" />
     </section>
-
     <!-- Plattformen-Bereich -->
     <section class="py-24 relative">
       <div class="absolute inset-0 opacity-5 overflow-hidden">
@@ -156,7 +153,6 @@
         </p>
       </div>
     </section>
-
     <!-- CTA-Bereich -->
     <section
       class="py-24 bg-gradient-to-br from-purple-900/70 via-gray-900 to-blue-900/70 relative overflow-hidden">
@@ -211,7 +207,6 @@
             verwalte und spare.
           </p>
         </div>
-
         <div>
           <h3 class="text-lg font-semibold text-gray-200 mb-4">Navigation</h3>
           <ul class="space-y-2 text-sm">
@@ -239,7 +234,6 @@
             </li>
           </ul>
         </div>
-
         <div>
           <h3 class="text-lg font-semibold text-gray-200 mb-4">Rechtliches</h3>
           <ul class="space-y-2 text-sm">
@@ -263,7 +257,6 @@
             </li>
           </ul>
         </div>
-
         <div>
           <h3 class="text-lg font-semibold text-gray-200 mb-4">Folge uns</h3>
           <div class="flex space-x-4">
@@ -279,7 +272,6 @@
           </div>
         </div>
       </div>
-
       <div class="text-center border-t border-gray-700/60 pt-8 mt-8">
         <p>
           &copy; {{ new Date().getFullYear() }} Nexus. Alle Rechte vorbehalten.
@@ -288,28 +280,23 @@
     </div>
   </footer>
 </template>
-
 <script setup>
   const user = useSupabaseUser();
-
   watchEffect(() => {
     if (user.value) {
       navigateTo('/dashboard', { replace: true });
     }
   });
-
   definePageMeta({
     title: 'Nexus - Deine All-in-One Spieleverwaltung der Zukunft'
   });
 </script>
-
 <style>
   /* Globale Stile für die Seite */
   body {
     background-color: #0a0a0f;
     color: #e0e0e0;
   }
-
   .bg-grid-white\/5 {
     background-image: linear-gradient(
         rgba(255, 255, 255, 0.05) 1px,
@@ -317,40 +304,32 @@
       ),
       linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   }
-
   .animate-text-pop-in {
     animation: textPopIn 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
     opacity: 0;
   }
-
   .animate-fade-in-up {
     animation: fadeInUp 0.8s ease-out forwards;
     opacity: 0;
   }
-
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
-
   .animate-pulse-slow-far {
     animation: pulse-far 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
   .animate-pulse-horizontal-slow {
     animation: pulse-horizontal 6s ease-in-out infinite alternate;
   }
-
   .animate-pulse-vertical-slow {
     animation: pulse-vertical 7s ease-in-out infinite alternate;
   }
-
   .animate-border-flow {
     animation: borderFlow 5s linear infinite;
   }
   .animate-border-flow-reverse {
     animation: borderFlowReverse 5s linear infinite;
   }
-
   .delay-2000 {
     animation-delay: 2s;
   }
@@ -376,7 +355,6 @@
       transform: scale(1) translateY(0);
     }
   }
-
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -387,7 +365,6 @@
       transform: translateY(0);
     }
   }
-
   @keyframes float {
     0%,
     100% {
@@ -397,7 +374,6 @@
       transform: translateY(-15px);
     }
   }
-
   @keyframes pulse-far {
     0%,
     100% {
@@ -409,7 +385,6 @@
       transform: scale(1.05);
     }
   }
-
   @keyframes pulse-horizontal {
     0% {
       transform: translateX(-10%);
@@ -431,7 +406,6 @@
       opacity: 0;
     }
   }
-
   @keyframes pulse-vertical {
     from {
       transform: translateY(-15%);
@@ -442,7 +416,6 @@
       opacity: 0.3;
     }
   }
-
   @keyframes borderFlow {
     0% {
       background-position: 0% 50%;

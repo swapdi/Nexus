@@ -6,7 +6,6 @@
     <div
       class="absolute inset-0 bg-black/70 backdrop-blur-sm"
       @click="onCancel"></div>
-
     <!-- Modal -->
     <div
       class="relative bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-md mx-4 w-full">
@@ -17,12 +16,10 @@
           {{ title }}
         </h3>
       </div>
-
       <!-- Message -->
       <p class="text-gray-300 mb-6">
         {{ message }}
       </p>
-
       <!-- Hint -->
       <div
         v-if="hint"
@@ -32,7 +29,6 @@
           class="w-4 h-4 inline mr-1" />
         <strong>Hinweis:</strong> {{ hint }}
       </div>
-
       <!-- Actions -->
       <div class="flex space-x-3">
         <button
@@ -57,7 +53,6 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   interface Props {
     isVisible: boolean;
@@ -72,7 +67,6 @@
     confirmButtonClass?: string;
     isLoading?: boolean;
   }
-
   const props = withDefaults(defineProps<Props>(), {
     iconName: 'heroicons:exclamation-triangle-20-solid',
     iconClass: 'text-red-400',
@@ -82,20 +76,16 @@
     confirmButtonClass: 'bg-red-600 hover:bg-red-700 disabled:bg-red-600/50',
     isLoading: false
   });
-
   const emit = defineEmits<{
     confirm: [];
     cancel: [];
   }>();
-
   const onConfirm = () => {
     emit('confirm');
   };
-
   const onCancel = () => {
     emit('cancel');
   };
-
   // ESC-Taste zum Schließen
   onMounted(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -103,9 +93,7 @@
         onCancel();
       }
     };
-
     document.addEventListener('keydown', handleEscape);
-
     onUnmounted(() => {
       document.removeEventListener('keydown', handleEscape);
     });

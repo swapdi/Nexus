@@ -14,12 +14,10 @@
       console.error('Fehler beim Initialisieren des Benutzers:', error);
     }
   });
-
   const handleSidebarHover = (isHovered: boolean) => {
     sidebarHovered.value = isHovered;
   };
 </script>
-
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <!-- Fixed Header (über allem) -->
@@ -33,7 +31,6 @@
       class="pt-1 transition-all duration-500 ease-out relative z-10"
       :class="sidebarHovered ? 'ml-64' : 'ml-20'">
       <!-- Notifications -->
-
       <!-- Page Content -->
       <main class="min-h-[calc(100vh-4rem)] overflow-y-auto">
         <div class="container mx-auto py-6 sm:py-8 px-4">
@@ -45,7 +42,6 @@
     </div>
   </div>
 </template>
-
 <style scoped>
   /* Smooth transitions für den Content-Bereich */
   .transition-all {

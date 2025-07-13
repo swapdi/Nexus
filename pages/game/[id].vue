@@ -36,7 +36,6 @@
       );
       if (existingGame) {
         game.value = existingGame;
-        console.log('Loaded from store cache:', game.value);
         isLoading.value = false;
       } else {
         // Falls nicht im Store, lade es über den Store (mit UserGame ID)
@@ -45,7 +44,6 @@
         const gameData = gamesStore.games.find(g => g.game.id === gameId.value);
         if (gameData) {
           game.value = gameData;
-          console.log('Loaded from API:', game.value);
         } else {
           error.value = 'Spiel nicht gefunden oder nicht in deiner Bibliothek';
         }

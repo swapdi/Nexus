@@ -16,7 +16,6 @@
         name="heroicons:arrow-down-tray-20-solid"
         class="w-8 h-8 text-purple-400" />
     </div>
-
     <!-- Platform Import Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <!-- Steam Import -->
@@ -32,7 +31,6 @@
             <p class="text-sm text-gray-400">Import von Steam-Bibliothek</p>
           </div>
         </div>
-
         <div v-if="!showSteamForm" class="space-y-3">
           <div class="text-sm text-gray-300">
             <div class="flex justify-between">
@@ -46,7 +44,6 @@
             Steam Importieren
           </button>
         </div>
-
         <!-- Steam Import Form -->
         <div v-else class="space-y-3">
           <div>
@@ -77,7 +74,6 @@
           </div>
         </div>
       </div>
-
       <!-- Epic Games (Placeholder) -->
       <div
         class="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-lg border border-gray-600/30 p-4 opacity-50">
@@ -105,7 +101,6 @@
           </button>
         </div>
       </div>
-
       <!-- Xbox/Microsoft (Placeholder) -->
       <div
         class="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-lg border border-gray-600/30 p-4 opacity-50">
@@ -134,7 +129,6 @@
         </div>
       </div>
     </div>
-
     <!-- Import Results -->
     <div
       v-if="importResult"
@@ -180,24 +174,19 @@
         {{ importResult.message }}
       </div>
     </div>
-
     <!-- Loading Overlay -->
     <LoadingOverlay />
   </div>
 </template>
-
 <script setup lang="ts">
   import { ref } from 'vue';
   import { NotificationType } from '~/stores/notify.store';
-
   const emit = defineEmits<{
     importCompleted: [];
   }>();
-
   const { $client } = useNuxtApp();
   const notifyStore = useNotifyStore();
   const loadingStore = useLoadingStore();
-
   // Steam Import State
   const showSteamForm = ref(false);
   const steamInput = ref('');
@@ -209,22 +198,18 @@
     errors?: string[];
     message?: string;
   } | null>(null);
-
   // Steam Import Function
   const importSteamLibrary = async () => {
     if (!steamInput.value.trim()) return;
-
     importResult.value = null;
     loadingStore.startOperation(
       'steam-import',
       'Steam-Bibliothek wird importiert...'
     );
-
     try {
       const result = await $client.games.importSteamLibrary.mutate({
         steamInput: steamInput.value.trim()
       });
-
       if (result.success) {
         importResult.value = result;
         notifyStore.notify(

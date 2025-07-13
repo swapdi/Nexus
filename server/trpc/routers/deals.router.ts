@@ -1,11 +1,9 @@
 // Deals Router - BEREINIGT
 // Grund: Nur noch syncAndLoadDeals Workflow für optimale Performance
-
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { DealsService } from '~/lib/services/deals.service';
 import { publicProcedure, router } from '../trpc';
-
 export const dealsRouter = router({
   /**
    * Lädt Deals schnell aus der Datenbank (ohne CheapShark Sync)
@@ -23,13 +21,11 @@ export const dealsRouter = router({
     .query(async ({ input }) => {
       try {
         const { limit = 100, offset = 0 } = input || {};
-
         const deals = await DealsService.searchDeals({
           isActive: true,
           limit,
           offset
         });
-
         return {
           deals,
           totalDeals: deals.length
@@ -43,9 +39,7 @@ export const dealsRouter = router({
         });
       }
     }),
-
   // ===== CHEAPSHARK INTEGRATION =====
-
   /**
    * Lädt alle verfügbaren CheapShark Deals im Hintergrund (ohne Limit)
    * Grund: Vollständige Synchronisation aller Deals für maximale Abdeckung
@@ -74,14 +68,11 @@ export const dealsRouter = router({
           maxAge = 2400,
           rateLimitDelay = 800
         } = input || {};
-
         // Schritt 1: Veraltete Deals bereinigen
         await DealsService.cleanupExpiredDeals(cleanupDays);
-
         let totalSynced = 0;
         let currentPage = 0;
         let emptyPagesCount = 0;
-
         // Schritt 2: Lade alle verfügbaren Seiten bis keine Deals mehr gefunden werden
         while (currentPage < maxPages) {
           try {
@@ -93,25 +84,19 @@ export const dealsRouter = router({
               desc: true,
               maxAge: maxAge // Filter Deals älter als X Tage
             });
-
             // Prüfe ob Seite leer ist
             if (!cheapSharkDeals || cheapSharkDeals.length === 0) {
               emptyPagesCount++;
-
               if (stopOnEmpty && emptyPagesCount >= maxEmptyPages) {
-                console.log(`Stopping nach ${maxEmptyPages} leeren Seiten`);
                 break;
               }
             } else {
               emptyPagesCount = 0; // Reset wenn wieder Deals gefunden werden
-
               // Schritt 3: Deals in Datenbank speichern
               await DealsService.saveCheapSharkDeals(cheapSharkDeals, null);
               totalSynced += cheapSharkDeals.length;
             }
-
             currentPage++;
-
             // Angepasste Pause zwischen API-Calls basierend auf Rate-Limiting-Erfahrung
             if (currentPage < maxPages) {
               // Längere Pausen nach jeder 10. Seite um 429 Errors zu vermeiden
@@ -124,7 +109,6 @@ export const dealsRouter = router({
               `API Error on page ${currentPage}:`,
               apiError.message
             );
-
             // Bei 429 (Rate Limit) oder 400 (Bad Request) stoppen
             if (
               apiError.message?.includes('429') ||
@@ -139,7 +123,6 @@ export const dealsRouter = router({
             }
           }
         }
-
         return {
           success: true,
           totalSynced,

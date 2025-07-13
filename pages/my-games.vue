@@ -1,20 +1,16 @@
 <script setup lang="ts">
   import ConfirmModal from '~/components/ConfirmModal.vue';
-
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const loadingStore = useLoadingStore();
-
   // Game Utils für Legacy-Support
   const { getGameName, gameMatchesSearch } = useGameUtils();
   // View Mode Management
   const { currentViewMode, getCurrentConfig } = useViewMode();
-
   onMounted(async () => {
     await userStore.init();
     await gamesStore.init();
   });
-
   definePageMeta({
     middleware: ['auth'],
     title: 'Meine Spiele',
@@ -25,108 +21,24 @@
   const selectedPlatform = ref('all');
   const sortBy = ref('lastPlayed');
   // Modal state
-  const showConfirmModal = ref(false); // Steam Import State
-  const showSteamImport = ref(false);
-  const steamInput = ref('');
-  const importResult = ref<{
-    success: boolean;
-    imported?: number;
-    updated?: number;
-    skipped?: number;
-    message?: string;
-  } | null>(null);
-
-  // Ein-/Ausklappen der Bibliothek-Sektion
-  const isLibrarySectionExpanded = ref(true);
-
+  const showConfirmModal = ref(false);
   // Nach Import aktualisieren
   const onImportCompleted = () => {
     gamesStore.refreshData();
-  }; // Steam Import Function
-  const importSteamLibrary = async () => {
-    if (!steamInput.value.trim()) return;
-
-    importResult.value = null;
-    loadingStore.startOperation(
-      'steam-import',
-      'Steam-Bibliothek wird importiert...',
-      'process'
-    );
-
-    try {
-      const { $client } = useNuxtApp();
-      const notifyStore = useNotifyStore();
-
-      // Steam Import
-      const result = await $client.games.importSteamLibrary.mutate({
-        steamInput: steamInput.value.trim()
-      });
-
-      loadingStore.finishOperation('steam-import');
-      importResult.value = result;
-
-      if (result.success) {
-        // Erfolgs-Benachrichtigung
-        let notificationMessage = 'Steam-Import abgeschlossen! ';
-        if (result.imported && result.imported > 0) {
-          notificationMessage += `${result.imported} neue Spiele importiert. `;
-        }
-        if (result.updated && result.updated > 0) {
-          notificationMessage += `${result.updated} Spiele aktualisiert. `;
-        }
-        if (!result.imported && !result.updated && result.skipped) {
-          notificationMessage =
-            'Steam-Import abgeschlossen - alle Spiele sind bereits in Ihrer Bibliothek.';
-        }
-        notifyStore.notify(notificationMessage.trim(), 1);
-
-        // Form zurücksetzen
-        showSteamImport.value = false;
-        steamInput.value = '';
-
-        // Spieleliste aktualisieren
-        onImportCompleted();
-      } else {
-        // Fehler-Benachrichtigung
-        if (result.errors && result.errors.length > 0) {
-          notifyStore.notify(result.errors.join(' '), 2);
-        } else {
-          notifyStore.notify('Unbekannter Fehler beim Steam-Import', 2);
-        }
-      }
-    } catch (error: any) {
-      loadingStore.finishOperation('steam-import');
-      console.error('Steam Import Error:', error);
-
-      importResult.value = {
-        success: false,
-        message: error.message || 'Ein unerwarteter Fehler ist aufgetreten'
-      };
-
-      const notifyStore = useNotifyStore();
-      notifyStore.notify(
-        'Steam-Import fehlgeschlagen. Ein unerwarteter Fehler ist aufgetreten',
-        3
-      );
-    }
   };
-
   // Computed für Auswahlmodus-UI
   const selectedGamesCount = computed(() => gamesStore.selectedGameIds.size);
   const selectedGamesText = computed(() => {
     const count = selectedGamesCount.value;
     return count === 1 ? '1 Spiel ausgewählt' : `${count} Spiele ausgewählt`;
   });
-
   // Computed properties für Filter und Suche
   const platforms = computed(() => {
     // Da wir keine Plattformdaten mehr haben, zeigen wir nur "Alle" an
     return [{ value: 'all', label: 'Alle Plattformen' }];
   });
-
   const filteredGames = computed(() => {
     let games = [...gamesStore.games];
-
     // Suchfilter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase();
@@ -137,14 +49,12 @@
             userGame.game.summary.toLowerCase().includes(query))
       );
     }
-
     // Plattformfilter - momentan nicht implementiert da keine Plattformdaten
     // if (selectedPlatform.value !== 'all') {
     //   games = games.filter(game =>
     //     game.platforms.includes(selectedPlatform.value)
     //   );
     // }
-
     // Sortierung
     games.sort((a, b) => {
       switch (sortBy.value) {
@@ -166,10 +76,8 @@
           );
       }
     });
-
     return games;
   });
-
   const totalGames = computed(() => gamesStore.games.length);
   const totalPlayTime = computed(() => {
     const minutes = gamesStore.games.reduce(
@@ -181,26 +89,21 @@
   const handleSelectionToggle = () => {
     gamesStore.toggleSelectionMode();
   };
-
   const handleSelectAll = () => {
     gamesStore.selectAllFilteredGames(filteredGames.value);
   };
-
   const handleDeselectAll = () => {
     gamesStore.deselectAllGames();
   };
-
   const confirmRemoveGames = () => {
     if (selectedGamesCount.value === 0) return;
     showConfirmModal.value = true;
   };
-
   const handleConfirmRemoval = async () => {
     const success = await gamesStore.removeSelectedGames();
     showConfirmModal.value = false;
     // Der Auswahlmodus wird automatisch im Store beendet
   };
-
   // Favoriten-Handler
   const handleToggleFavorite = async (userGameId: number) => {
     try {
@@ -209,14 +112,11 @@
       console.error('Fehler beim Ändern des Favoriten-Status:', error);
     }
   };
-
   // Formatierungsfunktionen
   const formatPlayTime = (minutes: number): string => {
     if (minutes === 0) return '0 Min';
-
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-
     // Ab 2+ Stunden nur "Xh", unter 2 Stunden detailliert
     if (hours >= 2) {
       return `${hours}h`;
@@ -226,7 +126,6 @@
       return `${minutes} Min`;
     }
   };
-
   // Plattform-basierte Statistiken
   const platformStats = computed(() => {
     const platforms = gamesStore.gamesByPlatform;
@@ -241,7 +140,6 @@
       }))
       .sort((a, b) => b.count - a.count);
   });
-
   const topPlatform = computed(() => {
     return platformStats.value[0] || { name: 'Keine', count: 0 };
   });
@@ -250,32 +148,26 @@
     if (recentGames.length === 0) return 'Keine Aktivität';
     return `${recentGames.length} Spiele kürzlich gespielt`;
   });
-
   // Kürzlich gespielte Spiele (innerhalb der letzten 2 Wochen)
   const recentlyPlayedGames = computed(() => {
     const twoWeeksAgo = new Date();
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14); // 2 Wochen = 14 Tage
-
     return gamesStore.games.filter(game => {
       if (!game.lastPlayed) return false;
       const lastPlayedDate = new Date(game.lastPlayed);
       return lastPlayedDate >= twoWeeksAgo;
     });
   });
-
   // Stars für Rating
   const getStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => i < rating);
   };
-
   // Relative Zeit formatieren
   const formatRelativeTime = (date: Date | null) => {
     if (!date) return 'Nie gespielt';
-
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - new Date(date).getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffDays === 0) return 'Heute';
     if (diffDays === 1) return 'Gestern';
     if (diffDays < 7) return `Vor ${diffDays} Tagen`;
@@ -283,7 +175,6 @@
     if (diffDays < 365) return `Vor ${Math.ceil(diffDays / 30)} Monaten`;
     return `Vor ${Math.ceil(diffDays / 365)} Jahren`;
   };
-
   // Rating-Statistiken (nur bewertete Spiele)
   const ratedGames = computed(() => {
     return gamesStore.games.filter(
@@ -293,7 +184,6 @@
   const favoriteGames = computed(() => {
     return gamesStore.games.filter(g => g.isFavorite);
   });
-
   const averageRating = computed(() => {
     const rated = ratedGames.value;
     if (rated.length === 0) return 'N/A';
@@ -304,7 +194,6 @@
     return (sum / rated.length).toFixed(1);
   });
 </script>
-
 <template>
   <div class="space-y-6">
     <!-- Ein-/Ausklappbarer Bereich: Meine Spielebibliothek -->
@@ -317,229 +206,74 @@
         class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
       <div
         class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
-
       <div class="relative z-10">
-        <!-- Header mit Toggle-Button -->
-        <div
-          @click="isLibrarySectionExpanded = !isLibrarySectionExpanded"
-          class="p-6 cursor-pointer hover:bg-white/5 transition-colors rounded-t-2xl">
-          <div class="flex items-center justify-between">
-            <div class="text-center flex-1">
-              <h1
-                class="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                Meine Spielebibliothek
-              </h1>
-              <p class="text-gray-400 text-sm">
-                Verwalte deine Spiele, importiere neue Bibliotheken und finde
-                deine Lieblingsspiele
-              </p>
-            </div>
-            <div class="ml-4">
-              <Icon
-                name="heroicons:chevron-down-20-solid"
-                class="w-6 h-6 text-gray-400 transition-transform duration-300"
-                :class="{ 'rotate-180': !isLibrarySectionExpanded }" />
-            </div>
+        <!-- Header ohne Toggle-Button -->
+        <div class="p-6">
+          <div class="text-center">
+            <h1
+              class="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+              Meine Spielebibliothek
+            </h1>
+            <p class="text-gray-400 text-sm">
+              Verwalte deine Spiele und finde deine Lieblingsspiele
+            </p>
           </div>
         </div>
-
         <!-- Ausklappbarer Inhalt -->
         <div
-          class="transition-all duration-500 ease-in-out"
-          :class="
-            isLibrarySectionExpanded
-              ? 'max-h-[2000px] opacity-100'
-              : 'max-h-0 opacity-0 overflow-hidden'
-          ">
+          class="transition-all duration-500 ease-in-out max-h-[2000px] opacity-100">
           <div class="px-6 pb-6 space-y-6">
-            <!-- Import-Bereich -->
+            <!-- Bibliotheksverwaltung Hinweis -->
             <div
               class="bg-gray-800/30 rounded-xl p-4 border border-gray-700/50">
               <h3
                 class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
                 <Icon
-                  name="heroicons:arrow-down-tray-20-solid"
+                  name="heroicons:cog-6-tooth-20-solid"
                   class="w-4 h-4 text-purple-400" />
-                Bibliothek Import
+                Bibliotheksverwaltung
               </h3>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <!-- Steam -->
-                <div
-                  class="relative bg-gray-700/20 rounded-xl border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 overflow-hidden group">
-                  <div
-                    class="p-4 transition-all duration-300"
-                    :class="showSteamImport ? 'min-h-[100px]' : 'h-20'">
-                    <!-- Nicht-erweiterte Ansicht -->
-                    <div
-                      v-if="!showSteamImport"
-                      class="h-full flex items-center justify-center">
-                      <button
-                        @click.stop="showSteamImport = !showSteamImport"
-                        class="w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-lg"
-                        title="Steam Import">
-                        <Icon
-                          name="simple-icons:steam"
-                          class="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-                      </button>
-                    </div>
-
-                    <!-- Erweiterte Ansicht -->
-                    <div v-else class="space-y-3">
-                      <!-- Header mit Steam Icon und Titel -->
-                      <div class="flex items-center gap-3">
-                        <div
-                          class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                          <Icon
-                            name="simple-icons:steam"
-                            class="w-6 h-6 text-white" />
-                        </div>
-                        <div class="flex-1">
-                          <h4 class="text-sm font-semibold text-white">
-                            Steam Import
-                          </h4>
-                          <p class="text-xs text-gray-400">
-                            Importiere deine Steam-Bibliothek
-                          </p>
-                        </div>
-                        <button
-                          @click.stop="showSteamImport = false"
-                          class="w-6 h-6 rounded-full bg-gray-600 hover:bg-gray-500 flex items-center justify-center transition-colors">
-                          <Icon
-                            name="heroicons:x-mark-16-solid"
-                            class="w-3 h-3 text-gray-300" />
-                        </button>
-                      </div>
-
-                      <!-- Input und Import Button -->
-                      <div class="space-y-2">
-                        <input
-                          v-model="steamInput"
-                          type="text"
-                          placeholder="Steam ID oder Profil-URL eingeben..."
-                          class="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          :disabled="loadingStore.isLoading"
-                          @keypress.enter="
-                            steamInput.trim() &&
-                              !loadingStore.isLoading &&
-                              importSteamLibrary()
-                          " />
-
-                        <button
-                          @click.stop="importSteamLibrary"
-                          :disabled="
-                            !steamInput.trim() || loadingStore.isLoading
-                          "
-                          class="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2">
-                          <Icon
-                            :name="
-                              loadingStore.isLoading
-                                ? 'heroicons:arrow-path-16-solid'
-                                : 'heroicons:arrow-down-tray-16-solid'
-                            "
-                            :class="[
-                              'w-4 h-4',
-                              loadingStore.isLoading ? 'animate-spin' : ''
-                            ]" />
-                          {{
-                            loadingStore.isLoading
-                              ? 'Importiere...'
-                              : 'Bibliothek importieren'
-                          }}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-300 text-sm mb-1">
+                    Verwalte deine Spielebibliotheken
+                  </p>
+                  <p class="text-gray-400 text-xs">
+                    Verknüpfe Steam, Epic Games und andere Plattformen in deinem
+                    Profil
+                  </p>
                 </div>
-                <!-- Epic Games (Coming Soon) -->
-                <div
-                  class="relative bg-gray-700/20 rounded-xl border border-gray-600/30 opacity-60 cursor-not-allowed overflow-hidden">
-                  <div class="p-4 h-20 flex items-center justify-center">
-                    <div class="text-center">
-                      <div
-                        class="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-1">
-                        <Icon
-                          name="simple-icons:epicgames"
-                          class="w-6 h-6 text-white" />
-                      </div>
-                      <span class="text-xs text-gray-500 font-medium"
-                        >Bald verfügbar</span
-                      >
-                    </div>
-                  </div>
-                </div>
-
-                <!-- GOG (Coming Soon) -->
-                <div
-                  class="relative bg-gray-700/20 rounded-xl border border-gray-600/30 opacity-60 cursor-not-allowed overflow-hidden">
-                  <div class="p-4 h-20 flex items-center justify-center">
-                    <div class="text-center">
-                      <div
-                        class="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-1">
-                        <Icon
-                          name="simple-icons:gogdotcom"
-                          class="w-6 h-6 text-white" />
-                      </div>
-                      <span class="text-xs text-gray-500 font-medium"
-                        >Bald verfügbar</span
-                      >
-                    </div>
-                  </div>
-                </div>
+                <NuxtLink
+                  to="/profile"
+                  class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2">
+                  <Icon name="heroicons:link-20-solid" class="w-4 h-4" />
+                  Profil öffnen
+                </NuxtLink>
               </div>
-              <!-- Import Result -->
-              <div
-                v-if="importResult && !showSteamImport"
-                class="mt-4 p-3 rounded-xl border text-sm"
-                :class="
-                  importResult.success
-                    ? 'bg-green-900/20 border-green-500/30 text-green-300'
-                    : 'bg-red-900/20 border-red-500/30 text-red-300'
-                ">
-                <div class="flex items-center gap-2 mb-1">
+              <!-- Aktualisieren Button (nur wenn Steam verknüpft) -->
+              <div class="mt-4 pt-4 border-t border-gray-600/30">
+                <button
+                  @click="onImportCompleted"
+                  :disabled="loadingStore.isLoading"
+                  class="w-full py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2">
                   <Icon
                     :name="
-                      importResult.success
-                        ? 'heroicons:check-circle-20-solid'
-                        : 'heroicons:exclamation-triangle-20-solid'
+                      loadingStore.isLoading
+                        ? 'heroicons:arrow-path-16-solid'
+                        : 'heroicons:arrow-path-20-solid'
                     "
-                    class="w-4 h-4" />
-                  <span class="font-medium">{{
-                    importResult.success
-                      ? 'Import erfolgreich!'
-                      : 'Import fehlgeschlagen'
-                  }}</span>
-                </div>
-                <div
-                  v-if="
-                    importResult.success &&
-                    (importResult.imported || importResult.updated)
-                  "
-                  class="pl-6 space-y-1 text-sm">
-                  <div
-                    v-if="importResult.imported"
-                    class="flex items-center gap-2">
-                    <Icon
-                      name="heroicons:plus-circle-16-solid"
-                      class="w-3 h-3" />
-                    {{ importResult.imported }} neue Spiele importiert
-                  </div>
-                  <div
-                    v-if="importResult.updated"
-                    class="flex items-center gap-2">
-                    <Icon
-                      name="heroicons:arrow-path-16-solid"
-                      class="w-3 h-3" />
-                    {{ importResult.updated }} Spiele aktualisiert
-                  </div>
-                </div>
-                <div
-                  v-else-if="!importResult.success && importResult.message"
-                  class="pl-6 text-sm">
-                  {{ importResult.message }}
-                </div>
+                    :class="[
+                      'w-4 h-4',
+                      loadingStore.isLoading ? 'animate-spin' : ''
+                    ]" />
+                  {{
+                    loadingStore.isLoading
+                      ? 'Aktualisiere...'
+                      : 'Bibliotheken aktualisieren'
+                  }}
+                </button>
               </div>
             </div>
-
             <!-- Stats-Bereich (verbessertes Design) -->
             <div
               class="bg-gray-800/30 rounded-xl p-4 border border-gray-700/50">
@@ -578,7 +312,6 @@
                     </div>
                   </div>
                 </div>
-
                 <!-- Gesamte Spielzeit -->
                 <div class="relative group">
                   <div
@@ -610,7 +343,6 @@
                     </div>
                   </div>
                 </div>
-
                 <!-- Top Plattform -->
                 <div class="relative group">
                   <div
@@ -645,7 +377,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Zusätzliche Stats-Reihe -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 <!-- Kürzlich gespielt -->
@@ -670,7 +401,6 @@
                   </div>
                   <div class="text-gray-400 text-xs">Lieblingsspiele</div>
                 </div>
-
                 <!-- Verschiedene Plattformen -->
                 <div
                   class="bg-gray-700/30 rounded-lg p-3 border border-gray-600/20 text-center">
@@ -699,7 +429,6 @@
         </div>
       </div>
     </div>
-
     <!-- Separater Filter-Bereich -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4">
@@ -730,7 +459,6 @@
               <Icon name="heroicons:x-mark-20-solid" class="w-3 h-3" />
             </button>
           </div>
-
           <!-- Plattform Filter -->
           <div class="relative">
             <Icon
@@ -757,7 +485,6 @@
               name="heroicons:chevron-down-20-solid"
               class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-
           <!-- Sortierung -->
           <div class="relative">
             <Icon
@@ -777,7 +504,6 @@
               class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
-
         <!-- Aktionsbereich -->
         <div
           class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-gray-700/30">
@@ -793,7 +519,6 @@
               <Icon name="heroicons:trash-20-solid" class="w-4 h-4" />
               <span class="hidden sm:inline font-medium">Löschen</span>
             </button>
-
             <!-- Selection Controls (Selection Mode) -->
             <div
               v-else
@@ -804,12 +529,10 @@
                 class="flex items-center justify-center w-5 h-5 rounded-full bg-gray-600 hover:bg-gray-500 text-gray-300 hover:text-white transition-all duration-200">
                 <Icon name="heroicons:x-mark-16-solid" class="w-3 h-3" />
               </button>
-
               <!-- Auswahl Info -->
               <span class="text-xs text-gray-300">
                 {{ selectedGamesCount }}/{{ filteredGames.length }}
               </span>
-
               <!-- Alle/Keine Buttons -->
               <button
                 v-if="selectedGamesCount < filteredGames.length"
@@ -823,7 +546,6 @@
                 class="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-all duration-200">
                 Keine
               </button>
-
               <!-- Löschen Button -->
               <button
                 @click="confirmRemoveGames"
@@ -852,7 +574,6 @@
               </button>
             </div>
           </div>
-
           <!-- Rechte Seite: View Mode Toggle und Game Count -->
           <div
             v-if="!loadingStore.isLoading && gamesStore.games.length > 0"
@@ -867,7 +588,6 @@
         </div>
       </div>
     </div>
-
     <!-- Spiele Grid -->
     <div v-if="filteredGames.length > 0">
       <div :class="getCurrentConfig().gridClass">
@@ -886,7 +606,6 @@
           @toggleFavorite="handleToggleFavorite" />
       </div>
     </div>
-
     <!-- Empty State -->
     <div v-else-if="!loadingStore.isLoading" class="text-center py-16 px-6">
       <div
@@ -916,7 +635,6 @@
         </button>
       </div>
     </div>
-
     <!-- Loading Overlay -->
     <LoadingOverlay />
     <!-- Confirm Modal -->
@@ -934,7 +652,6 @@
       @cancel="showConfirmModal = false" />
   </div>
 </template>
-
 <style scoped>
   /* Smooth transition für alle interaktiven Elemente */
   button {
@@ -943,18 +660,15 @@
     backface-visibility: hidden;
     transform-style: preserve-3d;
   }
-
   /* Optimierte Hover-Effekte */
   button:hover {
     will-change: transform, box-shadow, background-color;
   }
-
   /* Smooth scaling mit GPU-Beschleunigung */
   .hover\:scale-105:hover,
   .hover\:scale-110:hover {
     transform: scale3d(var(--tw-scale-x), var(--tw-scale-y), 1);
   }
-
   /* Anti-aliasing für bessere Textqualität während Animationen */
   .transition-all {
     -webkit-font-smoothing: antialiased;

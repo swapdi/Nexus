@@ -18,12 +18,10 @@
               <div
                 class="relative w-16 h-16 rounded-full border-4 border-gray-600 border-t-purple-500 animate-spin"></div>
             </div>
-
             <!-- Operation Label -->
             <h3 class="text-xl font-semibold text-white mb-2">
               {{ loadingStore.primaryOperation?.label || 'Lädt...' }}
             </h3>
-
             <!-- Simple description -->
             <p class="text-gray-400 text-sm">Bitte warten Sie einen Moment</p>
           </div>
@@ -32,7 +30,6 @@
     </Transition>
   </Teleport>
 </template>
-
 <script setup lang="ts">
   const loadingStore = useLoadingStore();
 </script>

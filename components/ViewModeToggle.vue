@@ -17,25 +17,9 @@
     </button>
   </div>
 </template>
-
 <script setup lang="ts">
   const { currentViewMode, setViewMode, VIEW_MODES } = useViewMode();
-
   const handleModeChange = (mode: ViewMode) => {
-    console.log(
-      'ViewModeToggle: Changing view mode from',
-      currentViewMode.value,
-      'to:',
-      mode
-    );
     setViewMode(mode);
-
-    // Zusätzliche Debugging-Info
-    nextTick(() => {
-      console.log(
-        'ViewModeToggle: After setViewMode, currentViewMode is now:',
-        currentViewMode.value
-      );
-    });
   };
 </script>

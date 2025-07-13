@@ -2,7 +2,6 @@
   const user = useSupabaseUser();
   const route = useRoute();
   const mobileMenuOpen = ref(false);
-
   watch(
     () => route.path,
     () => {
@@ -10,7 +9,6 @@
     }
   );
 </script>
-
 <template>
   <nav
     class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/60 shadow-lg">
@@ -29,7 +27,6 @@
               >Nexus</span
             >
           </NuxtLink>
-
           <div class="hidden lg:flex items-center space-x-3 md:space-x-5">
             <NuxtLink to="/#features" class="nav-link">Features</NuxtLink>
             <NuxtLink
@@ -48,7 +45,6 @@
             </a>
           </div>
         </div>
-
         <div class="flex items-center">
           <div class="hidden lg:flex items-center space-x-3 md:space-x-4">
             <template v-if="!user">
@@ -72,7 +68,6 @@
               >
             </template>
           </div>
-
           <div class="lg:hidden ml-3">
             <button
               @click="mobileMenuOpen = !mobileMenuOpen"
@@ -95,7 +90,6 @@
         </div>
       </div>
     </div>
-
     <div
       v-show="mobileMenuOpen"
       class="lg:hidden border-t border-gray-700/60 positioned absolute top-16 left-0 right-0 bg-gray-900/80 overflow-hidden"
@@ -108,9 +102,7 @@
           active-class="mobile-link-active-exact"
           >Pricing</NuxtLink
         >
-
         <hr class="my-2 border-gray-700/50" />
-
         <template v-if="!user">
           <NuxtLink
             to="/signin"
@@ -131,7 +123,6 @@
     </div>
   </nav>
 </template>
-
 <style scoped>
   .nav-link {
     @apply px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors;
@@ -142,14 +133,12 @@
   .primary-cta-button {
     @apply px-4 py-2 bg-gradient-to-r from-purple-600 via-blue-500 to-green-500 hover:from-purple-700 hover:via-blue-600 hover:to-green-600 rounded-md text-sm font-semibold text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/50 shadow-md hover:shadow-lg;
   }
-
   .mobile-link {
     @apply block px-3 py-2 rounded-md text-base text-center font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors;
   }
   .mobile-cta-button {
     @apply block w-full text-center mt-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-blue-500 to-green-500 hover:from-purple-700 hover:via-blue-600 hover:to-green-600 rounded-md text-base font-semibold text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500/50 shadow-md hover:shadow-lg;
   }
-
   /* Animationen und andere Stile bleiben erhalten */
   @keyframes spin-slow {
     from {

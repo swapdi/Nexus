@@ -4,10 +4,8 @@
     title: 'Dashboard - Gaming Nexus',
     layout: 'authenticated'
   });
-
   const userStore = useUserStore();
   const user = computed(() => userStore.user);
-
   // Dashboard Stats (Mock-Daten)
   const stats = ref({
     totalGames: 127,
@@ -19,7 +17,6 @@
     nextLevelXP: 3000,
     credits: user.value?.credits || 1250
   });
-
   // Zuletzt gespielte Spiele
   const recentGames = ref([
     {
@@ -55,7 +52,6 @@
       progress: 100
     }
   ]);
-
   // Aktuelle Achievements
   const recentAchievements = ref([
     {
@@ -86,7 +82,6 @@
       earnedAt: '3 Tage'
     }
   ]);
-
   // Aktuelle Deals/Angebote
   const featuredDeals = ref([
     {
@@ -120,7 +115,6 @@
       endsIn: '1 Woche'
     }
   ]);
-
   // Gaming-Aktivitäten diese Woche
   const weeklyActivity = ref([
     { day: 'Mo', hours: 2.5 },
@@ -131,12 +125,10 @@
     { day: 'Sa', hours: 5.5 },
     { day: 'So', hours: 3.0 }
   ]);
-
   // Berechne XP-Fortschritt
   const xpProgress = computed(() => {
     return Math.round((stats.value.currentXP / stats.value.nextLevelXP) * 100);
   });
-
   // Aktuelle Uhrzeit für Begrüßung
   const currentTime = ref(new Date());
   const greeting = computed(() => {
@@ -145,7 +137,6 @@
     if (hour < 18) return 'Guten Tag';
     return 'Guten Abend';
   });
-
   // Update Zeit jede Minute
   onMounted(() => {
     setInterval(() => {
@@ -158,7 +149,6 @@
     notifactionstore.notify('Testbenachrichtigung', 2);
   }
 </script>
-
 <template>
   <div class="space-y-8">
     <!-- Welcome Header -->
@@ -169,7 +159,6 @@
         class="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-blue-600/5 to-green-600/5 animate-pulse-slow"></div>
       <div
         class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
-
       <div class="relative z-10">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div>
@@ -182,7 +171,6 @@
               Übersicht.
             </p>
           </div>
-
           <!-- Level & XP Progress -->
           <div
             class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
@@ -209,7 +197,6 @@
         </div>
       </div>
     </div>
-
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Left Column: Gaming Stats -->
@@ -234,7 +221,6 @@
             <div class="text-sm text-gray-400">Spiele in Bibliothek</div>
           </div>
         </div>
-
         <!-- Hours Played -->
         <div
           class="bg-gradient-to-br from-blue-900/30 to-blue-800/20 rounded-xl p-6 border border-blue-500/20 relative overflow-hidden group hover:border-blue-400/50 transition-all duration-500">
@@ -255,7 +241,6 @@
             <div class="text-sm text-gray-400">Gespielte Stunden</div>
           </div>
         </div>
-
         <!-- Achievements -->
         <div
           class="bg-gradient-to-br from-green-900/30 to-green-800/20 rounded-xl p-6 border border-green-500/20 relative overflow-hidden group hover:border-green-400/50 transition-all duration-500">
@@ -277,7 +262,6 @@
           </div>
         </div>
       </div>
-
       <!-- Right Column: Nexus Credits -->
       <div class="flex flex-col">
         <!-- Stylish Silver Credits Card -->
@@ -290,7 +274,6 @@
             class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-300/8 to-gray-300/8 rounded-full blur-2xl transform translate-x-12 -translate-y-12"></div>
           <div
             class="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-slate-400/8 to-gray-400/8 rounded-full blur-xl transform -translate-x-10 translate-y-10"></div>
-
           <!-- Header with Purchase Link -->
           <div class="relative z-10 flex items-center justify-between mb-3">
             <div class="flex items-center space-x-2">
@@ -305,7 +288,6 @@
                 Guthaben
               </span>
             </div>
-
             <!-- Discrete Purchase Link -->
             <NuxtLink
               :to="'/credits/purchase'"
@@ -317,7 +299,6 @@
                 class="w-9 h-9 text-white" />
             </NuxtLink>
           </div>
-
           <!-- Large 3D Coin in Background -->
           <div class="absolute bottom-2 right-4 z-0 pointer-events-none">
             <!-- Credit Icon with Enhanced Styling -->
@@ -342,7 +323,6 @@
                         alt="Nexus Credit"
                         class="w-full h-full object-contain drop-shadow-lg filter brightness-60" />
                     </div>
-
                     <!-- Back of coin (slightly different appearance for realism) -->
                     <div
                       class="absolute inset-0 backface-hidden rotate-y-180 rounded-full">
@@ -351,7 +331,6 @@
                         alt="Nexus Credit Back"
                         class="w-full h-full object-contain drop-shadow-lg filter brightness-60 contrast-105 hue-rotate-15" />
                     </div>
-
                     <!-- Coin edge highlight effect -->
                     <div
                       class="absolute inset-0 rounded-full border-2 border-gradient-to-r from-transparent via-slate-200/20 to-transparent opacity-20"></div>
@@ -360,7 +339,6 @@
               </div>
             </div>
           </div>
-
           <!-- Balance Display -->
           <div class="space-y-1">
             <div class="text-3xl font-bold text-white mb-1">
@@ -370,7 +348,6 @@
               Nexus Credits
             </div>
           </div>
-
           <!-- Credit Value Hint -->
           <div class="mt-2 text-xs text-slate-400/70">
             ≈ {{ (stats.credits * 0.01).toFixed(2) }}€ Wert
@@ -378,7 +355,6 @@
         </div>
       </div>
     </div>
-
     <!-- Main Content Grid - Reorganized layout -->
     <div class="space-y-8">
       <!-- First Row: Recently Played Games and Hot Deals side by side -->
@@ -399,7 +375,6 @@
               Alle anzeigen →
             </NuxtLink>
           </div>
-
           <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
             <div
               v-for="game in recentGames"
@@ -413,7 +388,6 @@
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div
                   class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-
                 <!-- Progress Bar -->
                 <div class="absolute bottom-0 left-0 right-0 p-2">
                   <div class="bg-gray-900/70 rounded-full h-1.5 mb-1">
@@ -426,7 +400,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Game Info -->
               <div class="p-3">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
@@ -456,7 +429,6 @@
               Alle Deals →
             </NuxtLink>
           </div>
-
           <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
             <div
               v-for="deal in featuredDeals"
@@ -469,7 +441,6 @@
                   :alt="deal.name"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               </div>
-
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
                   {{ deal.name }}
@@ -506,7 +477,6 @@
               class="w-6 h-6 text-blue-400 mr-2" />
             Gaming-Aktivität diese Woche
           </h2>
-
           <!-- Chart -->
           <div
             class="flex items-end justify-between space-x-3 flex-1 mb-6 min-h-[200px]">
@@ -529,7 +499,6 @@
               <div class="text-xs text-white font-bold">{{ day.hours }}h</div>
             </div>
           </div>
-
           <!-- Stats Summary -->
           <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-700/30">
             <div class="text-center">
@@ -569,14 +538,12 @@
               class="w-6 h-6 text-yellow-400 mr-2" />
             Neue Errungenschaften
           </h2>
-
           <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
             <div
               v-for="achievement in recentAchievements"
               :key="achievement.id"
               class="flex items-start space-x-3 p-3 bg-gray-900/50 rounded-lg border border-gray-600/30 hover:border-yellow-500/30 transition-all duration-300">
               <div class="text-2xl">{{ achievement.icon }}</div>
-
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-white text-sm mb-1">
                   {{ achievement.title }}
@@ -608,11 +575,9 @@
       </div>
     </div>
   </div>
-
   <!-- Loading Overlay -->
   <LoadingOverlay />
 </template>
-
 <style scoped>
   /* Animations */
   @keyframes pulse-slow {
@@ -624,7 +589,6 @@
       opacity: 0.8;
     }
   }
-
   @keyframes spin-slow {
     from {
       transform: rotate(0deg);
@@ -633,7 +597,6 @@
       transform: rotate(360deg);
     }
   }
-
   @keyframes spin-reverse {
     from {
       transform: rotate(360deg);
@@ -642,34 +605,27 @@
       transform: rotate(0deg);
     }
   }
-
   .animate-pulse-slow {
     animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
   .animate-spin-slow {
     animation: spin-slow 8s linear infinite;
   }
-
   .animate-spin-reverse {
     animation: spin-reverse 6s linear infinite;
   }
-
   /* Custom scrollbar for any overflow content */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(147, 51, 234, 0.5) rgba(75, 85, 99, 0.1);
   }
-
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-track {
     background: rgba(75, 85, 99, 0.1);
     border-radius: 3px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(
       to bottom,
@@ -678,7 +634,6 @@
     );
     border-radius: 3px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(
       to bottom,

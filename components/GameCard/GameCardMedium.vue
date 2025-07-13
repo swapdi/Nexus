@@ -25,7 +25,6 @@
           class="w-3 h-3 text-white" />
       </div>
     </div>
-
     <!-- Cover Image -->
     <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
       <img
@@ -34,7 +33,6 @@
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
-
       <!-- Platform Badge (Steam) -->
       <div class="absolute top-1 left-1">
         <div
@@ -42,7 +40,6 @@
           <Icon name="simple-icons:steam" class="w-3 h-3 text-blue-400" />
         </div>
       </div>
-
       <!-- Favorite Icon -->
       <div v-if="!isSelectionMode" class="absolute bottom-1 left-1 z-10">
         <button
@@ -62,7 +59,6 @@
             ]" />
         </button>
       </div>
-
       <!-- Rating Badge -->
       <div
         v-if="gameData.totalRating"
@@ -77,7 +73,6 @@
         </div>
       </div>
     </div>
-
     <!-- Game Info -->
     <div class="p-2 flex flex-col flex-1">
       <div class="flex items-start justify-between gap-2 mb-1">
@@ -86,7 +81,6 @@
           {{ gameData.name }}
         </h3>
       </div>
-
       <!-- Genres -->
       <div v-if="gameData.genres && gameData.genres.length > 0" class="mb-1">
         <div class="flex flex-wrap gap-1">
@@ -103,10 +97,8 @@
           </span>
         </div>
       </div>
-
       <!-- Spacer -->
       <div class="flex-1"></div>
-
       <!-- Stats -->
       <div class="flex items-center justify-between text-xs text-gray-400 mt-1">
         <!-- Spielzeit -->
@@ -114,7 +106,6 @@
           <Icon name="heroicons:clock-16-solid" class="w-2.5 h-2.5" />
           <span>{{ formatPlayTime(game.playtimeMinutes) }}</span>
         </div>
-
         <!-- Zuletzt gespielt -->
         <div v-if="game.lastPlayed" class="flex items-center gap-1">
           <Icon name="heroicons:calendar-16-solid" class="w-2.5 h-2.5" />
@@ -124,34 +115,27 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { UserGameWithDetails } from '~/lib/services/games.service';
-
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
   }
-
   interface Emits {
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);
-
   const handleClick = () => {
     emit('click');
   };
-
   const toggleFavorite = () => {
     emit('toggleFavorite', props.game.id);
   };
-
   const handleImageError = (event: Event) => {
     if (event.target) {
       (event.target as HTMLImageElement).src = './gameplaceholder.jpg';
@@ -163,7 +147,6 @@
   const formatPlayTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-
     if (hours < 2) {
       if (hours === 0) {
         return `${minutes}m`;
@@ -176,13 +159,11 @@
       return `${hours}h`;
     }
   };
-
   const formatLastPlayed = (date: string | Date) => {
     const d = new Date(date);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - d.getTime());
     const diffInDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffInDays === 0) return 'Heute';
     if (diffInDays === 1) return 'Gestern';
     if (diffInDays < 7) return `${diffInDays}d`;

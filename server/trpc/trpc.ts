@@ -11,7 +11,6 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
 import superjson from 'superjson';
 import { AccountLimitError } from '~~/lib/services/errors'; // This might be irrelevant now if plans/limits are removed
-
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
   errorFormatter: opts => {
@@ -30,7 +29,6 @@ const t = initTRPC.context<Context>().create({
     };
   }
 });
-
 /**
  * Auth middlewares
  **/
@@ -48,12 +46,10 @@ const isAuthed = t.middleware(({ next, ctx }) => {
     }
   });
 });
-
 /**
  * Procedures
  **/
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);
-
 export const router = t.router;
 export const middleware = t.middleware;

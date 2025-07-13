@@ -1,11 +1,9 @@
 <script setup lang="ts">
   const supabase = useSupabaseClient();
   const userStore = useUserStore();
-
   onMounted(async () => {
     await userStore.init();
   });
-
   async function deleteAccount() {
     await supabase.auth.signOut();
     if (userStore) {
@@ -26,7 +24,6 @@
       your account is deleted, you will lose access to all the features and
       benefits of SupaNuxt SaaS.
     </p>
-
     <h2>Important Notes:</h2>
     <ol>
       <li>
@@ -51,7 +48,6 @@
         account deletion process.
       </li>
     </ol>
-
     <button
       @click="deleteAccount()"
       class="w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">

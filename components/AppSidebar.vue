@@ -1,22 +1,38 @@
 <script setup lang="ts">
   const userStore = useUserStore();
   const user = computed(() => userStore.user);
-
   const emit = defineEmits<{
     hoverChange: [isHovered: boolean];
   }>();
-
   const route = useRoute();
   const isHovered = ref(false);
+  let hoverTimeout: NodeJS.Timeout | null = null;
+
+  // Hover mit Verzögerung
+  const handleMouseEnter = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+    }
+    hoverTimeout = setTimeout(() => {
+      isHovered.value = true;
+    }, 300); // 300ms Verzögerung
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      hoverTimeout = null;
+    }
+    isHovered.value = false;
+  };
 
   // Zeige erweiterte Sidebar nur bei Hover
   const showExpanded = computed(() => isHovered.value);
-
   // Emittiere Hover-Status Änderungen
   watch(isHovered, newValue => {
     emit('hoverChange', newValue);
   });
-  // Navigation items mit Icons und Labels
+  // Navigation items mit Icons und Labels (vereinfacht ohne Untermenüs)
   const navigationItems = [
     {
       name: 'Dashboard',
@@ -28,67 +44,19 @@
       name: 'Meine Spiele',
       path: '/my-games',
       icon: 'heroicons:puzzle-piece-20-solid',
-      subItems: [
-        {
-          name: 'Alle Spiele',
-          path: '/my-games',
-          icon: 'heroicons:squares-2x2-20-solid'
-        },
-        {
-          name: 'Zuletzt gespielt',
-          path: '/my-games?filter=recent',
-          icon: 'heroicons:clock-20-solid'
-        },
-        {
-          name: 'Favoriten',
-          path: '/my-games?filter=favorites',
-          icon: 'heroicons:star-20-solid'
-        }
-      ]
+      subItems: []
     },
     {
       name: 'Angebote',
       path: '/deals',
       icon: 'heroicons:tag-20-solid',
-      subItems: [
-        {
-          name: 'Alle Angebote',
-          path: '/deals',
-          icon: 'heroicons:tag-20-solid'
-        },
-        {
-          name: 'Kostenlose Spiele',
-          path: '/deals?filter=free',
-          icon: 'heroicons:gift-20-solid'
-        },
-        {
-          name: 'Hohe Rabatte',
-          path: '/deals?filter=high-discount',
-          icon: 'heroicons:fire-20-solid'
-        }
-      ]
+      subItems: []
     },
     {
       name: 'Wishlist',
       path: '/wishlist',
       icon: 'heroicons:heart-20-solid',
-      subItems: [
-        {
-          name: 'Alle Wünsche',
-          path: '/wishlist',
-          icon: 'heroicons:heart-20-solid'
-        },
-        {
-          name: 'Im Angebot',
-          path: '/wishlist?filter=on-sale',
-          icon: 'heroicons:currency-dollar-20-solid'
-        },
-        {
-          name: 'Bald verfügbar',
-          path: '/wishlist?filter=upcoming',
-          icon: 'heroicons:calendar-20-solid'
-        }
-      ]
+      subItems: []
     },
     {
       name: 'Profil',
@@ -103,32 +71,15 @@
       subItems: []
     }
   ];
-
-  // Überprüfe welcher Hauptbereich aktiv ist
-  const getActiveMainItem = () => {
-    return navigationItems.find(
-      item => route.path === item.path || route.path.startsWith(item.path + '/')
-    );
-  };
-  // Zeige Unterelemente für den aktiven Hauptbereich
-  const activeMainItem = computed(() => getActiveMainItem());
-  const showSubNavigation = computed(
-    () =>
-      activeMainItem.value &&
-      activeMainItem.value.subItems.length > 0 &&
-      showExpanded.value
-  );
-
   // Überprüfe ob ein Pfad aktiv ist
   const isActiveRoute = (path: string) => {
     return route.path === path || route.path.startsWith(path + '/');
   };
 </script>
-
 <template>
   <aside
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
     class="group fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] flex flex-col bg-gray-900 overflow-hidden transition-all duration-500 ease-out"
     :style="{ width: showExpanded ? '256px' : '78px' }">
     <!-- Futuristischer Hintergrund mit Gradient und Glow -->
@@ -185,56 +136,18 @@
                   ">
                   {{ item.name }}
                 </span>
-
                 <!-- Hover Glow Effekt -->
                 <div
                   class="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-xl opacity-0 group-hover/nav:opacity-100 transition-opacity duration-300 -z-10"></div>
-
                 <!-- Active Indicator -->
                 <div
                   v-if="isActiveRoute(item.path)"
                   class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-purple-400 to-blue-400 rounded-r-full shadow-glow animate-pulse-slow"></div>
               </NuxtLink>
-
-              <!-- Sub-Navigation mit futuristischem Design -->
-              <div
-                v-if="showSubNavigation && activeMainItem?.path === item.path"
-                class="mt-2 ml-6 space-y-1 animate-fade-in overflow-hidden">
-                <NuxtLink
-                  v-for="subItem in item.subItems"
-                  :key="subItem.path"
-                  :to="subItem.path"
-                  class="group/sub flex items-center px-3 py-2 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-2"
-                  :class="{
-                    'bg-gradient-to-r from-purple-600/20 to-blue-600/10 text-purple-200 border-l-2 border-purple-400/50':
-                      route.fullPath === subItem.path,
-                    'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30 border-l-2 border-transparent hover:border-gray-500/30':
-                      route.fullPath !== subItem.path
-                  }">
-                  <Icon
-                    :name="subItem.icon"
-                    class="flex-shrink-0 w-4 h-4 mr-3 transition-all duration-300"
-                    :class="{
-                      'text-purple-300': route.fullPath === subItem.path,
-                      'text-gray-500 group-hover/sub:text-gray-300':
-                        route.fullPath !== subItem.path
-                    }" />
-                  <span
-                    class="whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0"
-                    >{{ subItem.name }}</span
-                  >
-
-                  <!-- Sub-item glow -->
-                  <div
-                    v-if="route.fullPath === subItem.path"
-                    class="absolute left-0 w-full h-full bg-purple-500/5 rounded-lg -z-10"></div>
-                </NuxtLink>
-              </div>
             </li>
           </ul>
         </div>
       </nav>
-
       <!-- Benutzerinformationen (fest am unteren Rand) -->
       <div
         class="flex-shrink-0 p-4 bg-gradient-to-t from-gray-900/90 to-transparent border-t border-gray-700/30">
@@ -266,7 +179,6 @@
               <p class="text-sm font-medium text-white truncate mb-1 min-w-0">
                 {{ user.display_name || 'User' }}
               </p>
-
               <!-- Level und XP -->
               <div
                 class="flex items-center justify-between text-xs mb-2 min-w-0 overflow-hidden">
@@ -286,7 +198,6 @@
                   >{{ user.credits }} Credits</span
                 >
               </div>
-
               <!-- XP Progress Bar -->
               <div class="w-full bg-gray-700/50 rounded-full h-1.5 mb-1">
                 <div
@@ -305,7 +216,6 @@
               </div>
             </div>
           </div>
-
           <!-- Collapsed State - nur Avatar mit Tooltip -->
           <div v-else class="relative">
             <!-- Tooltip bei Hover im collapsed Modus -->
@@ -323,7 +233,6 @@
             </div>
           </div>
         </div>
-
         <!-- Fallback wenn kein User -->
         <div v-else class="flex items-center justify-center">
           <div
@@ -342,28 +251,23 @@
     </div>
   </aside>
 </template>
-
 <style scoped>
   /* Verhindere horizontale Scrollbars */
   aside {
     overflow-x: hidden;
   }
-
   /* Custom Scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(147, 51, 234, 0.5) rgba(75, 85, 99, 0.1);
   }
-
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-track {
     background: rgba(75, 85, 99, 0.1);
     border-radius: 3px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(
       to bottom,
@@ -372,7 +276,6 @@
     );
     border-radius: 3px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(
       to bottom,
@@ -380,7 +283,6 @@
       rgba(59, 130, 246, 0.9)
     );
   }
-
   /* Verhindere Text-Overflow für alle Elemente */
   .truncate-text {
     white-space: nowrap;
@@ -388,16 +290,13 @@
     text-overflow: ellipsis;
     min-width: 0;
   }
-
   /* Glow Effects */
   .shadow-glow {
     box-shadow: 0 0 10px currentColor;
   }
-
   .drop-shadow-glow {
     filter: drop-shadow(0 0 8px currentColor);
   }
-
   /* Animations */
   @keyframes pulse-slow {
     0%,
@@ -408,11 +307,9 @@
       opacity: 0.8;
     }
   }
-
   .animate-pulse-slow {
     animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -423,11 +320,9 @@
       transform: translateY(0);
     }
   }
-
   .animate-fade-in {
     animation: fade-in 0.5s ease-out forwards;
   }
-
   /* Hover Effects */
   .group:hover .group-hover\:opacity-100 {
     opacity: 1;

@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { GamesService } from '~/lib/services/games.service';
 import { IGDBService } from '~/lib/services/igdb.service';
 import { protectedProcedure, router } from '~/server/trpc/trpc';
-
 export const gamesRouter = router({
   // Benutzer-Spiele abrufen
   getUserGames: protectedProcedure.query(async ({ ctx }) => {
@@ -19,14 +18,12 @@ export const gamesRouter = router({
     .query(async ({ input, ctx }) => {
       // getUserGameById erwartet UserGame ID
       const userGame = await GamesService.getUserGameById(input.userGameId);
-
       if (!userGame) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Spiel nicht gefunden'
         });
       }
-
       // Prüfen ob das UserGame dem aktuellen Benutzer gehört
       if (userGame.userId !== ctx.dbUser.id) {
         throw new TRPCError({
@@ -34,10 +31,8 @@ export const gamesRouter = router({
           message: 'Nicht berechtigt, dieses Spiel zu sehen'
         });
       }
-
       return userGame;
     }),
-
   // Notizen für ein Spiel aktualisieren
   updateGameNotes: protectedProcedure
     .input(
@@ -49,14 +44,12 @@ export const gamesRouter = router({
     .mutation(async ({ input, ctx }) => {
       // Prüfen ob das UserGame dem Benutzer gehört
       const userGame = await GamesService.getUserGameById(input.userGameId);
-
       if (!userGame) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Spiel nicht gefunden'
         });
       }
-
       // Prüfen ob es dem aktuellen Benutzer gehört
       if (userGame.userId !== ctx.dbUser.id) {
         throw new TRPCError({
@@ -70,11 +63,9 @@ export const gamesRouter = router({
           notes: input.notes ?? undefined
         }
       );
-
       // Vollständige Spiel-Daten zurückgeben
       return updatedUserGame;
     }),
-
   // Mehrere Spiele aus der Bibliothek entfernen
   removeGamesFromLibrary: protectedProcedure
     .input(
@@ -87,17 +78,14 @@ export const gamesRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const removedGames = [];
-
         // Alle ausgewählten Spiele aus der Benutzer-Bibliothek entfernen
         for (const userGameId of input.userGameIds) {
           const userGame = await GamesService.getUserGameById(userGameId);
-
           if (userGame && userGame.userId === ctx.dbUser.id) {
             await GamesService.deleteUserGame(userGame.id);
             removedGames.push(userGameId);
           }
         }
-
         return {
           success: true,
           removedCount: removedGames.length,
@@ -150,14 +138,12 @@ export const gamesRouter = router({
     .mutation(async ({ input, ctx }) => {
       // Prüfen ob das UserGame dem Benutzer gehört
       const userGame = await GamesService.getUserGameById(input.userGameId);
-
       if (!userGame) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Spiel nicht gefunden'
         });
       }
-
       // Prüfen ob es dem aktuellen Benutzer gehört
       if (userGame.userId !== ctx.dbUser.id) {
         throw new TRPCError({
@@ -165,7 +151,6 @@ export const gamesRouter = router({
           message: 'Nicht berechtigt, dieses Spiel zu bearbeiten'
         });
       }
-
       // Favoriten-Status umschalten
       const updatedUserGame = await GamesService.updateUserGame(
         input.userGameId,
@@ -173,13 +158,11 @@ export const gamesRouter = router({
           isFavorite: !userGame.isFavorite
         }
       );
-
       return {
         success: true,
         isFavorite: updatedUserGame.isFavorite
       };
     }),
-
   // Spiele in der Datenbank suchen
   searchGames: protectedProcedure
     .input(
@@ -196,7 +179,6 @@ export const gamesRouter = router({
         offset: input.offset
       });
     }),
-
   // Einzelnes Spiel anhand der Game ID abrufen
   getGameById: protectedProcedure
     .input(
@@ -206,17 +188,14 @@ export const gamesRouter = router({
     )
     .query(async ({ input }) => {
       const game = await GamesService.getGameById(input.gameId);
-
       if (!game) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Spiel nicht gefunden'
         });
       }
-
       return game;
     }),
-
   // IGDB nach Spielen durchsuchen
   searchIGDB: protectedProcedure
     .input(
@@ -243,7 +222,6 @@ export const gamesRouter = router({
         });
       }
     }),
-
   // Spiel anhand Name finden und zur Bibliothek hinzufügen
   findAndAddGame: protectedProcedure
     .input(
@@ -260,14 +238,12 @@ export const gamesRouter = router({
           input.gameName,
           input.playtimeMinutes
         );
-
         if (!userGame) {
           throw new TRPCError({
             code: 'NOT_FOUND',
             message: `Spiel "${input.gameName}" konnte nicht gefunden oder erstellt werden`
           });
         }
-
         return {
           success: true,
           userGame,

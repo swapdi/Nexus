@@ -4,14 +4,12 @@
     <div
       class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 animate-border-flow"
       style="background-size: 200% 100%" />
-
     <div class="container mx-auto px-4 py-3">
       <div
         class="flex flex-col sm:flex-row justify-between items-center gap-y-2">
         <p class="text-center sm:text-left">
           &copy; {{ new Date().getFullYear() }} Nexus. Alle Rechte vorbehalten.
         </p>
-
         <div
           class="flex flex-wrap justify-center sm:justify-end items-center gap-x-4 gap-y-1">
           <NuxtLink
@@ -43,7 +41,6 @@
     </div>
   </footer>
 </template>
-
 <style scoped>
   @keyframes borderFlow {
     0% {
@@ -53,11 +50,9 @@
       background-position: 200% 50%;
     }
   }
-
   .animate-border-flow {
     animation: borderFlow 5s linear infinite;
   }
-
   button.bg-transparent {
     line-height: inherit;
   }

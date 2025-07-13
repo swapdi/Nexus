@@ -4,13 +4,10 @@
   const loadingStore = useLoadingStore();
   const editableDisplayName = ref('');
   const isLoadingNameChange = ref(false);
-
   // Benutzer aus dem Store
   const user = computed(() => userStore.user);
-
   // Account aus der Supabase-Authentifizierung
   const account = useSupabaseUser();
-
   // Profile information
   const userEmail = computed(() => account.value?.email);
   const userDisplayName = computed(() => user.value?.display_name);
@@ -18,7 +15,6 @@
     () => account.value?.user_metadata?.avatar_url
   );
   const userFullName = computed(() => account.value?.user_metadata?.full_name);
-
   // Account metadata
   const accountCreatedAt = computed(() => {
     if (!account.value?.created_at) return 'N/A';
@@ -31,7 +27,6 @@
   const authProvider = computed(
     () => account.value?.app_metadata?.provider || 'N/A'
   );
-
   // Initialize display name with current value when user data loads
   watch(
     userDisplayName,
@@ -42,7 +37,6 @@
     },
     { immediate: true }
   );
-
   // Stelle sicher, dass die Benutzerdaten geladen sind
   onMounted(async () => {
     try {
@@ -57,12 +51,10 @@
       );
     }
   });
-
   definePageMeta({
     middleware: ['auth'],
     layout: 'authenticated'
   });
-
   async function handleChangeDisplayName() {
     if (!editableDisplayName.value.trim()) {
       notifyStore.notify(
@@ -82,7 +74,6 @@
       );
       return;
     }
-
     isLoadingNameChange.value = true;
     try {
       await userStore.updateProfile({
@@ -103,7 +94,6 @@
     }
   }
 </script>
-
 <template>
   <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
     <div class="mx-auto">
@@ -127,7 +117,6 @@
               class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
               Profile Settings
             </h2>
-
             <!-- Avatar and Basic Info -->
             <div class="flex items-center space-x-4 mb-6">
               <div class="flex-shrink-0">
@@ -164,7 +153,6 @@
                 </button>
               </div>
             </div>
-
             <div class="space-y-6">
               <!-- Email (Read-only) -->
               <div>
@@ -197,7 +185,6 @@
                   provider.
                 </p>
               </div>
-
               <!-- Display Name -->
               <div>
                 <label
@@ -256,7 +243,6 @@
             </div>
           </div>
         </div>
-
         <!-- Account Information Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -289,7 +275,6 @@
             </div>
           </div>
         </div>
-
         <!-- Preferences Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -320,7 +305,6 @@
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
               </div>
-
               <!-- Email Notifications -->
               <div class="flex items-center justify-between">
                 <div>
@@ -342,7 +326,6 @@
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
               </div>
-
               <!-- Achievement Notifications -->
               <div class="flex items-center justify-between">
                 <div>
@@ -367,7 +350,6 @@
             </div>
           </div>
         </div>
-
         <!-- Security Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -395,7 +377,6 @@
                   Change Password
                 </NuxtLink>
               </div>
-
               <!-- Two-Factor Authentication -->
               <div
                 class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
@@ -413,7 +394,6 @@
                   Enable 2FA
                 </button>
               </div>
-
               <!-- Connected Platforms -->
               <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 <h3
@@ -469,7 +449,6 @@
             </div>
           </div>
         </div>
-
         <!-- Data & Privacy Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -496,7 +475,6 @@
                   Export Data
                 </button>
               </div>
-
               <!-- Privacy Settings -->
               <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 <h3
@@ -531,7 +509,6 @@
             </div>
           </div>
         </div>
-
         <!-- Danger Zone Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -558,7 +535,6 @@
                   Sign Out All
                 </button>
               </div>
-
               <!-- Delete Account -->
               <div
                 class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700/50">
@@ -582,12 +558,10 @@
         </div>
       </div>
     </div>
-
     <!-- Loading Overlay -->
     <LoadingOverlay />
   </div>
 </template>
-
 <style scoped>
   /* Page-specific styles can be added here if Tailwind utilities are not sufficient */
 </style>

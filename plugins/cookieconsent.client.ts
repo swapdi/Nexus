@@ -1,6 +1,5 @@
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsent from 'vanilla-cookieconsent';
-
 export default defineNuxtPlugin(nuxtApp => {
   /**
    * All config. options available here:
@@ -14,7 +13,6 @@ export default defineNuxtPlugin(nuxtApp => {
       },
       analytics: {}
     },
-
     language: {
       default: 'en',
       translations: {
@@ -41,7 +39,6 @@ export default defineNuxtPlugin(nuxtApp => {
                 title: 'Strictly Necessary cookies',
                 description:
                   'These cookies are essential for the proper functioning of the website and cannot be disabled.',
-
                 //this field will generate a toggle linked to the 'necessary' category
                 linkedCategory: 'necessary'
               },

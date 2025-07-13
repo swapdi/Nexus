@@ -2,11 +2,9 @@
   const supabase = useSupabaseClient();
   const config = useRuntimeConfig();
   const notifyStore = useNotifyStore();
-
   const loading = ref(false);
   const email = ref('');
   const emailSent = ref(false);
-
   const sendResetPasswordLink = async () => {
     try {
       loading.value = true;
@@ -30,7 +28,6 @@
       loading.value = false;
     }
   };
-
   definePageMeta({
     title: 'Passwort vergessen'
   });
@@ -44,7 +41,6 @@
       class="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl" />
     <div
       class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full filter blur-3xl" />
-
     <div
       class="group max-w-md w-full p-8 bg-gray-800/80 rounded-lg shadow-[0_0_25px_rgba(0,0,0,0.3)] backdrop-blur-sm relative z-10 border border-gray-700">
       <div
@@ -55,11 +51,9 @@
             0 0 12px 3px rgba(16, 185, 129, 0.25);
         "
         aria-hidden="true" />
-
       <h2 class="text-3xl font-bold text-center mb-8 text-white">
         Passwort vergessen
       </h2>
-
       <div
         v-if="emailSent"
         class="p-4 mb-6 bg-green-500/20 border border-green-500/50 rounded-md text-center text-green-300">
@@ -77,13 +71,11 @@
           </NuxtLink>
         </div>
       </div>
-
       <form v-else @submit.prevent="sendResetPasswordLink" class="space-y-6">
         <div class="text-center text-gray-300 text-sm mb-6">
           Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum
           Zurücksetzen deines Passworts.
         </div>
-
         <div class="space-y-2">
           <label for="email" class="block text-sm font-medium text-gray-300"
             >E-Mail-Adresse</label
@@ -96,7 +88,6 @@
             placeholder="deine@email.de"
             required />
         </div>
-
         <button
           :disabled="loading || email === ''"
           type="submit"
@@ -104,7 +95,6 @@
           <span v-if="loading">Sende Link...</span>
           <span v-else>Passwort-Reset-Link senden</span>
         </button>
-
         <div class="text-center">
           <NuxtLink
             to="/signin"

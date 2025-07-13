@@ -2,14 +2,11 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { FullUser, UserStats } from '~/lib/services/user.service';
 import { useLoading } from '~/stores/loading.store';
-
 export const useUserStore = defineStore('user', () => {
   // Loading store integration
   const { loading } = useLoading();
-
   const user = ref<FullUser | null>(null);
   const stats = ref<UserStats | null>(null);
-
   const init = async () => {
     if (!user.value) {
       return await loading(
@@ -17,7 +14,6 @@ export const useUserStore = defineStore('user', () => {
         'Lade Benutzerdaten...',
         async () => {
           const { $client } = useNuxtApp();
-
           try {
             const { dbUser: _user } = await $client.user.getCurrentUser.query();
             if (_user) {
@@ -37,14 +33,12 @@ export const useUserStore = defineStore('user', () => {
       );
     }
   };
-
   const loadStats = async () => {
     return await loading(
       'user-stats',
       'Lade Benutzerstatistiken...',
       async () => {
         const { $client } = useNuxtApp();
-
         try {
           const userStats = await $client.user.getUserStats.query();
           stats.value = userStats;
@@ -61,7 +55,6 @@ export const useUserStore = defineStore('user', () => {
       'data'
     );
   };
-
   const updateProfile = async (data: {
     display_name?: string;
     email?: string;
@@ -71,7 +64,6 @@ export const useUserStore = defineStore('user', () => {
       'Profil wird aktualisiert...',
       async () => {
         const { $client } = useNuxtApp();
-
         try {
           const updatedUser = await $client.user.updateProfile.mutate(data);
           user.value = updatedUser;
@@ -86,7 +78,6 @@ export const useUserStore = defineStore('user', () => {
       'process'
     );
   };
-
   const addXP = async (xp: number) => {
     const { $client } = useNuxtApp();
     try {
@@ -98,7 +89,6 @@ export const useUserStore = defineStore('user', () => {
       throw error;
     }
   };
-
   const updateCredits = async (credits: number) => {
     const { $client } = useNuxtApp();
     try {
@@ -110,14 +100,12 @@ export const useUserStore = defineStore('user', () => {
       throw error;
     }
   };
-
   const deleteAccount = async () => {
     return await loading(
       'delete-account',
       'Konto wird gelöscht...',
       async () => {
         const { $client } = useNuxtApp();
-
         try {
           await $client.user.deleteAccount.mutate();
           user.value = null;
@@ -133,12 +121,10 @@ export const useUserStore = defineStore('user', () => {
       'process'
     );
   };
-
   const signout = () => {
     user.value = null;
     stats.value = null;
   };
-
   return {
     user,
     stats,

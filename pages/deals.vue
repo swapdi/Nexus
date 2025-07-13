@@ -1,42 +1,72 @@
 <script setup lang="ts">
+  import { CheapSharkService } from '~/lib/services/cheapshark.service';
   import type { DealWithGame } from '~/lib/services/deals.service';
   import type { DealSortOptions } from '~/stores/deals.store';
-
   const userStore = useUserStore();
   const dealsStore = useDealsStore();
+  const gamesStore = useGamesStore();
   const loadingStore = useLoadingStore();
   const { currentViewMode, getCurrentConfig } = useViewMode();
-
   definePageMeta({
     middleware: ['auth'],
     title: 'Angebote',
     layout: 'authenticated'
   });
-
   // Local state for UI filters
   const searchQuery = ref('');
   const selectedStore = ref<string>('all');
   const showOnlyFree = ref(false);
   const hideOwned = ref(false);
   const sortBy = ref<DealSortOptions>('discount-desc');
-
   // Loading state aus LoadingStore
   const isLoading = computed(() => loadingStore.isLoading);
-
   // Initialize data
   onMounted(async () => {
     await userStore.init();
     await dealsStore.loadDealsFromDB();
   });
-
   // Computed properties for filters
-  const availableStores = computed(() => [
-    { value: 'all', label: 'Alle Stores' },
-    ...dealsStore.availableStores.map((store: string) => ({
-      value: store,
-      label: store
-    }))
-  ]);
+  const availableStores = computed(() => {
+    // Hole alle verfügbaren Stores aus CheapShark API
+    const cheapSharkStores = CheapSharkService.getAllStores();
+    // Filtere nur die Stores, die tatsächlich Deals haben
+    const activeStores = cheapSharkStores.filter(store =>
+      dealsStore.deals.some(deal => {
+        const storeNameToId: Record<string, string> = {
+          Steam: '1',
+          GamersGate: '2',
+          'Green Man Gaming': '3',
+          GOG: '7',
+          Origin: '8',
+          'Humble Store': '11',
+          Uplay: '13',
+          Fanatical: '15',
+          WinGameStore: '21',
+          GameBillet: '23',
+          'Epic Games Store': '25',
+          Gamesplanet: '27',
+          Gamesload: '28',
+          SquareEnix: '29',
+          'Razer Game Store': '30',
+          'Gamesplanet FR': '31',
+          'Gamesplanet DE': '32',
+          'Gamesplanet UK': '33',
+          Battlenet: '34',
+          Voidu: '35'
+        };
+        return storeNameToId[deal.storeName] === store.id;
+      })
+    );
+
+    return [
+      { value: 'all', label: 'Alle Stores', icon: 'mdi:store' },
+      ...activeStores.map(store => ({
+        value: store.name,
+        label: store.name,
+        icon: store.icon
+      }))
+    ];
+  });
   const availableGenres = computed(() => {
     const genres = new Set<string>();
     dealsStore.deals.forEach(deal => {
@@ -50,13 +80,10 @@
       }))
     ];
   });
-
   const selectedGenre = ref<string>('all');
-
   // Filtered and sorted deals
   const filteredDeals = computed(() => {
     let filtered = dealsStore.searchDeals(searchQuery.value);
-
     filtered = filtered.filter(deal => {
       const matchesStore =
         selectedStore.value === 'all' || deal.storeName === selectedStore.value;
@@ -65,10 +92,8 @@
         deal.game.genres.includes(selectedGenre.value);
       const matchesFree = !showOnlyFree.value || deal.isFreebie;
       const matchesOwned = !hideOwned.value || !isGameOwned(deal);
-
       return matchesStore && matchesGenre && matchesFree && matchesOwned;
     });
-
     // Sort deals
     const sortedDeals = [...filtered];
     switch (sortBy.value) {
@@ -98,7 +123,6 @@
         });
         break;
     }
-
     return sortedDeals;
   });
   // Statistics
@@ -115,13 +139,13 @@
               ) / dealsStore.deals.length
             )
           : 0,
-      maxDiscount: Math.max(
-        ...dealsStore.deals.map(d => d.discountPercent || 0),
-        0
-      )
+      maxDiscount:
+        Math.round(
+          Math.max(...dealsStore.deals.map(d => d.discountPercent || 0), 0) *
+            100
+        ) / 100
     };
   });
-
   // Watch for sort changes and apply to backend
   watch(sortBy, async newSort => {
     if (
@@ -130,28 +154,25 @@
       await dealsStore.setSortBy(newSort as DealSortOptions);
     }
   });
-
   // Helper functions
   const isGameOwned = (deal: DealWithGame): boolean => {
-    // TODO: Implement ownership check against user's library
-    return false;
+    // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
+    return gamesStore.games.some(
+      (userGame: any) => userGame.gameId === deal.gameId
+    );
   };
-
   const handleDealClick = (deal: DealWithGame) => {
     if (deal.url) {
       window.open(deal.url, '_blank');
     }
   };
-
   // Deal Aggregation
   const aggregationMessage = ref<string | null>(null);
 </script>
-
 <template>
   <div class="space-y-6">
     <!-- Background Sync Status -->
     <DealsBackgroundSync />
-
     <!-- Header mit Statistiken -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
@@ -163,7 +184,6 @@
         <!-- Neue Refresh Controls -->
         <DealsRefreshControls :deals-count="filteredDeals.length" />
       </div>
-
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-8">
         <Icon
@@ -171,7 +191,6 @@
           class="w-8 h-8 animate-spin text-green-400 mx-auto mb-2" />
         <p class="text-gray-400">Lade Angebote...</p>
       </div>
-
       <!-- Error State -->
       <div v-else-if="dealsStore.error" class="text-center py-8">
         <Icon
@@ -184,7 +203,6 @@
           Erneut versuchen
         </button>
       </div>
-
       <!-- Aggregation Message -->
       <div
         v-if="aggregationMessage"
@@ -205,7 +223,6 @@
           <span>{{ aggregationMessage }}</span>
         </div>
       </div>
-
       <!-- Info-Box für DB vs API -->
       <div
         v-if="!isLoading && !dealsStore.error && dealsStore.deals.length > 0"
@@ -220,7 +237,6 @@
           >
         </div>
       </div>
-
       <!-- Statistics -->
       <div
         v-if="!isLoading && !dealsStore.error"
@@ -242,18 +258,17 @@
         <div
           class="bg-gradient-to-r from-purple-500/20 to-purple-600/20 rounded-lg p-4 border border-purple-500/30">
           <div class="text-2xl font-bold text-white">
-            {{ statistics.maxDiscount }}%
+            {{ statistics.maxDiscount.toFixed(2) }}%
           </div>
           <div class="text-purple-300 text-sm">Höchster Rabatt</div>
         </div>
       </div>
     </div>
-
     <!-- Filter und Suche -->
     <div
       v-if="!isLoading && !dealsStore.error"
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
-      <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-7 gap-4">
         <!-- Suche -->
         <div class="lg:col-span-2">
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -270,7 +285,6 @@
               class="w-full pl-10 pr-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
           </div>
         </div>
-
         <!-- Store Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -287,7 +301,6 @@
             </option>
           </select>
         </div>
-
         <!-- Genre Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -304,7 +317,6 @@
             </option>
           </select>
         </div>
-
         <!-- Sortierung -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -319,7 +331,6 @@
             <option value="ending-soon">Läuft bald ab</option>
           </select>
         </div>
-
         <!-- Toggle Filter -->
         <div class="space-y-3">
           <label class="block text-sm font-medium text-gray-300">Filter</label>
@@ -340,11 +351,14 @@
             </label>
           </div>
         </div>
+
+        <!-- View Mode Toggle -->
+        <div class="space-y-3">
+          <label class="block text-sm font-medium text-gray-300">Ansicht</label>
+          <ViewModeToggle />
+        </div>
       </div>
-
-      <ViewModeToggle />
     </div>
-
     <!-- Deals Grid/List -->
     <div
       v-if="!isLoading && !dealsStore.error"

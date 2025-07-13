@@ -2,15 +2,60 @@
   const userStore = useUserStore();
   const loadingStore = useLoadingStore();
   const supabaseUser = useSupabaseUser();
-
+  // Steam Import State für Profil
+  const showSteamLinking = ref(false);
+  const steamProfileId = ref('');
+  const linkingResult = ref<{
+    success: boolean;
+    message?: string;
+  } | null>(null);
+  // Steam Profil verknüpfen
+  const linkSteamProfile = async () => {
+    if (!steamProfileId.value.trim()) return;
+    linkingResult.value = null;
+    loadingStore.startOperation(
+      'steam-link',
+      'Steam-Profil wird verknüpft...',
+      'process'
+    );
+    try {
+      const { $client } = useNuxtApp();
+      const notifyStore = useNotifyStore();
+      // Steam Profil verknüpfen (ohne Import - nur ID speichern)
+      const result = await $client.user.linkSteamProfile.mutate({
+        steamId: steamProfileId.value.trim()
+      });
+      loadingStore.finishOperation('steam-link');
+      linkingResult.value = result;
+      if (result.success) {
+        notifyStore.notify('Steam-Profil erfolgreich verknüpft!', 1);
+        showSteamLinking.value = false;
+        steamProfileId.value = '';
+        // User-Daten aktualisieren
+        await userStore.init();
+      } else {
+        notifyStore.notify(
+          result.message || 'Fehler beim Verknüpfen des Steam-Profils',
+          2
+        );
+      }
+    } catch (error: any) {
+      loadingStore.finishOperation('steam-link');
+      console.error('Steam Link Error:', error);
+      linkingResult.value = {
+        success: false,
+        message: error.message || 'Ein unerwarteter Fehler ist aufgetreten'
+      };
+      const notifyStore = useNotifyStore();
+      notifyStore.notify('Verknüpfung fehlgeschlagen', 3);
+    }
+  };
   // Initialize user data
   onMounted(async () => {
     await userStore.init();
   });
-
   // User data access
   const user = computed(() => userStore.user);
-
   // User display information
   const userDisplayName = computed(
     () =>
@@ -24,28 +69,23 @@
   const userAvatarUrl = computed(
     () => supabaseUser.value?.user_metadata?.avatar_url
   );
-
   // Gaming stats
   const userLevel = computed(() => user.value?.level || 1);
   const userXP = computed(() => user.value?.xp || 0);
   const userCredits = computed(() => user.value?.credits || 0);
-
   // Collections
   const totalGames = computed(() => user.value?.userGames?.length || 0);
   const totalAchievements = computed(
     () => user.value?.userAchievements?.length || 0
   );
   const wishlistCount = computed(() => user.value?.wishlistItems?.length || 0);
-
   // Calculate progress to next level (assuming 1000 XP per level for now)
   const xpForNextLevel = computed(() => userLevel.value * 1000);
   const xpProgress = computed(() => (userXP.value % 1000) / 10); // Percentage for progress bar
   const xpNeeded = computed(() => xpForNextLevel.value - userXP.value);
-
   // Enhanced gamification calculations
   const currentLevelXp = computed(() => userXP.value % 1000);
   const xpProgressPercent = computed(() => (currentLevelXp.value / 1000) * 100);
-
   // Player rank based on level
   const playerRank = computed(() => {
     const level = userLevel.value;
@@ -77,12 +117,10 @@
       };
     return { name: 'Rookie', color: 'from-gray-400 to-gray-500', icon: '🎮' };
   });
-
   // Recent achievements (last 5)
   const recentAchievements = computed(() => {
     return user.value?.userAchievements?.slice(-5).reverse() || [];
   });
-
   // Account creation date for "Member since"
   const memberSince = computed(() => {
     if (supabaseUser.value?.created_at) {
@@ -96,23 +134,19 @@
     }
     return 'Unbekannt';
   });
-
   // Calculate total playtime (mock data for now)
   const totalPlaytimeMinutes = computed(() => {
     // Mock calculation - in real app this would come from game platforms
     return totalGames.value * 120; // Average 2 hours per game
   });
-
   const totalPlaytimeHours = computed(() => {
     const hours = Math.floor(totalPlaytimeMinutes.value / 60);
     return hours.toLocaleString();
   });
-
   definePageMeta({
     layout: 'authenticated'
   });
 </script>
-
 <template>
   <!-- Main Container with proper padding -->
   <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-4">
@@ -139,7 +173,6 @@
                 background-size: 20px 20px;
               "></div>
           </div>
-
           <div class="relative z-10">
             <div
               class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
@@ -167,7 +200,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Enhanced Player Info with better visibility -->
               <div class="flex-1 text-center sm:text-left">
                 <!-- Title with enhanced styling -->
@@ -180,7 +212,6 @@
                     </span>
                   </h2>
                 </div>
-
                 <!-- Enhanced Meta Information -->
                 <div
                   class="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-6">
@@ -237,14 +268,12 @@
               </div>
             </div>
           </div>
-
           <!-- Level Circle Display -->
           <div class="flex justify-center mb-8">
             <div class="relative w-40 h-40">
               <!-- Outer Ring Background -->
               <div
                 class="absolute inset-0 rounded-full border-8 border-gray-700/50"></div>
-
               <!-- Animated Progress Ring -->
               <svg
                 class="absolute inset-0 w-full h-full transform -rotate-90"
@@ -269,7 +298,6 @@
                   stroke-dasharray="440"
                   :stroke-dashoffset="440 - (440 * xpProgressPercent) / 100"
                   class="transition-all duration-2000 ease-out drop-shadow-lg" />
-
                 <!-- Gradient Definition -->
                 <defs>
                   <linearGradient
@@ -290,7 +318,6 @@
                   </linearGradient>
                 </defs>
               </svg>
-
               <!-- Level Number in Center -->
               <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center">
@@ -305,7 +332,6 @@
               </div>
             </div>
           </div>
-
           <!-- XP Information Panel -->
           <div
             class="bg-gray-800/30 rounded-2xl p-6 border border-gray-700/50 backdrop-blur-sm">
@@ -345,7 +371,6 @@
                   <div
                     class="absolute inset-0 bg-gradient-to-r from-purple-400/50 via-blue-400/50 to-green-400/50 animate-pulse-slow"></div>
                 </div>
-
                 <!-- Progress Percentage - Centered in Bar -->
                 <div class="absolute inset-0 flex items-center justify-center">
                   <span
@@ -385,7 +410,6 @@
           </div>
         </div>
       </div>
-
       <!-- XP Card -->
       <div
         class="stat-card bg-gradient-to-br from-blue-900/50 to-blue-800/50 backdrop-blur-sm p-6 rounded-xl border border-blue-500/30 shadow-xl">
@@ -406,7 +430,6 @@
           </div>
         </div>
       </div>
-
       <!-- Credits Card -->
       <div
         class="stat-card bg-gradient-to-br from-yellow-900/50 to-yellow-800/50 backdrop-blur-sm p-6 rounded-xl border border-yellow-500/30 shadow-xl">
@@ -427,7 +450,6 @@
           </div>
         </div>
       </div>
-
       <!-- Playtime Card -->
       <div
         class="stat-card bg-gradient-to-br from-green-900/50 to-green-800/50 backdrop-blur-sm p-6 rounded-xl border border-green-500/30 shadow-xl">
@@ -451,6 +473,59 @@
     </div>
     <!-- Collection Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 my-8">
+      <!-- Bibliotheksverknüpfungen Card -->
+      <div
+        class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-white">Bibliotheken</h3>
+          <svg
+            class="w-6 h-6 text-green-400"
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="space-y-4">
+          <!-- Steam Status -->
+          <div
+            class="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <svg
+                  class="w-5 h-5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v-.07zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-white font-medium">Steam</p>
+                <p class="text-gray-400 text-sm" v-if="false">
+                  Verknüpft: {{ user?.steamId || 'Nicht verfügbar' }}
+                </p>
+                <p class="text-gray-400 text-sm" v-else>Nicht verknüpft</p>
+              </div>
+            </div>
+            <button
+              @click="showSteamLinking = true"
+              class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
+              {{ false ? 'Ändern' : 'Verknüpfen' }}
+            </button>
+          </div>
+          <!-- Hinweis für weitere Plattformen -->
+          <div
+            class="text-center p-4 border-2 border-dashed border-gray-600 rounded-lg">
+            <p class="text-gray-400 text-sm">
+              Weitere Plattformen (Epic, GOG) folgen bald
+            </p>
+          </div>
+        </div>
+      </div>
       <!-- Games Collection -->
       <div
         class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
@@ -487,7 +562,6 @@
           </svg>
         </NuxtLink>
       </div>
-
       <!-- Achievements -->
       <div
         class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
@@ -523,7 +597,6 @@
           </svg>
         </button>
       </div>
-
       <!-- Wishlist -->
       <div
         class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
@@ -561,7 +634,6 @@
         </NuxtLink>
       </div>
     </div>
-
     <!-- Recent Achievements -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
@@ -575,7 +647,6 @@
         </svg>
         Neueste Erfolge
       </h3>
-
       <div v-if="recentAchievements.length === 0" class="text-center py-12">
         <svg
           class="w-16 h-16 mx-auto text-gray-600 mb-4"
@@ -591,7 +662,6 @@
           Fange an zu spielen, um deinen ersten Erfolg freizuschalten!
         </p>
       </div>
-
       <div v-else class="space-y-4">
         <div
           v-for="achievement in recentAchievements"
@@ -619,26 +689,133 @@
         </div>
       </div>
     </div>
-
+    <!-- Bibliotheksverknüpfung -->
+    <div
+      class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl mt-8">
+      <h3 class="text-xl font-semibold text-white mb-4">
+        Bibliotheksverknüpfung
+      </h3>
+      <p class="text-gray-400 text-sm mb-4">
+        Verknüpfe dein Profil mit externen Bibliotheken, um deine Spiele und
+        Erfolge zu importieren.
+      </p>
+      <!-- Steam Linking Section -->
+      <div class="mb-6">
+        <h4 class="text-lg font-semibold text-white mb-2">Steam</h4>
+        <div class="flex items-center space-x-4">
+          <!-- Steam Profile ID Input -->
+          <div class="flex-1">
+            <input
+              v-model="steamProfileId"
+              type="text"
+              placeholder="Steam Profil-ID"
+              class="w-full px-4 py-2 rounded-xl bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:outline-none" />
+          </div>
+          <!-- Link Button -->
+          <button
+            @click="linkSteamProfile"
+            class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-md transform hover:scale-105 transition-all duration-300">
+            Verknüpfen
+          </button>
+        </div>
+        <!-- Linking Result Message -->
+        <p
+          v-if="linkingResult"
+          :class="{
+            'text-green-400': linkingResult.success,
+            'text-red-400': !linkingResult.success
+          }"
+          class="mt-2 text-sm">
+          {{ linkingResult.message }}
+        </p>
+      </div>
+      <!-- Instructions and Info -->
+      <div class="text-gray-400 text-sm space-y-2">
+        <p>1. Gehe zu deiner Steam-Profilseite.</p>
+        <p>2. Kopiere die URL aus der Adressleiste.</p>
+        <p>3. Füge die URL hier ein und klicke auf "Verknüpfen".</p>
+        <p>
+          Hinweis: Die Verknüpfung ermöglicht es uns, deine Spiele und Erfolge
+          automatisch zu importieren.
+        </p>
+      </div>
+    </div>
     <!-- Loading Overlay -->
     <LoadingOverlay />
+    <!-- Steam Verknüpfungs Modal -->
+    <div
+      v-if="showSteamLinking"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div
+        class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-white">
+            Steam Profil verknüpfen
+          </h3>
+          <button
+            @click="showSteamLinking = false"
+            class="text-gray-400 hover:text-white transition-colors">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Steam Profil ID oder URL
+            </label>
+            <input
+              v-model="steamProfileId"
+              type="text"
+              placeholder="z.B. 76561198XXXXXXXXX oder steamcommunity.com/id/username"
+              class="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              @keyup.enter="linkSteamProfile" />
+          </div>
+          <div class="text-sm text-gray-400">
+            <p class="mb-2">Deine Steam ID findest du hier:</p>
+            <ul class="list-disc list-inside space-y-1 text-xs">
+              <li>Steam Profil → Profil-URL kopieren</li>
+              <li>Oder deine 17-stellige Steam ID64</li>
+            </ul>
+          </div>
+          <div class="flex space-x-3">
+            <button
+              @click="showSteamLinking = false"
+              class="flex-1 px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+              Abbrechen
+            </button>
+            <button
+              @click="linkSteamProfile"
+              :disabled="!steamProfileId.trim()"
+              class="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
+              Verknüpfen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
 <style scoped>
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
   .animate-shimmer {
     animation: shimmer 2s infinite;
   }
-
   .shadow-glow {
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.4),
       0 0 40px rgba(59, 130, 246, 0.3), 0 0 60px rgba(16, 185, 129, 0.2);
   }
-
   @keyframes shimmer {
     0% {
       transform: translateX(-100%);
@@ -650,7 +827,6 @@
       transform: translateX(100%);
     }
   }
-
   @keyframes pulse {
     0%,
     100% {
@@ -660,7 +836,6 @@
       opacity: 0.7;
     }
   }
-
   @keyframes glow {
     0%,
     100% {
@@ -672,12 +847,10 @@
         0 0 60px rgba(59, 130, 246, 0.5), 0 0 90px rgba(16, 185, 129, 0.4);
     }
   }
-
   /* Sicherstellen, dass Container nicht überlappen */
   .container {
     isolation: isolate;
   }
-
   /* Erweiterte Hover-Effekte für Stat Cards */
   .stat-card {
     transition: all 0.3s ease;
@@ -686,13 +859,11 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
-
   /* Strong text shadow for better contrast */
   .text-shadow-strong {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.6),
       0 0 16px rgba(0, 0, 0, 0.4);
   }
-
   /* Floating Animation für XP Particles */
   @keyframes float {
     0%,
@@ -705,7 +876,6 @@
       opacity: 1;
     }
   }
-
   .particle {
     animation: float 3s ease-in-out infinite;
   }

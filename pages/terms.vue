@@ -1,21 +1,17 @@
 <template>
   <div class="prose lg:prose-xl m-5">
     <h1>Terms of Service</h1>
-
     <p>
       These terms of service (the "Agreement") govern your use of our website
       and services (collectively, the "Service"). By using the Service, you
       agree to be bound by the terms of this Agreement. If you do not agree to
       these terms, you may not use the Service.
     </p>
-
     <h2>Use of the Service</h2>
-
     <p>
       You may use the Service only for lawful purposes and in accordance with
       this Agreement. You agree not to use the Service:
     </p>
-
     <ul>
       <li>
         In any way that violates any applicable federal, state, local, or
@@ -31,9 +27,7 @@
         or users of the Service or expose them to liability
       </li>
     </ul>
-
     <h2>Intellectual Property</h2>
-
     <p>
       The Service and its entire contents, features, and functionality
       (including but not limited to all information, software, text, displays,
@@ -43,13 +37,11 @@
       trademark, patent, trade secret, and other intellectual property or
       proprietary rights laws.
     </p>
-
     <p>
       You may not reproduce, distribute, modify, create derivative works of,
       publicly display, publicly perform, republish, download, store, or
       transmit any of the material on our website, except as follows:
     </p>
-
     <ul>
       <li>
         Your computer may temporarily store copies of such materials in RAM
@@ -65,9 +57,7 @@
         further reproduction, publication, or distribution
       </li>
     </ul>
-
     <h2>Disclaimer of Warranties</h2>
-
     <p>
       The Service is provided on an "as is" and "as available" basis, without
       any warranties of any kind, either express or implied, including but not
@@ -76,18 +66,14 @@
       meet your requirements, be available on an uninterrupted, secure, or
       error-free basis, or be free from viruses or other harmful components.
     </p>
-
     <h2>Limitation of Liability</h2>
-
     <p>
       In no event shall we be liable for any direct, indirect, incidental,
       special, or consequential damages arising out of or in any way connected
       with the use of the Service, whether based on contract, tort, strict
       liability, or any other theory of liability.
     </p>
-
     <h2>Indemnification</h2>
-
     <p>
       You agree to defend, indemnify, and hold us harmless from and against any
       claims, liabilities, damages, judgments, fines, costs, and expenses.

@@ -1,7 +1,6 @@
 import { createTRPCNuxtClient, httpBatchLink } from 'trpc-nuxt/client';
 import type { AppRouter } from '~/server/trpc/routers/app.router';
 import superjson from 'superjson';
-
 export default defineNuxtPlugin(() => {
   /**
    * createTRPCNuxtClient adds a `useQuery` composable
@@ -15,7 +14,6 @@ export default defineNuxtPlugin(() => {
     ],
     transformer: superjson
   });
-
   return {
     provide: {
       client

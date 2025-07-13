@@ -2,16 +2,13 @@
   const user = useSupabaseUser();
   const supabase = useSupabaseClient();
   const config = useRuntimeConfig(); // Hinzugefügt für redirectTo
-
   const notifyStore = useNotifyStore();
-
   const loading = ref(false);
   const email = ref('');
   const password = ref('');
   const confirmPassword = ref('');
   const signUpOk = ref(false);
   const provider = ref(''); // Für spezifisches Feedback bei OAuth Buttons
-
   const handleStandardSignup = async () => {
     if (password.value !== confirmPassword.value) {
       notifyStore.notify(
@@ -30,7 +27,6 @@
           emailRedirectTo: `${config.public.siteRootUrl}/confirm` // Wichtig für E-Mail Bestätigung
         }
       });
-
       if (error) {
         throw error;
       } else {
@@ -52,7 +48,6 @@
   const handleOAuthSignup = async (
     providerName: 'google' | 'discord' | 'github' | 'twitch'
   ) => {
-    console.log(`handleOAuthSignup for ${providerName}`);
     try {
       loading.value = true;
       provider.value = providerName;
@@ -73,12 +68,10 @@
       provider.value = '';
     }
   };
-
   definePageMeta({
     title: 'Registrieren' // Titel angepasst
   });
 </script>
-
 <template>
   <div
     class="min-h-[80vh] flex items-center justify-center py-16 relative overflow-hidden text-white">
@@ -88,7 +81,6 @@
       class="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl animate-pulse-slow-far" />
     <div
       class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full filter blur-3xl animate-pulse-slow-far animation-delay-2000ms" />
-
     <div
       class="group max-w-md w-full p-8 bg-gray-800/80 rounded-lg shadow-[0_0_25px_rgba(0,0,0,0.3)] backdrop-blur-sm relative z-10 border border-gray-700">
       <div
@@ -99,18 +91,15 @@
             /* Blau */ 0 0 12px 3px rgba(16, 185, 129, 0.25); /* Grün */
         "
         aria-hidden="true" />
-
       <h1 class="text-3xl font-bold text-center mb-8 text-gray-100">
         Registrieren
       </h1>
-
       <div
         v-if="signUpOk"
         class="p-4 mb-6 bg-green-500/20 border border-green-500/50 rounded-md text-center text-green-300">
         Registrierung erfolgreich! Bitte überprüfe dein E-Mail-Postfach für
         einen Bestätigungslink.
       </div>
-
       <form v-else @submit.prevent="handleStandardSignup" class="space-y-6">
         <div>
           <label
@@ -177,7 +166,6 @@
           >
         </div>
       </form>
-
       <div v-if="!signUpOk" class="mt-8">
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
@@ -240,7 +228,6 @@
           </button>
         </div>
       </div>
-
       <div class="mt-8 text-center">
         <p class="text-xs text-gray-500">
           Durch die Fortsetzung stimmst du unseren

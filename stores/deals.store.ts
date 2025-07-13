@@ -2,13 +2,11 @@ import { defineStore } from 'pinia';
 import { computed, readonly, ref } from 'vue';
 import type { DealWithGame } from '~/lib/services/deals.service';
 import { useLoading } from '~/stores/loading.store';
-
 export type DealSortOptions =
   | 'discount-desc'
   | 'price-asc'
   | 'recent'
   | 'ending-soon';
-
 export interface DealSearchFilters {
   gameId?: number;
   storeName?: string;
@@ -21,21 +19,17 @@ export interface DealSearchFilters {
   limit?: number;
   offset?: number;
 }
-
 export const useDealsStore = defineStore('deals', () => {
   // Loading store integration
   const { loading } = useLoading();
-
   // State
   const deals = ref<DealWithGame[]>([]);
   const bestDeals = ref<DealWithGame[]>([]);
   const freeGames = ref<DealWithGame[]>([]);
   const availableStores = ref<string[]>([]);
   const error = ref<string | null>(null);
-
   // Current filters und sorting
   const currentSortBy = ref<DealSortOptions>('recent');
-
   // State für Background-Sync und UI
   const isBackgroundSyncing = ref(false);
   const lastSyncTime = ref<Date | null>(null);
@@ -44,9 +38,7 @@ export const useDealsStore = defineStore('deals', () => {
     total: number;
     message: string;
   } | null>(null);
-
   const { $client } = useNuxtApp();
-
   /**
    * Lädt Deals schnell aus der Datenbank (ohne Sync)
    * Grund: Sofortiges UI-Loading für bessere User Experience
@@ -58,14 +50,11 @@ export const useDealsStore = defineStore('deals', () => {
       async () => {
         const notifyStore = useNotifyStore();
         error.value = null;
-
         try {
           const response = await $client.deals.loadDealsFromDB.query({
             limit: 100
           });
-
           deals.value = response.deals;
-
           return response;
         } catch (err: any) {
           error.value = err.message || 'Fehler beim Laden der Deals';
@@ -77,24 +66,19 @@ export const useDealsStore = defineStore('deals', () => {
       'data'
     );
   }
-
   /**
    * Synchronisiert alle CheapShark Deals im Hintergrund
    * Grund: Vollständige Sync ohne UI-Blockierung mit Fortschrittsanzeige
    */
   async function syncAllDealsInBackground() {
     if (isBackgroundSyncing.value) {
-      console.log('Background sync bereits aktiv, überspringe');
       return;
     }
-
     const notifyStore = useNotifyStore();
     isBackgroundSyncing.value = true;
     syncProgress.value = { current: 0, total: 0, message: 'Starte Sync...' };
-
     try {
       notifyStore.notify('Deals-Synchronisation im Hintergrund gestartet', 0);
-
       const response = await $client.deals.syncAllDealsBackground.mutate({
         cleanupDays: 100,
         maxPages: 1,
@@ -103,18 +87,14 @@ export const useDealsStore = defineStore('deals', () => {
         maxAge: 2400,
         rateLimitDelay: 800
       });
-
       lastSyncTime.value = new Date();
-
       // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync
       notifyStore.notify(
         `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen`,
         0
       );
-
       // Grund: Deals nach Hintergrund-Sync neu laden
       await loadDealsFromDB();
-
       return response;
     } catch (err: any) {
       console.error('Background sync failed:', err);
@@ -124,7 +104,6 @@ export const useDealsStore = defineStore('deals', () => {
       syncProgress.value = null;
     }
   }
-
   /**
    * Optimierte Kombination: Schneller Load + Hintergrund-Sync
    * Grund: Beste UX - sofortige Anzeige + vollständige Daten im Hintergrund
@@ -136,7 +115,6 @@ export const useDealsStore = defineStore('deals', () => {
     syncAllDealsInBackground().catch(console.error);
     return dbResult;
   }
-
   /**
    * Setze Sortierung und lade Deals neu
    */
@@ -144,7 +122,6 @@ export const useDealsStore = defineStore('deals', () => {
     currentSortBy.value = sortBy;
     // Sortierung wird lokal angewendet, kein API-Call nötig
   }
-
   /**
    * Hole verfügbare Stores aus aktuellen Deals
    */
@@ -153,7 +130,6 @@ export const useDealsStore = defineStore('deals', () => {
     deals.value.forEach(deal => stores.add(deal.storeName));
     availableStores.value = Array.from(stores).sort();
   }
-
   /**
    * Manuelle Aktualisierung aller Deals
    * Grund: Benutzer kann explizit alle Deals neu laden
@@ -164,16 +140,12 @@ export const useDealsStore = defineStore('deals', () => {
       'Aktualisiere alle Deals...',
       async () => {
         const notifyStore = useNotifyStore();
-
         try {
           // Schritt 1: Aktuelle Deals aus DB laden
           await loadDealsFromDB();
-
           // Schritt 2: Hintergrund-Sync für neue Deals starten
           syncAllDealsInBackground().catch(console.error);
-
           notifyStore.notify('Deals erfolgreich aktualisiert', 0);
-
           return { success: true };
         } catch (err: any) {
           error.value = err.message || 'Fehler beim Aktualisieren der Deals';
@@ -184,16 +156,13 @@ export const useDealsStore = defineStore('deals', () => {
       'data'
     );
   }
-
   // Computed Properties
-
   /**
    * Lokale Suche in geladenen Deals
    */
   const searchDeals = computed(() => {
     return (searchTerm: string) => {
       if (!searchTerm.trim()) return sortedDeals.value;
-
       const term = searchTerm.toLowerCase();
       return sortedDeals.value.filter(
         (deal: DealWithGame) =>
@@ -202,13 +171,11 @@ export const useDealsStore = defineStore('deals', () => {
       );
     };
   });
-
   /**
    * Sortierte Deals basierend auf currentSortBy
    */
   const sortedDeals = computed(() => {
     const sorted = [...deals.value];
-
     switch (currentSortBy.value) {
       case 'discount-desc':
         return sorted.sort(
@@ -235,16 +202,13 @@ export const useDealsStore = defineStore('deals', () => {
         return sorted;
     }
   });
-
   /**
    * Freebies (kostenlose Spiele) aus aktuellen Deals
    */
   const freebies = computed(() =>
     deals.value.filter((deal: DealWithGame) => deal.isFreebie)
   );
-
   // Helper Functions
-
   /**
    * Formatiere Preis
    */
@@ -255,7 +219,6 @@ export const useDealsStore = defineStore('deals', () => {
       currency: 'EUR'
     }).format(price);
   }
-
   /**
    * Formatiere Rabatt
    */
@@ -263,7 +226,6 @@ export const useDealsStore = defineStore('deals', () => {
     if (!discount) return '';
     return `-${Math.round(discount)}%`;
   }
-
   return {
     // State
     deals: readonly(deals),
@@ -274,7 +236,6 @@ export const useDealsStore = defineStore('deals', () => {
     isBackgroundSyncing: readonly(isBackgroundSyncing),
     lastSyncTime: readonly(lastSyncTime),
     syncProgress: readonly(syncProgress),
-
     // Actions - Optimiert für bessere UX
     loadDealsFromDB,
     syncAllDealsInBackground,
@@ -282,12 +243,10 @@ export const useDealsStore = defineStore('deals', () => {
     refreshAllDeals,
     setSortBy,
     updateAvailableStores,
-
     // Computed
     freebies,
     searchDeals,
     sortedDeals,
-
     // Helpers
     formatPrice,
     formatDiscount

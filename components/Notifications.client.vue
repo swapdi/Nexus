@@ -1,17 +1,14 @@
 <script setup lang="ts">
   import { NotificationType } from '#imports'; // Stellt sicher, dass dieser Import korrekt ist
   import { storeToRefs } from 'pinia';
-
   const notifyStore = useNotifyStore();
   const { notifications } = storeToRefs(notifyStore);
-
   interface NotificationVariantStyle {
     iconName: string;
     iconColorClass: string;
     textColorClass: string;
     accentBorderColorClass: string; // Nur die Farbklasse, z.B. 'border-blue-500'
   }
-
   const getNotificationVariantStyle = (
     type: NotificationType
   ): NotificationVariantStyle => {
@@ -54,7 +51,6 @@
     }
   };
 </script>
-
 <template>
   <div
     class="fixed top-6 right-6 z-[200] w-full max-w-xs sm:max-w-sm md:max-w-md">
@@ -100,7 +96,6 @@
     </transition-group>
   </div>
 </template>
-
 <style scoped>
   /* Enter Animation */
   .toast-notification-enter-active {
@@ -110,7 +105,6 @@
     opacity: 0;
     transform: translateX(100%);
   }
-
   .toast-notification-leave-active {
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     position: absolute;
@@ -118,12 +112,10 @@
     margin-top: 0 !important;
     margin-bottom: 0 !important;
   }
-
   .toast-notification-leave-to {
     opacity: 0;
     transform: translateX(100%) scale(0.95); /* Endzustand: Unsichtbar, nach rechts verschoben und leicht skaliert */
   }
-
   /* Move Animation für verbleibende Elemente */
   .toast-notification-move {
     transition: transform 0.3s ease-out;

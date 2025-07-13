@@ -26,7 +26,6 @@
           class="w-2.5 h-2.5 text-white" />
       </div>
     </div>
-
     <!-- Cover Image -->
     <div class="aspect-[3/4] bg-gray-700/50 relative overflow-hidden">
       <img
@@ -42,7 +41,6 @@
           <Icon name="simple-icons:steam" class="w-3 h-3 text-blue-400" />
         </div>
       </div>
-
       <!-- Favorite Icon -->
       <div v-if="!isSelectionMode" class="absolute bottom-1 left-1 z-10">
         <button
@@ -62,7 +60,6 @@
             ]" />
         </button>
       </div>
-
       <!-- Rating Badge -->
       <div
         v-if="gameData.totalRating"
@@ -77,14 +74,12 @@
         </div>
       </div>
     </div>
-
     <!-- Game Info (minimal) -->
     <div class="p-1.5 flex flex-col flex-1">
       <h3
         class="font-medium text-white text-xs mb-0.5 line-clamp-2 group-hover:text-purple-300 transition-colors leading-tight">
         {{ gameData.name }}
       </h3>
-
       <!-- Spacer to push stats to bottom -->
       <div
         class="flex items-center justify-between text-xs text-gray-400 mt-auto">
@@ -100,10 +95,8 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { UserGameWithDetails } from '~/lib/services/games.service';
-
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;
@@ -113,21 +106,16 @@
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
-
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);
-
   const handleClick = () => {
     emit('click');
   };
-
   const toggleFavorite = () => {
     emit('toggleFavorite', props.game.id);
   };
-
   const handleImageError = (event: Event) => {
     if (event.target) {
       (event.target as HTMLImageElement).src = './gameplaceholder.jpg';
@@ -139,7 +127,6 @@
   const formatPlayTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-
     if (hours < 2) {
       if (hours === 0) {
         return `${minutes}m`;
@@ -152,13 +139,11 @@
       return `${hours}h`;
     }
   };
-
   const formatLastPlayed = (date: string | Date) => {
     const d = new Date(date);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - d.getTime());
     const diffInDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffInDays === 0) return 'Heute';
     if (diffInDays === 1) return '1d';
     if (diffInDays < 7) return `${diffInDays}d`;

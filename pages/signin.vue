@@ -1,15 +1,12 @@
 <script setup lang="ts">
   const user = useSupabaseUser();
   const supabase = useSupabaseClient();
-
   const userStore = useUserStore();
   const notifyStore = useNotifyStore();
-
   const loading = ref(false);
   const email = ref('');
   const password = ref('');
   const config = useRuntimeConfig();
-
   const handleStandardSignin = async () => {
     try {
       loading.value = true;
@@ -27,7 +24,6 @@
   const handleOAuthSignin = async (
     providerName: 'google' | 'discord' | 'github' | 'twitch'
   ) => {
-    console.log(`handleOAuthSignin for ${providerName}`);
     try {
       loading.value = true;
       const { error } = await supabase.auth.signInWithOAuth({
@@ -62,7 +58,6 @@
       class="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl" />
     <div
       class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full filter blur-3xl" />
-
     <div
       class="group max-w-md w-full p-8 bg-gray-800/80 rounded-lg shadow-[0_0_25px_rgba(0,0,0,0.3)] backdrop-blur-sm relative z-10 border border-gray-700">
       <div
@@ -73,9 +68,7 @@
             0 0 12px 3px rgba(16, 185, 129, 0.25);
         "
         aria-hidden="true" />
-
       <h2 class="text-3xl font-bold text-center mb-8">Anmelden</h2>
-
       <form class="space-y-6" @submit.prevent="handleStandardSignin">
         <div class="space-y-2">
           <label for="email" class="block text-sm font-medium text-gray-300"
@@ -89,7 +82,6 @@
             placeholder="deine@email.de"
             required />
         </div>
-
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label
@@ -111,7 +103,6 @@
             placeholder="••••••••"
             required />
         </div>
-
         <div class="flex items-center">
           <input
             id="remember"
@@ -121,7 +112,6 @@
             >Angemeldet bleiben</label
           >
         </div>
-
         <button
           type="submit"
           :disabled="loading"
@@ -129,7 +119,6 @@
           <span v-if="loading">Wird geladen...</span>
           <span v-else>Anmelden</span>
         </button>
-
         <div class="text-center text-gray-400 text-sm">
           Noch kein Konto?
           <NuxtLink to="/signup" class="text-blue-400 hover:text-blue-300"
@@ -137,7 +126,6 @@
           >
         </div>
       </form>
-
       <div class="mt-8">
         <div class="relative">
           <div class="absolute inset-0 flex items-center">

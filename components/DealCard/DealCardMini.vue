@@ -11,21 +11,18 @@
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"
         @error="handleImageError" />
-
       <!-- Discount Badge -->
       <div
         v-if="deal.discountPercent && deal.discountPercent > 0"
         class="absolute top-0.5 right-0.5 px-1 py-0.5 bg-green-600 rounded text-xs text-white font-bold leading-none">
         {{ Math.round(deal.discountPercent) }}%
       </div>
-
       <!-- Free Badge -->
       <div
         v-if="deal.isFreebie"
         class="absolute top-0.5 right-0.5 px-1 py-0.5 bg-green-600 rounded text-xs text-white font-bold leading-none">
         FREI
       </div>
-
       <!-- Library Badge -->
       <div
         v-if="isGameOwned(deal)"
@@ -33,14 +30,12 @@
         <Icon name="heroicons:check-20-solid" class="w-2.5 h-2.5 text-white" />
       </div>
     </div>
-
     <!-- Deal Info -->
     <div class="p-1.5">
       <h3
         class="font-medium text-white text-xs mb-1 line-clamp-2 group-hover:text-green-300 transition-colors">
         {{ deal.title }}
       </h3>
-
       <!-- Price -->
       <div v-if="!deal.isFreebie" class="text-xs">
         <div class="text-green-400 font-bold">
@@ -56,48 +51,40 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { DealWithGame } from '~/lib/services/deals.service';
-
   interface Props {
     deal: DealWithGame;
   }
-
   interface Emits {
     (e: 'click'): void;
     (e: 'wishlist'): void;
   }
-
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   const dealsStore = useDealsStore();
-
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
-
   const isGameOwned = (deal: DealWithGame): boolean => {
-    // TODO: Implement ownership check against user's library
-    return false;
+    // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
+    const gamesStore = useGamesStore();
+    return gamesStore.games.some(
+      (userGame: any) => userGame.gameId === deal.gameId
+    );
   };
-
   const formatPriceShort = (price: number | null): string => {
     if (!price) return '€0';
     return `€${price.toFixed(0)}`;
   };
-
   const handleClick = () => {
     emit('click');
   };
-
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
   };
 </script>
-
 <style scoped>
   .line-clamp-2 {
     display: -webkit-box;

@@ -1,12 +1,9 @@
 import { PrismaClient, type Game, type UserGame } from '~/prisma/client';
-
 const prisma = new PrismaClient();
 // Keine Game Utils mehr benötigt - nutzen zentrale IGDB-Funktion
-
 // ============================================================================
 // TYPEN & INTERFACES
 // ============================================================================
-
 export interface GameSearchOptions {
   searchTerm?: string;
   genres?: string[];
@@ -16,18 +13,15 @@ export interface GameSearchOptions {
   limit?: number;
   offset?: number;
 }
-
 export interface GameImportResult {
   success: boolean;
   game: Game;
   isNew: boolean;
   message?: string;
 }
-
 export interface UserGameWithDetails extends UserGame {
   game: Game;
 }
-
 export namespace GamesService {
   /**
    * Suche nach Spielen in der zentralen Datenbank
@@ -46,14 +40,11 @@ export namespace GamesService {
       limit = 20,
       offset = 0
     } = options;
-
     // Baue WHERE-Bedingungen
     const where: any = {};
     if (searchTerm) {
-      where.OR = [
-        { name: { contains: searchTerm, mode: 'insensitive' } },
-        { summary: { contains: searchTerm, mode: 'insensitive' } }
-      ];
+      // Fokus nur auf den Titel des Spiels für die Suche
+      where.name = { contains: searchTerm, mode: 'insensitive' };
     }
     // Genre-Filter
     if (genres.length > 0) {
@@ -85,14 +76,12 @@ export namespace GamesService {
       }),
       prisma.game.count({ where })
     ]);
-
     return {
       games,
       total,
       hasMore: offset + limit < total
     };
   }
-
   /**
    * Hole ein Spiel anhand der ID
    */
@@ -101,7 +90,6 @@ export namespace GamesService {
       where: { id }
     });
   }
-
   /**
    * Verbesserte IGDB-Suche basierend auf Relevanz, Popularität und Erscheinungsjahr
    * Grund: Wie IGDB-Webseite - nimmt das relevanteste erste Ergebnis
@@ -120,22 +108,17 @@ export namespace GamesService {
           message: 'Spiel bereits in der Datenbank'
         };
       }
-
       // Grund: Nutze die zentrale IGDB-Funktion mit integrierter dynamischer Suche
       const { IGDBService } = await import('./igdb.service');
       const igdbGameData: import('./igdb.service').IGDBGameData | null =
         await IGDBService.findGameByTitle(gameName);
-
       if (!igdbGameData) {
-        console.log(`No IGDB match found for: "${gameName}"`);
         return undefined;
       }
-
       // Prüfe ob das Spiel bereits mit IGDB-ID existiert
       const existingByIGDB = await prisma.game.findUnique({
         where: { igdbId: igdbGameData.id }
       });
-
       if (existingByIGDB) {
         return {
           success: true,
@@ -144,7 +127,6 @@ export namespace GamesService {
           message: `Spiel mit IGDB-ID bereits vorhanden`
         };
       }
-
       // Erstelle neues Spiel mit IGDB-Daten
       const newGame = await prisma.game.create({
         data: {
@@ -164,7 +146,6 @@ export namespace GamesService {
           updatedAt: new Date()
         }
       });
-
       return {
         success: true,
         game: newGame,
@@ -200,7 +181,6 @@ export namespace GamesService {
             updatedAt: new Date()
           }
         });
-
         return {
           success: true,
           game: updatedGame,
@@ -208,18 +188,15 @@ export namespace GamesService {
           message: 'Spiel mit Steam Cover aktualisiert'
         };
       }
-
       // Versuche IGDB-Daten zu finden (optional)
       try {
         const { IGDBService } = await import('./igdb.service');
         const igdbGameData = await IGDBService.findGameByTitle(gameName);
-
         if (igdbGameData) {
           // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
           const existingByIGDB = await prisma.game.findUnique({
             where: { igdbId: igdbGameData.id }
           });
-
           if (existingByIGDB) {
             // Aktualisiere vorhandenes Spiel mit Steam Cover
             const updatedGame = await prisma.game.update({
@@ -229,7 +206,6 @@ export namespace GamesService {
                 updatedAt: new Date()
               }
             });
-
             return {
               success: true,
               game: updatedGame,
@@ -237,7 +213,6 @@ export namespace GamesService {
               message: 'IGDB-Spiel mit Steam Cover aktualisiert'
             };
           }
-
           // Erstelle Spiel mit IGDB-Daten aber Steam Cover
           const newGame = await prisma.game.create({
             data: {
@@ -257,7 +232,6 @@ export namespace GamesService {
               updatedAt: new Date()
             }
           });
-
           return {
             success: true,
             game: newGame,
@@ -265,9 +239,7 @@ export namespace GamesService {
             message: 'Spiel mit IGDB-Daten und Steam Cover erstellt'
           };
         }
-      } catch (igdbError) {
-        console.log(`IGDB-Suche für "${gameName}" fehlgeschlagen:`, igdbError);
-      }
+      } catch (igdbError) {}
     } catch (error) {
       console.error('Fehler beim Finden/Erstellen des Spiels:', error);
       const message =
@@ -275,11 +247,9 @@ export namespace GamesService {
       throw new Error(`Spiel konnte nicht importiert werden: ${message}`);
     }
   }
-
   // ============================================================================
   // USER GAMES OPERATIONEN
   // ============================================================================
-
   /**
    * Hole alle Spiele eines Users
    */
@@ -292,7 +262,6 @@ export namespace GamesService {
       orderBy: { addedAt: 'desc' }
     });
   }
-
   /**
    * Füge ein Spiel zur User-Bibliothek hinzu
    */
@@ -317,7 +286,6 @@ export namespace GamesService {
         }
       }
     });
-
     if (existingUserGame) {
       // Aktualisiere Spielzeit falls angegeben
       if (playtimeMinutes !== undefined) {
@@ -328,14 +296,12 @@ export namespace GamesService {
         });
         return updatedUserGame;
       }
-
       // Gib existierendes UserGame zurück
       return prisma.userGame.findUnique({
         where: { id: existingUserGame.id },
         include: { game: true }
       }) as Promise<UserGameWithDetails>;
     }
-
     // Erstelle neues UserGame
     return prisma.userGame.create({
       data: {
@@ -346,7 +312,6 @@ export namespace GamesService {
       include: { game: true }
     });
   }
-
   /**
    * Aktualisiere User-Game-Daten
    */
@@ -366,7 +331,6 @@ export namespace GamesService {
       include: { game: true }
     });
   }
-
   /**
    * Entferne ein Spiel aus der User-Bibliothek
    */
@@ -375,7 +339,6 @@ export namespace GamesService {
       where: { id: userGameId }
     });
   }
-
   /**
    * Hole ein UserGame anhand der ID
    */
@@ -387,7 +350,6 @@ export namespace GamesService {
       include: { game: true }
     });
   }
-
   /**
    * Entferne ein UserGame anhand der ID
    */
@@ -396,7 +358,6 @@ export namespace GamesService {
       where: { id: userGameId }
     });
   }
-
   /**
    * Hole User-Statistiken
    */
@@ -412,7 +373,6 @@ export namespace GamesService {
       where: { userId },
       include: { game: true }
     });
-
     const totalGames = userGames.length;
     const totalPlaytime = userGames.reduce(
       (sum, ug) => sum + (ug.playtimeMinutes || 0),
@@ -421,7 +381,6 @@ export namespace GamesService {
     const averagePlaytime =
       totalGames > 0 ? Math.round(totalPlaytime / totalGames) : 0;
     const favoriteGames = userGames.filter(ug => ug.isFavorite).length;
-
     const recentlyPlayed = userGames
       .filter(ug => ug.lastPlayed)
       .sort(
@@ -429,7 +388,6 @@ export namespace GamesService {
           new Date(b.lastPlayed!).getTime() - new Date(a.lastPlayed!).getTime()
       )
       .slice(0, 5);
-
     // Genre-Statistiken berechnen
     const genreCounts = new Map<string, number>();
     userGames.forEach(ug => {
@@ -437,12 +395,10 @@ export namespace GamesService {
         genreCounts.set(genre, (genreCounts.get(genre) || 0) + 1);
       });
     });
-
     const topGenres = Array.from(genreCounts.entries())
       .map(([genre, count]) => ({ genre, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
-
     return {
       totalGames,
       totalPlaytime,
@@ -452,11 +408,9 @@ export namespace GamesService {
       topGenres
     };
   }
-
   // ============================================================================
   // STEAM IMPORT OPERATIONEN
   // ============================================================================
-
   /**
    * Steam-Bibliothek importieren - Einfache Variante mit optionaler IGDB-Anreicherung
    * Erstellt nur neue Spiele basierend auf dem Namen, fügt IGDB-Daten hinzu wenn verfügbar
@@ -474,7 +428,6 @@ export namespace GamesService {
   }> {
     const { useSteamImport } = await import('../../composables/useSteamImport');
     const steamImport = useSteamImport();
-
     const result = {
       success: true,
       imported: 0,
@@ -482,7 +435,6 @@ export namespace GamesService {
       skipped: 0,
       errors: [] as string[]
     };
-
     try {
       // Validiere Steam Input
       const validation = await steamImport.validateSteamInput(steamInput);
@@ -491,7 +443,6 @@ export namespace GamesService {
         result.errors.push('Ungültige Steam ID oder Profil-URL');
         return result;
       }
-
       // Hole Steam Library
       const steamGames = await steamImport.fetchSteamLibrary(
         validation.steamId
@@ -503,17 +454,14 @@ export namespace GamesService {
         );
         return result;
       }
-
       // Verarbeite Steam-Spiele
       for (const steamGame of steamGames) {
         try {
           // Generiere Steam Cover-URL
           const steamCoverUrl = steamImport.getSteamCoverUrl(steamGame.appid);
-
           // Prüfe ob Spiel bereits existiert
           const existingGame = await findGameByName(steamGame.name);
           let gameId: number;
-
           if (existingGame) {
             // Spiel existiert bereits - aktualisiere Cover-URL mit Steam Cover
             await prisma.game.update({
@@ -535,13 +483,11 @@ export namespace GamesService {
             }
             gameId = gameResult.game.id;
           }
-
           // Konvertiere Steam-Daten
           const playtimeMinutes = steamGame.playtime_forever || 0;
           const lastPlayed = steamGame.rtime_last_played
             ? new Date(steamGame.rtime_last_played * 1000)
             : null;
-
           // Prüfe ob UserGame bereits existiert
           const existingUserGame = await prisma.userGame.findFirst({
             where: {
@@ -549,7 +495,6 @@ export namespace GamesService {
               gameId
             }
           });
-
           if (existingUserGame) {
             // Aktualisiere bestehendes UserGame
             await prisma.userGame.update({
@@ -590,18 +535,15 @@ export namespace GamesService {
       return result;
     }
   }
-
   // ============================================================================
   // HILFSFUNKTIONEN (INTERN)
   // ============================================================================
-
   /**
    * Finde Spiel anhand des Namens (fuzzy search)
    * Grund: Spiele können leicht unterschiedliche Namen haben
    */
   async function findGameByName(gameName: string): Promise<Game | null> {
     const normalizedName = gameName.trim();
-
     // Zuerst exakte Suche (case-insensitive)
     const exactMatch = await prisma.game.findFirst({
       where: { name: { equals: normalizedName, mode: 'insensitive' } }
@@ -612,7 +554,6 @@ export namespace GamesService {
     });
     if (fuzzyMatch) return fuzzyMatch;
     const normalizedSearchTitles = generateSimpleVariants(normalizedName);
-
     if (normalizedSearchTitles.length > 0) {
       const allGames = await prisma.game.findMany({
         select: { id: true, name: true, slug: true }
@@ -652,19 +593,14 @@ export namespace GamesService {
         ]
       }
     });
-
     return reverseMatch;
   }
-
   // Hilfsfunktion für lokale DB-Suchen (vereinfacht)
   const generateSimpleVariants = (title: string): string[] => {
     const variants: string[] = [];
     const cleanedTitle = title.trim();
-
     if (!cleanedTitle) return [];
-
     variants.push(cleanedTitle);
-
     // Entferne Wörter von rechts
     const words = cleanedTitle.split(/\s+/);
     while (words.length > 1) {
@@ -674,7 +610,6 @@ export namespace GamesService {
         variants.push(shortened);
       }
     }
-
     return [...new Set(variants)];
   };
 }

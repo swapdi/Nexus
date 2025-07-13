@@ -8,7 +8,6 @@
           name="heroicons:magnifying-glass-20-solid"
           class="h-5 w-5 text-gray-400" />
       </div>
-
       <input
         ref="searchInput"
         v-model="searchQuery"
@@ -22,12 +21,25 @@
         @focus="showSuggestions = true"
         @blur="handleBlur" />
     </div>
-
     <!-- Search Suggestions Dropdown -->
     <div
-      v-if="showSuggestions && suggestions.length > 0"
+      v-if="
+        showSuggestions &&
+        (suggestions.length > 0 || (!isLoading && searchQuery.length >= 2))
+      "
       class="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
-      <div class="p-2">
+      <!-- No Results Message -->
+      <div
+        v-if="suggestions.length === 0 && !isLoading && searchQuery.length >= 2"
+        class="p-4 text-center text-gray-400">
+        <Icon
+          name="heroicons:magnifying-glass-20-solid"
+          class="w-8 h-8 mx-auto mb-2 opacity-50" />
+        <p>Keine Ergebnisse gefunden</p>
+        <p class="text-sm mt-1">Versuche es mit anderen Suchbegriffen</p>
+      </div>
+      <!-- Search Results -->
+      <div v-else-if="suggestions.length > 0" class="p-2">
         <div
           v-for="(suggestion, index) in suggestions"
           :key="suggestion.id"
@@ -54,7 +66,6 @@
                 class="w-4 h-4 text-gray-500" />
             </div>
           </div>
-
           <!-- Game Info -->
           <div class="flex-1 min-w-0">
             <h4 class="font-medium text-white text-sm line-clamp-1">
@@ -73,7 +84,6 @@
               </span>
             </div>
           </div>
-
           <!-- Search Icon -->
           <div class="flex-shrink-0">
             <Icon
@@ -82,9 +92,8 @@
           </div>
         </div>
       </div>
-
       <!-- Show All Results Footer -->
-      <div class="border-t border-gray-600 p-3">
+      <div v-if="suggestions.length > 0" class="border-t border-gray-600 p-3">
         <button
           @mousedown="performSearch"
           class="w-full text-left text-sm text-green-400 hover:text-green-300 transition-colors">
@@ -92,7 +101,6 @@
         </button>
       </div>
     </div>
-
     <!-- Loading Indicator -->
     <div
       v-if="isLoading"
@@ -106,28 +114,24 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { Game } from '~/prisma/client';
-
   // References
   const searchInput = ref<HTMLInputElement | null>(null);
   const { $client } = useNuxtApp();
   const router = useRouter();
-
   // State
   const searchQuery = ref('');
   const suggestions = ref<Game[]>([]);
   const showSuggestions = ref(false);
   const isLoading = ref(false);
   const highlightedIndex = ref(-1);
-
   // Debounced search
   let debounceTimeout: NodeJS.Timeout;
   const debouncedSearch = () => {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(async () => {
-      if (searchQuery.value.length >= 4) {
+      if (searchQuery.value.length >= 2) {
         await searchSuggestions();
       } else {
         suggestions.value = [];
@@ -135,7 +139,6 @@
       }
     }, 300);
   };
-
   // Watch search query
   watch(searchQuery, newQuery => {
     highlightedIndex.value = -1;
@@ -146,11 +149,9 @@
       showSuggestions.value = false;
     }
   });
-
   // Search for suggestions
   const searchSuggestions = async () => {
-    if (!searchQuery.value.trim() || searchQuery.value.length < 4) return;
-
+    if (!searchQuery.value.trim() || searchQuery.value.length < 2) return;
     isLoading.value = true;
     try {
       const response = await $client.games.searchGames.query({
@@ -166,26 +167,22 @@
       isLoading.value = false;
     }
   };
-
   // Navigation methods
   const highlightNext = () => {
     if (highlightedIndex.value < suggestions.value.length - 1) {
       highlightedIndex.value++;
     }
   };
-
   const highlightPrevious = () => {
     if (highlightedIndex.value > 0) {
       highlightedIndex.value--;
     }
   };
-
   // Selection methods
   const selectSuggestion = (game: Game) => {
     router.push(`/game/${game.id}`);
     clearSearch();
   };
-
   const performSearch = () => {
     if (
       highlightedIndex.value >= 0 &&
@@ -197,7 +194,6 @@
       clearSearch();
     }
   };
-
   const clearSearch = () => {
     searchQuery.value = '';
     suggestions.value = [];
@@ -205,14 +201,12 @@
     highlightedIndex.value = -1;
     searchInput.value?.blur();
   };
-
   const handleBlur = () => {
     // Delay hiding suggestions to allow for clicks
     setTimeout(() => {
       showSuggestions.value = false;
     }, 150);
   };
-
   // Keyboard shortcut (Ctrl+K)
   onMounted(() => {
     const handleKeydown = (e: KeyboardEvent) => {
@@ -221,15 +215,12 @@
         searchInput.value?.focus();
       }
     };
-
     document.addEventListener('keydown', handleKeydown);
-
     onUnmounted(() => {
       document.removeEventListener('keydown', handleKeydown);
     });
   });
 </script>
-
 <style scoped>
   .line-clamp-1 {
     display: -webkit-box;

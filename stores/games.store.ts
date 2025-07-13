@@ -2,11 +2,9 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import type { UserGameWithDetails } from '~/lib/services/games.service';
 import { useLoading } from '~/stores/loading.store';
-
 export const useGamesStore = defineStore('games', () => {
   // Loading store integration
   const { loading } = useLoading();
-
   // State
   const games = ref<UserGameWithDetails[]>([]);
   const stats = ref<any | null>(null); // TODO: Define proper stats type
@@ -16,10 +14,8 @@ export const useGamesStore = defineStore('games', () => {
   const isSelectionMode = ref(false);
   const selectedGameIds = ref<Set<number>>(new Set());
   const isRemovingGames = ref(false);
-
   // Getters
   const totalGames = computed(() => games.value.length);
-
   const gamesByPlatform = computed(() => {
     // Da die Game-Tabelle kein platforms-Feld hat, müssen wir die Plattform-Informationen
     // aus den PlatformGame-Relationen oder externen Daten beziehen
@@ -27,12 +23,10 @@ export const useGamesStore = defineStore('games', () => {
     const platformGroups: Record<string, UserGameWithDetails[]> = {};
     return platformGroups;
   });
-
   const availablePlatforms = computed(() => {
     // Platzhalter - wird implementiert wenn Plattform-Informationen verfügbar sind
     return [];
   });
-
   const recentlyPlayed = computed(() => {
     return games.value
       .filter(game => game.lastPlayed)
@@ -44,7 +38,6 @@ export const useGamesStore = defineStore('games', () => {
       })
       .slice(0, 10);
   });
-
   const mostPlayed = computed(() => {
     return games.value
       .filter(game => game.playtimeMinutes && game.playtimeMinutes > 0)
@@ -80,7 +73,6 @@ export const useGamesStore = defineStore('games', () => {
       async () => {
         const { $client } = useNuxtApp();
         const notifyStore = useNotifyStore();
-
         try {
           const statsData = await $client.games.getUserStats.query();
           stats.value = statsData;
@@ -105,16 +97,12 @@ export const useGamesStore = defineStore('games', () => {
       async () => {
         const { $client } = useNuxtApp();
         const notifyStore = useNotifyStore();
-
         try {
           error.value = null;
-
           const result = await $client.games.importSteamLibrary.mutate({
             steamInput: steamInput.trim()
           });
-
           lastImportResult.value = result;
-
           if (result.success) {
             // Detaillierte Erfolgsmeldung erstellen
             let message = 'Steam-Import abgeschlossen! ';
@@ -127,13 +115,10 @@ export const useGamesStore = defineStore('games', () => {
             if (result.skipped > 0) {
               message += `${result.skipped} bereits vorhandene Spiele übersprungen.`;
             }
-
             notifyStore.notify(message, 1);
-
             // Daten neu laden nach erfolgreichem Import
             await refreshData();
           }
-
           return result;
         } catch (err: any) {
           error.value = err.message || 'Fehler beim Steam-Import';
@@ -148,7 +133,6 @@ export const useGamesStore = defineStore('games', () => {
   const refreshData = async () => {
     await Promise.all([loadGames(), loadStats()]);
   };
-
   // Funktionen für Auswahlmodus
   const toggleSelectionMode = () => {
     if (isSelectionMode.value) {
@@ -157,17 +141,14 @@ export const useGamesStore = defineStore('games', () => {
       enterSelectionMode();
     }
   };
-
   const enterSelectionMode = () => {
     isSelectionMode.value = true;
     selectedGameIds.value.clear();
   };
-
   const exitSelectionMode = () => {
     isSelectionMode.value = false;
     selectedGameIds.value.clear();
   };
-
   const toggleGameSelection = (gameId: number) => {
     if (selectedGameIds.value.has(gameId)) {
       selectedGameIds.value.delete(gameId);
@@ -175,11 +156,9 @@ export const useGamesStore = defineStore('games', () => {
       selectedGameIds.value.add(gameId);
     }
   };
-
   const selectAllFilteredGames = (filteredGames: UserGameWithDetails[]) => {
     filteredGames.forEach(game => selectedGameIds.value.add(game.id));
   };
-
   const deselectAllGames = () => {
     selectedGameIds.value.clear();
   };
@@ -187,42 +166,34 @@ export const useGamesStore = defineStore('games', () => {
     if (selectedGameIds.value.size === 0 || isRemovingGames.value) {
       return false;
     }
-
     return await loading(
       'remove-games',
       'Entferne Spiele aus der Bibliothek...',
       async () => {
         const { $client } = useNuxtApp();
         const notifyStore = useNotifyStore();
-
         try {
           isRemovingGames.value = true;
           const gameIdsArray = Array.from(selectedGameIds.value);
-
           const result = await $client.games.removeGamesFromLibrary.mutate({
             userGameIds: gameIdsArray
           });
-
           if (result.success) {
             // Erfolgreiche Entfernung
             const message = `${result.removedCount} Spiel${
               result.removedCount > 1 || 0 ? 'e' : ''
             } erfolgreich aus der Bibliothek entfernt.`;
             notifyStore.notify(message, 1);
-
             // Entfernte Spiele aus dem lokalen State entfernen
             games.value = games.value.filter(
               game => !gameIdsArray.includes(game.id)
             );
-
             // Statistiken neu berechnen
             await loadStats();
-
             // Auswahlmodus beenden
             exitSelectionMode();
             return true;
           }
-
           return false;
         } catch (err: any) {
           const errorMessage =
@@ -239,12 +210,10 @@ export const useGamesStore = defineStore('games', () => {
   const getGameById = (gameId: number) => {
     return games.value.find(game => game.id === gameId);
   };
-
   // Neue Funktion: Finde Spiel nach UserGame ID
   const getGameByUserGameId = (userGameId: number) => {
     return games.value.find(game => game.id === userGameId);
   };
-
   const getGameWithPlatforms = async (
     userGameId: number
   ): Promise<UserGameWithDetails | null> => {
@@ -254,7 +223,6 @@ export const useGamesStore = defineStore('games', () => {
       async () => {
         const { $client } = useNuxtApp();
         const notifyStore = useNotifyStore();
-
         try {
           error.value = null;
           const gameData = await $client.games.getGameWithPlatforms.query({
@@ -272,10 +240,8 @@ export const useGamesStore = defineStore('games', () => {
       'data'
     );
   };
-
   const searchGames = (query: string) => {
     if (!query.trim()) return games.value;
-
     const searchTerm = query.toLowerCase().trim();
     return games.value.filter(
       game =>
@@ -283,16 +249,13 @@ export const useGamesStore = defineStore('games', () => {
         game.game.genres.some(genre => genre.toLowerCase().includes(searchTerm))
     );
   };
-
   const filterGamesByPlatform = (platform: string) => {
     if (platform === 'all') return games.value;
     // Plattform-Filtering wird implementiert wenn Plattform-Daten verfügbar sind
     return games.value;
   };
-
   const sortGames = (games: UserGameWithDetails[], sortBy: string) => {
     const gamesCopy = [...games];
-
     switch (sortBy) {
       case 'title':
         return gamesCopy.sort((a, b) => a.game.name.localeCompare(b.game.name));
@@ -322,7 +285,6 @@ export const useGamesStore = defineStore('games', () => {
         return gamesCopy;
     }
   };
-
   const formatPlayTime = (minutes: number): string => {
     if (minutes === 0) return 'Nicht gespielt';
     if (minutes < 60) return `${minutes}min`;
@@ -333,39 +295,33 @@ export const useGamesStore = defineStore('games', () => {
       ? `${hours}h ${remainingMinutes}min`
       : `${hours}h`;
   };
-
   // Neue Hilfsfunktionen basierend auf games.service
   const getGamesByGenre = (genre: string) => {
     return games.value.filter(game =>
       game.game.genres.some(g => g.toLowerCase().includes(genre.toLowerCase()))
     );
   };
-
   const getTopRatedGames = (limit: number = 10) => {
     return games.value
       .filter(game => game.game.totalRating && game.game.totalRating > 0)
       .sort((a, b) => (b.game.totalRating || 0) - (a.game.totalRating || 0))
       .slice(0, limit);
   };
-
   const getUnratedGames = () => {
     return games.value.filter(
       game => !game.game.totalRating || game.game.totalRating === 0
     );
   };
-
   const getGamesByPlaytime = (minHours: number = 0) => {
     const minMinutes = minHours * 60;
     return games.value.filter(
       game => (game.playtimeMinutes || 0) >= minMinutes
     );
   };
-
   const getGamesByPlatformName = (platformName: string) => {
     // Plattform-Filtering wird implementiert wenn Plattform-Daten verfügbar sind
     return games.value;
   };
-
   const getAvailableGenres = computed(() => {
     const genres = new Set<string>();
     games.value.forEach(game => {
@@ -373,7 +329,6 @@ export const useGamesStore = defineStore('games', () => {
     });
     return Array.from(genres).sort();
   });
-
   const totalPlaytimeHours = computed(() => {
     const totalMinutes = games.value.reduce(
       (sum, game) => sum + (game.playtimeMinutes || 0),
@@ -381,7 +336,6 @@ export const useGamesStore = defineStore('games', () => {
     );
     return Math.floor(totalMinutes / 60);
   });
-
   const averageRating = computed(() => {
     const ratedGames = games.value.filter(
       game => game.game.totalRating && game.game.totalRating > 0
@@ -393,7 +347,6 @@ export const useGamesStore = defineStore('games', () => {
     );
     return Math.round((sum / ratedGames.length) * 10) / 10;
   });
-
   // Initialize data when store is first used
   const init = async () => {
     if (games.value.length === 0) {
@@ -403,25 +356,21 @@ export const useGamesStore = defineStore('games', () => {
   const toggleFavorite = async (userGameId: number) => {
     const { $client } = useNuxtApp();
     const notifyStore = useNotifyStore();
-
     try {
       const result = await $client.games.toggleFavorite.mutate({
         userGameId: userGameId
       });
-
       if (result.success) {
         // Lokalen State aktualisieren
         const gameIndex = games.value.findIndex(game => game.id === userGameId);
         if (gameIndex !== -1) {
           games.value[gameIndex].isFavorite = result.isFavorite;
         }
-
         // Erfolgs-Benachrichtigung
         const message = result.isFavorite
           ? 'Zu Favoriten hinzugefügt'
           : 'Aus Favoriten entfernt';
         notifyStore.notify(message, 1);
-
         return result.isFavorite;
       }
     } catch (err: any) {
@@ -430,7 +379,6 @@ export const useGamesStore = defineStore('games', () => {
       throw err;
     }
   };
-
   // Reset store
   const reset = () => {
     games.value = [];
@@ -450,7 +398,6 @@ export const useGamesStore = defineStore('games', () => {
     isSelectionMode,
     selectedGameIds,
     isRemovingGames,
-
     // Getters
     totalGames,
     gamesByPlatform,

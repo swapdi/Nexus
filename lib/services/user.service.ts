@@ -1,8 +1,6 @@
 import { useUserStats } from '~/composables/useUserStats'; // Import des Composables
 import { PrismaClient, type User } from '~/prisma/client';
-
 const prisma = new PrismaClient();
-
 export interface FullUser extends User {
   userAchievements: Array<{
     achievement: {
@@ -40,15 +38,14 @@ export interface FullUser extends User {
     };
   }>;
 }
-
 export interface UserUpdateData {
   display_name?: string;
   email?: string;
   xp?: number;
   level?: number;
   credits?: number;
+  steamId?: string;
 }
-
 export interface UserStats {
   totalGames: number;
   totalPlaytimeHours: number;
@@ -57,7 +54,6 @@ export interface UserStats {
   currentXP: number;
   credits: number;
 }
-
 export namespace UserService {
   /**
    * Benutzer über Supabase UID finden (Auth-Funktion)
@@ -105,10 +101,8 @@ export namespace UserService {
         }
       }
     });
-
     return user as FullUser | null;
   }
-
   /**
    * Benutzer über ID finden
    */
@@ -153,10 +147,8 @@ export namespace UserService {
         }
       }
     });
-
     return user as FullUser | null;
   }
-
   /**
    * Neuen Benutzer erstellen (Auth-Funktion)
    */
@@ -210,10 +202,8 @@ export namespace UserService {
         }
       }
     });
-
     return user as FullUser;
   }
-
   /**
    * Benutzerprofil aktualisieren (Auth-Funktion)
    */
@@ -262,10 +252,8 @@ export namespace UserService {
         }
       }
     });
-
     return user as FullUser;
   }
-
   /**
    * Benutzer löschen (Auth-Funktion mit Kaskadierung)
    */
@@ -290,7 +278,6 @@ export namespace UserService {
       })
     ]);
   }
-
   /**
    * Benutzerstatistiken abrufen
    */
@@ -302,16 +289,13 @@ export namespace UserService {
         userAchievements: true
       }
     });
-
     if (!user) {
       throw new Error('Benutzer nicht gefunden');
     }
-
     // Statistiken über Composable berechnen
     const { calculateUserStats } = useUserStats();
     return calculateUserStats(user);
   }
-
   /**
    * XP zum Benutzer hinzufügen und Level berechnen
    */
@@ -319,21 +303,17 @@ export namespace UserService {
     const user = await prisma.user.findUnique({
       where: { id: user_id }
     });
-
     if (!user) {
       throw new Error('Benutzer nicht gefunden');
     }
-
     // Level-Berechnung über Composable
     const { calculateLevelFromXP } = useUserStats();
     const levelResult = calculateLevelFromXP(user.xp, xp, user.level);
-
     return updateUser(user_id, {
       xp: levelResult.newXP,
       level: levelResult.newLevel
     });
   }
-
   /**
    * Credits zum Benutzer hinzufügen oder abziehen
    */
@@ -344,19 +324,15 @@ export namespace UserService {
     const user = await prisma.user.findUnique({
       where: { id: user_id }
     });
-
     if (!user) {
       throw new Error('Benutzer nicht gefunden');
     }
-
     // Credits-Validierung über Composable
     const { validateCreditsTransaction } = useUserStats();
     const validation = validateCreditsTransaction(user.credits, credits);
-
     if (!validation.isValid) {
       throw new Error(validation.error || 'Ungültige Credits-Transaktion');
     }
-
     return updateUser(user_id, {
       credits: validation.newCreditsAmount
     });

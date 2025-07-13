@@ -1,12 +1,9 @@
 <script setup lang="ts">
   const supabase = useSupabaseClient();
-
   const notifyStore = useNotifyStore();
-
   const loading = ref(false);
   const password = ref('');
   const confirmPassword = ref('');
-
   const changePassword = async () => {
     try {
       loading.value = true;

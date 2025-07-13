@@ -22,7 +22,6 @@
         <Icon name="mdi:cloud-download" class="h-5 w-5 text-blue-400" />
       </div>
     </div>
-
     <!-- Letzte Synchronisation -->
     <div
       v-else-if="showLastSync && dealsStore.lastSyncTime"
@@ -43,40 +42,31 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   interface Props {
     showLastSync?: boolean;
   }
-
   const props = withDefaults(defineProps<Props>(), {
     showLastSync: true
   });
-
   const dealsStore = useDealsStore();
   const showLastSyncInfo = ref(props.showLastSync);
-
   const showLastSync = computed(() => {
     return showLastSyncInfo.value && !dealsStore.isBackgroundSyncing;
   });
-
   const formatLastSync = computed(() => {
     if (!dealsStore.lastSyncTime) return '';
-
     const now = new Date();
     const syncTime = new Date(dealsStore.lastSyncTime);
     const diffMinutes = Math.floor(
       (now.getTime() - syncTime.getTime()) / (1000 * 60)
     );
-
     if (diffMinutes === 0) return 'gerade eben';
     if (diffMinutes === 1) return 'vor 1 Minute';
     if (diffMinutes < 60) return `vor ${diffMinutes} Minuten`;
-
     const diffHours = Math.floor(diffMinutes / 60);
     if (diffHours === 1) return 'vor 1 Stunde';
     if (diffHours < 24) return `vor ${diffHours} Stunden`;
-
     return syncTime.toLocaleDateString('de-DE', {
       day: '2-digit',
       month: '2-digit',
@@ -85,7 +75,6 @@
       minute: '2-digit'
     });
   });
-
   const hideLastSync = () => {
     showLastSyncInfo.value = false;
   };

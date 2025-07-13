@@ -10,7 +10,6 @@
           class="w-6 h-6 object-contain drop-shadow-lg filter brightness-60" />
         <!-- Glitzer-Effekt -->
       </div>
-
       <!-- Credits-Anzahl -->
       <span
         class="text-slate-400 font-semibold text-sm group-hover:text-white transition-colors duration-300">
@@ -19,10 +18,8 @@
     </div>
   </NuxtLink>
 </template>
-
 <script setup lang="ts">
   const userStore = useUserStore();
-
   // Grund: Credits formatieren für bessere Lesbarkeit (z.B. 1.234 statt 1234)
   const formattedCredits = computed(() => {
     const credits = userStore.user?.credits || 0;

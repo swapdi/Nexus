@@ -14,7 +14,6 @@
           loading="lazy"
           @error="handleImageError" />
       </div>
-
       <!-- Deal Info -->
       <div class="flex-1 min-w-0">
         <div class="flex items-start justify-between gap-4">
@@ -24,7 +23,6 @@
               class="font-semibold text-white text-lg line-clamp-1 group-hover:text-green-300 transition-colors">
               {{ deal.title }}
             </h3>
-
             <div class="flex items-center gap-4 mt-1 text-sm text-gray-400">
               <span>{{ deal.storeName }}</span>
               <span>{{ getGenreDisplay(deal) }}</span>
@@ -36,7 +34,6 @@
               </span>
             </div>
           </div>
-
           <!-- Price Section -->
           <div class="flex-shrink-0 text-right">
             <div v-if="!deal.isFreebie" class="space-y-1">
@@ -65,7 +62,6 @@
               </div>
             </div>
           </div>
-
           <!-- Action Buttons -->
           <div class="flex-shrink-0 flex items-center gap-2">
             <button
@@ -86,55 +82,45 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { DealWithGame } from '~/lib/services/deals.service';
-
   interface Props {
     deal: DealWithGame;
   }
-
   interface Emits {
     (e: 'click'): void;
     (e: 'wishlist'): void;
   }
-
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   const dealsStore = useDealsStore();
-
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
-
   const getGenreDisplay = (deal: DealWithGame): string => {
     return deal.game.genres.slice(0, 2).join(', ') || 'Unbekannt';
   };
-
   const isGameOwned = (deal: DealWithGame): boolean => {
-    // TODO: Implement ownership check against user's library
-    return false;
+    // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
+    const gamesStore = useGamesStore();
+    return gamesStore.games.some(
+      (userGame: any) => userGame.gameId === deal.gameId
+    );
   };
-
   const formatPrice = (price: number | null): string => {
     return dealsStore.formatPrice(price);
   };
-
   const formatDiscount = (discount: number): string => {
     return dealsStore.formatDiscount(discount);
   };
-
   const handleClick = () => {
     emit('click');
   };
-
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
   };
 </script>
-
 <style scoped>
   .line-clamp-1 {
     display: -webkit-box;

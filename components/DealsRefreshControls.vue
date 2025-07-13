@@ -15,7 +15,6 @@
           'animate-spin': isLoading
         }" />
     </button>
-
     <!-- Background Sync Button -->
     <button
       v-if="!dealsStore.isBackgroundSyncing"
@@ -30,11 +29,9 @@
   const dealsStore = useDealsStore();
   const loadingStore = useLoadingStore();
   const notifyStore = useNotifyStore();
-
   const isLoading = computed(() => {
     return loadingStore.isLoading && !dealsStore.isBackgroundSyncing;
   });
-
   const handleRefresh = async () => {
     try {
       await dealsStore.loadDealsFromDB();
@@ -42,7 +39,6 @@
       console.error('Refresh failed:', error);
     }
   };
-
   const handleBackgroundSync = async () => {
     try {
       await dealsStore.syncAllDealsInBackground();

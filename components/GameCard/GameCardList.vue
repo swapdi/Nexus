@@ -36,14 +36,12 @@
         loading="lazy"
         @error="handleImageError" />
     </div>
-
     <!-- Game Title and Genres (flexible width) -->
     <div class="flex-1 min-w-0">
       <h3
         class="font-semibold text-white text-base line-clamp-1 group-hover:text-purple-300 transition-colors mb-1">
         {{ gameData.name }}
       </h3>
-
       <!-- Genres direkt unter dem Titel -->
       <div
         v-if="gameData.genres && gameData.genres.length > 0"
@@ -61,7 +59,6 @@
         </span>
       </div>
     </div>
-
     <!-- Platform Badge (Steam) -->
     <div class="w-24 flex-shrink-0 flex justify-center">
       <div
@@ -69,7 +66,6 @@
         <Icon name="simple-icons:steam" class="w-4 h-4 text-blue-400" />
       </div>
     </div>
-
     <!-- Play Time (fixed width) -->
     <div class="w-20 flex-shrink-0 text-center">
       <div class="flex items-center justify-center gap-1">
@@ -79,7 +75,6 @@
         }}</span>
       </div>
     </div>
-
     <!-- Last Played (fixed width) -->
     <div class="w-24 flex-shrink-0 text-center hidden sm:block">
       <div class="flex items-center justify-center gap-1">
@@ -91,7 +86,6 @@
         }}</span>
       </div>
     </div>
-
     <!-- Favorite Button (fixed width) -->
     <div v-if="!isSelectionMode" class="w-10 flex-shrink-0 flex justify-center">
       <button
@@ -113,10 +107,8 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { UserGameWithDetails } from '~/lib/services/games.service';
-
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;
@@ -126,21 +118,16 @@
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
-
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);
-
   const handleClick = () => {
     emit('click');
   };
-
   const toggleFavorite = () => {
     emit('toggleFavorite', props.game.id);
   };
-
   const handleImageError = (event: Event) => {
     if (event.target) {
       (event.target as HTMLImageElement).src = './gameplaceholder.jpg';
@@ -152,7 +139,6 @@
   const formatPlayTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-
     if (hours < 2) {
       if (hours === 0) {
         return `${minutes} Min`;
@@ -165,13 +151,11 @@
       return `${hours}h`;
     }
   };
-
   const formatLastPlayed = (date: string | Date) => {
     const d = new Date(date);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - d.getTime());
     const diffInDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffInDays === 0) return 'Heute';
     if (diffInDays === 1) return 'Gestern';
     if (diffInDays < 7) return `Vor ${diffInDays} Tagen`;

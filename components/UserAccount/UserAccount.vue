@@ -2,7 +2,6 @@
   const user = useSupabaseUser();
   const isDropdownOpen = ref(false);
   const dropdownRef = ref<HTMLElement>();
-
   // Grund: Dropdown schließen wenn außerhalb geklickt wird
   function handleClickOutside(event: MouseEvent) {
     if (
@@ -12,27 +11,22 @@
       isDropdownOpen.value = false;
     }
   }
-
   // Grund: Event Listener für Click-Outside hinzufügen/entfernen
   onMounted(() => {
     document.addEventListener('click', handleClickOutside);
   });
-
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside);
   });
-
   // Grund: Toggle-Funktion für das Dropdown
   function toggleDropdown() {
     isDropdownOpen.value = !isDropdownOpen.value;
   }
-
   // Grund: Dropdown schließen bei Navigation
   function handleNavigation() {
     isDropdownOpen.value = false;
   }
 </script>
-
 <template>
   <div ref="dropdownRef" class="relative">
     <!-- Avatar Button -->
@@ -58,7 +52,6 @@
         <div
           class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full ring-2 ring-gray-900"></div>
       </div>
-
       <!-- User Name (optional, kann ausgeblendet werden auf kleinen Bildschirmen) -->
       <div class="hidden md:block text-left">
         <p
@@ -70,7 +63,6 @@
           {{ user?.email }}
         </p>
       </div>
-
       <!-- Dropdown Arrow -->
       <svg
         :class="{ 'rotate-180': isDropdownOpen }"
@@ -85,7 +77,6 @@
           d="M19 9l-7 7-7-7"></path>
       </svg>
     </button>
-
     <!-- Dropdown Menu -->
     <Transition
       enter-active-class="transition ease-out duration-200"
@@ -122,7 +113,6 @@
             </div>
           </div>
         </div>
-
         <!-- Menu Items -->
         <div class="py-2">
           <!-- Profile -->
@@ -143,7 +133,6 @@
             </svg>
             <span class="font-medium">Profil</span>
           </NuxtLink>
-
           <!-- Settings -->
           <NuxtLink
             to="/settings"
@@ -167,7 +156,6 @@
             </svg>
             <span class="font-medium">Einstellungen</span>
           </NuxtLink>
-
           <hr class="my-2 border-gray-700/50" />
           <!-- Logout -->
           <UserAccountSignout @click="handleNavigation" />

@@ -1,19 +1,15 @@
 <script setup lang="ts">
   const userStore = useUserStore();
-
   // Game Utils für Legacy-Support
   const { getGameName } = useGameUtils();
-
   onMounted(async () => {
     await userStore.init();
   });
-
   definePageMeta({
     middleware: ['auth'],
     title: 'Wishlist',
     layout: 'authenticated'
   });
-
   // Mock-Daten für Wishlist (später durch echte API ersetzen)
   const wishlistItems = ref([
     {
@@ -97,12 +93,10 @@
       platforms: ['Steam', 'Epic Games']
     }
   ]);
-
   const searchQuery = ref('');
   const selectedGenre = ref('all');
   const sortBy = ref('addedAt');
   const showOnlyOnSale = ref(false);
-
   // Filter Optionen
   const genres = computed(() => {
     const allGenres = ['all'];
@@ -118,7 +112,6 @@
       label: genre === 'all' ? 'Alle Genres' : genre
     }));
   });
-
   // Gefilterte Wishlist
   const filteredWishlist = computed(() => {
     let filtered = wishlistItems.value.filter(item => {
@@ -129,10 +122,8 @@
         selectedGenre.value === 'all' ||
         item.genres.includes(selectedGenre.value);
       const matchesSale = !showOnlyOnSale.value || item.onSale;
-
       return matchesSearch && matchesGenre && matchesSale;
     });
-
     // Sortierung
     if (sortBy.value === 'title') {
       filtered.sort((a, b) => getGameName(a).localeCompare(getGameName(b)));
@@ -151,10 +142,8 @@
         return discountB - discountA;
       });
     }
-
     return filtered;
   });
-
   // Statistiken
   const totalItems = computed(() => wishlistItems.value.length);
   const itemsOnSale = computed(
@@ -174,7 +163,6 @@
       return sum;
     }, 0);
   });
-
   // Format Funktionen
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('de-DE', {
@@ -182,29 +170,24 @@
       currency: 'EUR'
     }).format(price);
   };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('de-DE');
   };
-
   const getPriceChange = (item: any) => {
     if (item.priceHistory.length < 2) return 0;
     const current = item.currentPrice;
     const previous = item.priceHistory[item.priceHistory.length - 2].price;
     return ((current - previous) / previous) * 100;
   };
-
   const getPriceChangeColor = (change: number) => {
     if (change > 0) return 'text-red-400';
     if (change < 0) return 'text-green-400';
     return 'text-gray-400';
   };
-
   const removeFromWishlist = (id: number) => {
     wishlistItems.value = wishlistItems.value.filter(item => item.id !== id);
   };
 </script>
-
 <template>
   <div class="space-y-6">
     <!-- Header mit Statistiken -->
@@ -214,7 +197,6 @@
         class="text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent mb-4">
         Meine Wishlist
       </h1>
-
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div
           class="bg-gradient-to-r from-pink-500/20 to-pink-600/20 rounded-lg p-4 border border-pink-500/30">
@@ -242,7 +224,6 @@
         </div>
       </div>
     </div>
-
     <!-- Filter und Suche -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
@@ -263,7 +244,6 @@
               class="w-full pl-10 pr-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all" />
           </div>
         </div>
-
         <!-- Genre Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -280,7 +260,6 @@
             </option>
           </select>
         </div>
-
         <!-- Sortierung -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -295,7 +274,6 @@
             <option value="discount">Größter Rabatt</option>
           </select>
         </div>
-
         <!-- Toggle Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -311,7 +289,6 @@
         </div>
       </div>
     </div>
-
     <!-- Wishlist Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       <div
@@ -325,7 +302,6 @@
               :src="item.coverUrl"
               :alt="getGameName(item)"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-
             <!-- Sale Badge -->
             <div
               v-if="item.onSale"
@@ -333,7 +309,6 @@
               SALE
             </div>
           </div>
-
           <!-- Game Info -->
           <div class="flex-1 p-4">
             <div class="flex justify-between items-start mb-2">
@@ -347,12 +322,10 @@
                 <Icon name="heroicons:x-mark-20-solid" class="w-5 h-5" />
               </button>
             </div>
-
             <div class="text-sm text-gray-400 mb-3">
               <div>{{ item.developer }}</div>
               <div>{{ formatDate(item.releaseDate) }}</div>
             </div>
-
             <!-- Genres -->
             <div class="flex flex-wrap gap-1 mb-3">
               <span
@@ -362,12 +335,10 @@
                 {{ genre }}
               </span>
             </div>
-
             <!-- Platforms -->
             <div class="text-xs text-gray-400 mb-3">
               Verfügbar auf: {{ item.platforms.join(', ') }}
             </div>
-
             <!-- Price Info -->
             <div class="space-y-2">
               <div class="flex justify-between items-center">
@@ -385,14 +356,12 @@
                   </div>
                 </div>
               </div>
-
               <div class="flex justify-between items-center text-sm">
                 <span class="text-gray-400">Niedrigster Preis:</span>
                 <span class="text-green-400 font-medium">{{
                   formatPrice(item.lowestPrice)
                 }}</span>
               </div>
-
               <div class="flex justify-between items-center text-sm">
                 <span class="text-gray-400">Hinzugefügt:</span>
                 <span class="text-gray-300">{{
@@ -400,7 +369,6 @@
                 }}</span>
               </div>
             </div>
-
             <!-- Action Buttons -->
             <div class="mt-4 flex space-x-2">
               <button
@@ -419,7 +387,6 @@
         </div>
       </div>
     </div>
-
     <!-- Leerer Zustand -->
     <div
       v-if="filteredWishlist.length === 0 && wishlistItems.length > 0"
@@ -432,7 +399,6 @@
       </h3>
       <p class="text-gray-500">Versuchen Sie, Ihre Suchkriterien zu ändern.</p>
     </div>
-
     <!-- Komplett leere Wishlist -->
     <div v-if="wishlistItems.length === 0" class="text-center py-12">
       <Icon
@@ -453,7 +419,6 @@
     </div>
   </div>
 </template>
-
 <style scoped>
   .line-clamp-2 {
     display: -webkit-box;

@@ -11,27 +11,23 @@
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"
         @error="handleImageError" />
-
       <!-- Store Badge -->
       <div
         class="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-xs text-white">
         {{ deal.storeName }}
       </div>
-
       <!-- Discount Badge -->
       <div
         v-if="deal.discountPercent && deal.discountPercent > 0"
         class="absolute top-1 right-1 px-1.5 py-0.5 bg-green-600 rounded text-xs text-white font-bold">
         {{ formatDiscount(deal.discountPercent) }}
       </div>
-
       <!-- Free Badge -->
       <div
         v-if="deal.isFreebie"
         class="absolute top-1 right-1 px-1.5 py-0.5 bg-green-600 rounded text-xs text-white font-bold">
         FREI
       </div>
-
       <!-- Library Badge -->
       <div
         v-if="isGameOwned(deal)"
@@ -39,20 +35,17 @@
         <Icon name="heroicons:check-20-solid" class="w-3 h-3 inline" />
       </div>
     </div>
-
     <!-- Deal Info -->
     <div class="p-2">
       <h3
         class="font-medium text-white text-sm mb-1 line-clamp-2 group-hover:text-green-300 transition-colors">
         {{ deal.title }}
       </h3>
-
       <div class="space-y-1 text-xs">
         <!-- Genre -->
         <div class="text-gray-400 line-clamp-1">
           {{ getGenreDisplay(deal) }}
         </div>
-
         <!-- Price -->
         <div v-if="!deal.isFreebie" class="flex justify-between items-center">
           <div class="text-green-400 font-bold">
@@ -71,55 +64,45 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
   import type { DealWithGame } from '~/lib/services/deals.service';
-
   interface Props {
     deal: DealWithGame;
   }
-
   interface Emits {
     (e: 'click'): void;
     (e: 'wishlist'): void;
   }
-
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   const dealsStore = useDealsStore();
-
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
-
   const getGenreDisplay = (deal: DealWithGame): string => {
     return deal.game.genres.slice(0, 1).join(', ') || 'Unbekannt';
   };
-
   const isGameOwned = (deal: DealWithGame): boolean => {
-    // TODO: Implement ownership check against user's library
-    return false;
+    // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
+    const gamesStore = useGamesStore();
+    return gamesStore.games.some(
+      (userGame: any) => userGame.gameId === deal.gameId
+    );
   };
-
   const formatPrice = (price: number | null): string => {
     return dealsStore.formatPrice(price);
   };
-
   const formatDiscount = (discount: number): string => {
     return dealsStore.formatDiscount(discount);
   };
-
   const handleClick = () => {
     emit('click');
   };
-
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
   };
 </script>
-
 <style scoped>
   .line-clamp-1 {
     display: -webkit-box;
@@ -128,7 +111,6 @@
     overflow: hidden;
     line-clamp: 1;
   }
-
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

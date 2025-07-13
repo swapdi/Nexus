@@ -8,7 +8,6 @@
     @click="handleClick"
     @toggleFavorite="handleToggleFavorite" />
 </template>
-
 <script setup lang="ts">
   import type { ViewMode } from '~/composables/useViewMode';
   import type { UserGameWithDetails } from '~/lib/services/games.service';
@@ -16,22 +15,18 @@
   import GameCardList from './GameCardList.vue';
   import GameCardMedium from './GameCardMedium.vue';
   import GameCardMini from './GameCardMini.vue';
-
   interface Props {
     game: UserGameWithDetails;
     viewMode: ViewMode;
     isSelectionMode: boolean;
     isSelected: boolean;
   }
-
   interface Emits {
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
-
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
-
   const cardComponent = computed(() => {
     switch (props.viewMode) {
       case 'large':
@@ -55,7 +50,6 @@
       navigateTo(`/game/${props.game.game.id}`);
     }
   };
-
   const handleToggleFavorite = (userGameId: number) => {
     emit('toggleFavorite', userGameId);
   };

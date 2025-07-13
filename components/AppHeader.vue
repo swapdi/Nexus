@@ -12,14 +12,12 @@
             class="h-8 w-8 transition-all duration-200 group-hover:scale-105 drop-shadow-lg" />
         </NuxtLink>
       </div>
-
       <!-- User Section - fest positioniert rechts -->
       <div
         class="absolute right-0 top-0 flex items-center space-x-4 h-full pr-4 sm:pr-6 lg:pr-8">
         <UserCredits />
         <UserAccount />
       </div>
-
       <!-- Hauptinhalt mit Padding für Logo und User Section -->
       <div class="w-full pl-[78px] pr-[200px] h-full flex items-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -34,11 +32,9 @@
     </div>
   </header>
 </template>
-
 <script setup lang="ts">
   // Dunkles Gaming-Header ohne komplexe Ladeanzeigen
 </script>
-
 <style scoped>
   /* Dunkles Gaming-Header Design */
   header {

@@ -1,5 +1,4 @@
 export type ViewMode = 'large' | 'medium' | 'mini' | 'list';
-
 export interface ViewModeConfig {
   id: ViewMode;
   name: string;
@@ -7,7 +6,6 @@ export interface ViewModeConfig {
   gridClass: string;
   cardClass?: string;
 }
-
 export const VIEW_MODES: ViewModeConfig[] = [
   {
     id: 'large',
@@ -38,11 +36,9 @@ export const VIEW_MODES: ViewModeConfig[] = [
     gridClass: 'flex flex-col gap-2'
   }
 ];
-
 // Globaler State für ViewMode (singleton pattern)
 const globalViewMode = ref<ViewMode>('large');
 let isInitialized = false;
-
 export const useViewMode = () => {
   // Einmalige Initialisierung beim ersten Aufruf
   if (!isInitialized && process.client) {
@@ -50,27 +46,22 @@ export const useViewMode = () => {
     if (saved && VIEW_MODES.find(mode => mode.id === saved)) {
       globalViewMode.value = saved as ViewMode;
     }
-
     // Watch für localStorage-Persistierung
     watch(globalViewMode, newMode => {
       if (process.client) {
         localStorage.setItem('nexus-view-mode', newMode);
       }
     });
-
     isInitialized = true;
   }
-
   const setViewMode = (mode: ViewMode) => {
     globalViewMode.value = mode;
   };
-
   const getCurrentConfig = () => {
     return (
       VIEW_MODES.find(mode => mode.id === globalViewMode.value) || VIEW_MODES[0]
     );
   };
-
   return {
     currentViewMode: globalViewMode,
     setViewMode,

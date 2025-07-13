@@ -1,7 +1,6 @@
 import { serverSupabaseUser } from '#supabase/server';
 import { defineEventHandler } from 'h3';
 import { UserService } from '~/lib/services/user.service';
-
 export default defineEventHandler(async event => {
   if (!event.path.startsWith('/api/trpc')) {
     return;

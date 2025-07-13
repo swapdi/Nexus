@@ -1,12 +1,9 @@
 // Deals Service - VEREINFACHT
 // Grund: Nutzt zentrale IGDB-Funktion für alle Spielsuchen
-
 import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
-
 const prisma = new PrismaClient();
-
 export interface DealWithGame extends Deal {
   game: Game;
 }
@@ -24,7 +21,6 @@ export interface DealCreateInput {
   externalId?: string;
   source?: string;
 }
-
 export interface DealSearchFilters {
   gameId?: number;
   storeName?: string;
@@ -37,10 +33,8 @@ export interface DealSearchFilters {
   limit?: number;
   offset?: number;
 }
-
 export namespace DealsService {
   // ===== CORE WORKFLOW FUNCTIONS =====
-
   /**
    * Sucht nach Deals basierend auf Filtern
    * @param filters Such-Filter
@@ -77,7 +71,6 @@ export namespace DealsService {
       if (filters.source) {
         where.source = { contains: filters.source, mode: 'insensitive' };
       }
-
       const deals = await prisma.deal.findMany({
         where,
         include: {
@@ -87,7 +80,6 @@ export namespace DealsService {
         take: filters.limit,
         skip: filters.offset
       });
-
       return deals as DealWithGame[];
     } catch (error) {
       console.error('Error searching deals:', error);
@@ -98,33 +90,24 @@ export namespace DealsService {
       );
     }
   }
-
   /**
    * Findet oder erstellt ein Spiel für einen Deal-Titel
    * Grund: Nutzt zentrale IGDB-Funktion für konsistente Spielerkennung
    */
   export async function findOrCreateGameForDeal(dealTitle: string) {
-    console.log(`🔍 [Deals] Finding game for deal: "${dealTitle}"`);
-
     try {
       const { IGDBService } = await import('./igdb.service');
       const igdbGameData = await IGDBService.findGameByTitle(dealTitle);
-
       if (!igdbGameData) {
-        console.log(`❌ [Deals] No IGDB game found for: "${dealTitle}"`);
         return null;
       }
-
       // Grund: Prüfe ob das Spiel bereits in unserer DB existiert
       const existingGame = await prisma.game.findUnique({
         where: { igdbId: igdbGameData.id }
       });
-
       if (existingGame) {
-        console.log(`✅ [Deals] Found existing game: "${existingGame.name}"`);
         return existingGame;
       }
-
       // Grund: Erstelle neues Spiel mit IGDB-Daten
       const newGame = await prisma.game.create({
         data: {
@@ -150,9 +133,7 @@ export namespace DealsService {
       return null;
     }
   }
-
   // ===== CHEAPSHARK INTEGRATION =====
-
   /**
    * Konvertiert einen CheapShark Deal zu unserem Deal-Format
    * @param cheapSharkDeal CheapShark Deal Objekt
@@ -169,14 +150,11 @@ export namespace DealsService {
         console.warn('Invalid CheapShark deal: missing dealID or title');
         return null;
       }
-
       const salePrice = parseFloat(cheapSharkDeal.salePrice || '0');
       const normalPrice = parseFloat(cheapSharkDeal.normalPrice || '0');
       const savings = parseFloat(cheapSharkDeal.savings || '0');
-
       // Grund: Store-Namen aus CheapShark Service holen
       const storeName = CheapSharkService.getStoreName(cheapSharkDeal.storeID);
-
       // Grund: Spiel finden oder erstellen wenn keine gameId gegeben
       let finalGameId = gameId;
       if (!finalGameId) {
@@ -185,7 +163,6 @@ export namespace DealsService {
           const foundGame = await DealsService.findOrCreateGameForDeal(
             cheapSharkDeal.title
           );
-
           if (foundGame) {
             finalGameId = foundGame.id;
           } else {
@@ -199,13 +176,11 @@ export namespace DealsService {
           return null;
         }
       }
-
       // Grund: Prüfe ob gameId gefunden wurde
       if (!finalGameId) {
         console.warn(`No valid gameId found for deal: ${cheapSharkDeal.title}`);
         return null;
       }
-
       return {
         gameId: finalGameId,
         title: cheapSharkDeal.title,
@@ -224,7 +199,6 @@ export namespace DealsService {
       return null;
     }
   }
-
   /**
    * Speichert CheapShark Deals in der Datenbank (ohne Duplikate)
    * @param cheapSharkDeals Array von CheapShark Deals
@@ -236,7 +210,6 @@ export namespace DealsService {
     gameId?: number | null
   ): Promise<Deal[]> {
     const savedDeals: Deal[] = [];
-
     try {
       for (const cheapSharkDeal of cheapSharkDeals) {
         // Grund: Prüfen ob Deal bereits existiert (basierend auf externalId)
@@ -252,12 +225,10 @@ export namespace DealsService {
         // Grund: Deal-Daten konvertieren (jetzt async)
         const dealData = await convertCheapSharkDeal(cheapSharkDeal, gameId);
         if (!dealData) continue;
-
         // Grund: Neuen Deal erstellen
         const newDeal = await prisma.deal.create({
           data: dealData
         });
-
         savedDeals.push(newDeal);
       }
       return savedDeals;
@@ -270,7 +241,6 @@ export namespace DealsService {
       );
     }
   }
-
   /**
    * Bereinigt abgelaufene/veraltete Deals
    * @param olderThanDays Deals älter als X Tage löschen
@@ -282,7 +252,6 @@ export namespace DealsService {
     try {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
-
       // Grund: Löschen von abgelaufenen und veralteten Deals
       const result = await prisma.deal.deleteMany({
         where: {
@@ -303,7 +272,6 @@ export namespace DealsService {
           ]
         }
       });
-
       return result.count;
     } catch (error) {
       console.error('Error cleaning up expired deals:', error);
@@ -314,9 +282,7 @@ export namespace DealsService {
       );
     }
   }
-
   // ===== CHEAPSHARK API WRAPPERS =====
-
   /**
    * Wrapper für CheapShark getAllDeals
    */

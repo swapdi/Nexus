@@ -2,7 +2,6 @@
   const route = useRoute();
   const showStickyFooter = computed(() => route.path !== '/');
 </script>
-
 <template>
   <div class="flex flex-col min-h-screen bg-gray-900 text-white">
     <LandingHeader />

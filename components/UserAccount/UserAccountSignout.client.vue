@@ -1,7 +1,6 @@
 <script setup lang="ts">
   const supabase = useSupabaseClient();
   const userStore = useUserStore();
-
   async function signout() {
     await supabase.auth.signOut();
     if (userStore) {
@@ -10,7 +9,6 @@
     navigateTo('/', { replace: true });
   }
 </script>
-
 <template>
   <button
     @click="signout"

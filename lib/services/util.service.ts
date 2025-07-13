@@ -7,12 +7,10 @@ export namespace UtilService {
     }
     return date;
   }
-
   export function getErrorMessage(error: unknown) {
     if (error instanceof Error) return error.message;
     return String(error);
   }
-
   export function stringifySafely(obj: any) {
     let cache: any[] = [];
     let str = JSON.stringify(obj, function (key, value) {

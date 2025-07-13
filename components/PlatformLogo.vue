@@ -4,12 +4,10 @@
     size?: 'sm' | 'md' | 'lg';
     variant?: 'icon' | 'badge';
   }
-
   const props = withDefaults(defineProps<Props>(), {
     size: 'md',
     variant: 'icon'
   });
-
   // Platform Types
   type PlatformKey =
     | 'Steam'
@@ -29,7 +27,6 @@
     | 'Rockstar'
     | 'Bethesda'
     | 'default';
-
   // Platform logo mapping zu Simple Icons (über nuxt-icon)
   const platformIcons: Record<PlatformKey, string> = {
     Steam: 'simple-icons:steam',
@@ -50,7 +47,6 @@
     Bethesda: 'simple-icons:bethesda',
     default: 'heroicons:computer-desktop-20-solid'
   };
-
   // Platform Farben (Für dunklen Hintergrund optimiert)
   const platformColors: Record<PlatformKey, string> = {
     Steam: 'text-[#66C0F4]', // Steam blau, aber heller
@@ -71,30 +67,25 @@
     Bethesda: 'text-[#D4AF37]',
     default: 'text-gray-400'
   };
-
   // Size mapping
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-5 h-5',
     lg: 'w-6 h-6'
   };
-
   // Container size für badge variant
   const containerSizes = {
     sm: 'w-6 h-6',
     md: 'w-8 h-8',
     lg: 'w-10 h-10'
   };
-
   // Normalisiere Platform Namen und finde Matches
   const normalizedPlatform = computed((): PlatformKey => {
     const platform = props.platform.trim();
-
     // Direkte Übereinstimmung
     if (platformIcons[platform as PlatformKey]) {
       return platform as PlatformKey;
     }
-
     // Suche nach teilweisen Übereinstimmungen (case-insensitive)
     for (const key of Object.keys(platformIcons) as PlatformKey[]) {
       if (
@@ -104,16 +95,13 @@
         return key;
       }
     }
-
     return 'default';
   });
-
   const iconName = computed(() => platformIcons[normalizedPlatform.value]);
   const iconColor = computed(() => platformColors[normalizedPlatform.value]);
   const iconSize = computed(() => sizeClasses[props.size]);
   const containerSize = computed(() => containerSizes[props.size]);
 </script>
-
 <template>
   <div
     v-if="variant === 'badge'"
@@ -123,6 +111,5 @@
     ]">
     <Icon :name="iconName" :class="[iconSize, iconColor]" />
   </div>
-
   <Icon v-else :name="iconName" :class="[iconSize, iconColor]" />
 </template>
