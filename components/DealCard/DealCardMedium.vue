@@ -14,11 +14,12 @@
       <!-- Store Badge -->
       <div
         class="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-xs text-white flex items-center gap-1">
-        <Icon
-          :name="getStoreIcon(deal.storeName)"
-          class="w-3 h-3"
-          :title="deal.storeName" />
-        <span>{{ deal.storeName }}</span>
+        <img
+          :src="getStoreLogoURL(deal.storeName)"
+          :alt="`${deal.storeName} Logo`"
+          class="w-3 h-3 object-contain"
+          @error="handleStoreLogoError" />
+        <span class="font-medium">{{ deal.storeName }}</span>
       </div>
       <!-- Discount Badge -->
       <div
@@ -80,7 +81,7 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
   const dealsStore = useDealsStore();
-  const { getStoreIcon } = useStoreUtils();
+  const { getStoreLogoURL } = useStoreUtils();
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal?.game?.coverUrl || '/gameplaceholder.jpg';
   };
@@ -107,6 +108,12 @@
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
+  };
+
+  const handleStoreLogoError = (event: Event) => {
+    const img = event.target as HTMLImageElement;
+    // Fallback zu Store-Name ohne Logo
+    img.style.display = 'none';
   };
 </script>
 <style scoped>

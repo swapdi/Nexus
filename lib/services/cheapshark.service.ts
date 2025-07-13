@@ -1,5 +1,6 @@
 // CheapShark API Service
 // Grund: Zentrale Schnittstelle zur CheapShark API für Deal-Aggregation
+import { useStoreUtils } from '~/composables/useStoreUtils';
 export interface CheapSharkDeal {
   internalName: string;
   title: string;
@@ -285,29 +286,7 @@ export namespace CheapSharkService {
    * Grund: Benutzerfreundliche Anzeige der Store-Namen
    */
   export function getStoreName(storeID: string): string {
-    const storeMap: Record<string, string> = {
-      '1': 'Steam',
-      '2': 'GamersGate',
-      '3': 'Green Man Gaming',
-      '7': 'GOG',
-      '8': 'Origin',
-      '11': 'Humble Store',
-      '13': 'Uplay',
-      '15': 'Fanatical',
-      '21': 'WinGameStore',
-      '23': 'GameBillet',
-      '25': 'Epic Games Store',
-      '27': 'Gamesplanet',
-      '28': 'Gamesload',
-      '29': 'SquareEnix',
-      '30': 'Razer Game Store',
-      '31': 'Gamesplanet FR',
-      '32': 'Gamesplanet DE',
-      '33': 'Gamesplanet UK',
-      '34': 'Battlenet',
-      '35': 'Voidu'
-    };
-    return storeMap[storeID] || `Store ${storeID}`;
+    return useStoreUtils().getStoreName(storeID);
   }
 
   /**

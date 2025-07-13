@@ -13,11 +13,12 @@
         @error="handleImageError" />
       <!-- Store Badge -->
       <div
-        class="absolute top-0.5 left-0.5 w-4 h-4 bg-black/60 backdrop-blur-sm rounded flex items-center justify-center">
-        <Icon
-          :name="getStoreIcon(deal.storeName)"
-          class="w-2.5 h-2.5 text-white"
-          :title="deal.storeName" />
+        class="absolute top-0.5 left-0.5 w-6 h-4 bg-black/60 backdrop-blur-sm rounded flex items-center justify-center">
+        <img
+          :src="getStoreLogoURL(deal.storeName)"
+          :alt="`${deal.storeName} Logo`"
+          class="max-w-full max-h-full object-contain opacity-90"
+          @error="handleStoreLogoError" />
       </div>
       <!-- Discount Badge -->
       <div
@@ -71,7 +72,7 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
   const dealsStore = useDealsStore();
-  const { getStoreIcon } = useStoreUtils();
+  const { getStoreLogoURL } = useStoreUtils();
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
@@ -93,6 +94,19 @@
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
+  };
+
+  const handleStoreLogoError = (event: Event) => {
+    const img = event.target as HTMLImageElement;
+    // Fallback zu Icon bei Store-Logo-Fehler
+    img.style.display = 'none';
+    const parent = img.parentElement;
+    if (parent) {
+      parent.innerHTML = `<div class="w-2.5 h-2.5 bg-gray-400 rounded-sm" title="${img.alt.replace(
+        ' Logo',
+        ''
+      )}"></div>`;
+    }
   };
 </script>
 <style scoped>

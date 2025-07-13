@@ -4,8 +4,8 @@
  */
 
 export const useStoreUtils = () => {
-  const CHEAPSHARK_URL = 'https://www.cheapshark.com/api/1.0';
-  // Store Namen zu IDs mapping
+  const CHEAPSHARK_URL = 'https://www.cheapshark.com';
+  // Store Namen zu IDs mapping - mit korrekten Namen aus CheapShark API
   const stores = [
     {
       storeID: '1',
@@ -29,7 +29,7 @@ export const useStoreUtils = () => {
     },
     {
       storeID: '3',
-      storeName: 'GreenManGaming',
+      storeName: 'Green Man Gaming',
       isActive: 1,
       images: {
         banner: '/img/stores/banners/2.png',
@@ -362,27 +362,18 @@ export const useStoreUtils = () => {
    * Gibt das Icon für einen Store-Namen zurück
    */
   const getStoreIconURL = (storeName: string): string => {
-    return (
-      `${CHEAPSHARK_URL}/${
-        stores.find(store => store.storeName === storeName)?.images.icon
-      }` || 'mdi:store'
-    );
+    const store = stores.find(store => store.storeName === storeName);
+    return store ? `${CHEAPSHARK_URL}${store.images.icon}` : '';
   };
 
   const getStoreBannerURL = (storeName: string): string => {
-    return (
-      `${CHEAPSHARK_URL}/${
-        stores.find(store => store.storeName === storeName)?.images.banner
-      }` || 'mdi:store'
-    );
+    const store = stores.find(store => store.storeName === storeName);
+    return store ? `${CHEAPSHARK_URL}${store.images.banner}` : '';
   };
 
   const getStoreLogoURL = (storeName: string): string => {
-    return (
-      `${CHEAPSHARK_URL}/${
-        stores.find(store => store.storeName === storeName)?.images.logo
-      }` || 'mdi:store'
-    );
+    const store = stores.find(store => store.storeName === storeName);
+    return store ? `${CHEAPSHARK_URL}${store.images.logo}` : '';
   };
 
   /**
@@ -393,11 +384,62 @@ export const useStoreUtils = () => {
     return store ? store.storeName : 'Unbekannter Store';
   };
 
+  /**
+   * Gibt Store-ID für einen Store-Namen zurück (umgekehrte Funktion)
+   */
+  const getStoreIdByName = (storeName: string): string | null => {
+    const store = stores.find(s => s.storeName === storeName);
+    return store ? store.storeID : null;
+  };
+
+  /**
+   * Gibt die URLs für Banner, Logo und Icon für eine Store-ID zurück
+   */
+  const getStoreUrlsByID = (storeId: string) => {
+    const store = stores.find(s => s.storeID === storeId);
+    if (!store) {
+      return {
+        banner: '',
+        logo: '',
+        icon: ''
+      };
+    }
+
+    return {
+      banner: `${CHEAPSHARK_URL}${store.images.banner}`,
+      logo: `${CHEAPSHARK_URL}${store.images.logo}`,
+      icon: `${CHEAPSHARK_URL}${store.images.icon}`
+    };
+  };
+
+  /**
+   * Gibt die URLs für Banner, Logo und Icon für einen Store-Namen zurück
+   */
+  const getStoreUrlsByName = (storeName: string) => {
+    const store = stores.find(s => s.storeName === storeName);
+    if (!store) {
+      return {
+        banner: '',
+        logo: '',
+        icon: ''
+      };
+    }
+
+    return {
+      banner: `${CHEAPSHARK_URL}${store.images.banner}`,
+      logo: `${CHEAPSHARK_URL}${store.images.logo}`,
+      icon: `${CHEAPSHARK_URL}${store.images.icon}`
+    };
+  };
+
   return {
     getStoreIconURL,
     getStoreBannerURL,
     getStoreLogoURL,
     getStoreName,
+    getStoreIdByName,
+    getStoreUrlsByID,
+    getStoreUrlsByName,
     stores
   };
 };

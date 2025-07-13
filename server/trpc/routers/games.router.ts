@@ -60,7 +60,7 @@ export const gamesRouter = router({
       const updatedUserGame = await GamesService.updateUserGame(
         input.userGameId,
         {
-          notes: input.notes ?? undefined
+          notes: input.notes // Direkt verwenden - null wird korrekt als Löschung behandelt
         }
       );
       // Vollständige Spiel-Daten zurückgeben

@@ -90,7 +90,6 @@ export const useGamesStore = defineStore('games', () => {
   const importSteamLibrary = async (
     steamInput: string
   ): Promise<any | null> => {
-    // TODO: Define proper steam import return type
     return await loading(
       'steam-import',
       'Steam-Bibliothek importieren...',
@@ -207,12 +206,54 @@ export const useGamesStore = defineStore('games', () => {
       'process'
     );
   };
-  const getGameById = (gameId: number) => {
-    return games.value.find(game => game.id === gameId);
+  const getGameById = async (gameId: number) => {
+    return await loading(
+      'game-details',
+      'Lade Spiel-Details...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+        try {
+          error.value = null;
+          const gameData = await $client.games.getGameById.query({
+            gameId: gameId
+          });
+          return gameData;
+        } catch (err: any) {
+          const errorMessage =
+            err.message || 'Fehler beim Laden der Spiel-Details';
+          notifyStore.notify(errorMessage, 3);
+          console.error('Fehler beim Laden der Spiel-Details:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   };
   // Neue Funktion: Finde Spiel nach UserGame ID
-  const getGameByUserGameId = (userGameId: number) => {
-    return games.value.find(game => game.id === userGameId);
+  const getGameByUserGameId = async (userGameId: number) => {
+    return await loading(
+      'game-details',
+      'Lade Spiel-Details...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+        try {
+          error.value = null;
+          const gameData = await $client.games.getGameById.query({
+            gameId: userGameId
+          });
+          return gameData;
+        } catch (err: any) {
+          const errorMessage =
+            err.message || 'Fehler beim Laden der Spiel-Details';
+          notifyStore.notify(errorMessage, 3);
+          console.error('Fehler beim Laden der Spiel-Details:', err);
+          throw err;
+        }
+      },
+      'data'
+    );
   };
   const getGameWithPlatforms = async (
     userGameId: number
@@ -379,6 +420,47 @@ export const useGamesStore = defineStore('games', () => {
       throw err;
     }
   };
+  /**
+   * Aktualisiert die Notizen für ein UserGame
+   * Grund: Zentrale Verwaltung von Game-bezogenen Operationen im Store
+   */
+  const updateGameNotes = async (userGameId: number, notes: string | null) => {
+    return await loading(
+      'update-notes',
+      'Speichere Notizen...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+        try {
+          error.value = null;
+          const updatedGame = await $client.games.updateGameNotes.mutate({
+            userGameId,
+            notes: notes // Frontend trimmt bereits und sendet null für leere Strings
+          });
+
+          if (updatedGame) {
+            // Aktualisiere das Spiel im lokalen Store
+            const gameIndex = games.value.findIndex(g => g.id === userGameId);
+            if (gameIndex !== -1) {
+              games.value[gameIndex] = updatedGame;
+            }
+            notifyStore.notify('Notizen erfolgreich gespeichert', 1);
+          }
+
+          return updatedGame;
+        } catch (err: any) {
+          const errorMessage =
+            err.message || 'Fehler beim Speichern der Notizen';
+          error.value = errorMessage;
+          notifyStore.notify(errorMessage, 3);
+          console.error('Fehler beim Speichern der Notizen:', err);
+          throw err;
+        }
+      },
+      'process'
+    );
+  };
+
   // Reset store
   const reset = () => {
     games.value = [];
@@ -414,6 +496,7 @@ export const useGamesStore = defineStore('games', () => {
     getGameById,
     getGameByUserGameId,
     getGameWithPlatforms,
+    updateGameNotes,
     searchGames,
     filterGamesByPlatform,
     sortGames,

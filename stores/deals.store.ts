@@ -156,6 +156,31 @@ export const useDealsStore = defineStore('deals', () => {
       'data'
     );
   }
+  /**
+   * Sucht Deals für ein bestimmtes Spiel
+   * Grund: Game-Detail-Seite soll verwandte Deals anzeigen
+   */
+  async function searchGameDeals(
+    gameId: number,
+    gameName: string,
+    slug?: string
+  ): Promise<DealWithGame[]> {
+    return await loading('search-game-deals', 'Suche Angebote...', async () => {
+      try {
+        const gameDeals = await $client.deals.searchGameDeals.query({
+          gameId,
+          gameName,
+          slug
+        });
+        return gameDeals as DealWithGame[];
+      } catch (err: any) {
+        console.error('Fehler beim Laden der Game-Deals:', err);
+        error.value = 'Fehler beim Laden der Angebote';
+        return [];
+      }
+    });
+  }
+
   // Computed Properties
   /**
    * Lokale Suche in geladenen Deals
@@ -226,6 +251,7 @@ export const useDealsStore = defineStore('deals', () => {
     if (!discount) return '';
     return `-${Math.round(discount)}%`;
   }
+
   return {
     // State
     deals: readonly(deals),
@@ -249,6 +275,7 @@ export const useDealsStore = defineStore('deals', () => {
     sortedDeals,
     // Helpers
     formatPrice,
-    formatDiscount
+    formatDiscount,
+    searchGameDeals
   };
 });

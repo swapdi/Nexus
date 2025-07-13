@@ -14,10 +14,12 @@
       <!-- Store Badge -->
       <div
         class="absolute top-2 left-2 p-2 bg-black/60 backdrop-blur-sm rounded-lg">
-        <Icon
-          :name="getStoreIcon(deal.storeName)"
-          class="w-5 h-5 text-white"
-          :title="deal.storeName" />
+        <!-- Store Banner (falls verfügbar) -->
+        <img
+          :src="getStoreBannerURL(deal.storeName)"
+          :alt="`${deal.storeName} Banner`"
+          class="h-6 max-w-[80px] object-contain opacity-90"
+          @error="handleStoreBannerError" />
       </div>
       <!-- Discount Badge -->
       <div
@@ -117,7 +119,8 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
   const dealsStore = useDealsStore();
-  const { getStoreIcon } = useStoreUtils();
+  const { getStoreBannerURL } = useStoreUtils();
+
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
@@ -141,6 +144,19 @@
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
+  };
+
+  const handleStoreBannerError = (event: Event) => {
+    const img = event.target as HTMLImageElement;
+    // Fallback zu Store-Name als Text
+    img.style.display = 'none';
+    const parent = img.parentElement;
+    if (parent) {
+      parent.innerHTML = `<span class="text-white text-xs font-medium px-2 py-1 bg-gray-600/50 rounded">${img.alt.replace(
+        ' Banner',
+        ''
+      )}</span>`;
+    }
   };
 </script>
 <style scoped>

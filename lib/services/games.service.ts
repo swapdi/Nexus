@@ -322,7 +322,7 @@ export namespace GamesService {
     data: {
       playtimeMinutes?: number;
       lastPlayed?: Date;
-      notes?: string;
+      notes?: string | null; // Erlaubt explizit null für Löschen
       isInstalled?: boolean;
       isFavorite?: boolean;
     }

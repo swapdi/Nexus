@@ -24,12 +24,13 @@
               {{ deal.title }}
             </h3>
             <div class="flex items-center gap-4 mt-1 text-sm text-gray-400">
-              <div class="flex items-center gap-1">
-                <Icon
-                  :name="getStoreIcon(deal.storeName)"
-                  class="w-4 h-4"
-                  :title="deal.storeName" />
-                <span>{{ deal.storeName }}</span>
+              <div class="flex items-center gap-2">
+                <img
+                  :src="getStoreLogoURL(deal.storeName)"
+                  :alt="`${deal.storeName} Logo`"
+                  class="w-4 h-4 object-contain"
+                  @error="handleStoreLogoError" />
+                <span class="font-medium">{{ deal.storeName }}</span>
               </div>
               <span>{{ getGenreDisplay(deal) }}</span>
               <span
@@ -100,7 +101,7 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
   const dealsStore = useDealsStore();
-  const { getStoreIcon } = useStoreUtils();
+  const { getStoreLogoURL } = useStoreUtils();
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
@@ -127,6 +128,12 @@
   const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement;
     img.src = '/gameplaceholder.jpg';
+  };
+
+  const handleStoreLogoError = (event: Event) => {
+    const img = event.target as HTMLImageElement;
+    // Fallback zu Store-Name ohne Logo
+    img.style.display = 'none';
   };
 </script>
 <style scoped>

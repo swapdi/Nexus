@@ -91,23 +91,16 @@
     }
   });
 
-  // tRPC client
-  const { $client } = useNuxtApp();
+  // Store Integration
+  const { getStoreUrlsByName } = useStoreUtils();
 
   // Lade Spiel direkt wenn nicht in Bibliothek
   const loadGameDirectly = async () => {
+    if (!gameId.value) return;
     try {
-      const response = await $client.games.getGameById.query({
-        gameId: gameId.value
-      });
-      if (response) {
-        gameData.value = response;
-      } else {
-        error.value = 'Spiel nicht gefunden';
-      }
+      gameData.value = await gamesStore.getGameById(gameId.value);
     } catch (err) {
-      console.error('Fehler beim direkten Laden des Spiels:', err);
-      error.value = 'Spiel nicht gefunden';
+      console.error('Fehler beim Laden der Deals:', err);
     }
   };
 
@@ -115,21 +108,17 @@
   const loadRelatedDeals = async () => {
     if (!currentGame.value) return;
 
-    isLoadingDeals.value = true;
     try {
-      console.log(currentGame.value.id);
-      // Nutze tRPC für die Deal-Suche statt direkten Service-Aufruf
-      const gameDeals = await $client.deals.searchGameDeals.query({
-        gameId: currentGame.value.id,
-        gameName: currentGame.value.name,
-        slug: currentGame.value.slug || undefined
-      });
+      // Nutze deals.store für die Deal-Suche
+      const gameDeals = await dealsStore.searchGameDeals(
+        currentGame.value.id,
+        currentGame.value.name,
+        currentGame.value.slug || undefined
+      );
 
-      relatedDeals.value = gameDeals as DealWithGame[];
+      relatedDeals.value = gameDeals;
     } catch (err) {
       console.error('Fehler beim Laden der Deals:', err);
-    } finally {
-      isLoadingDeals.value = false;
     }
   };
 
@@ -174,6 +163,24 @@
     return `Vor ${Math.ceil(diffDays / 365)} Jahren`;
   };
 
+  // Deal-spezifische Funktionen
+  const navToLink = (deal: DealWithGame) => {
+    if (deal.url) {
+      window.open(deal.url, '_blank');
+    }
+  };
+
+  const getStoreImageUrls = (storeName: string) => {
+    return getStoreUrlsByName(storeName);
+  };
+
+  const handleImageError = (event: Event) => {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.style.display = 'none';
+    }
+  };
+
   const formatDate = (date: Date | string | null) => {
     if (!date) return 'Unbekannt';
     return new Date(date).toLocaleDateString('de-DE', {
@@ -211,43 +218,25 @@
     try {
       isSavingNotes.value = true;
 
-      const { $client } = useNuxtApp();
-      const notifyStore = useNotifyStore();
+      const notesToSave = notesText.value.trim() || null;
 
-      const updatedGame = await $client.games.updateGameNotes.mutate({
-        userGameId: userGame.value.id,
-        notes: notesText.value.trim() || null
-      });
+      const updatedGame = await gamesStore.updateGameNotes(
+        userGame.value.id,
+        notesToSave
+      );
 
       if (updatedGame) {
         userGame.value = updatedGame;
-        // Auch im Store aktualisieren
-        await gamesStore.refreshData();
-        notifyStore.notify('Notizen erfolgreich gespeichert', 1);
       }
 
       isEditingNotes.value = false;
     } catch (err: any) {
       console.error('Fehler beim Speichern der Notizen:', err);
-      const notifyStore = useNotifyStore();
-      notifyStore.notify('Fehler beim Speichern der Notizen', 3);
+      // Fehlerbehandlung wird bereits im Store gemacht
     } finally {
       isSavingNotes.value = false;
     }
   };
-
-  const hasGameData = computed(() => {
-    const currentGame = userGame.value?.game || gameData.value;
-    return (
-      currentGame &&
-      (currentGame.summary ||
-        currentGame.genres?.length ||
-        currentGame.developers?.length ||
-        currentGame.publishers?.length ||
-        currentGame.firstReleaseDate ||
-        currentGame.totalRating)
-    );
-  });
 
   // Media carousel functions
   const openMediaCarousel = (index = 0) => {
@@ -258,17 +247,7 @@
   const closeMediaCarousel = () => {
     showMediaCarousel.value = false;
   };
-  // Navigation helper for DealCard clicks
-  const navToLink = (deal: DealWithGame) => {
-    if (deal.url) {
-      window.open(deal.url, '_blank');
-    } else {
-      navigateTo(`/deals?search=${encodeURIComponent(deal.title)}`);
-    }
-  };
-  const getGenreDisplay = (deal: DealWithGame): string => {
-    return deal?.game?.genres.slice(0, 1).join(', ') || 'Unbekannt';
-  };
+
   const isGameOwned = (deal: DealWithGame): boolean => {
     // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
     const gamesStore = useGamesStore();
@@ -276,6 +255,7 @@
       (userGame: any) => userGame.gameId === deal.gameId
     );
   };
+
   const formatPrice = (price: number | null): string => {
     return dealsStore.formatPrice(price);
   };
@@ -543,78 +523,235 @@
             </div>
           </div>
         </div>
-
-        <!-- Media Section (Screenshots & Videos) -->
-        <div v-if="mediaItems.length > 0" class="mx-4 lg:mx-8">
-          <div class="group relative">
+        <!-- Personal Notes (nur für Spiele in der Bibliothek) -->
+        <div v-if="isInLibrary" class="mx-4 lg:mx-8">
+          <div class="mt-4 group relative">
             <div
               class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
             <div
-              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg hover:shadow-gray-500/10">
+              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg hover:shadow-gray-500/10">
               <!-- Header -->
-              <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 bg-gray-700/30 rounded-lg">
-                  <Icon
-                    name="heroicons:photo-20-solid"
-                    class="w-5 h-5 text-gray-300" />
-                </div>
-                <h2 class="text-xl font-bold text-white">
-                  Screenshots & Videos
-                </h2>
-                <span class="text-sm text-gray-400"
-                  >{{ mediaItems.length }} Medien</span
-                >
-              </div>
-
-              <!-- Media Grid -->
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div
-                  v-for="(item, index) in mediaItems.slice(0, 6)"
-                  :key="index"
-                  @click="openMediaCarousel(index)"
-                  class="group relative aspect-video bg-gray-800/50 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer">
-                  <!-- Video Thumbnail -->
-                  <div
-                    v-if="item.includes('youtube.com')"
-                    class="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center relative">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <div class="p-1.5 bg-gray-700/30 rounded-lg">
                     <Icon
-                      name="heroicons:play-circle-20-solid"
-                      class="w-16 h-16 text-white group-hover:scale-110 transition-transform duration-300" />
-                    <div
-                      class="absolute top-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
-                      Video
-                    </div>
+                      name="heroicons:pencil-square-20-solid"
+                      class="w-4 h-4 text-gray-300" />
                   </div>
+                  <h2 class="text-gray-200 font-medium text-sm">
+                    Persönliche Notizen
+                  </h2>
+                </div>
 
-                  <!-- Screenshot -->
-                  <img
-                    v-else
-                    :src="item"
-                    :alt="`Screenshot ${index + 1}`"
-                    class="w-full h-full object-cover"
-                    loading="lazy" />
+                <!-- Edit/Save Buttons -->
+                <div class="flex items-center gap-2">
+                  <button
+                    v-if="!isEditingNotes"
+                    @click="startEditingNotes"
+                    class="px-3 py-1.5 bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white text-xs rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 flex items-center gap-1.5">
+                    <Icon name="heroicons:pencil-20-solid" class="w-3 h-3" />
+                    {{ userGame?.notes ? 'Bearbeiten' : 'Hinzufügen' }}
+                  </button>
 
-                  <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div
-                    class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {{ index + 1 }} / {{ mediaItems.length }}
-                  </div>
+                  <template v-else>
+                    <button
+                      @click="saveNotes"
+                      :disabled="isSavingNotes"
+                      class="px-3 py-1.5 bg-green-600/80 hover:bg-green-600 text-white text-xs rounded-lg border border-green-500/50 hover:border-green-400/70 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <Icon
+                        v-if="!isSavingNotes"
+                        name="heroicons:check-20-solid"
+                        class="w-3 h-3" />
+                      <Icon
+                        v-else
+                        name="heroicons:arrow-path-20-solid"
+                        class="w-3 h-3 animate-spin" />
+                      {{ isSavingNotes ? 'Speichert...' : 'Speichern' }}
+                    </button>
+
+                    <button
+                      @click="cancelEditingNotes"
+                      :disabled="isSavingNotes"
+                      class="px-3 py-1.5 bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white text-xs rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <Icon name="heroicons:x-mark-20-solid" class="w-3 h-3" />
+                      Abbrechen
+                    </button>
+                  </template>
                 </div>
               </div>
 
-              <!-- Show More Button -->
-              <div v-if="mediaItems.length > 6" class="text-center mt-6">
-                <button
-                  @click="openMediaCarousel(0)"
-                  class="px-6 py-3 bg-gradient-to-r from-purple-600/80 to-purple-700/80 hover:from-purple-500/90 hover:to-purple-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25">
-                  Alle {{ mediaItems.length }} Medien anzeigen
-                </button>
+              <!-- Notes Content -->
+              <div v-if="!isEditingNotes">
+                <div
+                  v-if="userGame?.notes"
+                  class="text-gray-300/80 leading-relaxed text-sm whitespace-pre-wrap">
+                  {{ userGame.notes }}
+                </div>
+                <div v-else class="text-gray-500 text-sm italic">
+                  Keine Notizen vorhanden. Klicke auf "Hinzufügen" um Notizen zu
+                  diesem Spiel zu verfassen.
+                </div>
+              </div>
+
+              <!-- Notes Editor -->
+              <div v-else>
+                <textarea
+                  v-model="notesText"
+                  placeholder="Füge deine persönlichen Notizen zu diesem Spiel hinzu..."
+                  maxlength="1000"
+                  class="w-full h-32 bg-gray-800/50 border border-gray-600/30 rounded-lg p-3 text-gray-200 text-sm placeholder-gray-500 focus:border-gray-500/50 focus:outline-none focus:ring-0 resize-none"
+                  :disabled="isSavingNotes">
+                </textarea>
+
+                <!-- Character count -->
+                <div class="flex justify-between items-center mt-2">
+                  <div class="text-xs text-gray-500">
+                    {{ notesText.length }} / 1000 Zeichen
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    Tipp: Du kannst Zeilenwechsel verwenden
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <!-- Related Deals Section -->
+        <div v-if="relatedDeals.length > 0" class="mx-4 lg:mx-8 mb-12">
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
+            <div
+              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300">
+              <!-- Header -->
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-green-700/30 rounded-lg">
+                    <Icon
+                      name="heroicons:tag-20-solid"
+                      class="w-5 h-5 text-green-300" />
+                  </div>
+                  <h2 class="text-xl font-bold text-white">
+                    Aktuelle Angebote
+                  </h2>
+                </div>
+                <span class="text-sm text-gray-400"
+                  >{{ relatedDeals.length }} Deals gefunden</span
+                >
+              </div>
 
+              <!-- Loading state for deals -->
+              <div v-if="isLoadingDeals" class="text-center py-8">
+                <div
+                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mx-auto mb-4"></div>
+                <p class="text-gray-400">Lade Angebote...</p>
+              </div>
+
+              <!-- Deals Grid -->
+              <div
+                v-else
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Deal Card -->
+                <div v-for="deal in relatedDeals" :key="deal.id" class="group">
+                  <div
+                    class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                    @click="navToLink(deal)">
+                    <!-- Store Banner Header -->
+                    <div class="relative h-16 overflow-hidden">
+                      <img
+                        :src="getStoreImageUrls(deal.storeName).banner"
+                        :alt="`${deal.storeName} Banner`"
+                        class="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-300"
+                        @error="handleImageError" />
+                      <!-- Fallback mit Logo falls Banner fehlschlägt -->
+                      <div
+                        class="absolute inset-0 flex items-center justify-center bg-gray-700/80">
+                        <img
+                          :src="getStoreImageUrls(deal.storeName).logo"
+                          :alt="`${deal.storeName} Logo`"
+                          class="h-8 object-contain opacity-80"
+                          @error="handleImageError" />
+                        <!-- Final fallback mit Store Name -->
+                        <span
+                          v-if="!getStoreImageUrls(deal.storeName).logo"
+                          class="text-white font-semibold text-sm px-3 py-1 bg-gray-600/50 rounded-md">
+                          {{ deal.storeName }}
+                        </span>
+                      </div>
+
+                      <!-- Discount Badge -->
+                      <div
+                        v-if="deal.discountPercent && deal.discountPercent > 0"
+                        class="absolute top-2 right-2 px-2 py-1 bg-green-600 rounded text-xs text-white font-bold">
+                        -{{ Math.round(deal.discountPercent) }}%
+                      </div>
+
+                      <!-- Free Badge -->
+                      <div
+                        v-if="deal.isFreebie"
+                        class="absolute top-2 right-2 px-2 py-1 bg-green-600 rounded text-xs text-white font-bold">
+                        KOSTENLOS
+                      </div>
+                    </div>
+
+                    <!-- Deal Content -->
+                    <div class="p-4">
+                      <h3
+                        class="font-medium text-white text-sm mb-3 line-clamp-2 group-hover:text-green-300 transition-colors">
+                        {{ deal.title }}
+                      </h3>
+
+                      <!-- Store Info -->
+                      <div class="flex items-center gap-2 mb-3">
+                        <img
+                          :src="getStoreImageUrls(deal.storeName).icon"
+                          :alt="`${deal.storeName} Icon`"
+                          class="w-4 h-4 object-contain"
+                          @error="handleImageError" />
+                        <span class="text-gray-400 text-xs">{{
+                          deal.storeName
+                        }}</span>
+                      </div>
+
+                      <!-- Price Section -->
+                      <div class="space-y-2">
+                        <div
+                          v-if="!deal.isFreebie"
+                          class="flex justify-between items-center">
+                          <div class="text-green-400 font-bold text-lg">
+                            {{ formatPrice(deal.price) }}
+                          </div>
+                          <div
+                            v-if="
+                              deal.originalPrice &&
+                              deal.originalPrice > (deal.price || 0)
+                            "
+                            class="text-gray-500 line-through text-sm">
+                            {{ formatPrice(deal.originalPrice) }}
+                          </div>
+                        </div>
+                        <div v-else class="text-center">
+                          <div class="text-green-400 font-bold text-lg">
+                            KOSTENLOS
+                          </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <button
+                          @click.stop="navToLink(deal)"
+                          class="w-full mt-3 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors">
+                          {{
+                            deal.isFreebie ? 'Kostenlos holen' : 'Deal ansehen'
+                          }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Game Details Section -->
         <div class="mx-4 lg:mx-8">
           <!-- Enhanced Details Card -->
@@ -759,172 +896,77 @@
             </div>
           </div>
         </div>
-
-        <!-- Personal Notes (nur für Spiele in der Bibliothek) -->
-        <div v-if="isInLibrary" class="mx-4 lg:mx-8">
-          <div class="mt-4 group relative">
-            <div
-              class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
-            <div
-              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg hover:shadow-gray-500/10">
-              <!-- Header -->
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                  <div class="p-1.5 bg-gray-700/30 rounded-lg">
-                    <Icon
-                      name="heroicons:pencil-square-20-solid"
-                      class="w-4 h-4 text-gray-300" />
-                  </div>
-                  <h2 class="text-gray-200 font-medium text-sm">
-                    Persönliche Notizen
-                  </h2>
-                </div>
-
-                <!-- Edit/Save Buttons -->
-                <div class="flex items-center gap-2">
-                  <button
-                    v-if="!isEditingNotes"
-                    @click="startEditingNotes"
-                    class="px-3 py-1.5 bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white text-xs rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 flex items-center gap-1.5">
-                    <Icon name="heroicons:pencil-20-solid" class="w-3 h-3" />
-                    {{ userGame?.notes ? 'Bearbeiten' : 'Hinzufügen' }}
-                  </button>
-
-                  <template v-else>
-                    <button
-                      @click="saveNotes"
-                      :disabled="isSavingNotes"
-                      class="px-3 py-1.5 bg-green-600/80 hover:bg-green-600 text-white text-xs rounded-lg border border-green-500/50 hover:border-green-400/70 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                      <Icon
-                        v-if="!isSavingNotes"
-                        name="heroicons:check-20-solid"
-                        class="w-3 h-3" />
-                      <Icon
-                        v-else
-                        name="heroicons:arrow-path-20-solid"
-                        class="w-3 h-3 animate-spin" />
-                      {{ isSavingNotes ? 'Speichert...' : 'Speichern' }}
-                    </button>
-
-                    <button
-                      @click="cancelEditingNotes"
-                      :disabled="isSavingNotes"
-                      class="px-3 py-1.5 bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white text-xs rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                      <Icon name="heroicons:x-mark-20-solid" class="w-3 h-3" />
-                      Abbrechen
-                    </button>
-                  </template>
-                </div>
-              </div>
-
-              <!-- Notes Content -->
-              <div v-if="!isEditingNotes">
-                <div
-                  v-if="userGame?.notes"
-                  class="text-gray-300/80 leading-relaxed text-sm whitespace-pre-wrap">
-                  {{ userGame.notes }}
-                </div>
-                <div v-else class="text-gray-500 text-sm italic">
-                  Keine Notizen vorhanden. Klicke auf "Hinzufügen" um Notizen zu
-                  diesem Spiel zu verfassen.
-                </div>
-              </div>
-
-              <!-- Notes Editor -->
-              <div v-else>
-                <textarea
-                  v-model="notesText"
-                  placeholder="Füge deine persönlichen Notizen zu diesem Spiel hinzu..."
-                  maxlength="1000"
-                  class="w-full h-32 bg-gray-800/50 border border-gray-600/30 rounded-lg p-3 text-gray-200 text-sm placeholder-gray-500 focus:border-gray-500/50 focus:outline-none focus:ring-0 resize-none"
-                  :disabled="isSavingNotes">
-                </textarea>
-
-                <!-- Character count -->
-                <div class="flex justify-between items-center mt-2">
-                  <div class="text-xs text-gray-500">
-                    {{ notesText.length }} / 1000 Zeichen
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    Tipp: Du kannst Zeilenwechsel verwenden
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Related Deals Section -->
-        <div v-if="relatedDeals.length > 0" class="mx-4 lg:mx-8 mb-12">
+        <!-- Media Section (Screenshots & Videos) -->
+        <div v-if="mediaItems.length > 0" class="mx-4 lg:mx-8">
           <div class="group relative">
             <div
               class="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-xl blur-sm group-hover:blur-none transition-all duration-300"></div>
             <div
-              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300">
+              class="relative bg-gradient-to-br from-black/60 via-gray-900/60 to-black/60 rounded-xl p-6 border border-gray-700/30 backdrop-blur-sm hover:border-gray-600/50 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-lg hover:shadow-gray-500/10">
               <!-- Header -->
-              <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
-                  <div class="p-2 bg-green-700/30 rounded-lg">
-                    <Icon
-                      name="heroicons:tag-20-solid"
-                      class="w-5 h-5 text-green-300" />
-                  </div>
-                  <h2 class="text-xl font-bold text-white">
-                    Aktuelle Angebote
-                  </h2>
+              <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-gray-700/30 rounded-lg">
+                  <Icon
+                    name="heroicons:photo-20-solid"
+                    class="w-5 h-5 text-gray-300" />
                 </div>
+                <h2 class="text-xl font-bold text-white">
+                  Screenshots & Videos
+                </h2>
                 <span class="text-sm text-gray-400"
-                  >{{ relatedDeals.length }} Deals gefunden</span
+                  >{{ mediaItems.length }} Medien</span
                 >
               </div>
 
-              <!-- Loading state for deals -->
-              <div v-if="isLoadingDeals" class="text-center py-8">
+              <!-- Media Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
-                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mx-auto mb-4"></div>
-                <p class="text-gray-400">Lade Angebote...</p>
-              </div>
-
-              <!-- Deals Grid -->
-              <div
-                v-else
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Deal Info -->
-                <div class="p-2" v-for="deal in relatedDeals">
+                  v-for="(item, index) in mediaItems.slice(0, 6)"
+                  :key="index"
+                  @click="openMediaCarousel(index)"
+                  class="group relative aspect-video bg-gray-800/50 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer">
+                  <!-- Video Thumbnail -->
                   <div
-                    class="bg-gray-800/50 p-4 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer"
-                    @click="navToLink(deal)">
-                    <h3
-                      class="font-medium text-white text-sm mb-1 line-clamp-2 group-hover:text-green-300 transition-colors">
-                      {{ deal.title }}
-                    </h3>
-                    <div class="space-y-1 text-xs">
-                      <!-- Price -->
-                      <div
-                        v-if="!deal.isFreebie"
-                        class="flex justify-between items-center">
-                        <div class="text-green-400 font-bold">
-                          {{ formatPrice(deal.price) }}
-                        </div>
-                        <div
-                          v-if="
-                            deal.originalPrice &&
-                            deal.originalPrice > (deal.price || 0)
-                          "
-                          class="text-gray-500 line-through">
-                          {{ formatPrice(deal.originalPrice) }}
-                        </div>
-                      </div>
-                      <div v-else class="text-center">
-                        <div class="text-green-400 font-bold">KOSTENLOS</div>
-                      </div>
+                    v-if="item.includes('youtube.com')"
+                    class="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center relative">
+                    <Icon
+                      name="heroicons:play-circle-20-solid"
+                      class="w-16 h-16 text-white group-hover:scale-110 transition-transform duration-300" />
+                    <div
+                      class="absolute top-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
+                      Video
                     </div>
                   </div>
+
+                  <!-- Screenshot -->
+                  <img
+                    v-else
+                    :src="item"
+                    :alt="`Screenshot ${index + 1}`"
+                    class="w-full h-full object-cover"
+                    loading="lazy" />
+
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div
+                    class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {{ index + 1 }} / {{ mediaItems.length }}
+                  </div>
                 </div>
+              </div>
+
+              <!-- Show More Button -->
+              <div v-if="mediaItems.length > 6" class="text-center mt-6">
+                <button
+                  @click="openMediaCarousel(0)"
+                  class="px-6 py-3 bg-gradient-to-r from-purple-600/80 to-purple-700/80 hover:from-purple-500/90 hover:to-purple-600/90 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25">
+                  Alle {{ mediaItems.length }} Medien anzeigen
+                </button>
               </div>
             </div>
           </div>
         </div>
+
         <!-- Bottom Spacing -->
         <div class="min-h-20"></div>
       </div>
