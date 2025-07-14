@@ -9,7 +9,7 @@ export const gamesRouter = router({
     return await GamesService.getUserGames(ctx.dbUser.id);
   }),
   // Einzelnes Spiel mit Plattformen abrufen
-  getGameWithPlatforms: protectedProcedure
+  getUserGame: protectedProcedure
     .input(
       z.object({
         userGameId: z.number() // UserGame ID
@@ -99,31 +99,7 @@ export const gamesRouter = router({
         });
       }
     }), // Steam-Bibliothek importieren
-  importSteamLibrary: protectedProcedure
-    .input(
-      z.object({
-        steamInput: z
-          .string()
-          .min(1, 'Steam ID oder Profil-URL ist erforderlich')
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        return await GamesService.importSteamLibrary(
-          ctx.dbUser.id,
-          input.steamInput
-        );
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-        console.error('Steam Import Error:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Unerwarteter Fehler beim Importieren der Steam-Bibliothek'
-        });
-      }
-    }),
+
   // Benutzer-Statistiken
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserStats(ctx.dbUser.id);
@@ -219,41 +195,6 @@ export const gamesRouter = router({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Fehler bei der IGDB-Suche'
-        });
-      }
-    }),
-  // Spiel anhand Name finden und zur Bibliothek hinzufügen
-  findAndAddGame: protectedProcedure
-    .input(
-      z.object({
-        gameName: z.string().min(1),
-        playtimeMinutes: z.number().optional()
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        // Grund: Nutze zentrale findGameByTitle Funktion für konsistente Suche
-        const userGame = await GamesService.addGameToUser(
-          ctx.dbUser.id,
-          input.gameName,
-          input.playtimeMinutes
-        );
-        if (!userGame) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: `Spiel "${input.gameName}" konnte nicht gefunden oder erstellt werden`
-          });
-        }
-        return {
-          success: true,
-          userGame,
-          message: 'Spiel erfolgreich zur Bibliothek hinzugefügt'
-        };
-      } catch (error) {
-        console.error('Error adding game to library:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Fehler beim Hinzufügen des Spiels zur Bibliothek'
         });
       }
     })

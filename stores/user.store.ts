@@ -121,6 +121,68 @@ export const useUserStore = defineStore('user', () => {
       'process'
     );
   };
+  const linkSteamProfile = async (steamId: string) => {
+    return await loading(
+      'steam-link',
+      'Steam-Profil wird verknüpft...',
+      async () => {
+        const { $client } = useNuxtApp();
+        try {
+          const result = await $client.user.linkSteamProfile.mutate({
+            steamId: steamId.trim()
+          });
+
+          if (result.success) {
+            // Refresh user data to get updated steamId
+            await init();
+            useNotifyStore().notify('Steam-Profil erfolgreich verknüpft!', 1);
+          } else {
+            useNotifyStore().notify(
+              result.message || 'Fehler beim Verknüpfen des Steam-Profils',
+              2
+            );
+          }
+
+          return result;
+        } catch (error: any) {
+          console.error('Error linking Steam profile:', error);
+          useNotifyStore().notify('Verknüpfung fehlgeschlagen', 3);
+          throw error;
+        }
+      },
+      'process'
+    );
+  };
+  const unlinkSteamProfile = async () => {
+    return await loading(
+      'steam-unlink',
+      'Steam-Profil wird getrennt...',
+      async () => {
+        const { $client } = useNuxtApp();
+        try {
+          const result = await $client.user.unlinkSteamProfile.mutate();
+
+          if (result.success) {
+            // Refresh user data to remove steamId
+            await init();
+            useNotifyStore().notify('Steam-Profil erfolgreich getrennt!', 1);
+          } else {
+            useNotifyStore().notify(
+              result.message || 'Fehler beim Trennen des Steam-Profils',
+              2
+            );
+          }
+
+          return result;
+        } catch (error: any) {
+          console.error('Error unlinking Steam profile:', error);
+          useNotifyStore().notify('Trennung fehlgeschlagen', 3);
+          throw error;
+        }
+      },
+      'process'
+    );
+  };
   const signout = () => {
     user.value = null;
     stats.value = null;
@@ -134,6 +196,8 @@ export const useUserStore = defineStore('user', () => {
     addXP,
     updateCredits,
     deleteAccount,
+    linkSteamProfile,
+    unlinkSteamProfile,
     signout
   };
 });

@@ -1,11 +1,13 @@
 import { router } from '~/server/trpc/trpc';
 import { dealsRouter } from './deals.router';
 import { gamesRouter } from './games.router';
+import { librariesRouter } from './libraries.router';
 import { userRouter } from './user.router';
 export const appRouter = router({
   user: userRouter,
   games: gamesRouter,
-  deals: dealsRouter
+  deals: dealsRouter,
+  libraries: librariesRouter
 });
 // export only the type definition of the API
 // None of the actual implementation is exposed to the client

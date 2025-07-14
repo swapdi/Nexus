@@ -1,14 +1,11 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
 import type { UserGameWithDetails } from '~/lib/services/games.service';
-import { useLoading } from '~/stores/loading.store';
 export const useGamesStore = defineStore('games', () => {
   // Loading store integration
   const { loading } = useLoading();
   // State
   const games = ref<UserGameWithDetails[]>([]);
   const stats = ref<any | null>(null); // TODO: Define proper stats type
-  const lastImportResult = ref<any | null>(null); // TODO: Define proper import result type
   const error = ref<string | null>(null);
   // Neue State für Auswahlmodus
   const isSelectionMode = ref(false);
@@ -87,48 +84,7 @@ export const useGamesStore = defineStore('games', () => {
       'data'
     );
   };
-  const importSteamLibrary = async (
-    steamInput: string
-  ): Promise<any | null> => {
-    return await loading(
-      'steam-import',
-      'Steam-Bibliothek importieren...',
-      async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
-        try {
-          error.value = null;
-          const result = await $client.games.importSteamLibrary.mutate({
-            steamInput: steamInput.trim()
-          });
-          lastImportResult.value = result;
-          if (result.success) {
-            // Detaillierte Erfolgsmeldung erstellen
-            let message = 'Steam-Import abgeschlossen! ';
-            if (result.imported > 0) {
-              message += `${result.imported} neue Spiele importiert. `;
-            }
-            if (result.updated && result.updated > 0) {
-              message += `${result.updated} Spiele aktualisiert. `;
-            }
-            if (result.skipped > 0) {
-              message += `${result.skipped} bereits vorhandene Spiele übersprungen.`;
-            }
-            notifyStore.notify(message, 1);
-            // Daten neu laden nach erfolgreichem Import
-            await refreshData();
-          }
-          return result;
-        } catch (err: any) {
-          error.value = err.message || 'Fehler beim Steam-Import';
-          notifyStore.notify(error.value, 3);
-          console.error('Fehler beim Steam-Import:', err);
-          throw err;
-        }
-      },
-      'import'
-    );
-  };
+
   const refreshData = async () => {
     await Promise.all([loadGames(), loadStats()]);
   };
@@ -266,7 +222,7 @@ export const useGamesStore = defineStore('games', () => {
         const notifyStore = useNotifyStore();
         try {
           error.value = null;
-          const gameData = await $client.games.getGameWithPlatforms.query({
+          const gameData = await $client.games.getUserGame.query({
             userGameId: userGameId
           });
           return gameData;
@@ -348,11 +304,7 @@ export const useGamesStore = defineStore('games', () => {
       .sort((a, b) => (b.game.totalRating || 0) - (a.game.totalRating || 0))
       .slice(0, limit);
   };
-  const getUnratedGames = () => {
-    return games.value.filter(
-      game => !game.game.totalRating || game.game.totalRating === 0
-    );
-  };
+
   const getGamesByPlaytime = (minHours: number = 0) => {
     const minMinutes = minHours * 60;
     return games.value.filter(
@@ -465,7 +417,6 @@ export const useGamesStore = defineStore('games', () => {
   const reset = () => {
     games.value = [];
     stats.value = null;
-    lastImportResult.value = null;
     error.value = null;
     isSelectionMode.value = false;
     selectedGameIds.value.clear();
@@ -475,7 +426,6 @@ export const useGamesStore = defineStore('games', () => {
     // State
     games,
     stats,
-    lastImportResult,
     error,
     isSelectionMode,
     selectedGameIds,
@@ -488,10 +438,10 @@ export const useGamesStore = defineStore('games', () => {
     mostPlayed,
     getAvailableGenres,
     totalPlaytimeHours,
-    averageRating, // Actions
+    averageRating,
+    // Actions
     loadGames,
     loadStats,
-    importSteamLibrary,
     refreshData,
     getGameById,
     getGameByUserGameId,
@@ -503,11 +453,11 @@ export const useGamesStore = defineStore('games', () => {
     formatPlayTime,
     getGamesByGenre,
     getTopRatedGames,
-    getUnratedGames,
     getGamesByPlaytime,
     getGamesByPlatformName,
     init,
-    reset, // Neue Aktionen für Auswahlmodus
+    reset,
+    // Neue Aktionen für Auswahlmodus
     toggleSelectionMode,
     enterSelectionMode,
     exitSelectionMode,

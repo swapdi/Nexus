@@ -3,7 +3,6 @@
 
   const userStore = useUserStore();
   const notifyStore = useNotifyStore();
-  const loadingStore = useLoadingStore();
   const editableDisplayName = ref('');
   const isLoadingNameChange = ref(false);
   // Benutzer aus dem Store
@@ -29,12 +28,7 @@
   const authProvider = computed(
     () => account.value?.app_metadata?.provider || 'N/A'
   );
-  const showSteamLinking = ref(false);
-  const steamProfileId = ref('');
-  const linkingResult = ref<{
-    success: boolean;
-    message?: string;
-  } | null>(null);
+
   // Initialize display name with current value when user data loads
   watch(
     userDisplayName,
@@ -101,77 +95,6 @@
       isLoadingNameChange.value = false;
     }
   }
-  const linkSteamProfile = async () => {
-    if (!steamProfileId.value.trim()) return;
-    linkingResult.value = null;
-    loadingStore.startOperation(
-      'steam-link',
-      'Steam-Profil wird verknüpft...',
-      'process'
-    );
-    try {
-      const { $client } = useNuxtApp();
-      const result = await $client.user.linkSteamProfile.mutate({
-        steamId: steamProfileId.value.trim()
-      });
-      loadingStore.finishOperation('steam-link');
-      linkingResult.value = result;
-      if (result.success) {
-        notifyStore.notify('Steam-Profil erfolgreich verknüpft!', 1);
-        showSteamLinking.value = false;
-        steamProfileId.value = '';
-        await userStore.init();
-      } else {
-        notifyStore.notify(
-          result.message || 'Fehler beim Verknüpfen des Steam-Profils',
-          2
-        );
-      }
-    } catch (error: any) {
-      loadingStore.finishOperation('steam-link');
-      linkingResult.value = {
-        success: false,
-        message: error.message || 'Ein unerwarteter Fehler ist aufgetreten'
-      };
-      notifyStore.notify('Verknüpfung fehlgeschlagen', 3);
-    }
-  };
-  // Steam connection status
-  const isSteamConnected = computed(() => {
-    return !!user.value?.steamId;
-  });
-
-  // Steam profile disconnect function
-  const disconnectSteamProfile = async () => {
-    if (!user.value) return;
-
-    try {
-      loadingStore.startOperation(
-        'steam-unlink',
-        'Steam-Profil wird getrennt...',
-        'process'
-      );
-
-      const { $client } = useNuxtApp();
-      const result = await $client.user.unlinkSteamProfile.mutate();
-
-      loadingStore.finishOperation('steam-unlink');
-
-      if (result.success) {
-        notifyStore.notify('Steam-Profil erfolgreich getrennt!', 1);
-        await userStore.init(); // Refresh user data
-      } else {
-        notifyStore.notify(
-          result.message || 'Fehler beim Trennen des Steam-Profils',
-          2
-        );
-      }
-    } catch (error: any) {
-      loadingStore.finishOperation('steam-unlink');
-      console.error('Fehler beim Trennen des Steam-Profils:', error);
-      notifyStore.notify('Trennung fehlgeschlagen', 3);
-    }
-  };
 </script>
 <template>
   <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -354,156 +277,7 @@
             </div>
           </div>
         </div>
-        <!-- Library Management Card -->
-        <div
-          class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
-          <div class="p-6">
-            <h2
-              class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300 border-b pb-2 dark:border-gray-700">
-              Bibliotheken verwalten
-            </h2>
-
-            <!-- Steam Connection -->
-            <div class="space-y-4">
-              <div
-                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="flex items-center space-x-3">
-                  <div
-                    class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                    <svg
-                      class="w-8 h-8 text-white"
-                      viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                      <path d="M12 7v5l4 2-1 1.7-5-3V7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
-                      Steam
-                    </h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      {{ isSteamConnected ? 'Verbunden' : 'Nicht verbunden' }}
-                    </p>
-                    <p
-                      v-if="isSteamConnected && user?.steamId"
-                      class="text-xs text-gray-400">
-                      Steam ID: {{ user.steamId }}
-                    </p>
-                  </div>
-                </div>
-                <div class="flex space-x-2">
-                  <button
-                    v-if="!isSteamConnected"
-                    @click="showSteamLinking = true"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                    Verbinden
-                  </button>
-                  <button
-                    v-else
-                    @click="disconnectSteamProfile"
-                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-                    Trennen
-                  </button>
-                </div>
-              </div>
-
-              <!-- Epic Games (Coming Soon) -->
-              <div
-                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-50">
-                <div class="flex items-center space-x-3">
-                  <div
-                    class="w-12 h-12 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
-                    <svg
-                      class="w-8 h-8 text-white"
-                      viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <path
-                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
-                      Epic Games
-                    </h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Bald verfügbar
-                    </p>
-                  </div>
-                </div>
-                <button
-                  disabled
-                  class="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed">
-                  Bald verfügbar
-                </button>
-              </div>
-
-              <!-- GOG (Coming Soon) -->
-              <div
-                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-50">
-                <div class="flex items-center space-x-3">
-                  <div
-                    class="w-12 h-12 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
-                    <svg
-                      class="w-8 h-8 text-white"
-                      viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <path
-                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
-                      GOG
-                    </h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Bald verfügbar
-                    </p>
-                  </div>
-                </div>
-                <button
-                  disabled
-                  class="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed">
-                  Bald verfügbar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          v-if="showSteamLinking"
-          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3
-              class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              Steam-Profil verknüpfen
-            </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Geben Sie Ihre Steam-ID oder Ihren Steam-Benutzernamen ein:
-            </p>
-            <input
-              v-model="steamProfileId"
-              type="text"
-              placeholder="Steam-ID oder Benutzername"
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100 mb-4"
-              @keyup.enter="linkSteamProfile" />
-            <div class="flex justify-end space-x-2">
-              <button
-                @click="showSteamLinking = false"
-                class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
-                Abbrechen
-              </button>
-              <button
-                @click="linkSteamProfile"
-                :disabled="!steamProfileId.trim()"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                Verknüpfen
-              </button>
-            </div>
-          </div>
-        </div>
+        <LibraryManagement />
         <!-- Preferences Card -->
         <div
           class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
@@ -714,10 +488,5 @@
         </div>
       </div>
     </div>
-    <!-- Loading Overlay -->
-    <LoadingOverlay />
   </div>
 </template>
-<style scoped>
-  /* Page-specific styles can be added here if Tailwind utilities are not sufficient */
-</style>
