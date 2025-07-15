@@ -14,6 +14,7 @@ export namespace EpicGamesService {
         activation_url: string;
         activation_code: string;
       }>(`${backendUrl}/auth/begin`);
+      console.log(data);
       return data;
     } catch (error) {
       console.error('Fehler beim Starten der Authentifizierung:', error);

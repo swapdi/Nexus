@@ -52,11 +52,50 @@ export const useLibraryStore = defineStore('library', () => {
       'import'
     );
   };
+
+  const completeEpicGamesAuth = async (
+    authToken: string,
+    userId: string
+  ): Promise<any | null> => {
+    return await loading(
+      'epic-auth-complete',
+      'Epic Games Authentifizierung wird abgeschlossen...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+        try {
+          error.value = null;
+          const result = await $client.libraries.completeAuthEpicGames.mutate({
+            authToken: authToken.trim(),
+            userId
+          });
+
+          if (result && result.status) {
+            notifyStore.notify('Epic Games erfolgreich authentifiziert!', 1);
+            // Daten neu laden nach erfolgreicher Authentifizierung
+            await gamesStore.refreshData();
+          }
+
+          return result;
+        } catch (err: any) {
+          error.value =
+            err.message ||
+            'Fehler beim Abschließen der Epic Games Authentifizierung';
+          notifyStore.notify(error.value, 3);
+          console.error('Fehler bei Epic Games Auth Completion:', err);
+          throw err;
+        }
+      },
+      'process'
+    );
+  };
+
   return {
     // State
     error,
     lastImportResult,
     // Actions
-    importSteamLibrary
+    importSteamLibrary,
+    completeEpicGamesAuth
   };
 });

@@ -179,9 +179,19 @@
 
       <!-- Step 1: Start Connection -->
       <div v-if="step === 1" class="space-y-4">
+        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+          <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            Was passiert bei der Verknüpfung?
+          </h4>
+          <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <li>• Authentifizierung über Epic Games Login</li>
+            <li>• Zugriff auf deine Epic Games Spielebibliothek</li>
+            <li>• Keine Speicherung sensibler Anmeldedaten</li>
+          </ul>
+        </div>
         <p class="text-sm text-gray-600 dark:text-gray-400">
-          Verbinde dein Epic Games-Konto, um deine Spielebibliothek zu
-          synchronisieren.
+          Klicke auf "Verbindung starten", um den sicheren
+          Authentifizierungsprozess zu beginnen.
         </p>
         <div class="flex justify-end space-x-2">
           <button
@@ -193,7 +203,7 @@
             Abbrechen
           </button>
           <button
-            @click="handleBeginAuth"
+            @click="step = 2"
             class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
             Verbindung starten
           </button>
@@ -212,31 +222,16 @@
             <li>
               Gehe zu:
               <a
-                :href="activationUrl"
+                href=https://legendary.gl/epiclogin
                 target="_blank"
                 class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-200">
-                {{ activationUrl }}
+                https://legendary.gl/epiclogin
               </a>
-            </li>
-            <li>
-              Gib dort diesen Code ein:
-              <code
-                class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded font-mono"
-                >{{ activationCode }}</code
-              >
             </li>
             <li>Logge dich ein und autorisiere die Anfrage.</li>
             <li>
-              <strong>Wichtiger Schritt:</strong> Nach dem Erfolg landest du auf
-              einer leeren Seite. Öffne die Entwickler-Tools (F12) >
-              "Netzwerk"-Tab. Lade die Seite neu. Finde die Anfrage an
-              <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded font-mono"
-                >account/api/oauth/token</code
-              >
-              und kopiere aus der Antwort den Wert von
-              <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded font-mono"
-                >authorizationCode</code
-              >.
+              <strong>Wichtiger Schritt:</strong> Nach dem erfolgreichen Login wird eine JSON-Antwort angezeigt.
+            Kopiere den Wert des Schlüssels 'authorizationCode' aus dieser Antwort und füge ihn unten ein.
             </li>
           </ol>
         </div>
@@ -246,11 +241,24 @@
             class="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Authorization Token:
           </label>
+          <div class="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg mb-2">
+            <p class="text-xs text-amber-700 dark:text-amber-300">
+              💡 <strong>Tipp:</strong> Der Authorization Code sollte etwa 32
+              Zeichen lang sein und Buchstaben und Zahlen enthalten (z.B.
+              "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6").
+            </p>
+          </div>
           <input
             v-model="authToken"
             type="text"
-            placeholder="Authorization Token hier einfügen"
+            placeholder="z.B. a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
             class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100" />
+          <p
+            v-if="authToken.trim() && authToken.trim().length < 20"
+            class="text-orange-500 text-xs">
+            ⚠️ Der Token scheint zu kurz zu sein. Stelle sicher, dass du den
+            vollständigen Authorization Code kopiert hast.
+          </p>
         </div>
 
         <div class="flex justify-end space-x-2">
@@ -269,6 +277,7 @@
             Verbindung abschließen
           </button>
         </div>
+        <p v-if="error" class="text-red-500 text-sm mt-2">{{ error }}</p>
       </div>
 
       <!-- Step 3: Success -->
@@ -307,8 +316,9 @@
 </template>
 <script setup lang="ts">
   const userStore = useUserStore();
+  const libraryStore = useLibraryStore();
   const user = computed(() => userStore.user);
-  const { getStoreIconURL, getStoreLogoURL } = useStoreUtils();
+  const {  getStoreLogoURL } = useStoreUtils();
 
   const showSteamLinking = ref(false);
   const showEpicLinking = ref(false);
@@ -320,15 +330,14 @@
   });
 
   const isEpicConnected = computed(() => {
-    return false; // TODO: implement when Epic Games integration is ready
-    //return !!user.value?.epicId;
+    // TODO: implement when Epic Games integration stores connection status
+    // This could check for user.value?.epicId or a separate epic connection flag
+    return false;
   });
 
   // Epic Games connection variables
   const step = ref(1);
   const error = ref('');
-  const activationUrl = ref('');
-  const activationCode = ref('');
   const authToken = ref('');
 
   const linkSteamProfile = async () => {
@@ -365,25 +374,35 @@
   const resetEpicFlow = () => {
     step.value = 1;
     error.value = '';
-    activationUrl.value = '';
-    activationCode.value = '';
     authToken.value = '';
   };
 
-  const handleBeginAuth = () => {
-    console.log('Begin Auth clicked');
-    // TODO: Implement Epic Games OAuth flow initialization
-    // This would typically call an API endpoint to start the OAuth flow
-    step.value = 2;
-    // Mock data for demonstration - replace with actual API call
-    activationUrl.value = 'https://www.epicgames.com/id/login';
-    activationCode.value = 'ABC123';
-  };
 
-  const handleCompleteAuth = () => {
-    console.log('Complete Auth clicked with token:', authToken.value);
-    // TODO: Implement token exchange logic
-    // This would send the authToken to your backend for processing
-    step.value = 3;
+  const handleCompleteAuth = async () => {
+    if (!authToken.value.trim() || !user.value?.id) {
+      error.value = 'Bitte geben Sie den Authorization Token ein';
+      return;
+    }
+
+    try {
+      error.value = '';
+      const result = await libraryStore.completeEpicGamesAuth(
+        authToken.value,
+        user.value.id.toString()
+      );
+
+      if (result) {
+        step.value = 3;
+        // Nach erfolgreicher Authentifizierung könnten wir auch den Epic Connection Status aktualisieren
+        await userStore.init(); // Refresh user data if Epic ID is stored there
+      } else {
+        error.value = 'Fehler beim Abschließen der Authentifizierung';
+      }
+    } catch (err: any) {
+      error.value =
+        err.message ||
+        'Unerwarteter Fehler beim Abschließen der Authentifizierung';
+      console.error('Complete Auth Error:', err);
+    }
   };
 </script>

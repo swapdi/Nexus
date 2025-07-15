@@ -29,24 +29,6 @@ export const librariesRouter = router({
         });
       }
     }),
-  beginAuthenticateEpicGames: protectedProcedure.mutation(async () => {
-    try {
-      const authData = EpicGamesService.beginAuth();
-      if (!authData) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Fehler beim Starten der Epic Games Authentifizierung'
-        });
-      }
-      return authData;
-    } catch (error) {
-      console.error('Epic Games Auth Error:', error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Unerwarteter Fehler bei der Epic Games Authentifizierung'
-      });
-    }
-  }),
   completeAuthEpicGames: protectedProcedure
     .input(
       z.object({
