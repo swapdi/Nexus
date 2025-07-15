@@ -54,8 +54,7 @@ export const useLibraryStore = defineStore('library', () => {
   };
 
   const completeEpicGamesAuth = async (
-    authToken: string,
-    userId: string
+    authToken: string
   ): Promise<any | null> => {
     return await loading(
       'epic-auth-complete',
@@ -67,7 +66,7 @@ export const useLibraryStore = defineStore('library', () => {
           error.value = null;
           const result = await $client.libraries.completeAuthEpicGames.mutate({
             authToken: authToken.trim(),
-            userId
+            userId: userStore.user?.id.toString() || ''
           });
 
           if (result && result.status) {
@@ -90,12 +89,37 @@ export const useLibraryStore = defineStore('library', () => {
     );
   };
 
+  const getEpicConfigStatus = async (): Promise<any | null> => {
+    return await loading(
+      'epic-config-status',
+      'Überprüfe Epic Games Konfiguration...',
+      async () => {
+        const { $client } = useNuxtApp();
+        try {
+          error.value = null;
+          const status = await $client.libraries.getEpicConfigStatus.query({
+            userId: userStore.user?.id.toString() || ''
+          });
+          return status;
+        } catch (err: any) {
+          error.value =
+            err.message ||
+            'Fehler beim Überprüfen der Epic Games Konfiguration';
+          console.error('Fehler bei Epic Games Config Status:', err);
+          throw err;
+        }
+      },
+      'process'
+    );
+  };
+
   return {
     // State
     error,
     lastImportResult,
     // Actions
     importSteamLibrary,
-    completeEpicGamesAuth
+    completeEpicGamesAuth,
+    getEpicConfigStatus
   };
 });

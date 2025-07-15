@@ -78,28 +78,6 @@ export const useUserStore = defineStore('user', () => {
       'process'
     );
   };
-  const addXP = async (xp: number) => {
-    const { $client } = useNuxtApp();
-    try {
-      const updatedUser = await $client.user.addXP.mutate({ xp });
-      user.value = updatedUser;
-      return updatedUser;
-    } catch (error) {
-      console.error('Error adding XP:', error);
-      throw error;
-    }
-  };
-  const updateCredits = async (credits: number) => {
-    const { $client } = useNuxtApp();
-    try {
-      const updatedUser = await $client.user.updateCredits.mutate({ credits });
-      user.value = updatedUser;
-      return updatedUser;
-    } catch (error) {
-      console.error('Error updating credits:', error);
-      throw error;
-    }
-  };
   const deleteAccount = async () => {
     return await loading(
       'delete-account',
@@ -193,8 +171,6 @@ export const useUserStore = defineStore('user', () => {
     init,
     loadStats,
     updateProfile,
-    addXP,
-    updateCredits,
     deleteAccount,
     linkSteamProfile,
     unlinkSteamProfile,

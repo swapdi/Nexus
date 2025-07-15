@@ -1,7 +1,7 @@
 <!-- filepath: c:\Users\jgram\git\Nexus\components\DealCard\DealCardMedium.vue -->
 <template>
   <div
-    class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer"
+    class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer flex flex-col h-full"
     @click="handleClick">
     <!-- Cover Image -->
     <div class="relative aspect-[3/4] overflow-hidden">
@@ -41,18 +41,27 @@
       </div>
     </div>
     <!-- Deal Info -->
-    <div class="p-2">
-      <h3
-        class="font-medium text-white text-sm mb-1 line-clamp-2 group-hover:text-green-300 transition-colors">
-        {{ deal.title }}
-      </h3>
-      <div class="space-y-1 text-xs">
-        <!-- Genre -->
-        <div class="text-gray-400 line-clamp-1">
+    <div class="p-2 flex flex-col flex-1">
+      <!-- Title and Genre grouped together -->
+      <div class="mb-2">
+        <h3
+          class="font-medium text-white text-sm line-clamp-2 group-hover:text-green-300 transition-colors mb-1">
+          {{ deal.title }}
+        </h3>
+        <!-- Genre - Always render div to maintain consistent spacing -->
+        <div class="text-gray-400 line-clamp-1 text-xs min-h-[1rem]">
           {{ getGenreDisplay(deal) }}
         </div>
-        <!-- Price -->
-        <div v-if="!deal.isFreebie" class="flex justify-between items-center">
+      </div>
+
+      <!-- Spacer to push price to bottom -->
+      <div class="flex-1 min-h-4"></div>
+
+      <!-- Price - Fixed at bottom -->
+      <div class="mt-auto">
+        <div
+          v-if="!deal.isFreebie"
+          class="flex justify-between items-center text-xs">
           <div class="text-green-400 font-bold">
             {{ formatPrice(deal.price) }}
           </div>
@@ -63,7 +72,7 @@
           </div>
         </div>
         <div v-else class="text-center">
-          <div class="text-green-400 font-bold">KOSTENLOS</div>
+          <div class="text-green-400 font-bold text-xs">KOSTENLOS</div>
         </div>
       </div>
     </div>

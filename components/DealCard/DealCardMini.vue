@@ -1,7 +1,7 @@
 <!-- filepath: c:\Users\jgram\git\Nexus\components\DealCard\DealCardMini.vue -->
 <template>
   <div
-    class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer"
+    class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer flex flex-col h-full"
     @click="handleClick">
     <!-- Cover Image -->
     <div class="relative aspect-[3/4] overflow-hidden">
@@ -40,23 +40,32 @@
       </div>
     </div>
     <!-- Deal Info -->
-    <div class="p-1.5">
-      <h3
-        class="font-medium text-white text-xs mb-1 line-clamp-2 group-hover:text-green-300 transition-colors">
-        {{ deal.title }}
-      </h3>
-      <!-- Price -->
-      <div v-if="!deal.isFreebie" class="text-xs">
-        <div class="text-green-400 font-bold">
-          {{ formatPriceShort(deal.price) }}
-        </div>
-        <div
-          v-if="deal.originalPrice && deal.originalPrice > (deal.price || 0)"
-          class="text-gray-500 line-through leading-none">
-          {{ formatPriceShort(deal.originalPrice) }}
-        </div>
+    <div class="p-1.5 flex flex-col flex-1">
+      <!-- Title -->
+      <div class="mb-1">
+        <h3
+          class="font-medium text-white text-xs line-clamp-2 group-hover:text-green-300 transition-colors">
+          {{ deal.title }}
+        </h3>
       </div>
-      <div v-else class="text-xs text-green-400 font-bold">KOSTENLOS</div>
+
+      <!-- Spacer to push price to bottom -->
+      <div class="flex-1 min-h-2"></div>
+
+      <!-- Price - Fixed at bottom -->
+      <div class="mt-auto">
+        <div v-if="!deal.isFreebie" class="text-xs">
+          <div class="text-green-400 font-bold">
+            {{ formatPrice(deal.price) }}
+          </div>
+          <div
+            v-if="deal.originalPrice && deal.originalPrice > (deal.price || 0)"
+            class="text-gray-500 line-through leading-none">
+            {{ formatPrice(deal.originalPrice) }}
+          </div>
+        </div>
+        <div v-else class="text-xs text-green-400 font-bold">KOSTENLOS</div>
+      </div>
     </div>
   </div>
 </template>
@@ -84,9 +93,9 @@
       (userGame: any) => userGame.gameId === deal.gameId
     );
   };
-  const formatPriceShort = (price: number | null): string => {
-    if (!price) return '€0';
-    return `€${price.toFixed(0)}`;
+
+  const formatPrice = (price: number | null): string => {
+    return dealsStore.formatPrice(price);
   };
   const handleClick = () => {
     emit('click');

@@ -15,8 +15,9 @@ model User {
   xp               Int               @default(0)
   level            Int               @default(1)
   credits          Int               @default(0)
-  steamId          String?          
-  userAchievements UserAchievement[]
+  steamId          String?    
+  epicConnect      Boolean?          @default(false)   
+  gogConnect       Boolean?          @default(false) 
   userGames        UserGame[]
   wishlistItems    Wishlist[]
 
@@ -35,18 +36,10 @@ model Game {
   screenshots           String[]
   videos                String[]       @default([])
   totalRating           Float?
-  totalRatingCount      Int?
-  aggregatedRating      Float?
-  aggregatedRatingCount Int?
   genres                String[]
-  themes                String[]
-  gameModes             String[]
-  keywords              String[]
   developers            String[]
   publishers            String[]
   websites              Json?
-  externalGames         Json?
-  ageRatings            Json?
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
   lastSyncedAt          DateTime?
@@ -71,7 +64,7 @@ model UserGame {
   id              Int       @id @default(autoincrement())
   userId          Int
   gameId          Int
-  platformIds     Int[]     @default([])
+  platformDRMs    Int[]     @default([]) // IDs of platforms where the game is bought from
   addedAt         DateTime  @default(now())
   playtimeMinutes Int?      @default(0)
   lastPlayed      DateTime?
@@ -89,9 +82,9 @@ model UserGame {
 model Deal {
   id              Int      @id @default(autoincrement())
   gameId          Int?
-  platformIds     Int[]    @default([])
   title           String
   storeName       String
+  platformDRM     Int? 
   price           Float?
   discountPercent Float?
   originalPrice   Float?
@@ -106,33 +99,6 @@ model Deal {
   game            Game?    @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@map("deals")
-}
-
-model Achievement {
-  id               Int               @id @default(autoincrement())
-  name             String            @unique
-  description      String
-  iconUrl          String?
-  criteria         String
-  xpReward         Int               @default(0)
-  creditsReward    Int               @default(0)
-  createdAt        DateTime          @default(now())
-  userAchievements UserAchievement[]
-
-  @@map("achievements")
-}
-
-model UserAchievement {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  achievementId Int
-  unlockedAt    DateTime    @default(now())
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, achievementId])
-  @@unique([userId, achievementId], map: "user_achievements_userid_achievementid_unique")
-  @@map("user_achievements")
 }
 
 model Wishlist {

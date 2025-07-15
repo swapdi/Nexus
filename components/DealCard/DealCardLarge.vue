@@ -43,33 +43,38 @@
     </div>
     <!-- Deal Info -->
     <div class="p-4 flex flex-col flex-1">
-      <h3
-        class="font-semibold text-white text-lg mb-2 line-clamp-2 group-hover:text-green-300 transition-colors">
-        {{ deal.title }}
-      </h3>
+      <!-- Title and Genres grouped together with fixed height -->
+      <div class="mb-3 h-20 flex flex-col">
+        <h3
+          class="font-semibold text-white text-lg mb-2 line-clamp-2 group-hover:text-green-300 transition-colors">
+          {{ deal.title }}
+        </h3>
 
-      <!-- Genres -->
-      <div
-        v-if="deal.game.genres && deal.game.genres.length > 0"
-        class="flex flex-wrap gap-1 mb-3">
-        <span
-          v-for="genre in deal.game.genres.slice(0, 2)"
-          :key="genre"
-          class="px-2 py-1 bg-green-600/20 text-green-300 text-xs rounded-md border border-green-500/30">
-          {{ genre }}
-        </span>
-        <span
-          v-if="deal.game.genres.length > 2"
-          class="px-2 py-1 bg-gray-600/30 text-gray-400 text-xs rounded-md">
-          +{{ deal.game.genres.length - 2 }}
-        </span>
+        <!-- Genres - Fixed space for consistent layout -->
+        <div class="flex-1 flex items-start">
+          <div
+            v-if="deal.game.genres && deal.game.genres.length > 0"
+            class="flex flex-wrap gap-1">
+            <span
+              v-for="genre in deal.game.genres.slice(0, 2)"
+              :key="genre"
+              class="px-2 py-1 bg-green-600/20 text-green-300 text-xs rounded-md border border-green-500/30">
+              {{ genre }}
+            </span>
+            <span
+              v-if="deal.game.genres.length > 2"
+              class="px-2 py-1 bg-gray-600/30 text-gray-400 text-xs rounded-md">
+              +{{ deal.game.genres.length - 2 }}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <!-- Spacer to push price and button to bottom -->
+      <!-- Spacer to push price to bottom -->
       <div class="flex-1"></div>
 
-      <div class="space-y-2">
-        <!-- Preise -->
+      <!-- Price - Fixed at bottom -->
+      <div class="mt-auto">
         <div v-if="!deal.isFreebie" class="flex justify-between items-center">
           <span class="text-gray-400">Preis:</span>
           <div class="text-right">
@@ -88,7 +93,6 @@
         <div v-else class="text-center">
           <div class="text-green-400 font-bold text-lg">KOSTENLOS</div>
         </div>
-
       </div>
     </div>
   </div>

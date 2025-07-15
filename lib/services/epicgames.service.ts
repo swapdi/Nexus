@@ -4,31 +4,17 @@ export namespace EpicGamesService {
   const backendUrl = 'http://localhost:5000';
 
   export interface EpicGamesAuthData {
-    activation_url: string;
-    activation_code: string;
+    auth_token: string;
+    user_id: string;
   }
 
-  export const beginAuth = async () => {
-    try {
-      const data = await $fetch<{
-        activation_url: string;
-        activation_code: string;
-      }>(`${backendUrl}/auth/begin`);
-      console.log(data);
-      return data;
-    } catch (error) {
-      console.error('Fehler beim Starten der Authentifizierung:', error);
-      return null;
-    }
-  };
-
-  export const completeAuth = async (authToken: string, userId: string) => {
+  export const completeAuth = async (authData: EpicGamesAuthData) => {
     try {
       const data = await $fetch<{ status: string }>(
         `${backendUrl}/auth/complete`,
         {
           method: 'POST',
-          body: { auth_token: authToken, user_id: userId }
+          body: { auth_token: authData.auth_token, user_id: authData.user_id }
         }
       );
       return data;
@@ -45,6 +31,16 @@ export namespace EpicGamesService {
     } catch (error) {
       console.error('Fehler beim Abrufen der Spiele:', error);
       return [];
+    }
+  };
+
+  export const checkConfig = async (userId: string) => {
+    try {
+      const response = await $fetch(`${backendUrl}/auth/status/${userId}`);
+      return response;
+    } catch (error) {
+      console.error('Fehler beim Überprüfen der Konfiguration:', error);
+      return false;
     }
   };
 }

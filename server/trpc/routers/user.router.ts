@@ -74,57 +74,7 @@ export const userRouter = router({
         });
       }
     }),
-  // XP hinzufügen
-  addXP: protectedProcedure
-    .input(
-      z.object({
-        xp: z.number().min(1)
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        const updatedUser = await UserService.addXP(ctx.dbUser.id, input.xp);
-        return updatedUser;
-      } catch (error) {
-        console.error('Error adding XP:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Fehler beim Hinzufügen von XP'
-        });
-      }
-    }),
-  // Credits aktualisieren
-  updateCredits: protectedProcedure
-    .input(
-      z.object({
-        credits: z.number() // Kann negativ sein für Ausgaben
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        const updatedUser = await UserService.updateCredits(
-          ctx.dbUser.id,
-          input.credits
-        );
-        return updatedUser;
-      } catch (error) {
-        console.error('Error updating credits:', error);
-        // Spezifische Behandlung für nicht genügend Credits
-        if (
-          error instanceof Error &&
-          error.message.includes('Nicht genügend Credits')
-        ) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: error.message
-          });
-        }
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Fehler beim Aktualisieren der Credits'
-        });
-      }
-    }),
+
   // Steam Profil verknüpfen
   linkSteamProfile: protectedProcedure
     .input(

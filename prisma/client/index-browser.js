@@ -127,7 +127,9 @@ exports.Prisma.UserScalarFieldEnum = {
   xp: 'xp',
   level: 'level',
   credits: 'credits',
-  steamId: 'steamId'
+  steamId: 'steamId',
+  epicConnect: 'epicConnect',
+  gogConnect: 'gogConnect'
 };
 
 exports.Prisma.GameScalarFieldEnum = {
@@ -142,18 +144,10 @@ exports.Prisma.GameScalarFieldEnum = {
   screenshots: 'screenshots',
   videos: 'videos',
   totalRating: 'totalRating',
-  totalRatingCount: 'totalRatingCount',
-  aggregatedRating: 'aggregatedRating',
-  aggregatedRatingCount: 'aggregatedRatingCount',
   genres: 'genres',
-  themes: 'themes',
-  gameModes: 'gameModes',
-  keywords: 'keywords',
   developers: 'developers',
   publishers: 'publishers',
   websites: 'websites',
-  externalGames: 'externalGames',
-  ageRatings: 'ageRatings',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   lastSyncedAt: 'lastSyncedAt'
@@ -171,7 +165,7 @@ exports.Prisma.UserGameScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   gameId: 'gameId',
-  platformIds: 'platformIds',
+  platformDRMs: 'platformDRMs',
   addedAt: 'addedAt',
   playtimeMinutes: 'playtimeMinutes',
   lastPlayed: 'lastPlayed',
@@ -183,9 +177,9 @@ exports.Prisma.UserGameScalarFieldEnum = {
 exports.Prisma.DealScalarFieldEnum = {
   id: 'id',
   gameId: 'gameId',
-  platformIds: 'platformIds',
   title: 'title',
   storeName: 'storeName',
+  platformDRM: 'platformDRM',
   price: 'price',
   discountPercent: 'discountPercent',
   originalPrice: 'originalPrice',
@@ -197,24 +191,6 @@ exports.Prisma.DealScalarFieldEnum = {
   updatedAt: 'updatedAt',
   externalId: 'externalId',
   source: 'source'
-};
-
-exports.Prisma.AchievementScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  iconUrl: 'iconUrl',
-  criteria: 'criteria',
-  xpReward: 'xpReward',
-  creditsReward: 'creditsReward',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.UserAchievementScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  achievementId: 'achievementId',
-  unlockedAt: 'unlockedAt'
 };
 
 exports.Prisma.WishlistScalarFieldEnum = {
@@ -257,8 +233,6 @@ exports.Prisma.ModelName = {
   Platform: 'Platform',
   UserGame: 'UserGame',
   Deal: 'Deal',
-  Achievement: 'Achievement',
-  UserAchievement: 'UserAchievement',
   Wishlist: 'Wishlist'
 };
 

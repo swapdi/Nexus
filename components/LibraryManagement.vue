@@ -177,42 +177,8 @@
         </h3>
       </div>
 
-      <!-- Step 1: Start Connection -->
+      <!-- Step 1: Authorization Instructions -->
       <div v-if="step === 1" class="space-y-4">
-        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-          <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-            Was passiert bei der Verknüpfung?
-          </h4>
-          <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-            <li>• Authentifizierung über Epic Games Login</li>
-            <li>• Zugriff auf deine Epic Games Spielebibliothek</li>
-            <li>• Keine Speicherung sensibler Anmeldedaten</li>
-          </ul>
-        </div>
-        <p class="text-sm text-gray-600 dark:text-gray-400">
-          Klicke auf "Verbindung starten", um den sicheren
-          Authentifizierungsprozess zu beginnen.
-        </p>
-        <div class="flex justify-end space-x-2">
-          <button
-            @click="
-              showEpicLinking = false;
-              resetEpicFlow();
-            "
-            class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
-            Abbrechen
-          </button>
-          <button
-            @click="step = 2"
-            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-            Verbindung starten
-          </button>
-        </div>
-        <p v-if="error" class="text-red-500 text-sm mt-2">{{ error }}</p>
-      </div>
-
-      <!-- Step 2: Authorization Instructions -->
-      <div v-if="step === 2" class="space-y-4">
         <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
           <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">
             Anleitung:
@@ -281,7 +247,7 @@
       </div>
 
       <!-- Step 3: Success -->
-      <div v-if="step === 3" class="text-center space-y-4">
+      <div v-if="step === 2" class="text-center space-y-4">
         <div
           class="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
           <svg
@@ -388,11 +354,10 @@
       error.value = '';
       const result = await libraryStore.completeEpicGamesAuth(
         authToken.value,
-        user.value.id.toString()
       );
 
       if (result) {
-        step.value = 3;
+        step.value = 2;
         // Nach erfolgreicher Authentifizierung könnten wir auch den Epic Connection Status aktualisieren
         await userStore.init(); // Refresh user data if Epic ID is stored there
       } else {

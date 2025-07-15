@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { EpicGamesService } from '~/lib/services/epicgames.service';
-import { GamesService } from '~/lib/services/games.service';
 import { protectedProcedure, router } from '~/server/trpc/trpc';
+import { SteamService } from '../../../lib/services/steam.service';
 export const librariesRouter = router({
   importSteamLibrary: protectedProcedure
     .input(
@@ -14,7 +14,7 @@ export const librariesRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        return await GamesService.importSteamLibrary(
+        return await SteamService.importSteamLibrary(
           ctx.dbUser.id,
           input.steamInput
         );
@@ -32,16 +32,16 @@ export const librariesRouter = router({
   completeAuthEpicGames: protectedProcedure
     .input(
       z.object({
-        authToken: z.string(),
-        userId: z.string()
+        authToken: z.string().min(1, 'Auth-Token ist erforderlich'),
+        userId: z.string().min(1, 'User ID ist erforderlich')
       })
     )
     .mutation(async ({ input }) => {
       try {
-        const result = await EpicGamesService.completeAuth(
-          input.authToken,
-          input.userId
-        );
+        const result = await EpicGamesService.completeAuth({
+          auth_token: input.authToken,
+          user_id: input.userId
+        });
         if (!result) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
@@ -55,6 +55,27 @@ export const librariesRouter = router({
           code: 'INTERNAL_SERVER_ERROR',
           message:
             'Unerwarteter Fehler beim Abschließen der Epic Games Authentifizierung'
+        });
+      }
+    }),
+  getEpicConfigStatus: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string().min(1, 'User ID ist erforderlich')
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const status = await EpicGamesService.checkConfig(input.userId);
+        return status;
+      } catch (error) {
+        console.error(
+          'Fehler beim Überprüfen der Epic Games Konfiguration:',
+          error
+        );
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Fehler beim Überprüfen der Epic Games Konfiguration'
         });
       }
     })
