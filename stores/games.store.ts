@@ -14,16 +14,65 @@ export const useGamesStore = defineStore('games', () => {
   // Getters
   const totalGames = computed(() => games.value.length);
   const gamesByPlatform = computed(() => {
-    // Da die Game-Tabelle kein platforms-Feld hat, müssen wir die Plattform-Informationen
-    // aus den PlatformGame-Relationen oder externen Daten beziehen
-    // Für jetzt verwenden wir einen leeren Platzhalter
     const platformGroups: Record<string, UserGameWithDetails[]> = {};
+
+    games.value.forEach(userGame => {
+      const platformDRMs = userGame.platformDRMs || [];
+
+      if (platformDRMs.length === 0) {
+        // Spiele ohne Platform-Zuordnung
+        if (!platformGroups['unknown']) {
+          platformGroups['unknown'] = [];
+        }
+        platformGroups['unknown'].push(userGame);
+      } else {
+        // Spiele zu ihren jeweiligen Plattformen zuordnen
+        platformDRMs.forEach(platformId => {
+          const platformName = getPlatformNameById(platformId);
+          if (!platformGroups[platformName]) {
+            platformGroups[platformName] = [];
+          }
+          platformGroups[platformName].push(userGame);
+        });
+      }
+    });
+
     return platformGroups;
   });
+
   const availablePlatforms = computed(() => {
-    // Platzhalter - wird implementiert wenn Plattform-Informationen verfügbar sind
-    return [];
+    const platformIds = new Set<number>();
+
+    games.value.forEach(userGame => {
+      const platformDRMs = userGame.platformDRMs || [];
+      platformDRMs.forEach(id => platformIds.add(id));
+    });
+
+    return Array.from(platformIds).map(id => ({
+      id,
+      name: getPlatformNameById(id),
+      slug: getPlatformSlugById(id)
+    }));
   });
+
+  // Utility-Funktionen für Platform-Mapping
+  const getPlatformNameById = (platformId: number): string => {
+    const platformMap: Record<number, string> = {
+      1: 'Steam',
+      2: 'Epic Games',
+      3: 'GOG'
+    };
+    return platformMap[platformId] || 'Unbekannt';
+  };
+
+  const getPlatformSlugById = (platformId: number): string => {
+    const platformMap: Record<number, string> = {
+      1: 'steam',
+      2: 'epic',
+      3: 'gog'
+    };
+    return platformMap[platformId] || 'unknown';
+  };
   const recentlyPlayed = computed(() => {
     return games.value
       .filter(game => game.lastPlayed)
@@ -248,7 +297,31 @@ export const useGamesStore = defineStore('games', () => {
   };
   const filterGamesByPlatform = (platform: string) => {
     if (platform === 'all') return games.value;
-    // Plattform-Filtering wird implementiert wenn Plattform-Daten verfügbar sind
+
+    // Filter nach Platform ID oder Slug
+    if (platform === 'steam') {
+      return games.value.filter(game => game.platformDRMs?.includes(1));
+    }
+    if (platform === 'epic') {
+      return games.value.filter(game => game.platformDRMs?.includes(2));
+    }
+    if (platform === 'gog') {
+      return games.value.filter(game => game.platformDRMs?.includes(3));
+    }
+    if (platform === 'unknown') {
+      return games.value.filter(
+        game => !game.platformDRMs || game.platformDRMs.length === 0
+      );
+    }
+
+    // Fallback für numerische Platform-IDs
+    const platformId = parseInt(platform);
+    if (!isNaN(platformId)) {
+      return games.value.filter(game =>
+        game.platformDRMs?.includes(platformId)
+      );
+    }
+
     return games.value;
   };
   const sortGames = (games: UserGameWithDetails[], sortBy: string) => {
@@ -312,8 +385,7 @@ export const useGamesStore = defineStore('games', () => {
     );
   };
   const getGamesByPlatformName = (platformName: string) => {
-    // Plattform-Filtering wird implementiert wenn Plattform-Daten verfügbar sind
-    return games.value;
+    return filterGamesByPlatform(platformName);
   };
   const getAvailableGenres = computed(() => {
     const genres = new Set<string>();
@@ -455,6 +527,8 @@ export const useGamesStore = defineStore('games', () => {
     getTopRatedGames,
     getGamesByPlaytime,
     getGamesByPlatformName,
+    getPlatformNameById,
+    getPlatformSlugById,
     init,
     reset,
     // Neue Aktionen für Auswahlmodus

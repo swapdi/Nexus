@@ -59,11 +59,17 @@
         </span>
       </div>
     </div>
-    <!-- Platform Badge (Steam) -->
+    <!-- Platform Badges -->
     <div class="w-24 flex-shrink-0 flex justify-center">
-      <div
-        class="bg-black/80 backdrop-blur-sm rounded px-2 py-1 flex items-center justify-center">
-        <Icon name="simple-icons:steam" class="w-4 h-4 text-blue-400" />
+      <div class="flex gap-1">
+        <div
+          v-for="platformId in game.platformDRMs"
+          :key="platformId"
+          class="bg-black/80 backdrop-blur-sm rounded px-2 py-1 flex items-center justify-center">
+          <Icon
+            :name="getPlatformIconByDRM(platformId)"
+            :class="['w-4 h-4', getPlatformColorByDRM(platformId)]" />
+        </div>
       </div>
     </div>
     <!-- Play Time (fixed width) -->
@@ -109,30 +115,67 @@
 </template>
 <script setup lang="ts">
   import type { UserGameWithDetails } from '~/lib/services/games.service';
+
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
   }
+
   interface Emits {
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
+
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
+  const { getPlatformIcon, getPlatformColor } = usePlatforms();
+
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);
+
   const handleClick = () => {
     emit('click');
   };
+
   const toggleFavorite = () => {
     emit('toggleFavorite', props.game.id);
   };
+
   const handleImageError = (event: Event) => {
     if (event.target) {
       (event.target as HTMLImageElement).src = './gameplaceholder.jpg';
     }
   };
+
+  /**
+   * Hole Platform Icon basierend auf DRM ID
+   */
+  const getPlatformIconByDRM = (platformId: number) => {
+    const platformMap: Record<number, string> = {
+      1: 'steam',
+      2: 'epic',
+      3: 'gog'
+    };
+
+    const slug = platformMap[platformId];
+    return getPlatformIcon(slug || 'unknown');
+  };
+
+  /**
+   * Hole Platform Farbe basierend auf DRM ID
+   */
+  const getPlatformColorByDRM = (platformId: number) => {
+    const platformMap: Record<number, string> = {
+      1: 'steam',
+      2: 'epic',
+      3: 'gog'
+    };
+
+    const slug = platformMap[platformId];
+    return getPlatformColor(slug || 'unknown');
+  };
+
   const formatRating = (rating: number) => {
     return rating.toFixed(1);
   };

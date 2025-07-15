@@ -1,5 +1,6 @@
 import { PrismaClient } from '~/prisma/client';
 import { GamesService } from './games.service';
+import { PlatformService } from './platform.service';
 
 const prisma = new PrismaClient();
 
@@ -81,6 +82,9 @@ export namespace EpicGamesService {
     };
 
     try {
+      // Hole Epic Games Platform ID
+      const epicPlatformId = await PlatformService.getEpicPlatformId();
+
       // Hole Epic Games Library
       const epicGames = await getGames(userId.toString());
 
@@ -132,12 +136,24 @@ export namespace EpicGamesService {
           });
 
           if (existingUserGame) {
+            // Aktualisiere bestehendes UserGame und füge Epic Platform hinzu wenn nicht vorhanden
+            const currentPlatforms = existingUserGame.platformDRMs || [];
+            const updatedPlatforms = currentPlatforms.includes(epicPlatformId)
+              ? currentPlatforms
+              : [...currentPlatforms, epicPlatformId];
+
+            await prisma.userGame.update({
+              where: { id: existingUserGame.id },
+              data: {
+                platformDRMs: updatedPlatforms
+              }
+            });
             console.log(
-              `UserGame für "${gameName}" bereits vorhanden - übersprungen`
+              `UserGame für "${gameName}" aktualisiert - Epic Platform hinzugefügt`
             );
             result.updated++;
           } else {
-            // Erstelle neues UserGame
+            // Erstelle neues UserGame mit Epic Platform
             await prisma.userGame.create({
               data: {
                 userId,
@@ -145,9 +161,11 @@ export namespace EpicGamesService {
                 playtimeMinutes: 0, // Epic liefert meist keine Spielzeiten
                 lastPlayed: null,
                 isInstalled: false, // Epic API zeigt nicht direkt Installationsstatus
-                isFavorite: false
+                isFavorite: false,
+                platformDRMs: [epicPlatformId]
               }
             });
+            console.log(`UserGame für "${gameName}" erstellt`);
             result.imported++;
           }
         } catch (error) {

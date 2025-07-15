@@ -1,6 +1,8 @@
 import { PrismaClient } from '~/prisma/client';
 import type { GameImportResult } from './games.service';
 import { GamesService } from './games.service';
+import { PlatformService } from './platform.service';
+
 const prisma = new PrismaClient();
 
 export namespace SteamService {
@@ -24,6 +26,9 @@ export namespace SteamService {
       errors: [] as string[]
     };
     try {
+      // Hole Steam Platform ID
+      const steamPlatformId = await PlatformService.getSteamPlatformId();
+
       // Validiere Steam Input
       const validation = await steamImport.validateSteamInput(steamInput);
       if (!validation.isValid || !validation.steamId) {
@@ -86,17 +91,23 @@ export namespace SteamService {
             }
           });
           if (existingUserGame) {
-            // Aktualisiere bestehendes UserGame
+            // Aktualisiere bestehendes UserGame und füge Steam Platform hinzu wenn nicht vorhanden
+            const currentPlatforms = existingUserGame.platformDRMs || [];
+            const updatedPlatforms = currentPlatforms.includes(steamPlatformId)
+              ? currentPlatforms
+              : [...currentPlatforms, steamPlatformId];
+
             await prisma.userGame.update({
               where: { id: existingUserGame.id },
               data: {
                 playtimeMinutes,
-                lastPlayed
+                lastPlayed,
+                platformDRMs: updatedPlatforms
               }
             });
             result.updated++;
           } else {
-            // Erstelle neues UserGame
+            // Erstelle neues UserGame mit Steam Platform
             await prisma.userGame.create({
               data: {
                 userId,
@@ -104,7 +115,8 @@ export namespace SteamService {
                 playtimeMinutes,
                 lastPlayed,
                 isInstalled: false,
-                isFavorite: false
+                isFavorite: false,
+                platformDRMs: [steamPlatformId]
               }
             });
             result.imported++;

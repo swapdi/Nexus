@@ -34,11 +34,15 @@
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
         @error="handleImageError" />
-      <!-- Platform Badge (Steam) -->
-      <div class="absolute top-1 left-1">
+      <!-- Platform Badges -->
+      <div class="absolute top-1 left-1 flex flex-col gap-0.5">
         <div
+          v-for="platformId in game.platformDRMs"
+          :key="platformId"
           class="bg-black/80 backdrop-blur-sm rounded px-1.5 py-1 flex items-center justify-center min-w-[26px] min-h-[18px]">
-          <Icon name="simple-icons:steam" class="w-3 h-3 text-blue-400" />
+          <Icon
+            :name="getPlatformIconByDRM(platformId)"
+            :class="['w-3 h-3', getPlatformColorByDRM(platformId)]" />
         </div>
       </div>
       <!-- Favorite Icon -->
@@ -108,8 +112,12 @@
   }
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
+
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);
+
+  // Platform utilities
+  const { getPlatformIcon, getPlatformColor } = usePlatforms();
   const handleClick = () => {
     emit('click');
   };
@@ -120,6 +128,34 @@
     if (event.target) {
       (event.target as HTMLImageElement).src = './gameplaceholder.jpg';
     }
+  };
+
+  /**
+   * Hole Platform Icon basierend auf DRM ID
+   */
+  const getPlatformIconByDRM = (platformId: number) => {
+    const platformMap: Record<number, string> = {
+      1: 'steam',
+      2: 'epic',
+      3: 'gog'
+    };
+
+    const slug = platformMap[platformId];
+    return getPlatformIcon(slug || 'unknown');
+  };
+
+  /**
+   * Hole Platform Farbe basierend auf DRM ID
+   */
+  const getPlatformColorByDRM = (platformId: number) => {
+    const platformMap: Record<number, string> = {
+      1: 'steam',
+      2: 'epic',
+      3: 'gog'
+    };
+
+    const slug = platformMap[platformId];
+    return getPlatformColor(slug || 'unknown');
   };
   const formatRating = (rating: number) => {
     return rating.toFixed(1);

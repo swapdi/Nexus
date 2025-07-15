@@ -20,6 +20,12 @@ export interface GameImportResult {
 }
 export interface UserGameWithDetails extends UserGame {
   game: Game;
+  platforms?: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    iconUrl: string | null;
+  }>;
 }
 export namespace GamesService {
   /**

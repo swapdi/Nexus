@@ -34,11 +34,43 @@
   const selectedGamesCount = computed(() => gamesStore.selectedGameIds.size);
   // Computed properties für Filter und Suche
   const platforms = computed(() => {
-    // Da wir keine Plattformdaten mehr haben, zeigen wir nur "Alle" an
-    return [{ value: 'all', label: 'Alle Plattformen' }];
+    const availablePlatforms = gamesStore.availablePlatforms;
+    const platformCounts = gamesStore.gamesByPlatform;
+
+    const platformOptions = [
+      { value: 'all', label: 'Alle Plattformen', count: gamesStore.totalGames }
+    ];
+
+    // Füge verfügbare Plattformen hinzu
+    availablePlatforms.forEach(platform => {
+      const gamesForPlatform = platformCounts[platform.name] || [];
+      platformOptions.push({
+        value: platform.slug,
+        label: platform.name,
+        count: gamesForPlatform.length
+      });
+    });
+
+    // Füge "Unbekannt" hinzu, falls vorhanden
+    const unknownGames = platformCounts['Unbekannt'] || [];
+    if (unknownGames.length > 0) {
+      platformOptions.push({
+        value: 'unknown',
+        label: 'Unbekannt',
+        count: unknownGames.length
+      });
+    }
+
+    return platformOptions;
   });
   const filteredGames = computed(() => {
     let games = [...gamesStore.games];
+
+    // Platform-Filter
+    if (selectedPlatform.value !== 'all') {
+      games = gamesStore.filterGamesByPlatform(selectedPlatform.value);
+    }
+
     // Suchfilter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase();
@@ -133,8 +165,10 @@
           0
         )
       }))
+      .filter(stat => stat.count > 0) // Nur Plattformen mit Spielen anzeigen
       .sort((a, b) => b.count - a.count);
   });
+
   const topPlatform = computed(() => {
     return platformStats.value[0] || { name: 'Keine', count: 0 };
   });
@@ -666,13 +700,7 @@
                 :key="platform.value"
                 :value="platform.value">
                 {{ platform.label }}
-                {{
-                  platform.value !== 'all'
-                    ? `(${
-                        gamesStore.getGamesByPlatformName(platform.value).length
-                      })`
-                    : ''
-                }}
+                {{ platform.count ? `(${platform.count})` : '' }}
               </option>
             </select>
             <Icon
@@ -772,16 +800,69 @@
           <div
             v-if="!loadingStore.isLoading && gamesStore.games.length > 0"
             class="flex items-center gap-3">
-            <!-- Game Count -->
-            <span class="text-xs text-gray-500 whitespace-nowrap">
-              {{ filteredGames.length }} von {{ totalGames }}
-            </span>
+            <!-- Game Count und Filter Status -->
+            <div
+              class="flex items-center gap-2 text-xs text-gray-500 whitespace-nowrap">
+              <span>{{ filteredGames.length }} von {{ totalGames }}</span>
+              <span
+                v-if="selectedPlatform !== 'all'"
+                class="px-2 py-1 bg-purple-600/20 text-purple-300 rounded-full">
+                {{ platforms.find(p => p.value === selectedPlatform)?.label }}
+              </span>
+            </div>
             <!-- View Mode Toggle (nur im normalen Modus) -->
             <ViewModeToggle v-if="!gamesStore.isSelectionMode" />
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Platform Quick Filter -->
+    <div
+      v-if="
+        !loadingStore.isLoading &&
+        gamesStore.games.length > 0 &&
+        platforms.length > 2
+      "
+      class="mb-6">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-sm text-gray-400 font-medium">Schnellfilter:</span>
+        <button
+          v-for="platform in platforms.slice(0, 6)"
+          :key="platform.value"
+          @click="selectedPlatform = platform.value"
+          :class="[
+            'px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200',
+            selectedPlatform === platform.value
+              ? 'bg-purple-600 border-purple-500 text-white'
+              : 'bg-gray-800/50 border-gray-600/50 text-gray-300 hover:bg-gray-700/50 hover:border-gray-500/50'
+          ]">
+          <Icon
+            v-if="platform.value === 'steam'"
+            name="simple-icons:steam"
+            class="w-3 h-3 inline mr-1.5" />
+          <Icon
+            v-else-if="platform.value === 'epic'"
+            name="simple-icons:epicgames"
+            class="w-3 h-3 inline mr-1.5" />
+          <Icon
+            v-else-if="platform.value === 'gog'"
+            name="simple-icons:gog"
+            class="w-3 h-3 inline mr-1.5" />
+          <Icon
+            v-else-if="platform.value === 'all'"
+            name="heroicons:squares-2x2-20-solid"
+            class="w-3 h-3 inline mr-1.5" />
+          <Icon
+            v-else
+            name="heroicons:question-mark-circle-20-solid"
+            class="w-3 h-3 inline mr-1.5" />
+          {{ platform.label }}
+          <span class="ml-1 opacity-75">({{ platform.count }})</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Spiele Grid -->
     <div v-if="filteredGames.length > 0">
       <div :class="getCurrentConfig().gridClass">
