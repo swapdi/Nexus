@@ -143,5 +143,26 @@ export const userRouter = router({
         message: 'Fehler beim Löschen des Kontos'
       });
     }
+  }),
+
+  // Epic Games Profil trennen
+  unlinkEpicProfile: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      const updatedUser = await UserService.updateUser(ctx.dbUser.id, {
+        epicConnect: false
+      });
+
+      return {
+        success: true,
+        message: 'Epic Games Profil erfolgreich getrennt',
+        user: updatedUser
+      };
+    } catch (error) {
+      console.error('Error unlinking Epic Games profile:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Fehler beim Trennen des Epic Games Profils'
+      });
+    }
   })
 });

@@ -3,8 +3,7 @@
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const loadingStore = useLoadingStore();
-  // Game Utils für Legacy-Support
-  const { getGameName, gameMatchesSearch } = useGameUtils();
+  const libraryStore = useLibraryStore();
   // View Mode Management
   const { currentViewMode, getCurrentConfig } = useViewMode();
   onMounted(async () => {
@@ -28,14 +27,11 @@
   const showConfirmModal = ref(false);
   // Nach Import aktualisieren
   const onImportCompleted = () => {
+    libraryStore.refreshLibraries();
     gamesStore.refreshData();
   };
   // Computed für Auswahlmodus-UI
   const selectedGamesCount = computed(() => gamesStore.selectedGameIds.size);
-  const selectedGamesText = computed(() => {
-    const count = selectedGamesCount.value;
-    return count === 1 ? '1 Spiel ausgewählt' : `${count} Spiele ausgewählt`;
-  });
   // Computed properties für Filter und Suche
   const platforms = computed(() => {
     // Da wir keine Plattformdaten mehr haben, zeigen wir nur "Alle" an
@@ -53,12 +49,7 @@
             userGame.game.summary.toLowerCase().includes(query))
       );
     }
-    // Plattformfilter - momentan nicht implementiert da keine Plattformdaten
-    // if (selectedPlatform.value !== 'all') {
-    //   games = games.filter(game =>
-    //     game.platforms.includes(selectedPlatform.value)
-    //   );
-    // }
+
     // Sortierung
     games.sort((a, b) => {
       switch (sortBy.value) {
@@ -104,7 +95,7 @@
     showConfirmModal.value = true;
   };
   const handleConfirmRemoval = async () => {
-    const success = await gamesStore.removeSelectedGames();
+    await gamesStore.removeSelectedGames();
     showConfirmModal.value = false;
     // Der Auswahlmodus wird automatisch im Store beendet
   };
@@ -147,11 +138,6 @@
   const topPlatform = computed(() => {
     return platformStats.value[0] || { name: 'Keine', count: 0 };
   });
-  const recentActivity = computed(() => {
-    const recentGames = recentlyPlayedGames.value.slice(0, 5);
-    if (recentGames.length === 0) return 'Keine Aktivität';
-    return `${recentGames.length} Spiele kürzlich gespielt`;
-  });
   // Kürzlich gespielte Spiele (innerhalb der letzten 2 Wochen)
   const recentlyPlayedGames = computed(() => {
     const twoWeeksAgo = new Date();
@@ -162,10 +148,6 @@
       return lastPlayedDate >= twoWeeksAgo;
     });
   });
-  // Stars für Rating
-  const getStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => i < rating);
-  };
   // Relative Zeit formatieren
   const formatRelativeTime = (date: Date | null) => {
     if (!date) return 'Nie gespielt';

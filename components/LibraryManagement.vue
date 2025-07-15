@@ -296,9 +296,7 @@
   });
 
   const isEpicConnected = computed(() => {
-    // TODO: implement when Epic Games integration stores connection status
-    // This could check for user.value?.epicId or a separate epic connection flag
-    return false;
+    return !!user.value?.epicConnect || false
   });
 
   // Epic Games connection variables

@@ -9,7 +9,26 @@ export const useLibraryStore = defineStore('library', () => {
   const error = ref<string | null>(null);
 
   const lastImportResult = ref<any | null>(null); // TODO: Define proper import result type
+  const refreshLibraries = async () => {
+    return await loading(
+      'library-refresh',
+      'Bibliotheken werden aktualisiert...',
+      async () => {
+        try {
+          error.value = null;
 
+          await importEpicLibrary();
+          await importSteamLibrary(userStore.user?.steamId || '');
+          return true;
+        } catch (err: any) {
+          error.value =
+            err.message || 'Fehler beim Aktualisieren der Bibliotheken';
+          console.error('Fehler beim Aktualisieren der Bibliotheken:', err);
+          throw err;
+        }
+      }
+    );
+  };
   const importSteamLibrary = async (
     steamInput: string
   ): Promise<any | null> => {
@@ -48,8 +67,45 @@ export const useLibraryStore = defineStore('library', () => {
           console.error('Fehler beim Steam-Import:', err);
           throw err;
         }
-      },
-      'import'
+      }
+    );
+  };
+
+  const importEpicLibrary = async (): Promise<any | null> => {
+    return await loading(
+      'epic-import',
+      'Epic Games-Bibliothek importieren...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+        try {
+          error.value = null;
+          const result = await $client.libraries.importEpicLibrary.mutate();
+          lastImportResult.value = result;
+          if (result.success) {
+            // Detaillierte Erfolgsmeldung erstellen
+            let message = 'Epic Games-Import abgeschlossen! ';
+            if (result.imported > 0) {
+              message += `${result.imported} neue Spiele importiert. `;
+            }
+            if (result.updated && result.updated > 0) {
+              message += `${result.updated} Spiele aktualisiert. `;
+            }
+            if (result.skipped > 0) {
+              message += `${result.skipped} bereits vorhandene Spiele übersprungen.`;
+            }
+            notifyStore.notify(message, 1);
+            // Daten neu laden nach erfolgreichem Import
+            await gamesStore.refreshData();
+          }
+          return result;
+        } catch (err: any) {
+          error.value = err.message || 'Fehler beim Epic Games-Import';
+          notifyStore.notify(error.value, 3);
+          console.error('Fehler beim Epic Games-Import:', err);
+          throw err;
+        }
+      }
     );
   };
 
@@ -113,13 +169,49 @@ export const useLibraryStore = defineStore('library', () => {
     );
   };
 
+  const disconnectEpic = async (): Promise<any | null> => {
+    return await loading(
+      'epic-disconnect',
+      'Epic Games Verbindung wird getrennt...',
+      async () => {
+        const { $client } = useNuxtApp();
+        const notifyStore = useNotifyStore();
+        try {
+          error.value = null;
+          const result = await $client.user.unlinkEpicProfile.mutate();
+
+          if (result && result.success) {
+            notifyStore.notify(
+              'Epic Games Verbindung erfolgreich getrennt!',
+              1
+            );
+            // User-Daten nach Trennung aktualisieren
+            await userStore.init();
+          }
+
+          return result;
+        } catch (err: any) {
+          error.value =
+            err.message || 'Fehler beim Trennen der Epic Games Verbindung';
+          notifyStore.notify(error.value, 3);
+          console.error('Fehler beim Epic Games Disconnect:', err);
+          throw err;
+        }
+      },
+      'process'
+    );
+  };
+
   return {
     // State
     error,
     lastImportResult,
     // Actions
     importSteamLibrary,
+    importEpicLibrary,
     completeEpicGamesAuth,
-    getEpicConfigStatus
+    getEpicConfigStatus,
+    refreshLibraries,
+    disconnectEpic
   };
 });

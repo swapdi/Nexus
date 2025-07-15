@@ -29,6 +29,21 @@ export const librariesRouter = router({
         });
       }
     }),
+  importEpicLibrary: protectedProcedure.mutation(async ({ input, ctx }) => {
+    try {
+      return await EpicGamesService.importEpicLibrary(ctx.dbUser.id);
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      console.error('Epic Games Import Error:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message:
+          'Unerwarteter Fehler beim Importieren der Epic Games-Bibliothek'
+      });
+    }
+  }),
   completeAuthEpicGames: protectedProcedure
     .input(
       z.object({
@@ -36,12 +51,15 @@ export const librariesRouter = router({
         userId: z.string().min(1, 'User ID ist erforderlich')
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        const result = await EpicGamesService.completeAuth({
-          auth_token: input.authToken,
-          user_id: input.userId
-        });
+        const result = await EpicGamesService.completeAuth(
+          {
+            auth_token: input.authToken,
+            user_id: input.userId
+          },
+          ctx.dbUser.id
+        );
         if (!result) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
