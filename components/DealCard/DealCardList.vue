@@ -69,21 +69,6 @@
               </div>
             </div>
           </div>
-          <!-- Action Buttons -->
-          <div class="flex-shrink-0 flex items-center gap-2">
-            <button
-              v-if="!isGameOwned(deal)"
-              @click.stop="handleClick"
-              class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-              {{ deal.isFreebie ? 'Kostenlos holen' : 'Deal ansehen' }}
-            </button>
-            <button
-              v-else
-              disabled
-              class="px-4 py-2 bg-gray-600 text-gray-300 font-medium rounded-lg cursor-not-allowed">
-              In Bibliothek
-            </button>
-          </div>
         </div>
       </div>
     </div>
