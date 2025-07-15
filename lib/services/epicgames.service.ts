@@ -1,5 +1,4 @@
 import { PrismaClient } from '~/prisma/client';
-import type { GameImportResult } from './games.service';
 import { GamesService } from './games.service';
 
 const prisma = new PrismaClient();
@@ -92,20 +91,22 @@ export namespace EpicGamesService {
         );
         return result;
       }
-
+      console.log(
+        `Epic Games Import gestartet: ${epicGames.length} Spiele gefunden`
+      );
       // Verarbeite Epic Games
       for (const epicGame of epicGames) {
         try {
-          console.log('Verarbeite Epic Game:', epicGame);
-          // Epic Game Datenstruktur anpassen - je nach Backend-Response
-          const gameName =
-            epicGame.name || epicGame.title || epicGame.displayName;
+          // Epic Game Datenstruktur entsprechend der API-Antwort verarbeiten
+          const gameName = epicGame.app_title || epicGame.metadata?.title;
+          const appName = epicGame.app_name;
 
           if (!gameName) {
-            result.errors.push('Spiel ohne Namen gefunden - übersprungen');
+            result.errors.push(
+              `Spiel ohne Namen gefunden (app_name: ${appName}) - übersprungen`
+            );
             continue;
           }
-
           // Prüfe ob Spiel bereits existiert oder erstelle es
           const existingGame = await GamesService.findGameByName(gameName);
           let gameId: number;
@@ -114,7 +115,8 @@ export namespace EpicGamesService {
             gameId = existingGame.id;
           } else {
             // Erstelle neues Spiel mit IGDB-Anreicherung
-            const gameResult = await findOrCreateGameWithEpicData(gameName);
+            const gameResult =
+              await GamesService.findOrCreateGameWithIGDBRelevance(gameName);
             if (!gameResult?.game) {
               throw new Error(`Failed to create game for ${gameName}`);
             }
@@ -130,8 +132,9 @@ export namespace EpicGamesService {
           });
 
           if (existingUserGame) {
-            // Epic Games liefert normalerweise keine Spielzeiten
-            // Aktualisiere nur wenn nötig
+            console.log(
+              `UserGame für "${gameName}" bereits vorhanden - übersprungen`
+            );
             result.updated++;
           } else {
             // Erstelle neues UserGame
@@ -141,7 +144,7 @@ export namespace EpicGamesService {
                 gameId,
                 playtimeMinutes: 0, // Epic liefert meist keine Spielzeiten
                 lastPlayed: null,
-                isInstalled: epicGame.installed || false,
+                isInstalled: false, // Epic API zeigt nicht direkt Installationsstatus
                 isFavorite: false
               }
             });
@@ -149,13 +152,12 @@ export namespace EpicGamesService {
           }
         } catch (error) {
           const errorMsg = `Fehler beim Importieren von "${
-            epicGame.name || 'Unbekanntes Spiel'
+            epicGame.app_title || epicGame.app_name || 'Unbekanntes Spiel'
           }": ${error}`;
           result.errors.push(errorMsg);
           console.error(errorMsg);
         }
       }
-
       return result;
     } catch (error) {
       console.error('Epic Games Import Error:', error);
@@ -164,114 +166,6 @@ export namespace EpicGamesService {
         error instanceof Error ? error.message : 'Unbekannter Fehler'
       );
       return result;
-    }
-  }
-
-  /**
-   * Finde oder erstelle ein Spiel mit Epic Games Daten
-   * Grund: Analog zum Steam Service - nutze IGDB für Metadaten
-   */
-  export async function findOrCreateGameWithEpicData(
-    gameName: string
-  ): Promise<GameImportResult | undefined> {
-    try {
-      // Prüfe zuerst lokale Datenbank
-      const existingGame = await GamesService.findGameByName(gameName);
-      if (existingGame) {
-        return {
-          success: true,
-          game: existingGame,
-          isNew: false,
-          message: 'Spiel bereits vorhanden'
-        };
-      }
-
-      // Versuche IGDB-Daten zu finden
-      try {
-        const { IGDBService } = await import('./igdb.service');
-        const igdbGameData = await IGDBService.findGameByTitle(gameName);
-
-        if (igdbGameData) {
-          // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert
-          const existingByIGDB = await prisma.game.findUnique({
-            where: { igdbId: igdbGameData.id }
-          });
-
-          if (existingByIGDB) {
-            return {
-              success: true,
-              game: existingByIGDB,
-              isNew: false,
-              message: 'IGDB-Spiel bereits vorhanden'
-            };
-          }
-
-          // Erstelle Spiel mit IGDB-Daten
-          const newGame = await prisma.game.create({
-            data: {
-              igdbId: igdbGameData.id,
-              name: igdbGameData.name,
-              slug: igdbGameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-              summary: igdbGameData.summary,
-              firstReleaseDate: igdbGameData.firstReleaseDate,
-              coverUrl: igdbGameData.coverUrl,
-              screenshots: igdbGameData.screenshotUrls || [],
-              videos: igdbGameData.videoUrls || [],
-              totalRating: igdbGameData.totalRating,
-              genres: igdbGameData.genres || [],
-              developers: igdbGameData.developers || [],
-              publishers: igdbGameData.publishers || [],
-              lastSyncedAt: new Date(),
-              createdAt: new Date(),
-              updatedAt: new Date()
-            }
-          });
-
-          return {
-            success: true,
-            game: newGame,
-            isNew: true,
-            message: 'Spiel mit IGDB-Daten erstellt'
-          };
-        }
-      } catch (igdbError) {
-        console.warn(
-          'IGDB-Suche fehlgeschlagen, erstelle Basis-Spiel:',
-          igdbError
-        );
-      }
-
-      // Fallback: Erstelle Basis-Spiel ohne IGDB-Daten
-      const newGame = await prisma.game.create({
-        data: {
-          name: gameName,
-          slug: gameName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          summary: null,
-          firstReleaseDate: null,
-          coverUrl: '/gameplaceholder.jpg', // Fallback Cover
-          screenshots: [],
-          videos: [],
-          totalRating: null,
-          genres: [],
-          developers: [],
-          publishers: [],
-          lastSyncedAt: new Date(),
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      });
-
-      return {
-        success: true,
-        game: newGame,
-        isNew: true,
-        message: 'Basis-Spiel ohne IGDB-Daten erstellt'
-      };
-    } catch (error) {
-      console.error('Fehler beim Finden/Erstellen des Spiels:', error);
-      const message =
-        error instanceof Error ? error.message : 'Unbekannter Fehler';
-      throw new Error(`Spiel konnte nicht importiert werden: ${message}`);
     }
   }
 }
