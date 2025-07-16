@@ -198,22 +198,21 @@ export const gamesRouter = router({
         });
       }
     }),
-  addGameFromIGDB: protectedProcedure
+  addGameFromIGDBSearch: protectedProcedure
     .input(
       z.object({
-        igdbId: z.number()
+        igdbName: z.string()
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const igdbGame = await IGDBService.getGameDetails(input.igdbId);
+      const igdbGame = await IGDBService.findGameByTitle(input.igdbName);
       if (!igdbGame) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: `Spiel mit IGDB ID ${input.igdbId} nicht gefunden.`
+          message: `Spiel mit IGDB Name ${input.igdbName} nicht gefunden.`
         });
       }
-      const gameData = IGDBService.convertIGDBGame(igdbGame);
-      const game = await GamesService.createGameFromIGDB(ctx.db, gameData);
+      const game = await GamesService.createGameFromIGDB(igdbGame);
       return game;
     })
 });

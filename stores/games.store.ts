@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia';
 import type { UserGameWithDetails } from '~/lib/services/games.service';
+import type { IGDBGame } from '~/lib/services/igdb.service';
+
 export const useGamesStore = defineStore('games', () => {
+  const { $client } = useNuxtApp();
+  const notifyStore = useNotifyStore();
+
   // Loading store integration
   const { loading } = useLoading();
   // State
@@ -96,8 +101,6 @@ export const useGamesStore = defineStore('games', () => {
       'games-load',
       'Lade Spielebibliothek...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const gamesData = await $client.games.getUserGames.query();
@@ -117,8 +120,6 @@ export const useGamesStore = defineStore('games', () => {
       'games-stats',
       'Lade Spielstatistiken...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           const statsData = await $client.games.getUserStats.query();
           stats.value = statsData;
@@ -174,8 +175,6 @@ export const useGamesStore = defineStore('games', () => {
       'remove-games',
       'Entferne Spiele aus der Bibliothek...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           isRemovingGames.value = true;
           const gameIdsArray = Array.from(selectedGameIds.value);
@@ -216,8 +215,6 @@ export const useGamesStore = defineStore('games', () => {
       'game-details',
       'Lade Spiel-Details...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const gameData = await $client.games.getGameById.query({
@@ -241,8 +238,6 @@ export const useGamesStore = defineStore('games', () => {
       'game-details',
       'Lade Spiel-Details...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const gameData = await $client.games.getGameById.query({
@@ -267,8 +262,6 @@ export const useGamesStore = defineStore('games', () => {
       'game-details',
       'Lade Spiel-Details...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const gameData = await $client.games.getUserGame.query({
@@ -419,8 +412,6 @@ export const useGamesStore = defineStore('games', () => {
     }
   }; // Toggle Favorite für ein Spiel
   const toggleFavorite = async (userGameId: number) => {
-    const { $client } = useNuxtApp();
-    const notifyStore = useNotifyStore();
     try {
       const result = await $client.games.toggleFavorite.mutate({
         userGameId: userGameId
@@ -453,8 +444,6 @@ export const useGamesStore = defineStore('games', () => {
       'update-notes',
       'Speichere Notizen...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const updatedGame = await $client.games.updateGameNotes.mutate({
@@ -483,6 +472,44 @@ export const useGamesStore = defineStore('games', () => {
       },
       'process'
     );
+  };
+  const searchDatabase = async (searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+    try {
+      const response = await $client.games.searchGames.query({
+        searchTerm: searchQuery,
+        limit: 50
+      });
+      return response.games;
+      // Apply filters after loading results
+    } catch (error) {
+      console.error('Database search error:', error);
+    }
+  };
+  const searchIGDB = async (searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+    try {
+      const response = await $client.games.searchIGDB.query({
+        searchTerm: searchQuery,
+        limit: 20
+      });
+      return response.games;
+    } catch (error) {
+      console.error('IGDB search error:', error);
+    }
+  };
+
+  const navigateToIGDBGame = async (igdbGame: IGDBGame) => {
+    return await loading('load-igdb-game', 'Lade IGDB-Spiel...', async () => {
+      try {
+        const game = await $client.games.addGameFromIGDBSearch.mutate({
+          igdbName: igdbGame.name
+        });
+        return game;
+      } catch (error) {
+        console.error('Error adding game from IGDB:', error);
+      }
+    });
   };
 
   // Reset store
@@ -531,6 +558,9 @@ export const useGamesStore = defineStore('games', () => {
     getPlatformSlugById,
     init,
     reset,
+    searchDatabase,
+    searchIGDB,
+    navigateToIGDBGame,
     // Neue Aktionen für Auswahlmodus
     toggleSelectionMode,
     enterSelectionMode,

@@ -44,7 +44,7 @@
         <!-- Advanced Search Filters -->
         <div
           v-if="showAdvancedSearch"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
+          class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3 p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
           <!-- Genre Filter -->
           <div>
             <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -61,23 +61,6 @@
                 :value="genre">
                 {{ genre }}
               </option>
-            </select>
-          </div>
-
-          <!-- Platform Filter -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2"
-              >Plattform</label
-            >
-            <select
-              v-model="selectedPlatform"
-              @change="applyFilters"
-              class="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-              <option value="">Alle Plattformen</option>
-              <option value="Steam">Steam</option>
-              <option value="Epic">Epic Games</option>
-              <option value="GOG">GOG</option>
-              <option value="Other">Andere</option>
             </select>
           </div>
 
@@ -197,17 +180,18 @@
                 class="flex-shrink-0 w-16 h-20 bg-gray-600/50 rounded overflow-hidden">
                 <img
                   v-if="igdbGame.cover?.url"
-                  :src="getIGDBImageUrl(igdbGame.cover.url)"
+                  :src="
+                    getIGDBImageUrl(igdbGame.cover.url) || 'gameplaceholder.jpg'
+                  "
                   :alt="igdbGame.name"
                   class="w-full h-full object-cover"
                   loading="lazy" />
-                <div
+                <img
                   v-else
-                  class="w-full h-full flex items-center justify-center">
-                  <Icon
-                    name="heroicons:photo-20-solid"
-                    class="w-6 h-6 text-gray-500" />
-                </div>
+                  :src="'gameplaceholder.jpg'"
+                  :alt="igdbGame.name"
+                  class="w-full h-full object-cover"
+                  loading="lazy" />
               </div>
               <!-- Game Info -->
               <div class="flex-1 min-w-0">
@@ -295,7 +279,7 @@
   });
   const route = useRoute();
   const router = useRouter();
-  const userStore = useUserStore();
+  const gameStore = useGamesStore();
   const { getCurrentConfig, currentViewMode } = useViewMode();
   // Search state
   const searchQuery = ref((route.query.q as string) || '');
@@ -344,12 +328,6 @@
       filtered = filtered.filter(game =>
         game.genres.includes(selectedGenre.value)
       );
-    }
-
-    // Apply platform filter (assuming we have platform info in the game data)
-    if (selectedPlatform.value) {
-      // This would need to be implemented based on how platform data is stored
-      // For now, we'll skip this filter or implement a basic version
     }
 
     // Apply year filter
@@ -426,11 +404,10 @@
   const searchDatabase = async () => {
     if (!searchQuery.value.trim()) return;
     try {
-      const response = await $client.games.searchGames.query({
-        searchTerm: searchQuery.value,
-        limit: 50
-      });
-      dbResults.value = response.games;
+      const response = await gameStore.searchDatabase(searchQuery.value);
+      if (response) {
+        dbResults.value = response;
+      }
       // Apply filters after loading results
       applyFilters();
     } catch (error) {
@@ -440,15 +417,13 @@
     }
   };
   const searchIGDB = async () => {
-    if (!searchQuery.value.trim() || isIgdbLoading.value) return;
     isIgdbLoading.value = true;
     try {
-      const response = await $client.games.searchIGDB.query({
-        searchTerm: searchQuery.value,
-        limit: 20
-      });
-      igdbResults.value = response.games;
-      igdbSearched.value = true;
+      const response = await gameStore.searchIGDB(searchQuery.value);
+      if (response) {
+        igdbResults.value = response;
+        igdbSearched.value = true;
+      }
     } catch (error) {
       console.error('IGDB search error:', error);
       igdbResults.value = [];
@@ -463,17 +438,12 @@
 
   const navigateToIGDBGame = async (igdbGame: IGDBGame) => {
     try {
-      const game = await $client.games.addGameFromIGDB.mutate({
-        igdbId: igdbGame.id
-      });
-      router.push(`/game/${game.id}`);
+      const game = await gameStore.navigateToIGDBGame(igdbGame);
+      if (game) {
+        router.push(`/game/${game.id}`);
+      }
     } catch (error) {
       console.error('Error adding game from IGDB:', error);
-      alert(
-        `Fehler beim Hinzufügen des Spiels: ${
-          error.message || 'Unbekannter Fehler'
-        }`
-      );
     }
   };
   const performNewSearch = () => {
