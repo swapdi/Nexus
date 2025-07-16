@@ -27,7 +27,7 @@
         showSuggestions &&
         (suggestions.length > 0 || (!isLoading && searchQuery.length >= 2))
       "
-      class="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+      class="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50 max-h-[500px] overflow-y-auto">
       <!-- No Results Message -->
       <div
         v-if="suggestions.length === 0 && !isLoading && searchQuery.length >= 2"
@@ -49,8 +49,7 @@
               ? 'bg-green-600/20 border border-green-500/30'
               : 'hover:bg-gray-700/50'
           ]"
-          @mousedown="selectSuggestion(suggestion)"
-          @mouseenter="highlightedIndex = index">
+          @mousedown="selectSuggestion(suggestion)">
           <!-- Game Cover -->
           <div
             class="flex-shrink-0 w-12 h-16 bg-gray-600/50 rounded overflow-hidden">
@@ -184,12 +183,7 @@
     clearSearch();
   };
   const performSearch = () => {
-    if (
-      highlightedIndex.value >= 0 &&
-      suggestions.value[highlightedIndex.value]
-    ) {
-      selectSuggestion(suggestions.value[highlightedIndex.value]);
-    } else if (searchQuery.value.trim()) {
+    if (searchQuery.value.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.value.trim())}`);
       clearSearch();
     }
