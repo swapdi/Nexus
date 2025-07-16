@@ -110,18 +110,14 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
   const dealsStore = useDealsStore();
+  const gamesStore = useGamesStore();
   const { getStoreBannerURL } = useStoreUtils();
 
   const getCoverUrl = (deal: DealWithGame): string => {
     return deal.game.coverUrl || '/gameplaceholder.jpg';
   };
-
   const isGameOwned = (deal: DealWithGame): boolean => {
-    // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
-    const gamesStore = useGamesStore();
-    return gamesStore.games.some(
-      (userGame: any) => userGame.gameId === deal.gameId
-    );
+    return gamesStore.isGameOwned(deal.game.id);
   };
   const formatPrice = (price: number | null): string => {
     return dealsStore.formatPrice(price);

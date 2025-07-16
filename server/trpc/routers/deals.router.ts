@@ -5,6 +5,16 @@ import { z } from 'zod';
 import { DealsService } from '~/lib/services/deals.service';
 import { publicProcedure, router } from '../trpc';
 export const dealsRouter = router({
+  searchDeals: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().optional(),
+        isActive: z.boolean().optional()
+      })
+    )
+    .query(async ({ input }) => {
+      return await DealsService.searchDeals(input);
+    }),
   /**
    * Lädt Deals schnell aus der Datenbank (ohne CheapShark Sync)
    * Grund: Schneller UI-Load für bessere User Experience

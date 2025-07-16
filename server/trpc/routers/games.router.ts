@@ -5,9 +5,26 @@ import { IGDBService } from '~/lib/services/igdb.service';
 import { protectedProcedure, router } from '~/server/trpc/trpc';
 export const gamesRouter = router({
   // Benutzer-Spiele abrufen
-  getUserGames: protectedProcedure.query(async ({ ctx }) => {
-    return await GamesService.getUserGames(ctx.dbUser.id);
-  }),
+  getUserGames: protectedProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().optional(),
+          sortBy: z.enum(['lastPlayed', 'addedAt']).optional()
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const userGames = await GamesService.getUserGames(ctx.dbUser.id);
+      if (input?.sortBy === 'lastPlayed') {
+        userGames.sort(
+          (a, b) =>
+            new Date(b.lastPlayed!).getTime() -
+            new Date(a.lastPlayed!).getTime()
+        );
+      }
+      return userGames.slice(0, input?.limit);
+    }),
   // Einzelnes Spiel mit Plattformen abrufen
   getUserGame: protectedProcedure
     .input(
@@ -103,6 +120,27 @@ export const gamesRouter = router({
   // Benutzer-Statistiken
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserStats(ctx.dbUser.id);
+  }),
+  getGameActivity: protectedProcedure.query(async ({ ctx }) => {
+    const userGames = await GamesService.getUserGames(ctx.dbUser.id);
+    const activity = new Array(7).fill(0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (const userGame of userGames) {
+      if (userGame.lastPlayed) {
+        const lastPlayed = new Date(userGame.lastPlayed);
+        lastPlayed.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor(
+          (today.getTime() - lastPlayed.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        if (diffDays < 7) {
+          activity[6 - diffDays] += userGame.playtimeMinutes || 0;
+        }
+      }
+    }
+
+    return activity.map(minutes => Math.round(minutes / 60));
   }),
   // Favoriten-Status für ein Spiel umschalten
   toggleFavorite: protectedProcedure
