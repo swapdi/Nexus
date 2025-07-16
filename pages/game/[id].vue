@@ -3,7 +3,8 @@
   import MediaCarousel from '~/components/MediaCarousel.vue';
   import type { DealWithGame } from '~/lib/services/deals.service';
   import type { UserGameWithDetails } from '~/lib/services/games.service';
-  import type { Game } from '~/prisma/client';
+  import type { Game, Platform } from '~/prisma/client';
+  import PlatformBadge from '~/components/PlatformBadge.vue';
 
   // Route Parameter (Game ID, nicht UserGame ID)
   const route = useRoute();
@@ -20,6 +21,7 @@
   const isLoading = ref(true);
   const isLoadingDeals = ref(false);
   const error = ref<string | null>(null);
+  const ownedPlatforms = ref<Platform[]>([]);
 
   // Notes editing state
   const isEditingNotes = ref(false);
@@ -82,6 +84,7 @@
 
       // Lade verwandte Deals
       await loadRelatedDeals();
+      await loadOwnership();
 
       isLoading.value = false;
     } catch (err) {
@@ -93,6 +96,21 @@
 
   // Store Integration
   const { getStoreUrlsByName } = useStoreUtils();
+  const { $client } = useNuxtApp();
+
+  const loadOwnership = async () => {
+    if (!gameId.value) return;
+    try {
+      const platforms = await $client.games.getGameOwnership.query({
+        gameId: gameId.value
+      });
+      if (platforms) {
+        ownedPlatforms.value = platforms;
+      }
+    } catch (err) {
+      console.error('Fehler beim Laden der Plattformen:', err);
+    }
+  };
 
   // Lade Spiel direkt wenn nicht in Bibliothek
   const loadGameDirectly = async () => {
@@ -351,7 +369,11 @@
 
                       <!-- Platform badges with glow effect -->
                       <div class="absolute top-4 left-4 flex flex-wrap gap-2">
-                        <!-- Platzhalter für Plattformen - implementiert wenn verfügbar -->
+                        <PlatformBadge
+                          v-for="platform in ownedPlatforms"
+                          :key="platform.id"
+                          :platform="platform"
+                        />
                       </div>
                     </div>
 

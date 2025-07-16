@@ -197,5 +197,31 @@ export const gamesRouter = router({
           message: 'Fehler bei der IGDB-Suche'
         });
       }
+    }),
+  getGameOwnership: protectedProcedure
+    .input(
+      z.object({
+        gameId: z.number()
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const userGame = await GamesService.getUserGameByGameId(
+        ctx.dbUser.id,
+        input.gameId
+      );
+
+      if (!userGame) {
+        return null;
+      }
+
+      const platforms = await ctx.db.platform.findMany({
+        where: {
+          id: {
+            in: userGame.platformDRMs
+          }
+        }
+      });
+
+      return platforms;
     })
 });

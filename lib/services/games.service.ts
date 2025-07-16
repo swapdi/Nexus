@@ -233,6 +233,21 @@ export namespace GamesService {
       include: { game: true }
     });
   }
+
+  export async function getUserGameByGameId(
+    userId: number,
+    gameId: number
+  ): Promise<UserGameWithDetails | null> {
+    return prisma.userGame.findUnique({
+      where: {
+        userId_gameId: {
+          userId,
+          gameId
+        }
+      },
+      include: { game: true }
+    });
+  }
   /**
    * Aktualisiere User-Game-Daten
    */
