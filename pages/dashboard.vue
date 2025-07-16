@@ -4,131 +4,28 @@
     title: 'Dashboard - Gaming Nexus',
     layout: 'authenticated'
   });
+  const { $client } = useNuxtApp();
   const userStore = useUserStore();
   const user = computed(() => userStore.user);
-  // Dashboard Stats (Mock-Daten)
-  const stats = ref({
-    totalGames: 127,
-    hoursPlayed: 1847,
-    achievementsUnlocked: 342,
-    gamesCompleted: 23,
-    currentLevel: user.value?.level || 15,
-    currentXP: user.value?.xp || 2750,
-    nextLevelXP: 3000,
-    credits: user.value?.credits || 1250
-  });
-  // Zuletzt gespielte Spiele
-  const recentGames = ref([
-    {
-      id: 1,
-      name: 'Cyberpunk 2077',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      platform: 'Steam',
-      lastPlayed: '2 Stunden',
-      progress: 78
-    },
-    {
-      id: 2,
-      name: 'Elden Ring',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      platform: 'Steam',
-      lastPlayed: '1 Tag',
-      progress: 45
-    },
-    {
-      id: 3,
-      name: 'Red Dead Redemption 2',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      platform: 'Epic Games',
-      lastPlayed: '3 Tage',
-      progress: 92
-    },
-    {
-      id: 4,
-      name: 'The Witcher 3',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      platform: 'GOG',
-      lastPlayed: '1 Woche',
-      progress: 100
-    }
-  ]);
-  // Aktuelle Achievements
-  const recentAchievements = ref([
-    {
-      id: 1,
-      title: 'Legendary Warrior',
-      description: 'Erreiche Level 50 in Elden Ring',
-      game: 'Elden Ring',
-      icon: '🏆',
-      rarity: 'Legendär',
-      earnedAt: '2 Stunden'
-    },
-    {
-      id: 2,
-      title: 'Night City Legend',
-      description: 'Schließe alle Hauptmissionen ab',
-      game: 'Cyberpunk 2077',
-      icon: '🌃',
-      rarity: 'Episch',
-      earnedAt: '1 Tag'
-    },
-    {
-      id: 3,
-      title: 'Master Explorer',
-      description: 'Entdecke alle Gebiete',
-      game: 'Red Dead Redemption 2',
-      icon: '🗺️',
-      rarity: 'Selten',
-      earnedAt: '3 Tage'
-    }
-  ]);
-  // Aktuelle Deals/Angebote
-  const featuredDeals = ref([
-    {
-      id: 1,
-      name: "Baldur's Gate 3",
-      originalPrice: 59.99,
-      discountPrice: 47.99,
-      discount: 20,
-      platform: 'Steam',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      endsIn: '2 Tage'
-    },
-    {
-      id: 2,
-      name: 'Hades',
-      originalPrice: 24.99,
-      discountPrice: 12.49,
-      discount: 50,
-      platform: 'Epic Games',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      endsIn: '5 Tage'
-    },
-    {
-      id: 3,
-      name: 'Disco Elysium',
-      originalPrice: 39.99,
-      discountPrice: 19.99,
-      discount: 50,
-      platform: 'GOG',
-      coverUrl: 'https://via.placeholder.com/200x280',
-      endsIn: '1 Woche'
-    }
-  ]);
-  // Gaming-Aktivitäten diese Woche
-  const weeklyActivity = ref([
-    { day: 'Mo', hours: 2.5 },
-    { day: 'Di', hours: 1.0 },
-    { day: 'Mi', hours: 3.5 },
-    { day: 'Do', hours: 2.0 },
-    { day: 'Fr', hours: 4.0 },
-    { day: 'Sa', hours: 5.5 },
-    { day: 'So', hours: 3.0 }
-  ]);
-  // Berechne XP-Fortschritt
-  const xpProgress = computed(() => {
-    return Math.round((stats.value.currentXP / stats.value.nextLevelXP) * 100);
-  });
+  const { data: stats } = await useAsyncData('dashboard-stats', () =>
+    $client.user.getStats.query()
+  );
+  const { data: recentGames } = await useAsyncData(
+    'dashboard-recent-games',
+    () =>
+      $client.games.getUserGames.query({
+        limit: 4,
+        sortBy: 'lastPlayed'
+      })
+  );
+  const { data: featuredDeals } = await useAsyncData(
+    'dashboard-featured-deals',
+    () => $client.deals.searchDeals.query({ limit: 3, isActive: true })
+  );
+  const { data: gameActivity } = await useAsyncData(
+    'dashboard-game-activity',
+    () => $client.games.getGameActivity.query()
+  );
   // Aktuelle Uhrzeit für Begrüßung
   const currentTime = ref(new Date());
   const greeting = computed(() => {
@@ -171,29 +68,6 @@
               Übersicht.
             </p>
           </div>
-          <!-- Level & XP Progress -->
-          <div
-            class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
-            <div class="flex items-center space-x-4">
-              <div class="text-center">
-                <div class="text-2xl font-bold text-purple-400">
-                  {{ stats.currentLevel }}
-                </div>
-                <div class="text-xs text-gray-400">Level</div>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between text-sm mb-1">
-                  <span class="text-gray-300">{{ stats.currentXP }} XP</span>
-                  <span class="text-gray-400">{{ stats.nextLevelXP }} XP</span>
-                </div>
-                <div class="w-32 bg-gray-700 rounded-full h-2">
-                  <div
-                    class="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-1000"
-                    :style="`width: ${xpProgress}%`"></div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -211,12 +85,9 @@
               <Icon
                 name="heroicons:squares-2x2-20-solid"
                 class="w-8 h-8 text-purple-400" />
-              <span class="text-xs text-purple-300 font-medium"
-                >+12 diese Woche</span
-              >
             </div>
             <div class="text-3xl font-bold text-white mb-1">
-              {{ stats.totalGames }}
+              {{ stats?.totalGames || 0 }}
             </div>
             <div class="text-sm text-gray-400">Spiele in Bibliothek</div>
           </div>
@@ -231,17 +102,13 @@
               <Icon
                 name="heroicons:clock-20-solid"
                 class="w-8 h-8 text-blue-400" />
-              <span class="text-xs text-blue-300 font-medium"
-                >+21h diese Woche</span
-              >
             </div>
             <div class="text-3xl font-bold text-white mb-1">
-              {{ stats.hoursPlayed }}
+              {{ Math.round(stats?.totalPlaytime / 60) || 0 }}
             </div>
             <div class="text-sm text-gray-400">Gespielte Stunden</div>
           </div>
         </div>
-        <!-- Achievements -->
         <div
           class="bg-gradient-to-br from-green-900/30 to-green-800/20 rounded-xl p-6 border border-green-500/20 relative overflow-hidden group hover:border-green-400/50 transition-all duration-500">
           <div
@@ -249,16 +116,13 @@
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-2">
               <Icon
-                name="heroicons:trophy-20-solid"
+                name="heroicons:heart-20-solid"
                 class="w-8 h-8 text-green-400" />
-              <span class="text-xs text-green-300 font-medium"
-                >+8 diese Woche</span
-              >
             </div>
             <div class="text-3xl font-bold text-white mb-1">
-              {{ stats.achievementsUnlocked }}
+              {{ stats?.favoriteGames || 0 }}
             </div>
-            <div class="text-sm text-gray-400">Errungenschaften</div>
+            <div class="text-sm text-gray-400">Favoriten</div>
           </div>
         </div>
       </div>
@@ -342,7 +206,7 @@
           <!-- Balance Display -->
           <div class="space-y-1">
             <div class="text-3xl font-bold text-white mb-1">
-              {{ stats.credits }}
+              {{ user?.credits || 0 }}
             </div>
             <div class="text-slate-300/80 text-xs font-medium tracking-widest">
               Nexus Credits
@@ -350,7 +214,7 @@
           </div>
           <!-- Credit Value Hint -->
           <div class="mt-2 text-xs text-slate-400/70">
-            ≈ {{ (stats.credits * 0.01).toFixed(2) }}€ Wert
+            ≈ {{ ((user?.credits || 0) * 0.01).toFixed(2) }}€ Wert
           </div>
         </div>
       </div>
@@ -383,31 +247,21 @@
               <!-- Game Cover -->
               <div class="aspect-[3/4] relative overflow-hidden">
                 <img
-                  :src="game.coverUrl"
-                  :alt="game.name"
+                  :src="game.game.coverUrl"
+                  :alt="game.game.name"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div
                   class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                <!-- Progress Bar -->
-                <div class="absolute bottom-0 left-0 right-0 p-2">
-                  <div class="bg-gray-900/70 rounded-full h-1.5 mb-1">
-                    <div
-                      class="bg-gradient-to-r from-purple-500 to-blue-500 h-1.5 rounded-full transition-all duration-500"
-                      :style="`width: ${game.progress}%`"></div>
-                  </div>
-                  <div class="text-xs text-white font-medium">
-                    {{ game.progress }}%
-                  </div>
-                </div>
               </div>
               <!-- Game Info -->
               <div class="p-3">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
-                  {{ game.name }}
+                  {{ game.game.name }}
                 </h3>
                 <div class="flex items-center justify-between text-xs">
-                  <span class="text-gray-400">{{ game.platform }}</span>
-                  <span class="text-purple-300">{{ game.lastPlayed }}</span>
+                  <span class="text-purple-300">{{
+                    useTimeAgo(game.lastPlayed).value
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -437,138 +291,74 @@
               <div
                 class="w-12 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
                 <img
-                  :src="deal.coverUrl"
-                  :alt="deal.name"
+                  :src="deal.game.coverUrl"
+                  :alt="deal.game.name"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
-                  {{ deal.name }}
+                  {{ deal.game.name }}
                 </h3>
                 <div class="flex items-center space-x-2 mb-1">
                   <span class="text-lg font-bold text-green-400"
-                    >{{ deal.discountPrice.toFixed(2) }}€</span
+                    >{{ deal.price?.toFixed(2) }}€</span
                   >
                   <span class="text-sm text-gray-400 line-through"
-                    >{{ deal.originalPrice.toFixed(2) }}€</span
+                    >{{ deal.originalPrice?.toFixed(2) }}€</span
                   >
                   <span
                     class="text-xs bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded"
-                    >-{{ deal.discount }}%</span
+                    >-{{ deal.discountPercent?.toFixed(0) }}%</span
                   >
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-400">{{ deal.platform }}</span>
-                  <span class="text-xs text-orange-300">{{ deal.endsIn }}</span>
+                  <span class="text-xs text-gray-400">{{
+                    deal.storeName
+                  }}</span>
+                  <span class="text-xs text-orange-300">{{
+                    useTimeAgo(deal.validUntil).value
+                  }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- Second Row: Gaming Activity and New Achievements side by side -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Weekly Activity Chart - Takes 2/3 of the width -->
+      <!-- Second Row: Gaming Activity -->
+      <div class="grid grid-cols-1">
         <div
-          class="lg:col-span-2 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 flex-1 flex flex-col hover:border-blue-400/50 transition-all duration-500">
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-blue-400/50 transition-all duration-500">
           <h2 class="text-xl font-bold text-white mb-6 flex items-center">
             <Icon
               name="heroicons:chart-bar-20-solid"
               class="w-6 h-6 text-blue-400 mr-2" />
             Gaming-Aktivität diese Woche
           </h2>
-          <!-- Chart -->
           <div
             class="flex items-end justify-between space-x-3 flex-1 mb-6 min-h-[200px]">
             <div
-              v-for="day in weeklyActivity"
-              :key="day.day"
+              v-for="(hours, index) in gameActivity"
+              :key="index"
               class="flex-1 flex flex-col items-center group cursor-pointer h-full">
               <div class="relative flex-1 flex items-end w-full">
                 <div
                   class="w-full bg-gradient-to-t from-purple-600 to-blue-500 rounded-t-lg transition-all duration-500 hover:from-purple-500 hover:to-blue-400 group-hover:scale-105 relative min-h-[20px]"
-                  :style="`height: ${Math.max((day.hours / 6) * 100, 15)}%`">
-                  <!-- Glow effect -->
+                  :style="`height: ${Math.max(
+                    (hours / (Math.max(...gameActivity) || 1)) * 100,
+                    5
+                  )}%`">
                   <div
                     class="absolute inset-0 bg-gradient-to-t from-purple-400/50 to-blue-400/50 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
                 </div>
               </div>
               <div class="text-xs text-gray-400 mt-2 font-medium">
-                {{ day.day }}
-              </div>
-              <div class="text-xs text-white font-bold">{{ day.hours }}h</div>
-            </div>
-          </div>
-          <!-- Stats Summary -->
-          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-700/30">
-            <div class="text-center">
-              <div class="text-lg font-bold text-blue-400">
                 {{
-                  weeklyActivity
-                    .reduce((sum, day) => sum + day.hours, 0)
-                    .toFixed(1)
-                }}h
+                  new Date(
+                    new Date().setDate(new Date().getDate() - 6 + index)
+                  ).toLocaleDateString('de-DE', { weekday: 'short' })
+                }}
               </div>
-              <div class="text-xs text-gray-400">Diese Woche</div>
-            </div>
-            <div class="text-center">
-              <div class="text-lg font-bold text-purple-400">
-                {{ Math.max(...weeklyActivity.map(d => d.hours)).toFixed(1) }}h
-              </div>
-              <div class="text-xs text-gray-400">Bester Tag</div>
-            </div>
-            <div class="text-center">
-              <div class="text-lg font-bold text-green-400">
-                {{
-                  (
-                    weeklyActivity.reduce((sum, day) => sum + day.hours, 0) / 7
-                  ).toFixed(1)
-                }}h
-              </div>
-              <div class="text-xs text-gray-400">Ø pro Tag</div>
-            </div>
-          </div>
-        </div>
-        <!-- Recent Achievements - Takes 1/3 of the width -->
-        <div
-          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 flex-1 flex flex-col hover:border-yellow-400/50 transition-all duration-500">
-          <h2 class="text-xl font-bold text-white mb-6 flex items-center">
-            <Icon
-              name="heroicons:star-20-solid"
-              class="w-6 h-6 text-yellow-400 mr-2" />
-            Neue Errungenschaften
-          </h2>
-          <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
-            <div
-              v-for="achievement in recentAchievements"
-              :key="achievement.id"
-              class="flex items-start space-x-3 p-3 bg-gray-900/50 rounded-lg border border-gray-600/30 hover:border-yellow-500/30 transition-all duration-300">
-              <div class="text-2xl">{{ achievement.icon }}</div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-white text-sm mb-1">
-                  {{ achievement.title }}
-                </h3>
-                <p class="text-xs text-gray-400 mb-1">
-                  {{ achievement.description }}
-                </p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-blue-300">{{
-                    achievement.game
-                  }}</span>
-                  <span
-                    class="text-xs px-2 py-1 rounded-full"
-                    :class="{
-                      'bg-yellow-500/20 text-yellow-300':
-                        achievement.rarity === 'Legendär',
-                      'bg-purple-500/20 text-purple-300':
-                        achievement.rarity === 'Episch',
-                      'bg-blue-500/20 text-blue-300':
-                        achievement.rarity === 'Selten'
-                    }">
-                    {{ achievement.rarity }}
-                  </span>
-                </div>
-              </div>
+              <div class="text-xs text-white font-bold">{{ hours }}h</div>
             </div>
           </div>
         </div>
