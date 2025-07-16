@@ -4,28 +4,16 @@
     title: 'Dashboard - Gaming Nexus',
     layout: 'authenticated'
   });
-  const { $client } = useNuxtApp();
+  const { getStoreBannerURL } = useStoreUtils();
   const userStore = useUserStore();
+  const gamesStore = useGamesStore();
+  const dealsStore = useDealsStore();
+
   const user = computed(() => userStore.user);
-  const { data: stats } = await useAsyncData('dashboard-stats', () =>
-    $client.user.getStats.query()
-  );
-  const { data: recentGames } = await useAsyncData(
-    'dashboard-recent-games',
-    () =>
-      $client.games.getUserGames.query({
-        limit: 4,
-        sortBy: 'lastPlayed'
-      })
-  );
-  const { data: featuredDeals } = await useAsyncData(
-    'dashboard-featured-deals',
-    () => $client.deals.searchDeals.query({ limit: 3, isActive: true })
-  );
-  const { data: gameActivity } = await useAsyncData(
-    'dashboard-game-activity',
-    () => $client.games.getGameActivity.query()
-  );
+  const stats = computed(() => userStore.stats);
+  const recentGames = computed(() => gamesStore.recentlyPlayed.slice(0, 4));
+  const featuredDeals = computed(() => dealsStore.deals.slice(0, 3));
+
   // Aktuelle Uhrzeit für Begrüßung
   const currentTime = ref(new Date());
   const greeting = computed(() => {
@@ -34,17 +22,46 @@
     if (hour < 18) return 'Guten Tag';
     return 'Guten Abend';
   });
+
+  // Gaming-Aktivität (Mock-Daten basierend auf echten Stats)
+  const gameActivity = computed(() => {
+    // Grund: Einfache Darstellung der Wochenaktivität basierend auf totalPlaytimeHours
+    const totalHours = stats.value?.totalPlaytimeHours || 0;
+    const avgPerDay = Math.floor(totalHours / 7) || 1;
+    return Array.from({ length: 7 }, (_, i) =>
+      Math.max(avgPerDay + Math.floor(Math.random() * 3) - 1, 0)
+    );
+  });
+
   // Update Zeit jede Minute
-  onMounted(() => {
+  onMounted(async () => {
     setInterval(() => {
       currentTime.value = new Date();
     }, 60000);
+
+    // Benutzer initialisieren (falls noch nicht geschehen)
+    await userStore.init();
+
+    // Daten laden mit Fehlerbehandlung
+    try {
+      await Promise.all([
+        userStore.loadStats().catch(err => {
+          console.error('Fehler beim Laden der User Stats:', err);
+          return null;
+        }),
+        gamesStore.loadGames().catch(err => {
+          console.error('Fehler beim Laden der Spiele:', err);
+          return null;
+        }),
+        dealsStore.loadDealsFromDB().catch(err => {
+          console.error('Fehler beim Laden der Deals:', err);
+          return null;
+        })
+      ]);
+    } catch (error) {
+      console.error('Fehler beim Laden der Dashboard-Daten:', error);
+    }
   });
-  import { useNotifyStore } from '#imports';
-  const notifactionstore = useNotifyStore();
-  function testNotify() {
-    notifactionstore.notify('Testbenachrichtigung', 2);
-  }
 </script>
 <template>
   <div class="space-y-8">
@@ -104,7 +121,7 @@
                 class="w-8 h-8 text-blue-400" />
             </div>
             <div class="text-3xl font-bold text-white mb-1">
-              {{ Math.round(stats?.totalPlaytime / 60) || 0 }}
+              {{ stats?.totalPlaytimeHours || 0 }}
             </div>
             <div class="text-sm text-gray-400">Gespielte Stunden</div>
           </div>
@@ -120,7 +137,7 @@
                 class="w-8 h-8 text-green-400" />
             </div>
             <div class="text-3xl font-bold text-white mb-1">
-              {{ stats?.favoriteGames || 0 }}
+              {{ user?.userGames?.filter(g => g.isFavorite).length || 0 }}
             </div>
             <div class="text-sm text-gray-400">Favoriten</div>
           </div>
@@ -156,8 +173,7 @@
             <NuxtLink
               :to="'/credits/purchase'"
               class="text-slate-300 hover:text-slate-100 text-sm font-medium transition-colors"
-              title="Credits nachkaufen"
-              @click="testNotify">
+              title="Credits nachkaufen">
               <Icon
                 name="heroicons:plus-circle-20-solid"
                 class="w-9 h-9 text-white" />
@@ -183,7 +199,7 @@
                     <!-- Front of coin -->
                     <div class="absolute inset-0 backface-hidden rounded-full">
                       <img
-                        src="/assets/images/NexusCredit.png"
+                        src="/assets/images/NexusCredit.PNG"
                         alt="Nexus Credit"
                         class="w-full h-full object-contain drop-shadow-lg filter brightness-60" />
                     </div>
@@ -191,7 +207,7 @@
                     <div
                       class="absolute inset-0 backface-hidden rotate-y-180 rounded-full">
                       <img
-                        src="/assets/images/NexusCredit.png"
+                        src="/assets/images/NexusCredit.PNG"
                         alt="Nexus Credit Back"
                         class="w-full h-full object-contain drop-shadow-lg filter brightness-60 contrast-105 hue-rotate-15" />
                     </div>
@@ -241,13 +257,29 @@
           </div>
           <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
             <div
+              v-if="recentGames.length === 0"
+              class="col-span-4 text-center text-gray-500 py-8">
+              <Icon
+                name="heroicons:squares-2x2-20-solid"
+                class="w-12 h-12 mx-auto mb-2 text-gray-600" />
+              <p>Noch keine Spiele gespielt</p>
+              <p class="text-sm">
+                Importiere deine Steam-Bibliothek in den
+                <NuxtLink
+                  to="/settings"
+                  class="text-purple-400 hover:text-purple-300">
+                  Einstellungen
+                </NuxtLink>
+              </p>
+            </div>
+            <div
               v-for="game in recentGames"
               :key="game.id"
               class="group relative bg-gray-900/50 rounded-lg overflow-hidden border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1">
               <!-- Game Cover -->
               <div class="aspect-[3/4] relative overflow-hidden">
                 <img
-                  :src="game.game.coverUrl"
+                  :src="game.game.coverUrl || '/gameplaceholder.jpg'"
                   :alt="game.game.name"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div
@@ -260,7 +292,9 @@
                 </h3>
                 <div class="flex items-center justify-between text-xs">
                   <span class="text-purple-300">{{
-                    useTimeAgo(game.lastPlayed).value
+                    game.lastPlayed
+                      ? new Date(game.lastPlayed).toLocaleDateString('de-DE')
+                      : 'Nie gespielt'
                   }}</span>
                 </div>
               </div>
@@ -285,39 +319,49 @@
           </div>
           <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
             <div
+              v-if="featuredDeals.length === 0"
+              class="text-center text-gray-500 py-8">
+              <Icon
+                name="heroicons:fire-20-solid"
+                class="w-12 h-12 mx-auto mb-2 text-gray-600" />
+              <p>Keine aktuellen Deals</p>
+              <p class="text-sm">Deals werden automatisch synchronisiert</p>
+            </div>
+            <div
               v-for="deal in featuredDeals"
               :key="deal.id"
               class="flex items-center space-x-3 p-3 bg-gray-900/50 rounded-lg border border-gray-600/30 hover:border-red-500/30 transition-all duration-300 group">
               <div
                 class="w-12 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
                 <img
-                  :src="deal.game.coverUrl"
-                  :alt="deal.game.name"
+                  :src="deal.game?.coverUrl || '/gameplaceholder.jpg'"
+                  :alt="deal.game?.name || deal.title"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-white text-sm mb-1 truncate">
-                  {{ deal.game.name }}
+                  {{ deal.game?.name || deal.title }}
                 </h3>
                 <div class="flex items-center space-x-2 mb-1">
                   <span class="text-lg font-bold text-green-400"
-                    >{{ deal.price?.toFixed(2) }}€</span
+                    >{{ deal.price?.toFixed(2) || '0.00' }}€</span
                   >
-                  <span class="text-sm text-gray-400 line-through"
+                  <span
+                    v-if="deal.originalPrice"
+                    class="text-sm text-gray-400 line-through"
                     >{{ deal.originalPrice?.toFixed(2) }}€</span
                   >
                   <span
+                    v-if="deal.discountPercent"
                     class="text-xs bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded"
                     >-{{ deal.discountPercent?.toFixed(0) }}%</span
                   >
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-400">{{
-                    deal.storeName
-                  }}</span>
-                  <span class="text-xs text-orange-300">{{
-                    useTimeAgo(deal.validUntil).value
-                  }}</span>
+                  <img
+                    :src="getStoreBannerURL(deal.storeName)"
+                    :alt="`${deal.storeName} Banner`"
+                    class="h-6 max-w-[80px] object-contain opacity-90" />
                 </div>
               </div>
             </div>
@@ -325,44 +369,6 @@
         </div>
       </div>
       <!-- Second Row: Gaming Activity -->
-      <div class="grid grid-cols-1">
-        <div
-          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6 hover:border-blue-400/50 transition-all duration-500">
-          <h2 class="text-xl font-bold text-white mb-6 flex items-center">
-            <Icon
-              name="heroicons:chart-bar-20-solid"
-              class="w-6 h-6 text-blue-400 mr-2" />
-            Gaming-Aktivität diese Woche
-          </h2>
-          <div
-            class="flex items-end justify-between space-x-3 flex-1 mb-6 min-h-[200px]">
-            <div
-              v-for="(hours, index) in gameActivity"
-              :key="index"
-              class="flex-1 flex flex-col items-center group cursor-pointer h-full">
-              <div class="relative flex-1 flex items-end w-full">
-                <div
-                  class="w-full bg-gradient-to-t from-purple-600 to-blue-500 rounded-t-lg transition-all duration-500 hover:from-purple-500 hover:to-blue-400 group-hover:scale-105 relative min-h-[20px]"
-                  :style="`height: ${Math.max(
-                    (hours / (Math.max(...gameActivity) || 1)) * 100,
-                    5
-                  )}%`">
-                  <div
-                    class="absolute inset-0 bg-gradient-to-t from-purple-400/50 to-blue-400/50 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
-                </div>
-              </div>
-              <div class="text-xs text-gray-400 mt-2 font-medium">
-                {{
-                  new Date(
-                    new Date().setDate(new Date().getDate() - 6 + index)
-                  ).toLocaleDateString('de-DE', { weekday: 'short' })
-                }}
-              </div>
-              <div class="text-xs text-white font-bold">{{ hours }}h</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <!-- Loading Overlay -->

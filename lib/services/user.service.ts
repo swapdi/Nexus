@@ -219,8 +219,17 @@ export namespace UserService {
     if (!user) {
       throw new Error('Benutzer nicht gefunden');
     }
-    // Statistiken über Composable berechnen
-    const { calculateUserStats } = useUserStats();
-    return calculateUserStats(user);
+
+    // Statistiken direkt berechnen (ohne Composable für Server-Side)
+    const totalPlaytimeMinutes = user.userGames.reduce(
+      (sum, game) => sum + (game.playtimeMinutes || 0),
+      0
+    );
+    const totalPlaytimeHours = Math.floor(totalPlaytimeMinutes / 60);
+
+    return {
+      totalGames: user.userGames.length,
+      totalPlaytimeHours
+    };
   }
 }

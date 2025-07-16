@@ -133,6 +133,9 @@ export const useGamesStore = defineStore('games', () => {
       'data'
     );
   };
+  const isGameOwned = (gameId: number): boolean => {
+    return games.value.some((userGame: any) => userGame.gameId === gameId);
+  };
 
   const refreshData = async () => {
     await Promise.all([loadGames(), loadStats()]);
@@ -512,6 +515,7 @@ export const useGamesStore = defineStore('games', () => {
     totalPlaytimeHours,
     averageRating,
     // Actions
+    isGameOwned,
     loadGames,
     loadStats,
     refreshData,
