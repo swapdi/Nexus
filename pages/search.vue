@@ -219,9 +219,11 @@
                   class="text-sm text-gray-400 mt-1 line-clamp-2">
                   {{ igdbGame.summary }}
                 </div>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div
+                  v-if="igdbGame.genres && igdbGame.genres.length > 0"
+                  class="flex flex-wrap gap-2 mt-2">
                   <span
-                    v-for="genre in igdbGame.genres?.slice(0, 3)"
+                    v-for="genre in igdbGame.genres.slice(0, 3)"
                     :key="genre.id"
                     class="px-2 py-1 bg-purple-600/20 text-purple-300 text-xs rounded">
                     {{ genre.name }}
@@ -459,12 +461,20 @@
     router.push(`/game/${game.id}`);
   };
 
-  const navigateToIGDBGame = (igdbGame: IGDBGame) => {
-    // Für IGDB-Spiele könnte man eine separate Seite erstellen oder zur Suche zurückleiten
-    // Für jetzt zeigen wir einfach eine Nachricht
-    alert(
-      `IGDB-Spiel: ${igdbGame.name}. Diese Funktion ist noch nicht implementiert.`
-    );
+  const navigateToIGDBGame = async (igdbGame: IGDBGame) => {
+    try {
+      const game = await $client.games.addGameFromIGDB.mutate({
+        igdbId: igdbGame.id
+      });
+      router.push(`/game/${game.id}`);
+    } catch (error) {
+      console.error('Error adding game from IGDB:', error);
+      alert(
+        `Fehler beim Hinzufügen des Spiels: ${
+          error.message || 'Unbekannter Fehler'
+        }`
+      );
+    }
   };
   const performNewSearch = () => {
     if (newSearchQuery.value.trim()) {

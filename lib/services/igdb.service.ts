@@ -147,7 +147,7 @@ export namespace IGDBService {
       const headers = await getHeaders();
       const body = `
         search "${query}";
-        fields id, name, first_release_date, platforms.name;
+        fields id, name, first_release_date, platforms.name, genres.name;
         limit ${limit};
       `;
       const response = await fetch('https://api.igdb.com/v4/games', {

@@ -1,4 +1,5 @@
 import { PrismaClient, type Game, type UserGame } from '~/prisma/client';
+import type { IGDBGameData } from './igdb.service';
 const prisma = new PrismaClient();
 // ============================================================================
 // TYPEN & INTERFACES
@@ -166,6 +167,40 @@ export namespace GamesService {
         }`
       );
     }
+  }
+
+  export async function createGameFromIGDB(
+    db: PrismaClient,
+    gameData: IGDBGameData
+  ): Promise<Game> {
+    // Prüfe ob das Spiel bereits mit IGDB-ID existiert
+    const existingGame = await db.game.findUnique({
+      where: { igdbId: gameData.id }
+    });
+    if (existingGame) {
+      return existingGame;
+    }
+    // Erstelle neues Spiel mit IGDB-Daten
+    const newGame = await db.game.create({
+      data: {
+        igdbId: gameData.id,
+        name: gameData.name,
+        slug: gameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        summary: gameData.summary,
+        firstReleaseDate: gameData.firstReleaseDate,
+        coverUrl: gameData.coverUrl,
+        screenshots: gameData.screenshotUrls || [],
+        videos: gameData.videoUrls || [],
+        totalRating: gameData.totalRating,
+        genres: gameData.genres || [],
+        developers: gameData.developers || [],
+        publishers: gameData.publishers || [],
+        lastSyncedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    });
+    return newGame;
   }
 
   // ============================================================================
@@ -348,33 +383,7 @@ export namespace GamesService {
       });
       for (const game of allGames) {
         const normalizedGameTitles = generateSimpleVariants(game.name);
-        // Prüfe auf exakte Übereinstimmung zwischen allen Varianten
-        for (const searchVariant of normalizedSearchTitles) {
-          for (const gameVariant of normalizedGameTitles) {
-            if (searchVariant === gameVariant) {
-              return prisma.game.findUnique({ where: { id: game.id } });
-            }
-            // Prüfe auf enthält-Beziehung in beide Richtungen
-            if (
-              gameVariant.includes(searchVariant) ||
-              searchVariant.includes(gameVariant)
-            ) {
-              return prisma.game.findUnique({ where: { id: game.id } });
-            }
-          }
-        }
-      }
-    }
-    // Fallback: Versuche auch umgekehrt - wenn DB-Name im Suchbegriff enthalten ist
-    const reverseMatch = await prisma.game.findFirst({
-      where: {
-        OR: [
-          { name: { contains: normalizedName, mode: 'insensitive' } },
-          {
-            slug: {
-              contains: normalizedName
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-'),
+.replace(/[^a-z0-9]+/g, '-'),
               mode: 'insensitive'
             }
           }

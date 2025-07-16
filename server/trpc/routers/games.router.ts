@@ -197,5 +197,23 @@ export const gamesRouter = router({
           message: 'Fehler bei der IGDB-Suche'
         });
       }
+    }),
+  addGameFromIGDB: protectedProcedure
+    .input(
+      z.object({
+        igdbId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const igdbGame = await IGDBService.getGameDetails(input.igdbId);
+      if (!igdbGame) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Spiel mit IGDB ID ${input.igdbId} nicht gefunden.`
+        });
+      }
+      const gameData = IGDBService.convertIGDBGame(igdbGame);
+      const game = await GamesService.createGameFromIGDB(ctx.db, gameData);
+      return game;
     })
 });
