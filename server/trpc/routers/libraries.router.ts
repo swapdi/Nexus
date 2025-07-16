@@ -96,5 +96,30 @@ export const librariesRouter = router({
           message: 'Fehler beim Überprüfen der Epic Games Konfiguration'
         });
       }
+    }),
+  removeEpicGamesAuth: protectedProcedure
+    .input(
+      z.object({
+        userId: z.number().min(1, 'User ID ist erforderlich')
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const result = await EpicGamesService.removeEpicGamesAuth(input.userId);
+        if (!result) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Fehler beim Entfernen der Epic Games Authentifizierung'
+          });
+        }
+        return result;
+      } catch (error) {
+        console.error('Epic Games Auth Removal Error:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message:
+            'Unerwarteter Fehler beim Entfernen der Epic Games Authentifizierung'
+        });
+      }
     })
 });

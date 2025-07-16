@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export namespace EpicGamesService {
   // Die Basis-URL deines Docker/Flask-Backends
   // Für die Produktion sollte dies aus der Nuxt-Konfiguration kommen
-  const backendUrl = 'http://localhost:5000';
+  const backendUrl = 'https://epic.swapdi.de';
 
   export interface EpicGamesAuthData {
     auth_token: string;
@@ -23,6 +23,10 @@ export namespace EpicGamesService {
         `${backendUrl}/auth/complete`,
         {
           method: 'POST',
+          headers: {
+            'X-API-Key': process.env.EPIC_GAMES_API_KEY || '',
+            'Content-Type': 'application/json'
+          },
           body: { auth_token: authData.auth_token, user_id: authData.user_id }
         }
       );
@@ -44,7 +48,12 @@ export namespace EpicGamesService {
 
   export const getGames = async (userId: string) => {
     try {
-      const games = await $fetch<any[]>(`${backendUrl}/games/${userId}`);
+      const games = await $fetch<any[]>(`${backendUrl}/games/${userId}`, {
+        method: 'GET',
+        headers: {
+          'X-API-Key': process.env.EPIC_GAMES_API_KEY || ''
+        }
+      });
       return games;
     } catch (error) {
       console.error('Fehler beim Abrufen der Spiele:', error);
@@ -54,12 +63,45 @@ export namespace EpicGamesService {
 
   export const checkConfig = async (userId: string) => {
     try {
-      const response = await $fetch(`${backendUrl}/auth/status/${userId}`);
+      const response = await $fetch(`${backendUrl}/auth/status/${userId}`, {
+        method: 'GET',
+        headers: {
+          'X-API-Key': process.env.EPIC_GAMES_API_KEY || ''
+        }
+      });
       return response;
     } catch (error) {
       console.error('Fehler beim Überprüfen der Konfiguration:', error);
       return false;
     }
+  };
+
+  export const removeEpicGamesAuth = async (
+    userId: number
+  ): Promise<boolean> => {
+    try {
+      const response: any = await $fetch(
+        `${backendUrl}/auth/delete/${userId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'X-API-Key': process.env.EPIC_GAMES_API_KEY || ''
+          }
+        }
+      );
+      if (
+        response &&
+        response.message === 'Benutzer wurde erfolgreich abgemeldet.'
+      ) {
+        return true;
+      }
+    } catch (error) {
+      console.error(
+        'Fehler beim Entfernen der Epic Games-Authentifizierung:',
+        error
+      );
+    }
+    return false;
   };
 
   /**
@@ -95,9 +137,6 @@ export namespace EpicGamesService {
         );
         return result;
       }
-      console.log(
-        `Epic Games Import gestartet: ${epicGames.length} Spiele gefunden`
-      );
       // Verarbeite Epic Games
       for (const epicGame of epicGames) {
         try {

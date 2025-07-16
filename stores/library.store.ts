@@ -4,11 +4,13 @@ import { useUserStore } from './user.store';
 export const useLibraryStore = defineStore('library', () => {
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
+  const notifyStore = useNotifyStore();
+  const { $client } = useNuxtApp();
   // Loading store integration
   const { loading } = useLoading();
   const error = ref<string | null>(null);
 
-  const lastImportResult = ref<any | null>(null); // TODO: Define proper import result type
+  const lastImportResult = ref<any | null>(null);
   const refreshLibraries = async () => {
     return await loading(
       'library-refresh',
@@ -36,8 +38,6 @@ export const useLibraryStore = defineStore('library', () => {
       'steam-import',
       'Steam-Bibliothek importieren...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const result = await $client.libraries.importSteamLibrary.mutate({
@@ -76,8 +76,6 @@ export const useLibraryStore = defineStore('library', () => {
       'epic-import',
       'Epic Games-Bibliothek importieren...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const result = await $client.libraries.importEpicLibrary.mutate();
@@ -116,8 +114,6 @@ export const useLibraryStore = defineStore('library', () => {
       'epic-auth-complete',
       'Epic Games Authentifizierung wird abgeschlossen...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const result = await $client.libraries.completeAuthEpicGames.mutate({
@@ -150,7 +146,6 @@ export const useLibraryStore = defineStore('library', () => {
       'epic-config-status',
       'Überprüfe Epic Games Konfiguration...',
       async () => {
-        const { $client } = useNuxtApp();
         try {
           error.value = null;
           const status = await $client.libraries.getEpicConfigStatus.query({
@@ -174,18 +169,19 @@ export const useLibraryStore = defineStore('library', () => {
       'epic-disconnect',
       'Epic Games Verbindung wird getrennt...',
       async () => {
-        const { $client } = useNuxtApp();
-        const notifyStore = useNotifyStore();
         try {
           error.value = null;
           const result = await $client.user.unlinkEpicProfile.mutate();
-
-          if (result && result.success) {
+          const resultAuth = await $client.libraries.removeEpicGamesAuth.mutate(
+            {
+              userId: userStore.user?.id || 0
+            }
+          );
+          if (result && result.success && resultAuth) {
             notifyStore.notify(
               'Epic Games Verbindung erfolgreich getrennt!',
               1
             );
-            // User-Daten nach Trennung aktualisieren
             await userStore.init();
           }
 

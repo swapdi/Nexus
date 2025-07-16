@@ -20,6 +20,9 @@ export interface DealSearchFilters {
   offset?: number;
 }
 export const useDealsStore = defineStore('deals', () => {
+  const { $client } = useNuxtApp();
+  const notifyStore = useNotifyStore();
+
   // Loading store integration
   const { loading } = useLoading();
   // State
@@ -38,7 +41,6 @@ export const useDealsStore = defineStore('deals', () => {
     total: number;
     message: string;
   } | null>(null);
-  const { $client } = useNuxtApp();
   /**
    * Lädt Deals schnell aus der Datenbank (ohne Sync)
    * Grund: Sofortiges UI-Loading für bessere User Experience
@@ -48,7 +50,6 @@ export const useDealsStore = defineStore('deals', () => {
       'load-deals-db',
       'Lade aktuelle Deals...',
       async () => {
-        const notifyStore = useNotifyStore();
         error.value = null;
         try {
           const response = await $client.deals.loadDealsFromDB.query({
@@ -74,19 +75,11 @@ export const useDealsStore = defineStore('deals', () => {
     if (isBackgroundSyncing.value) {
       return;
     }
-    const notifyStore = useNotifyStore();
     isBackgroundSyncing.value = true;
     syncProgress.value = { current: 0, total: 0, message: 'Starte Sync...' };
     try {
       notifyStore.notify('Deals-Synchronisation im Hintergrund gestartet', 0);
-      const response = await $client.deals.syncAllDealsBackground.mutate({
-        cleanupDays: 100,
-        maxPages: 1,
-        stopOnEmpty: true,
-        maxEmptyPages: 3,
-        maxAge: 2400,
-        rateLimitDelay: 800
-      });
+      const response = await $client.deals.syncAllDealsBackground.mutate();
       lastSyncTime.value = new Date();
       // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync
       notifyStore.notify(
@@ -139,7 +132,6 @@ export const useDealsStore = defineStore('deals', () => {
       'refresh-all-deals',
       'Aktualisiere alle Deals...',
       async () => {
-        const notifyStore = useNotifyStore();
         try {
           // Schritt 1: Aktuelle Deals aus DB laden
           await loadDealsFromDB();

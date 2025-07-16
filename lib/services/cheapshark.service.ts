@@ -1,6 +1,5 @@
 // CheapShark API Service
 // Grund: Zentrale Schnittstelle zur CheapShark API für Deal-Aggregation
-import { useStoreUtils } from '~/composables/useStoreUtils';
 export interface CheapSharkDeal {
   internalName: string;
   title: string;
@@ -280,13 +279,6 @@ export namespace CheapSharkService {
       console.error('Fehler beim Laden der Stores:', error);
       throw error;
     }
-  }
-  /**
-   * Hilfsfunktion: Gibt den Store-Namen basierend auf der storeID zurück
-   * Grund: Benutzerfreundliche Anzeige der Store-Namen
-   */
-  export function getStoreName(storeID: string): string {
-    return useStoreUtils().getStoreName(storeID);
   }
 
   /**

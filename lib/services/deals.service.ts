@@ -154,15 +154,13 @@ export namespace DealsService {
       const normalPrice = parseFloat(cheapSharkDeal.normalPrice || '0');
       const savings = parseFloat(cheapSharkDeal.savings || '0');
       // Grund: Store-Namen aus CheapShark Service holen
-      const storeName = CheapSharkService.getStoreName(cheapSharkDeal.storeID);
+      const storeName = useStoreUtils().getStoreName(cheapSharkDeal.storeID);
       // Grund: Spiel finden oder erstellen wenn keine gameId gegeben
       let finalGameId = gameId;
       if (!finalGameId) {
         try {
           // Grund: Nutze zentrale Spielsuche
-          const foundGame = await DealsService.findOrCreateGameForDeal(
-            cheapSharkDeal.title
-          );
+          const foundGame = await findOrCreateGameForDeal(cheapSharkDeal.title);
           if (foundGame) {
             finalGameId = foundGame.id;
           } else {
