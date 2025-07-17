@@ -9,86 +9,62 @@ datasource db {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  supabase_uid     String            @unique
-  display_name     String?
-  xp               Int               @default(0)
-  level            Int               @default(1)
-  credits          Int               @default(0)
-  userAchievements UserAchievement[]
-  userGames        UserGame[]
-  wishlistItems    Wishlist[]
+  id            Int        @id @default(autoincrement())
+  supabase_uid  String     @unique
+  display_name  String?
+  xp            Int        @default(0)
+  level         Int        @default(1)
+  credits       Int        @default(0)
+  steamId       String?
+  epicConnect   Boolean?   @default(false)
+  gogConnect    Boolean?   @default(false)
+  userGames     UserGame[]
+  wishlistItems Wishlist[]
 
   @@map("users")
 }
 
 model Game {
-  id                    Int            @id @default(autoincrement())
-  igdbId                Int?           @unique
-  name                  String
-  slug                  String?
-  summary               String?
-  storyline             String?
-  firstReleaseDate      DateTime?
-  coverUrl              String?
-  screenshots           String[]
-  totalRating           Float?
-  totalRatingCount      Int?
-  aggregatedRating      Float?
-  aggregatedRatingCount Int?
-  genres                String[]
-  themes                String[]
-  gameModes             String[]
-  keywords              String[]
-  developers            String[]
-  publishers            String[]
-  websites              Json?
-  externalGames         Json?
-  ageRatings            Json?
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
-  lastSyncedAt          DateTime?
-  steamAppId            String?
-  deals                 Deal[]
-  platformGames         PlatformGame[]
-  userGames             UserGame[]
-  wishlistedBy          Wishlist[]
+  id               Int        @id @default(autoincrement())
+  igdbId           Int?       @unique
+  name             String
+  slug             String?
+  summary          String?
+  storyline        String?
+  firstReleaseDate DateTime?
+  coverUrl         String?
+  screenshots      String[]
+  videos           String[]   @default([])
+  totalRating      Float?
+  genres           String[]
+  developers       String[]
+  publishers       String[]
+  websites         Json?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  lastSyncedAt     DateTime?
+  deals            Deal[]
+  userGames        UserGame[]
+  wishlistedBy     Wishlist[]
 
   @@map("games")
 }
 
 model Platform {
-  id            Int            @id @default(autoincrement())
-  name          String         @unique
-  slug          String         @unique
-  iconUrl       String?
-  siteUrl       String?
-  platformGames PlatformGame[]
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  slug    String  @unique
+  iconUrl String?
+  siteUrl String?
 
   @@map("platforms")
-}
-
-model PlatformGame {
-  id                 Int      @id @default(autoincrement())
-  gameId             Int
-  platformId         Int
-  platformSpecificId String
-  url                String?
-  deals              Deal[]
-  game               Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  platform           Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
-
-  @@unique([gameId, platformId])
-  @@unique([platformId, platformSpecificId])
-  @@unique([gameId, platformId], map: "platform_games_gameid_platformid_unique")
-  @@unique([platformId, platformSpecificId], map: "platform_games_platformid_platformspecificid_unique")
-  @@map("platform_games")
 }
 
 model UserGame {
   id              Int       @id @default(autoincrement())
   userId          Int
   gameId          Int
+  platformDRMs    Int[]     @default([]) // IDs of platforms where the game is bought from
   addedAt         DateTime  @default(now())
   playtimeMinutes Int?      @default(0)
   lastPlayed      DateTime?
@@ -104,53 +80,25 @@ model UserGame {
 }
 
 model Deal {
-  id              Int           @id @default(autoincrement())
-  gameId          Int
-  platformGameId  Int?
+  id              Int       @id @default(autoincrement())
+  gameId          Int?
   title           String
   storeName       String
+  platformDRM     Int?
   price           Float?
   discountPercent Float?
   originalPrice   Float?
   url             String
   validFrom       DateTime?
   validUntil      DateTime?
-  isFreebie       Boolean       @default(false)
-  discoveredAt    DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  isFreebie       Boolean   @default(false)
+  discoveredAt    DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   externalId      String?
   source          String?
-  game            Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  platformGame    PlatformGame? @relation(fields: [platformGameId], references: [id])
+  game            Game?     @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@map("deals")
-}
-
-model Achievement {
-  id               Int               @id @default(autoincrement())
-  name             String            @unique
-  description      String
-  iconUrl          String?
-  criteria         String
-  xpReward         Int               @default(0)
-  creditsReward    Int               @default(0)
-  createdAt        DateTime          @default(now())
-  userAchievements UserAchievement[]
-
-  @@map("achievements")
-}
-
-model UserAchievement {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  achievementId Int
-  unlockedAt    DateTime    @default(now())
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, achievementId])
-  @@unique([userId, achievementId], map: "user_achievements_userid_achievementid_unique")
-  @@map("user_achievements")
 }
 
 model Wishlist {
