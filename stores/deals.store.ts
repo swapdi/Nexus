@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, readonly, ref } from 'vue';
 import type { DealWithGame } from '~/lib/services/deals.service';
+import type { ITADGame } from '~/lib/services/itad.service';
 import { useLoading } from '~/stores/loading.store';
 export type DealSortOptions =
   | 'discount-desc'
@@ -32,6 +33,8 @@ export const useDealsStore = defineStore('deals', () => {
   const bestDeals = ref<DealWithGame[]>([]);
   const freeGames = ref<DealWithGame[]>([]);
   const availableStores = ref<string[]>([]);
+  const searchResults = ref<ITADGame[]>([]);
+  const waitlist = ref<ITADGame[]>([]);
   const error = ref<string | null>(null);
   // Current filters und sorting
   const currentSortBy = ref<DealSortOptions>('recent');
@@ -163,6 +166,61 @@ export const useDealsStore = defineStore('deals', () => {
       }
     });
   }
+  const addToWaitlist = async (id: string) => {
+    return await loading(
+      `add-to-itad-waitlist-${id}`,
+      'Füge zur Waitlist hinzu...',
+      async () => {
+        try {
+          await $client.deals.addToITADWaitlist.mutate({
+            gameIds: [id]
+          });
+
+          notifyStore.notify(`Spiel zur Wishlist hinzugefügt!`, 1);
+
+          return true;
+        } catch (error) {
+          console.error('Error adding to ITAD waitlist:', error);
+          notifyStore.notify(
+            'Fehler beim Hinzufügen zur Waitlist. Bitte versuche es später erneut.',
+            3
+          );
+          throw error;
+        }
+      },
+      'api'
+    );
+  };
+
+  const removeFromWaitlist = async (id: string) => {
+    return await loading(
+      `remove-from-itad-waitlist-${id}`,
+      'Entferne von Waitlist...',
+      async () => {
+        try {
+          await $client.deals.removeFromITADWaitlist.mutate({
+            gameIds: [id]
+          });
+
+          notifyStore.notify(`"Spiel von Wishlist entfernt!`, 1);
+
+          return true;
+        } catch (error) {
+          console.error('Error removing from ITAD waitlist:', error);
+          notifyStore.notify(
+            'Fehler beim Entfernen von der Waitlist. Bitte versuche es später erneut.',
+            3
+          );
+          throw error;
+        }
+      },
+      'api'
+    );
+  };
+
+  const isInWaitlist = (id: string): boolean => {
+    return waitlist.value.some(game => game.id === id);
+  };
 
   // Computed Properties
   /**
@@ -262,6 +320,9 @@ export const useDealsStore = defineStore('deals', () => {
     // Helpers
     formatPrice,
     formatDiscount,
-    searchGameDeals
+    searchGameDeals,
+    addToWaitlist,
+    removeFromWaitlist,
+    isInWaitlist
   };
 });

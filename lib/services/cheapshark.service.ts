@@ -237,49 +237,6 @@ export namespace CheapSharkService {
       );
     }
   }
-  /**
-   * Holt detaillierte Informationen zu einem spezifischen Deal
-   * @param dealID Die CheapShark dealID
-   * @returns Detaillierte Deal-Informationen
-   */
-  export async function getDealDetails(
-    dealID: string
-  ): Promise<CheapSharkDealDetails> {
-    try {
-      if (!dealID.trim()) {
-        throw new Error('Deal ID cannot be empty');
-      }
-      const url = `${BASE_URL}/deals?id=${dealID.trim()}`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(
-          `CheapShark API Error: ${response.status} ${response.statusText}`
-        );
-      }
-      const dealDetails: CheapSharkDealDetails = await response.json();
-      return dealDetails;
-    } catch (error) {
-      console.error('Error fetching deal details from CheapShark:', error);
-      throw new Error(
-        `Failed to fetch deal details: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
-
-  export async function getAllStores(): Promise<CheapSharkStore[]> {
-    try {
-      const response = await fetch(`${BASE_URL}/stores`);
-      if (!response.ok) {
-        throw new Error(`CheapShark API Error: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Fehler beim Laden der Stores:', error);
-      throw error;
-    }
-  }
 
   /**
    * Lädt alle verfügbaren Stores von der CheapShark API

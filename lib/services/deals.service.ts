@@ -283,11 +283,140 @@ export namespace DealsService {
       );
     }
   }
+  /**
+   * Deal erstellen oder aktualisieren
+   */
+  export async function createOrUpdateDeal(
+    dealData: DealCreateInput
+  ): Promise<DealWithGame | null> {
+    try {
+      // Prüfen ob Deal bereits existiert
+      let existingDeal = null;
+
+      if (dealData.externalId) {
+        existingDeal = await prisma.deal.findFirst({
+          where: {
+            externalId: dealData.externalId,
+            source: dealData.source
+          },
+          include: {
+            game: true
+          }
+        });
+      }
+
+      if (existingDeal) {
+        // Deal aktualisieren
+        const updatedDeal = await prisma.deal.update({
+          where: { id: existingDeal.id },
+          data: {
+            price: dealData.price,
+            originalPrice: dealData.originalPrice,
+            discountPercent: dealData.discountPercent,
+            url: dealData.url,
+            isFreebie: dealData.isFreebie,
+            validUntil: dealData.validUntil
+            // updatedAt wird automatisch gesetzt
+          },
+          include: {
+            game: true
+          }
+        });
+        return updatedDeal as DealWithGame;
+      } else {
+        // Neuen Deal erstellen
+        const newDeal = await prisma.deal.create({
+          data: {
+            gameId: dealData.gameId,
+            title: dealData.title,
+            storeName: dealData.storeName,
+            price: dealData.price,
+            originalPrice: dealData.originalPrice,
+            discountPercent: dealData.discountPercent,
+            url: dealData.url,
+            validFrom: dealData.validFrom,
+            validUntil: dealData.validUntil,
+            isFreebie: dealData.isFreebie || false,
+            externalId: dealData.externalId,
+            source: dealData.source || 'unknown',
+            thumb: dealData.thumb,
+            rating: dealData.rating
+          },
+          include: {
+            game: true
+          }
+        });
+        return newDeal as DealWithGame;
+      }
+    } catch (error) {
+      console.error('Error creating/updating deal:', error);
+      return null;
+    }
+  }
+
   // ===== CHEAPSHARK API WRAPPERS =====
   /**
    * Wrapper für CheapShark getAllDeals
    */
   export async function getAllCheapSharkDeals(options: any = {}) {
     return await CheapSharkService.getAllDeals(options);
+  }
+
+  // ===== ITAD API INTEGRATION =====
+
+  /**
+   * Konvertiert einen ITAD Deal zu unserem Deal-Format
+   * @param itadDeal ITAD Deal Objekt
+   * @param gameId Optional: Verknüpfung zu unserem Game
+   * @returns DealCreateInput für die Erstellung
+   */
+  export async function convertITADDeal(
+    itadDeal: any, // ITAD Deal aus der deals list
+    gameId?: number | null
+  ): Promise<DealCreateInput | null> {
+    try {
+      if (!itadDeal.id || !itadDeal.title) {
+        console.warn('Invalid ITAD deal: missing id or title');
+        return null;
+      }
+
+      const price = itadDeal.price?.amount || 0;
+      const regularPrice = itadDeal.regular?.amount || 0;
+      const cut = itadDeal.cut || 0;
+
+      // Grund: Spiel finden oder erstellen wenn keine gameId gegeben
+      let finalGameId = gameId;
+      if (!finalGameId) {
+        try {
+          const foundGame = await findOrCreateGameForDeal(itadDeal.title);
+          if (foundGame) {
+            finalGameId = foundGame.id;
+          } else {
+            finalGameId = null;
+          }
+        } catch (error) {
+          console.error('Error finding/creating game for ITAD deal:', error);
+          finalGameId = null;
+        }
+      }
+
+      return {
+        gameId: finalGameId,
+        title: itadDeal.title,
+        storeName: itadDeal.shop?.name || 'Unknown Store',
+        price: price > 0 ? price : undefined,
+        originalPrice: regularPrice > 0 ? regularPrice : undefined,
+        discountPercent: cut > 0 ? cut : undefined,
+        url: itadDeal.url,
+        validFrom: new Date(),
+        isFreebie: price === 0,
+        externalId: itadDeal.id,
+        source: 'ITAD',
+        thumb: itadDeal.assets?.boxart || undefined
+      };
+    } catch (error) {
+      console.error('Error converting ITAD deal:', error);
+      return null;
+    }
   }
 }

@@ -4,6 +4,8 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { useStoreUtils } from '~/composables/useStoreUtils';
 import { DealsService } from '~/lib/services/deals.service';
+import { CheapSharkService } from '../../../lib/services/cheapshark.service';
+import { ITADService } from '../../../lib/services/itad.service';
 import { publicProcedure, router } from '../trpc';
 export const dealsRouter = router({
   searchDeals: publicProcedure
@@ -77,8 +79,7 @@ export const dealsRouter = router({
         try {
           const cheapSharkDeals = await DealsService.getAllCheapSharkDeals({
             pageNumber: currentPage,
-            //pageSize: 60,
-            pageSize: 10,
+            pageSize: 60,
             sortBy: 'Deal Rating',
             desc: true,
             maxAge: maxAge // Filter Deals älter als X Tage
@@ -98,7 +99,6 @@ export const dealsRouter = router({
           currentPage++;
           // Angepasste Pause zwischen API-Calls basierend auf Rate-Limiting-Erfahrung
           if (currentPage < maxPages) {
-            // Längere Pausen nach jeder 10. Seite um 429 Errors zu vermeiden
             const delay =
               currentPage % 10 === 0 ? rateLimitDelay * 2 : rateLimitDelay;
             await new Promise(resolve => setTimeout(resolve, delay));
@@ -159,46 +159,21 @@ export const dealsRouter = router({
           limit: 10
         });
 
-        // Falls keine direkten gameId matches, suche in allen Deals nach ähnlichem Titel
-        if (savedDeals.length === 0) {
-          // Lade alle aktiven Deals und filtere clientseitig nach Titel
-          const allDeals = await DealsService.searchDeals({
-            isActive: true,
-            limit: 100
-          });
-
-          savedDeals = allDeals
-            .filter(
-              deal =>
-                deal.title.toLowerCase().includes(gameName.toLowerCase()) ||
-                (slug && deal.title.toLowerCase().includes(slug.toLowerCase()))
-            )
-            .slice(0, 10);
-        }
-
         // Schritt 2: Suche live Deals bei CheapShark
-        const liveDeals = [];
+        const liveCSDeals = [];
         try {
-          // Importiere CheapShark Service nur hier im Router
-          const { CheapSharkService } = await import(
-            '~/lib/services/cheapshark.service'
-          );
-
           // Suche Game bei CheapShark
-          const gameSearchResults = await CheapSharkService.searchGameByTitle(
-            gameName
-          );
+          const cheapSharkSearchResults =
+            await CheapSharkService.searchGameByTitle(gameName);
 
-          if (gameSearchResults.length > 0) {
-            const cheapSharkGameId = gameSearchResults[0].gameID;
+          if (cheapSharkSearchResults.length > 0) {
+            const cheapSharkGameId = cheapSharkSearchResults[0].gameID;
             const gameInfo = await CheapSharkService.getGameDeals(
               cheapSharkGameId
             );
-
             // Konvertiere zu unserem Deal-Format
             for (const deal of gameInfo.deals.slice(0, 6)) {
-              liveDeals.push({
-                id: Math.floor(Math.random() * 1000000), // Temporäre ID
+              liveCSDeals.push({
                 gameId,
                 title: gameInfo.info.title,
                 storeName: useStoreUtils().getStoreName(deal.storeID),
@@ -221,9 +196,37 @@ export const dealsRouter = router({
           console.warn('CheapShark API Fehler bei Live-Suche:', apiError);
           // Ignoriere API-Fehler und fahre nur mit gespeicherten Deals fort
         }
+        const liveITADDeals: any[] = [];
+        try {
+          const ITADGames = await ITADService.searchGamesByTitle(gameName);
+          ITADGames.forEach(async game => {
+            const deals = await ITADService.getGamePrice([game.id]);
+            const dealGame = deals[0];
+            dealGame.deals.forEach(deal => {
+              liveITADDeals.push({
+                gameId,
+                title: game.title,
+                storeName: deal.shop.name,
+                price: deal.price.amount.toString(),
+                originalPrice: parseFloat(deal.regular.amount.toString()),
+                discountPercent: parseFloat(deal.cut.toString()),
+                url: deal.url,
+                validFrom: new Date(),
+                validUntil: deal.expiry,
+                isFreebie: deal.price.amount === 0,
+                discoveredAt: new Date(),
+                updatedAt: new Date(),
+                externalId: game.id,
+                source: 'itad'
+              });
+            });
+          });
+        } catch (apiError) {
+          console.warn('ITAD API Fehler bei Live-Suche:', apiError);
+        }
 
         // Kombiniere gespeicherte und Live-Deals
-        const allDeals = [...savedDeals, ...liveDeals];
+        const allDeals = [...savedDeals, ...liveCSDeals, ...liveITADDeals];
 
         // Entferne Duplikate basierend auf externalId
         const uniqueDeals = allDeals.filter(
@@ -232,7 +235,7 @@ export const dealsRouter = router({
             self.findIndex(d => d.externalId === deal.externalId) === index
         );
 
-        return uniqueDeals.slice(0, 6);
+        return uniqueDeals;
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -241,5 +244,138 @@ export const dealsRouter = router({
           }`
         });
       }
-    })
+    }),
+
+  // ===== ITAD API ENDPOINTS =====
+
+  /**
+   * ITAD-Spiele suchen
+   */
+  searchITADGames: publicProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        results: z.number().min(1).max(100).default(20)
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        return await ITADService.searchGamesByTitle(input.title, input.results);
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to search ITAD games: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        });
+      }
+    }),
+
+  /**
+   * ITAD-Preis-Übersicht für Spiele abrufen
+   */
+  getITADPriceOverview: publicProcedure
+    .input(
+      z.object({
+        gameIds: z.array(z.string()).min(1).max(200),
+        country: z.string().optional(),
+        shops: z.array(z.number()).optional(),
+        vouchers: z.boolean().optional()
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const { gameIds, ...options } = input;
+        return await ITADService.getPriceOverview(gameIds, options);
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to get ITAD price overview: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        });
+      }
+    }),
+
+  /**
+   * ITAD-Shops abrufen
+   */
+  getITADShops: publicProcedure
+    .input(z.object({ country: z.string().optional() }))
+    .query(async ({ input }) => {
+      try {
+        return await ITADService.getAllShops(input.country);
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to get ITAD shops: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        });
+      }
+    }),
+
+  /**
+   * Zur ITAD-Waitlist hinzufügen (OAuth erforderlich)
+   */
+  addToITADWaitlist: publicProcedure
+    .input(
+      z.object({
+        gameIds: z.array(z.string()).min(1)
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const response = await ITADService.addGamesToWaitlist(input.gameIds);
+        return response;
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to add to ITAD waitlist: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        });
+      }
+    }),
+
+  /**
+   * Von ITAD-Waitlist entfernen (OAuth erforderlich)
+   */
+  removeFromITADWaitlist: publicProcedure
+    .input(
+      z.object({
+        gameIds: z.array(z.string()).min(1)
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const response = await ITADService.removeGamesFromWaitlist(
+          input.gameIds
+        );
+        return response;
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to remove from ITAD waitlist: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        });
+      }
+    }),
+
+  /**
+   * ITAD-Waitlist-Spiele abrufen (OAuth erforderlich)
+   */
+  getITADWaitlistGames: publicProcedure.query(async () => {
+    try {
+      return await ITADService.getWaitlistGames();
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to get ITAD waitlist games: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      });
+    }
+  })
 });
