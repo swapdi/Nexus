@@ -1,7 +1,42 @@
 import { PrismaClient, type Wishlist } from '~/prisma/client';
+import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
+import { ITADService } from './itad.service';
 
 const prisma = new PrismaClient();
+
+// Store-Namen Mapping für CheapShark Store-IDs
+const STORE_NAMES: Record<string, string> = {
+  '1': 'Steam',
+  '2': 'GamersGate',
+  '3': 'Green Man Gaming',
+  '4': 'Get Games',
+  '5': 'GameStop',
+  '6': 'Origin',
+  '7': 'GOG',
+  '8': 'Humble Store',
+  '9': 'GameFly',
+  '10': 'Impulse',
+  '11': 'Gamers Gate',
+  '12': 'IndieGala',
+  '13': 'Humble Bundle',
+  '14': 'Bundlestars',
+  '15': 'MacGameStore',
+  '16': 'WinGameStore',
+  '17': 'Coinbase',
+  '18': 'Groupees',
+  '19': 'Flying Bundle',
+  '20': 'Bundle Stars',
+  '21': 'Groupees Bundle',
+  '22': 'Coinbase Commerce',
+  '23': 'Fanatical',
+  '24': 'Newegg',
+  '25': 'Epic Games Store'
+};
+
+const getStoreName = (storeId: string): string => {
+  return STORE_NAMES[storeId] || 'Unbekannter Store';
+};
 
 export interface FullWishlistItem extends Wishlist {
   game: {
@@ -180,42 +215,130 @@ export namespace WishlistService {
       const notifications: WishlistDealNotification[] = [];
 
       for (const item of wishlistItems) {
-        // Aktuelle Deals für das Spiel abrufen
-        const deals = await DealsService.searchDeals({
-          gameId: item.gameId,
-          limit: 10
-        });
+        console.log(
+          `Prüfe Deals für "${item.game.name}" (ID: ${item.gameId})...`
+        );
 
-        if (deals.length > 0) {
-          // Nur relevante Deals (mit Rabatt oder Freebies)
-          const relevantDeals = deals.filter(
-            (deal: any) =>
-              deal.isFreebie ||
-              (deal.discountPercent && deal.discountPercent > 0)
+        // Aktuelle Deals für das Spiel abrufen - sowohl aus DB als auch live von APIs
+        // Grund: Wir verwenden direkt den DealsService.searchGameDeals für Live-API-Abfragen
+        try {
+          // Zuerst lokale DB-Deals abrufen
+          const dbDeals = await DealsService.searchDeals({
+            gameId: item.gameId,
+            limit: 10
+          });
+
+          // Dann Live-Deals von APIs abrufen (CheapShark/ITAD)
+          const liveDeals: any[] = [];
+
+          try {
+            // CheapShark API Deals abrufen
+            const cheapSharkSearchResults =
+              await CheapSharkService.searchGameByTitle(item.game.name);
+            if (cheapSharkSearchResults.length > 0) {
+              const cheapSharkGameId = cheapSharkSearchResults[0].gameID;
+              const gameInfo = await CheapSharkService.getGameDeals(
+                cheapSharkGameId
+              );
+
+              // Grund: Konvertiere CheapShark Deals zu unserem Format
+              for (const deal of gameInfo.deals.slice(0, 6)) {
+                liveDeals.push({
+                  gameId: item.gameId,
+                  title: gameInfo.info.title,
+                  storeName: getStoreName(deal.storeID),
+                  price: parseFloat(deal.price),
+                  originalPrice: parseFloat(deal.retailPrice),
+                  discountPercent: parseFloat(deal.savings),
+                  url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+                  isFreebie: false,
+                  id: deal.dealID
+                });
+              }
+            }
+          } catch (cheapSharkError) {
+            console.warn('CheapShark API Fehler:', cheapSharkError);
+          }
+
+          try {
+            // ITAD API Deals abrufen
+            const ITADGames = await ITADService.searchGamesByTitle(
+              item.game.name
+            );
+            for (const game of ITADGames) {
+              const deals = await ITADService.getGamePrice([game.id]);
+              const dealGame = deals[0];
+              if (dealGame && dealGame.deals && dealGame.deals.length > 0) {
+                // Grund: Konvertiere ITAD Deals zu unserem Format
+                for (const deal of dealGame.deals.slice(0, 6)) {
+                  liveDeals.push({
+                    gameId: item.gameId,
+                    title: game.title,
+                    storeName: deal.shop?.name || 'Unknown Store',
+                    price: deal.price.amount,
+                    originalPrice: deal.regular.amount,
+                    discountPercent: deal.cut,
+                    url: deal.url,
+                    isFreebie: deal.price.amount === 0,
+                    id: `itad_${game.id}_${deal.shop?.id}`
+                  });
+                }
+              }
+            }
+          } catch (itadError) {
+            console.warn('ITAD API Fehler:', itadError);
+          }
+
+          // Kombiniere alle Deals
+          const allDeals = [...dbDeals, ...liveDeals];
+
+          console.log(
+            `Gefundene Deals für "${item.game.name}":`,
+            allDeals.length
           );
 
-          if (relevantDeals.length > 0) {
-            notifications.push({
-              gameId: item.gameId,
-              gameName: item.game.name,
-              deals: relevantDeals.map((deal: any) => ({
-                id: deal.id,
-                title: deal.title,
-                storeName: deal.storeName,
-                price: deal.price,
-                discountPercent: deal.discountPercent,
-                originalPrice: deal.originalPrice,
-                url: deal.url
-              }))
-            });
+          if (allDeals.length > 0) {
+            // Nur relevante Deals (mit Rabatt oder Freebies)
+            const relevantDeals = allDeals.filter(
+              (deal: any) =>
+                deal.isFreebie ||
+                (deal.discountPercent && deal.discountPercent > 0)
+            );
 
-            // Server-Nachricht für Deals erstellen - ENTFERNT
-            // await createDealNotificationMessage(
-            //   userId,
-            //   item.game.name,
-            //   relevantDeals
-            // );
+            console.log(
+              `Relevante Deals für "${item.game.name}":`,
+              relevantDeals.length
+            );
+
+            if (relevantDeals.length > 0) {
+              notifications.push({
+                gameId: item.gameId,
+                gameName: item.game.name,
+                deals: relevantDeals.map((deal: any) => ({
+                  id: deal.id,
+                  title: deal.title,
+                  storeName: deal.storeName,
+                  price: deal.price,
+                  discountPercent: deal.discountPercent,
+                  originalPrice: deal.originalPrice,
+                  url: deal.url
+                }))
+              });
+
+              // Server-Nachricht für Deals erstellen - ENTFERNT
+              // await createDealNotificationMessage(
+              //   userId,
+              //   item.game.name,
+              //   relevantDeals
+              // );
+            }
           }
+        } catch (itemError) {
+          console.error(
+            `Fehler beim Prüfen der Deals für "${item.game.name}":`,
+            itemError
+          );
+          // Weiter mit dem nächsten Item
         }
       }
 

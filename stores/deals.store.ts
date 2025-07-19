@@ -166,31 +166,6 @@ export const useDealsStore = defineStore('deals', () => {
       }
     });
   }
-  const addToWaitlist = async (id: string) => {
-    return await loading(
-      `add-to-itad-waitlist-${id}`,
-      'Füge zur Waitlist hinzu...',
-      async () => {
-        try {
-          await $client.deals.addToITADWaitlist.mutate({
-            gameIds: [id]
-          });
-
-          notifyStore.notify(`Spiel zur Wishlist hinzugefügt!`, 1);
-
-          return true;
-        } catch (error) {
-          console.error('Error adding to ITAD waitlist:', error);
-          notifyStore.notify(
-            'Fehler beim Hinzufügen zur Waitlist. Bitte versuche es später erneut.',
-            3
-          );
-          throw error;
-        }
-      },
-      'api'
-    );
-  };
 
   /**
    * Holt ITAD-Preishistorie für ein bestimmtes Spiel
@@ -234,32 +209,6 @@ export const useDealsStore = defineStore('deals', () => {
         }
       },
       'data'
-    );
-  };
-
-  const removeFromWaitlist = async (id: string) => {
-    return await loading(
-      `remove-from-itad-waitlist-${id}`,
-      'Entferne von Waitlist...',
-      async () => {
-        try {
-          await $client.deals.removeFromITADWaitlist.mutate({
-            gameIds: [id]
-          });
-
-          notifyStore.notify(`"Spiel von Wishlist entfernt!`, 1);
-
-          return true;
-        } catch (error) {
-          console.error('Error removing from ITAD waitlist:', error);
-          notifyStore.notify(
-            'Fehler beim Entfernen von der Waitlist. Bitte versuche es später erneut.',
-            3
-          );
-          throw error;
-        }
-      },
-      'api'
     );
   };
 
@@ -367,8 +316,6 @@ export const useDealsStore = defineStore('deals', () => {
     formatDiscount,
     searchGameDeals,
     getGamePriceHistory,
-    addToWaitlist,
-    removeFromWaitlist,
     isInWaitlist
   };
 });

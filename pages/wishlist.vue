@@ -17,10 +17,23 @@
   const filteredWishlistItems = computed(() => {
     let items = wishlistStore.sortedWishlistItems;
 
+    // Debug: Aktuelle Deal-Benachrichtigungen loggen
+    console.log('Deal Notifications:', wishlistStore.dealNotifications);
+    console.log('All wishlist items:', items);
+
     if (searchQuery.value) {
       items = items.filter(item =>
         item.game.name.toLowerCase().includes(searchQuery.value.toLowerCase())
       );
+    }
+
+    // Sale-Filter anwenden
+    if (showOnlyOnSale.value) {
+      const gameIdsWithDeals = wishlistStore.dealNotifications.map(
+        notif => notif.gameId
+      );
+      items = items.filter(item => gameIdsWithDeals.includes(item.gameId));
+      console.log('Filtered items with deals:', items);
     }
 
     return items;
@@ -28,13 +41,21 @@
 
   onMounted(async () => {
     await userStore.init();
+    console.log('User initialized, user ID:', userStore.user?.id);
 
     try {
-      await Promise.all([
-        wishlistStore.loadWishlist(),
-        wishlistStore.checkWishlistDeals(),
-        messagesStore.refreshUnreadCount()
-      ]);
+      console.log('Loading wishlist...');
+      await wishlistStore.loadWishlist();
+      console.log('Wishlist loaded, items:', wishlistStore.wishlistItems);
+
+      console.log('Checking deals...');
+      await wishlistStore.checkWishlistDeals();
+      console.log(
+        'Deals checked, notifications:',
+        wishlistStore.dealNotifications
+      );
+
+      await messagesStore.refreshUnreadCount();
     } catch (error) {
       console.error('Fehler beim Laden der Wishlist:', error);
     }
@@ -51,9 +72,46 @@
 
   const handleCheckDeals = async () => {
     try {
+      console.log('Manually checking deals...');
+      console.log(
+        'Current wishlist items before deal check:',
+        wishlistStore.wishlistItems
+      );
+      console.log('Current wishlist count:', wishlistStore.wishlistCount);
+      console.log('Has wishlist items:', wishlistStore.hasWishlistItems);
+
+      // Grund: Debug-Informationen über einzelne Games in der Wishlist
+      wishlistStore.wishlistItems.forEach((item, index) => {
+        console.log(`Wishlist item ${index + 1}:`, {
+          id: item.id,
+          gameId: item.gameId,
+          gameName: item.game?.name,
+          addedAt: item.addedAt
+        });
+      });
+
+      console.log('🔍 Starte Deal-Prüfung...');
       await wishlistStore.checkWishlistDeals();
+
+      console.log(
+        '✅ Deal notifications after manual check:',
+        wishlistStore.dealNotifications
+      );
+      console.log(
+        '📊 Deal notifications count:',
+        wishlistStore.dealNotifications.length
+      );
+
+      if (wishlistStore.dealNotifications.length === 0) {
+        console.log(
+          '⚠️ Keine Deal-Benachrichtigungen gefunden. Mögliche Gründe:'
+        );
+        console.log('- Keine aktiven Deals für die Wishlist-Items');
+        console.log('- API-Fehler bei der Deal-Abfrage');
+        console.log('- Alle Deals haben keinen Rabatt > 0%');
+      }
     } catch (error) {
-      console.error('Fehler beim Prüfen der Deals:', error);
+      console.error('❌ Fehler beim Prüfen der Deals:', error);
     }
   };
 </script>

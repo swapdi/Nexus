@@ -152,6 +152,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
               (sum, notif) => sum + notif.deals.length,
               0
             );
+
             notifyStore.notify(
               `${totalDeals} neue Deal${
                 totalDeals === 1 ? '' : 's'

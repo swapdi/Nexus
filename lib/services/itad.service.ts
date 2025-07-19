@@ -326,80 +326,6 @@ export namespace ITADService {
       );
     }
   }
-
-  /**
-   * Fügt Spiele zur Waitlist hinzu (OAuth erforderlich)
-   * @param gameIds Array der ITAD Game IDs
-   * @returns Success status
-   */
-  export async function addGamesToWaitlist(gameIds: string[]): Promise<void> {
-    try {
-      if (!gameIds.length) {
-        throw new Error('Game IDs array cannot be empty');
-      }
-
-      await apiRequest<void>('/waitlist/games/v1', {
-        method: 'PUT',
-        body: gameIds,
-        requiresAuth: true
-      });
-    } catch (error) {
-      console.error('Error adding games to ITAD waitlist:', error);
-      throw new Error(
-        `Failed to add games to waitlist: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
-
-  /**
-   * Entfernt Spiele aus der Waitlist (OAuth erforderlich)
-   * @param gameIds Array der ITAD Game IDs
-   * @returns Success status
-   */
-  export async function removeGamesFromWaitlist(
-    gameIds: string[]
-  ): Promise<void> {
-    try {
-      if (!gameIds.length) {
-        throw new Error('Game IDs array cannot be empty');
-      }
-
-      await apiRequest<void>('/waitlist/games/v1', {
-        method: 'DELETE',
-        body: gameIds,
-        requiresAuth: true
-      });
-    } catch (error) {
-      console.error('Error removing games from ITAD waitlist:', error);
-      throw new Error(
-        `Failed to remove games from waitlist: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
-
-  /**
-   * Holt die Waitlist des Benutzers (OAuth erforderlich)
-   * @returns Array der Spiele in der Waitlist
-   */
-  export async function getWaitlistGames(): Promise<ITADWaitlistGame[]> {
-    try {
-      return await apiRequest<ITADWaitlistGame[]>('/waitlist/games/v1', {
-        requiresAuth: true
-      });
-    } catch (error) {
-      console.error('Error fetching ITAD waitlist:', error);
-      throw new Error(
-        `Failed to fetch waitlist: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
-
   /**
    * Lädt alle verfügbaren Shops von der ITAD API
    * @param country Land-Code für regionale Verfügbarkeit
@@ -416,41 +342,6 @@ export namespace ITADService {
       console.error('Error fetching shops from ITAD:', error);
       throw new Error(
         `Failed to fetch shops: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
-
-  /**
-   * Sucht ein Spiel über den Titel oder Steam App ID
-   * @param options Suchoptionen (title oder appid)
-   * @returns Gefundenes Spiel oder null
-   */
-  export async function lookupGame(options: {
-    title?: string;
-    appid?: number;
-  }): Promise<{ found: boolean; game?: ITADGame }> {
-    try {
-      if (!options.title && !options.appid) {
-        throw new Error('Either title or appid must be provided');
-      }
-
-      const params: Record<string, any> = {};
-      if (options.title) params.title = options.title;
-      if (options.appid) params.appid = options.appid;
-
-      return await apiRequest<{ found: boolean; game?: ITADGame }>(
-        '/games/lookup/v1',
-        {
-          params,
-          requiresAuth: true
-        }
-      );
-    } catch (error) {
-      console.error('Error looking up game on ITAD:', error);
-      throw new Error(
-        `Failed to lookup game: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`
       );
