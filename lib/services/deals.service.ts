@@ -1,5 +1,6 @@
 // Deals Service - VEREINFACHT
-// Grund: Nutzt zentrale IGDB-Funktion für alle Spielsuchen
+
+import { useStoreUtils } from '~/composables/useStoreUtils';
 import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
@@ -34,7 +35,6 @@ export interface DealSearchFilters {
   offset?: number;
 }
 export namespace DealsService {
-  // ===== CORE WORKFLOW FUNCTIONS =====
   /**
    * Sucht nach Deals basierend auf Filtern
    * @param filters Such-Filter

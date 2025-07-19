@@ -2,6 +2,8 @@
   const user = useSupabaseUser();
   const isDropdownOpen = ref(false);
   const dropdownRef = ref<HTMLElement>();
+  const supabase = useSupabaseClient();
+  const userStore = useUserStore();
   // Grund: Dropdown schließen wenn außerhalb geklickt wird
   function handleClickOutside(event: MouseEvent) {
     if (
@@ -25,6 +27,13 @@
   // Grund: Dropdown schließen bei Navigation
   function handleNavigation() {
     isDropdownOpen.value = false;
+  }
+  async function signout() {
+    await supabase.auth.signOut();
+    if (userStore) {
+      userStore.signout();
+    }
+    navigateTo('/', { replace: true });
   }
 </script>
 <template>
@@ -117,7 +126,7 @@
         <div class="py-2">
           <!-- Profile -->
           <NuxtLink
-            to="/profile"
+            to="/settings"
             @click="handleNavigation"
             class="flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-transparent transition-all duration-200 group">
             <svg
@@ -158,7 +167,22 @@
           </NuxtLink>
           <hr class="my-2 border-gray-700/50" />
           <!-- Logout -->
-          <UserAccountSignout @click="handleNavigation" />
+          <button
+            @click="signout"
+            class="flex items-center w-full px-6 py-3 text-gray-300 hover:text-red-300 hover:bg-gradient-to-r hover:from-red-600/20 hover:to-transparent transition-all duration-200 group">
+            <svg
+              class="w-5 h-5 mr-3 text-red-400 group-hover:text-red-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span class="font-medium">Abmelden</span>
+          </button>
         </div>
       </div>
     </Transition>
