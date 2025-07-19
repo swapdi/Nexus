@@ -96,6 +96,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
       category?: 'action' | 'rpg' | 'strategy' | 'indie' | 'other';
       priceAlert?: number;
       notes?: string;
+      checkDeals?: boolean;
     }
   ) => {
     return await loading(
@@ -119,15 +120,26 @@ export const useWishlistStore = defineStore('wishlist', () => {
           wishlistItems.value.unshift(enhancedResult);
           wishlistCount.value = wishlistItems.value.length;
 
-          notifyStore.notify('Spiel erfolgreich zur Wishlist hinzugefügt', 1);
+          notifyStore.notify(
+            '✅ Spiel erfolgreich zur Wishlist hinzugefügt',
+            1
+          );
+
+          // Automatisch nach Deals suchen wenn aktiviert
+          if (options?.checkDeals) {
+            setTimeout(async () => {
+              await checkSingleGameDeals(gameId);
+            }, 1000);
+          }
+
           return enhancedResult;
         } catch (error: any) {
           console.error('Error adding to wishlist:', error);
 
           if (error.message?.includes('bereits in deiner Wishlist')) {
-            notifyStore.notify('Spiel ist bereits in deiner Wishlist', 2);
+            notifyStore.notify('ℹ️ Spiel ist bereits in deiner Wishlist', 2);
           } else {
-            notifyStore.notify('Fehler beim Hinzufügen zur Wishlist', 3);
+            notifyStore.notify('❌ Fehler beim Hinzufügen zur Wishlist', 3);
           }
           throw error;
         }
@@ -154,12 +166,64 @@ export const useWishlistStore = defineStore('wishlist', () => {
           return true;
         } catch (error) {
           console.error('Error removing from wishlist:', error);
-          notifyStore.notify('Fehler beim Entfernen aus der Wishlist', 3);
+          notifyStore.notify('❌ Fehler beim Entfernen aus der Wishlist', 3);
           throw error;
         }
       },
       'process'
     );
+  };
+
+  const checkSingleGameDeals = async (gameId: number) => {
+    try {
+      // Finde das Spiel in der Wishlist
+      const wishlistItem = wishlistItems.value.find(
+        item => item.gameId === gameId
+      );
+      if (!wishlistItem) return;
+
+      // Verwende das DealsStore für die Suche
+      const dealsStore = useDealsStore();
+      if (!dealsStore) return;
+
+      const deals = await dealsStore.searchGameDeals(
+        gameId,
+        wishlistItem.game.name,
+        wishlistItem.game.slug || undefined
+      );
+
+      // Filtere relevante Deals
+      const relevantDeals = deals.filter(
+        (deal: any) =>
+          deal.isFreebie || (deal.discountPercent && deal.discountPercent > 0)
+      );
+
+      if (relevantDeals.length > 0) {
+        const freeDeals = relevantDeals.filter((d: any) => d.isFreebie);
+        const discountDeals = relevantDeals.filter((d: any) => !d.isFreebie);
+
+        let message = `🎮 ${wishlistItem.game.name}: `;
+        if (freeDeals.length > 0) {
+          message += `${freeDeals.length} kostenlose${
+            freeDeals.length === 1 ? 's' : ''
+          } Angebot${freeDeals.length === 1 ? '' : 'e'}`;
+          if (discountDeals.length > 0) {
+            message += ` und ${discountDeals.length} reduzierte${
+              discountDeals.length === 1 ? 's' : ''
+            } Angebot${discountDeals.length === 1 ? '' : 'e'}`;
+          }
+        } else if (discountDeals.length > 0) {
+          message += `${discountDeals.length} reduzierte${
+            discountDeals.length === 1 ? 's' : ''
+          } Angebot${discountDeals.length === 1 ? '' : 'e'}`;
+        }
+        message += ` gefunden!`;
+
+        notifyStore.notify(message, 1);
+      }
+    } catch (error) {
+      console.error('Fehler beim Prüfen der Deals für einzelnes Spiel:', error);
+    }
   };
 
   const isInWishlist = async (gameId: number): Promise<boolean> => {
@@ -209,12 +273,45 @@ export const useWishlistStore = defineStore('wishlist', () => {
               (sum, notif) => sum + notif.deals.length,
               0
             );
-            notifyStore.notify(
-              `${totalDeals} neue Deal${
-                totalDeals === 1 ? '' : 's'
-              } für deine Wishlist gefunden!`,
-              1
-            );
+
+            // Erweiterte Notification mit Icons und Details
+            let message = `🎉 Wishlist-Update: ${totalDeals} neue Deal${
+              totalDeals === 1 ? '' : 's'
+            } gefunden!\n`;
+
+            // Zeige Details für bis zu 3 Spiele
+            const displayNotifications = notifications.slice(0, 3);
+            for (const notification of displayNotifications) {
+              const gameDeals = notification.deals;
+              const freeDeals = gameDeals.filter(
+                d => d.price === null || d.price === 0
+              );
+              const discountDeals = gameDeals.filter(
+                d =>
+                  d.price !== null &&
+                  d.price > 0 &&
+                  d.discountPercent &&
+                  d.discountPercent > 0
+              );
+
+              message += `🎮 ${notification.gameName}: `;
+              if (freeDeals.length > 0) {
+                message += `${freeDeals.length} kostenlos`;
+                if (discountDeals.length > 0) {
+                  message += `, ${discountDeals.length} reduziert`;
+                }
+              } else if (discountDeals.length > 0) {
+                message += `${discountDeals.length} reduziert`;
+              }
+              message += '\n';
+            }
+
+            // Wenn mehr als 3 Spiele
+            if (notifications.length > 3) {
+              message += `...und ${notifications.length - 3} weitere Spiele`;
+            }
+
+            notifyStore.notify(message, 1);
           }
 
           return notifications;
@@ -306,6 +403,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
     toggleWishlist,
     loadWishlistCount,
     checkWishlistDeals,
+    checkSingleGameDeals,
 
     // Helpers
     findWishlistItem,

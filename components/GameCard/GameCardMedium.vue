@@ -72,14 +72,12 @@
         v-if="!isSelectionMode && showWishlistButton"
         class="absolute bottom-1 left-1 z-10"
         :class="{ 'left-8': showFavoriteButton }">
-        <EnhancedWishlistButton
+        <WishlistButton
           :game-id="gameData.id"
-          :game-title="gameData.name"
           variant="floating"
           size="small"
           :show-text="false"
-          mode="both"
-          :enable-i-t-a-d="true" />
+          :animated="true" />
       </div>
       <!-- Rating Badge -->
       <div

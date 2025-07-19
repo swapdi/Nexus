@@ -218,7 +218,7 @@
               </div>
               <!-- Actions -->
               <div class="flex-shrink-0 flex items-center gap-2">
-                <!-- Wishlist Button -->
+                <!-- Enhanced Wishlist Button mit Deal-Check -->
                 <WishlistButton
                   v-if="igdbGame.id"
                   :game-id="igdbGame.id"

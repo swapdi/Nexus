@@ -13,6 +13,7 @@
   // Stores
   const gamesStore = useGamesStore();
   const dealsStore = useDealsStore();
+  const notifyStore = useNotifyStore();
 
   // State
   const userGame = ref<UserGameWithDetails | null>(null);
@@ -20,6 +21,7 @@
   const relatedDeals = ref<DealWithGame[]>([]);
   const isLoading = ref(true);
   const isLoadingDeals = ref(false);
+  const isCheckingDeals = ref(false);
   const error = ref<string | null>(null);
 
   // Notes editing state
@@ -168,6 +170,66 @@
   const navToLink = (deal: DealWithGame) => {
     if (deal.url) {
       window.open(deal.url, '_blank');
+    }
+  };
+
+  // Manueller Deal-Check für das aktuelle Spiel
+  const checkGameDeals = async () => {
+    if (!currentGame.value || isCheckingDeals.value) return;
+
+    try {
+      isCheckingDeals.value = true;
+
+      // Suche nach aktuellen Deals für das Spiel
+      const gameDeals = await dealsStore.searchGameDeals(
+        currentGame.value.id,
+        currentGame.value.name,
+        currentGame.value.slug || undefined
+      );
+
+      // Filtere relevante Deals (mit Rabatt oder kostenlos)
+      const relevantDeals = gameDeals.filter(
+        (deal: any) =>
+          deal.isFreebie || (deal.discountPercent && deal.discountPercent > 0)
+      );
+
+      if (relevantDeals.length > 0) {
+        relatedDeals.value = gameDeals; // Aktualisiere die Related Deals Anzeige
+
+        // Notification über gefundene Deals
+        const freeDeals = relevantDeals.filter((d: any) => d.isFreebie);
+        const discountDeals = relevantDeals.filter((d: any) => !d.isFreebie);
+
+        let message = `🎮 ${currentGame.value.name}: `;
+        if (freeDeals.length > 0) {
+          message += `${freeDeals.length} kostenlose${
+            freeDeals.length === 1 ? 's' : ''
+          } Angebot${freeDeals.length === 1 ? '' : 'e'}`;
+          if (discountDeals.length > 0) {
+            message += ` und ${discountDeals.length} reduzierte${
+              discountDeals.length === 1 ? 's' : ''
+            } Angebot${discountDeals.length === 1 ? '' : 'e'}`;
+          }
+        } else if (discountDeals.length > 0) {
+          message += `${discountDeals.length} reduzierte${
+            discountDeals.length === 1 ? 's' : ''
+          } Angebot${discountDeals.length === 1 ? '' : 'e'}`;
+        }
+        message += ` gefunden!`;
+
+        notifyStore.notify(message, 1); // Success notification
+      } else {
+        relatedDeals.value = gameDeals; // Auch normale Deals anzeigen
+        notifyStore.notify(
+          `Keine besonderen Deals für "${currentGame.value.name}" gefunden. Alle verfügbaren Angebote werden angezeigt.`,
+          2
+        );
+      }
+    } catch (error) {
+      console.error('Fehler beim Prüfen der Deals:', error);
+      notifyStore.notify('❌ Fehler beim Prüfen der Deals', 3);
+    } finally {
+      isCheckingDeals.value = false;
     }
   };
 
@@ -376,7 +438,7 @@
 
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-4 mb-6">
-                      <!-- Wishlist Button -->
+                      <!-- Enhanced Wishlist Button mit automatischem Deal-Check -->
                       <WishlistButton
                         v-if="currentGame?.id"
                         :game-id="currentGame.id"
@@ -384,6 +446,27 @@
                         size="large"
                         :show-text="true"
                         :animated="true" />
+
+                      <!-- Manual Deal Check Button -->
+                      <button
+                        v-if="currentGame?.id"
+                        @click="checkGameDeals"
+                        :disabled="isCheckingDeals"
+                        class="flex items-center gap-2 px-4 py-2 bg-green-600/80 hover:bg-green-600 disabled:bg-gray-600 disabled:opacity-50 text-white text-sm rounded-lg transition-all duration-200">
+                        <Icon
+                          :name="
+                            isCheckingDeals
+                              ? 'heroicons:arrow-path-20-solid'
+                              : 'heroicons:tag-20-solid'
+                          "
+                          :class="[
+                            'w-4 h-4',
+                            isCheckingDeals ? 'animate-spin' : ''
+                          ]" />
+                        {{
+                          isCheckingDeals ? 'Suche Deals...' : 'Deals prüfen'
+                        }}
+                      </button>
                     </div>
 
                     <!-- Release Year & Rating Badge -->

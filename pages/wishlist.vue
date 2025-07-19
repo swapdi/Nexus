@@ -8,10 +8,12 @@
   const userStore = useUserStore();
   const wishlistStore = useWishlistStore();
   const messagesStore = useMessagesStore();
+  const notifyStore = useNotifyStore();
 
   // Ref für Suche und Filter
   const searchQuery = ref('');
   const showOnlyOnSale = ref(false);
+  const isCheckingDeals = ref(false);
 
   // Computed für gefilterte Items
   const filteredWishlistItems = computed(() => {
@@ -49,6 +51,24 @@
     }
   };
 
+  // Manueller Deal-Check für alle Wishlist-Spiele
+  const checkAllWishlistDeals = async () => {
+    if (isCheckingDeals.value) return;
+
+    try {
+      isCheckingDeals.value = true;
+      notifyStore.notify('🔍 Prüfe Deals für deine Wishlist...', 0);
+
+      await wishlistStore.checkWishlistDeals();
+      notifyStore.notify('✅ Deal-Prüfung abgeschlossen!', 1);
+    } catch (error) {
+      console.error('Fehler beim Prüfen der Wishlist-Deals:', error);
+      notifyStore.notify('❌ Fehler beim Prüfen der Deals', 3);
+    } finally {
+      isCheckingDeals.value = false;
+    }
+  };
+
   const handleCheckDeals = async () => {
     try {
       await wishlistStore.checkWishlistDeals();
@@ -72,12 +92,19 @@
       </div>
 
       <div class="flex flex-col sm:flex-row gap-4 mt-4 sm:mt-0">
-        <!-- Deal-Check Button -->
+        <!-- Enhanced Deal-Check Button -->
         <button
-          @click="handleCheckDeals"
-          class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center gap-2">
-          <Icon name="heroicons:magnifying-glass" class="w-4 h-4" />
-          Deals prüfen
+          @click="checkAllWishlistDeals"
+          :disabled="isCheckingDeals"
+          class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 disabled:from-gray-600 disabled:to-gray-600 disabled:opacity-50 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center gap-2">
+          <Icon
+            :name="
+              isCheckingDeals
+                ? 'heroicons:arrow-path'
+                : 'heroicons:magnifying-glass'
+            "
+            :class="['w-4 h-4', isCheckingDeals ? 'animate-spin' : '']" />
+          {{ isCheckingDeals ? 'Suche Deals...' : 'Deals prüfen' }}
         </button>
       </div>
     </div>
