@@ -1,424 +1,264 @@
 <script setup lang="ts">
-  const userStore = useUserStore();
-  // Game Utils für Legacy-Support
-  const { getGameName } = useGameUtils();
-  onMounted(async () => {
-    await userStore.init();
-  });
   definePageMeta({
     middleware: ['auth'],
     title: 'Wishlist',
     layout: 'authenticated'
   });
-  // Mock-Daten für Wishlist (später durch echte API ersetzen)
-  const wishlistItems = ref([
-    {
-      id: 1,
-      title: 'Starfield',
-      coverUrl:
-        'https://via.placeholder.com/300x400/6366f1/ffffff?text=Starfield',
-      releaseDate: '2023-09-06',
-      developer: 'Bethesda Game Studios',
-      genres: ['RPG', 'Space', 'Exploration'],
-      addedAt: '2024-01-20',
-      currentPrice: 69.99,
-      lowestPrice: 49.99,
-      priceHistory: [
-        { date: '2024-01-01', price: 69.99 },
-        { date: '2024-01-15', price: 59.99 },
-        { date: '2024-01-25', price: 49.99 },
-        { date: '2024-01-30', price: 59.99 }
-      ],
-      onSale: false,
-      platforms: ['Steam', 'Xbox Game Pass']
-    },
-    {
-      id: 2,
-      title: "Baldur's Gate 3",
-      coverUrl:
-        'https://via.placeholder.com/300x400/8b5cf6/ffffff?text=Baldurs+Gate+3',
-      releaseDate: '2023-08-03',
-      developer: 'Larian Studios',
-      genres: ['RPG', 'Turn-Based', 'Fantasy'],
-      addedAt: '2024-01-18',
-      currentPrice: 39.99,
-      lowestPrice: 35.99,
-      priceHistory: [
-        { date: '2024-01-01', price: 59.99 },
-        { date: '2024-01-10', price: 49.99 },
-        { date: '2024-01-20', price: 35.99 },
-        { date: '2024-01-28', price: 39.99 }
-      ],
-      onSale: true,
-      platforms: ['Steam', 'GOG', 'PlayStation 5']
-    },
-    {
-      id: 3,
-      title: 'Hogwarts Legacy',
-      coverUrl:
-        'https://via.placeholder.com/300x400/06b6d4/ffffff?text=Hogwarts+Legacy',
-      releaseDate: '2023-02-10',
-      developer: 'Avalanche Software',
-      genres: ['Action-Adventure', 'RPG', 'Open World'],
-      addedAt: '2024-01-15',
-      currentPrice: 59.99,
-      lowestPrice: 29.99,
-      priceHistory: [
-        { date: '2024-01-01', price: 59.99 },
-        { date: '2024-01-12', price: 44.99 },
-        { date: '2024-01-18', price: 29.99 },
-        { date: '2024-01-26', price: 39.99 }
-      ],
-      onSale: false,
-      platforms: ['Steam', 'Epic Games', 'PlayStation 5']
-    },
-    {
-      id: 4,
-      title: 'Spider-Man Remastered',
-      coverUrl:
-        'https://via.placeholder.com/300x400/10b981/ffffff?text=Spider-Man',
-      releaseDate: '2022-08-12',
-      developer: 'Insomniac Games',
-      genres: ['Action-Adventure', 'Superhero', 'Open World'],
-      addedAt: '2024-01-10',
-      currentPrice: 59.99,
-      lowestPrice: 19.99,
-      priceHistory: [
-        { date: '2024-01-01', price: 59.99 },
-        { date: '2024-01-08', price: 39.99 },
-        { date: '2024-01-16', price: 19.99 },
-        { date: '2024-01-24', price: 29.99 }
-      ],
-      onSale: true,
-      platforms: ['Steam', 'Epic Games']
-    }
-  ]);
+
+  const userStore = useUserStore();
+  const wishlistStore = useWishlistStore();
+  const messagesStore = useMessagesStore();
+
+  // Ref für Suche und Filter
   const searchQuery = ref('');
-  const selectedGenre = ref('all');
-  const sortBy = ref('addedAt');
   const showOnlyOnSale = ref(false);
-  // Filter Optionen
-  const genres = computed(() => {
-    const allGenres = ['all'];
-    wishlistItems.value.forEach(item => {
-      item.genres.forEach(genre => {
-        if (!allGenres.includes(genre)) {
-          allGenres.push(genre);
-        }
-      });
-    });
-    return allGenres.map(genre => ({
-      value: genre,
-      label: genre === 'all' ? 'Alle Genres' : genre
-    }));
-  });
-  // Gefilterte Wishlist
-  const filteredWishlist = computed(() => {
-    let filtered = wishlistItems.value.filter(item => {
-      const matchesSearch = getGameName(item)
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase());
-      const matchesGenre =
-        selectedGenre.value === 'all' ||
-        item.genres.includes(selectedGenre.value);
-      const matchesSale = !showOnlyOnSale.value || item.onSale;
-      return matchesSearch && matchesGenre && matchesSale;
-    });
-    // Sortierung
-    if (sortBy.value === 'title') {
-      filtered.sort((a, b) => getGameName(a).localeCompare(getGameName(b)));
-    } else if (sortBy.value === 'addedAt') {
-      filtered.sort(
-        (a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+
+  // Computed für gefilterte Items
+  const filteredWishlistItems = computed(() => {
+    let items = wishlistStore.sortedWishlistItems;
+
+    if (searchQuery.value) {
+      items = items.filter(item =>
+        item.game.name.toLowerCase().includes(searchQuery.value.toLowerCase())
       );
-    } else if (sortBy.value === 'price') {
-      filtered.sort((a, b) => a.currentPrice - b.currentPrice);
-    } else if (sortBy.value === 'discount') {
-      filtered.sort((a, b) => {
-        const discountA =
-          ((a.lowestPrice - a.currentPrice) / a.lowestPrice) * 100;
-        const discountB =
-          ((b.lowestPrice - b.currentPrice) / b.lowestPrice) * 100;
-        return discountB - discountA;
-      });
     }
-    return filtered;
+
+    return items;
   });
-  // Statistiken
-  const totalItems = computed(() => wishlistItems.value.length);
-  const itemsOnSale = computed(
-    () => wishlistItems.value.filter(item => item.onSale).length
-  );
-  const totalValue = computed(() => {
-    return wishlistItems.value.reduce(
-      (sum, item) => sum + item.currentPrice,
-      0
-    );
+
+  onMounted(async () => {
+    await userStore.init();
+
+    try {
+      await Promise.all([
+        wishlistStore.loadWishlist(),
+        wishlistStore.checkWishlistDeals(),
+        messagesStore.refreshUnreadCount()
+      ]);
+    } catch (error) {
+      console.error('Fehler beim Laden der Wishlist:', error);
+    }
   });
-  const totalSavings = computed(() => {
-    return wishlistItems.value.reduce((sum, item) => {
-      if (item.onSale) {
-        return sum + (item.lowestPrice - item.currentPrice);
-      }
-      return sum;
-    }, 0);
-  });
-  // Format Funktionen
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(price);
+
+  // Wishlist-Actions
+  const handleRemoveFromWishlist = async (gameId: number) => {
+    try {
+      await wishlistStore.removeFromWishlist(gameId);
+    } catch (error) {
+      console.error('Fehler beim Entfernen aus Wishlist:', error);
+    }
   };
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('de-DE');
-  };
-  const getPriceChange = (item: any) => {
-    if (item.priceHistory.length < 2) return 0;
-    const current = item.currentPrice;
-    const previous = item.priceHistory[item.priceHistory.length - 2].price;
-    return ((current - previous) / previous) * 100;
-  };
-  const getPriceChangeColor = (change: number) => {
-    if (change > 0) return 'text-red-400';
-    if (change < 0) return 'text-green-400';
-    return 'text-gray-400';
-  };
-  const removeFromWishlist = (id: number) => {
-    wishlistItems.value = wishlistItems.value.filter(item => item.id !== id);
+
+  const handleCheckDeals = async () => {
+    try {
+      await wishlistStore.checkWishlistDeals();
+    } catch (error) {
+      console.error('Fehler beim Prüfen der Deals:', error);
+    }
   };
 </script>
+
 <template>
-  <div class="space-y-6">
-    <!-- Header mit Statistiken -->
-    <div
-      class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
-      <h1
-        class="text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent mb-4">
-        Meine Wishlist
-      </h1>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div
-          class="bg-gradient-to-r from-pink-500/20 to-pink-600/20 rounded-lg p-4 border border-pink-500/30">
-          <div class="text-2xl font-bold text-white">{{ totalItems }}</div>
-          <div class="text-pink-300 text-sm">Spiele auf Wishlist</div>
-        </div>
-        <div
-          class="bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
-          <div class="text-2xl font-bold text-white">{{ itemsOnSale }}</div>
-          <div class="text-green-300 text-sm">Aktuell im Angebot</div>
-        </div>
-        <div
-          class="bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg p-4 border border-blue-500/30">
-          <div class="text-2xl font-bold text-white">
-            {{ formatPrice(totalValue) }}
-          </div>
-          <div class="text-blue-300 text-sm">Gesamtwert</div>
-        </div>
-        <div
-          class="bg-gradient-to-r from-purple-500/20 to-purple-600/20 rounded-lg p-4 border border-purple-500/30">
-          <div class="text-2xl font-bold text-white">
-            {{ formatPrice(Math.abs(totalSavings)) }}
-          </div>
-          <div class="text-purple-300 text-sm">Mögliche Ersparnis</div>
-        </div>
+  <div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-white">Deine Wishlist</h1>
+        <p class="text-gray-400 mt-1">
+          {{ wishlistStore.wishlistCount }}
+          {{ wishlistStore.wishlistCount === 1 ? 'Spiel' : 'Spiele' }} auf
+          deiner Wunschliste
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 mt-4 sm:mt-0">
+        <!-- Deal-Check Button -->
+        <button
+          @click="handleCheckDeals"
+          class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center gap-2">
+          <Icon name="heroicons:magnifying-glass" class="w-4 h-4" />
+          Deals prüfen
+        </button>
       </div>
     </div>
-    <!-- Filter und Suche -->
+
+    <!-- Search and Filters -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <!-- Suche -->
-        <div class="lg:col-span-2">
-          <label class="block text-sm font-medium text-gray-300 mb-2"
-            >Suchen</label
-          >
+      <div class="flex flex-col sm:flex-row gap-4">
+        <!-- Search -->
+        <div class="flex-1">
           <div class="relative">
             <Icon
-              name="heroicons:magnifying-glass-20-solid"
+              name="heroicons:magnifying-glass"
               class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Spiel suchen..."
-              class="w-full pl-10 pr-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all" />
+              placeholder="Spiele durchsuchen..."
+              class="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200" />
           </div>
         </div>
-        <!-- Genre Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2"
-            >Genre</label
-          >
-          <select
-            v-model="selectedGenre"
-            class="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all">
-            <option
-              v-for="genre in genres"
-              :key="genre.value"
-              :value="genre.value">
-              {{ genre.label }}
-            </option>
-          </select>
-        </div>
-        <!-- Sortierung -->
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2"
-            >Sortieren</label
-          >
-          <select
-            v-model="sortBy"
-            class="w-full px-4 py-2.5 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all">
-            <option value="addedAt">Zuletzt hinzugefügt</option>
-            <option value="title">Titel (A-Z)</option>
-            <option value="price">Preis (niedrig-hoch)</option>
-            <option value="discount">Größter Rabatt</option>
-          </select>
-        </div>
-        <!-- Toggle Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2"
-            >Filter</label
-          >
-          <label class="flex items-center mt-3">
-            <input
-              v-model="showOnlyOnSale"
-              type="checkbox"
-              class="w-4 h-4 text-pink-600 bg-gray-700 border-gray-600 rounded focus:ring-pink-500 focus:ring-2" />
-            <span class="ml-2 text-sm text-gray-300">Nur Angebote</span>
+
+        <!-- Only On Sale Filter -->
+        <div class="flex items-center gap-2">
+          <input
+            id="onSaleFilter"
+            v-model="showOnlyOnSale"
+            type="checkbox"
+            class="w-4 h-4 text-purple-600 bg-gray-900 border-gray-600 rounded focus:ring-purple-500 focus:ring-2" />
+          <label for="onSaleFilter" class="text-sm text-gray-300">
+            Nur Sale-Artikel
           </label>
         </div>
       </div>
     </div>
-    <!-- Wishlist Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-      <div
-        v-for="item in filteredWishlist"
-        :key="item.id"
-        class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-pink-500/50 transition-all duration-300 group">
-        <div class="flex">
-          <!-- Cover Image -->
-          <div class="w-24 h-32 flex-shrink-0 relative overflow-hidden">
-            <img
-              :src="item.coverUrl"
-              :alt="getGameName(item)"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            <!-- Sale Badge -->
+
+    <!-- Deal Notifications -->
+    <div v-if="wishlistStore.dealNotifications.length > 0" class="space-y-4">
+      <h2 class="text-2xl font-bold text-white">
+        Aktuelle Deals für deine Wishlist
+      </h2>
+      <div class="grid grid-cols-1 gap-4">
+        <div
+          v-for="notification in wishlistStore.dealNotifications"
+          :key="notification.gameId"
+          class="bg-gradient-to-r from-green-900/20 to-blue-900/20 border border-green-500/20 rounded-xl p-6">
+          <h3 class="text-xl font-bold text-white mb-4">
+            {{ notification.gameName }}
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
-              v-if="item.onSale"
-              class="absolute top-1 left-1 px-1.5 py-0.5 bg-green-600 rounded text-xs text-white font-bold">
-              SALE
-            </div>
-          </div>
-          <!-- Game Info -->
-          <div class="flex-1 p-4">
-            <div class="flex justify-between items-start mb-2">
-              <h3
-                class="font-semibold text-white text-lg line-clamp-2 group-hover:text-pink-300 transition-colors">
-                {{ getGameName(item) }}
-              </h3>
-              <button
-                @click="removeFromWishlist(item.id)"
-                class="text-gray-400 hover:text-red-400 transition-colors ml-2">
-                <Icon name="heroicons:x-mark-20-solid" class="w-5 h-5" />
-              </button>
-            </div>
-            <div class="text-sm text-gray-400 mb-3">
-              <div>{{ item.developer }}</div>
-              <div>{{ formatDate(item.releaseDate) }}</div>
-            </div>
-            <!-- Genres -->
-            <div class="flex flex-wrap gap-1 mb-3">
-              <span
-                v-for="genre in item.genres.slice(0, 3)"
-                :key="genre"
-                class="px-2 py-1 bg-gray-700/50 rounded text-xs text-gray-300">
-                {{ genre }}
-              </span>
-            </div>
-            <!-- Platforms -->
-            <div class="text-xs text-gray-400 mb-3">
-              Verfügbar auf: {{ item.platforms.join(', ') }}
-            </div>
-            <!-- Price Info -->
-            <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-gray-400 text-sm">Aktueller Preis:</span>
+              v-for="deal in notification.deals"
+              :key="deal.id"
+              class="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+              <div class="flex justify-between items-start mb-2">
+                <h4 class="font-semibold text-white">{{ deal.storeName }}</h4>
                 <div class="text-right">
-                  <div class="text-white font-bold">
-                    {{ formatPrice(item.currentPrice) }}
+                  <div
+                    v-if="deal.discountPercent"
+                    class="text-green-400 font-bold">
+                    -{{ deal.discountPercent }}%
+                  </div>
+                  <div v-if="deal.price" class="text-white font-bold">
+                    {{ deal.price.toFixed(2) }}€
                   </div>
                   <div
-                    v-if="getPriceChange(item) !== 0"
-                    :class="getPriceChangeColor(getPriceChange(item))"
-                    class="text-xs">
-                    {{ getPriceChange(item) > 0 ? '+' : ''
-                    }}{{ getPriceChange(item).toFixed(1) }}%
+                    v-if="
+                      deal.originalPrice && deal.originalPrice !== deal.price
+                    "
+                    class="text-gray-400 line-through text-sm">
+                    {{ deal.originalPrice.toFixed(2) }}€
                   </div>
                 </div>
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-gray-400">Niedrigster Preis:</span>
-                <span class="text-green-400 font-medium">{{
-                  formatPrice(item.lowestPrice)
-                }}</span>
-              </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-gray-400">Hinzugefügt:</span>
-                <span class="text-gray-300">{{
-                  formatDate(item.addedAt)
-                }}</span>
-              </div>
-            </div>
-            <!-- Action Buttons -->
-            <div class="mt-4 flex space-x-2">
-              <button
-                class="flex-1 px-3 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm rounded-lg transition-colors">
-                <Icon
-                  name="heroicons:shopping-cart-20-solid"
-                  class="w-4 h-4 inline mr-1" />
-                Kaufen
-              </button>
-              <button
-                class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">
-                <Icon name="heroicons:chart-bar-20-solid" class="w-4 h-4" />
-              </button>
+              <a
+                :href="deal.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors duration-200">
+                <Icon name="heroicons:shopping-cart" class="w-4 h-4" />
+                Zum Deal
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- Leerer Zustand -->
-    <div
-      v-if="filteredWishlist.length === 0 && wishlistItems.length > 0"
-      class="text-center py-12">
-      <Icon
-        name="heroicons:heart-20-solid"
-        class="w-16 h-16 text-gray-600 mx-auto mb-4" />
-      <h3 class="text-xl font-semibold text-gray-400 mb-2">
-        Keine Spiele gefunden
-      </h3>
-      <p class="text-gray-500">Versuchen Sie, Ihre Suchkriterien zu ändern.</p>
+
+    <!-- Wishlist Items -->
+    <div v-if="filteredWishlistItems.length > 0" class="space-y-6">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div
+          v-for="item in filteredWishlistItems"
+          :key="item.id"
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-purple-500/30 transition-all duration-300 group">
+          <!-- Game Cover -->
+          <div class="aspect-[3/4] relative overflow-hidden">
+            <img
+              :src="item.game.coverUrl || '/gameplaceholder.jpg'"
+              :alt="item.game.name"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+
+            <!-- Remove Button -->
+            <button
+              @click="handleRemoveFromWishlist(item.gameId)"
+              class="absolute top-3 right-3 p-2 bg-red-600/80 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+              title="Aus Wishlist entfernen">
+              <Icon name="heroicons:x-mark" class="w-4 h-4" />
+            </button>
+          </div>
+
+          <!-- Game Info -->
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-white mb-2 line-clamp-2">
+              {{ item.game.name }}
+            </h3>
+
+            <p class="text-sm text-gray-400 mb-4">
+              Hinzugefügt:
+              {{ new Date(item.addedAt).toLocaleDateString('de-DE') }}
+            </p>
+
+            <!-- Action Button -->
+            <NuxtLink
+              :to="`/game/${item.gameId}`"
+              class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+              <Icon name="heroicons:eye" class="w-4 h-4" />
+              Details anzeigen
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- Komplett leere Wishlist -->
-    <div v-if="wishlistItems.length === 0" class="text-center py-12">
-      <Icon
-        name="heroicons:heart-20-solid"
-        class="w-16 h-16 text-gray-600 mx-auto mb-4" />
-      <h3 class="text-xl font-semibold text-gray-400 mb-2">
-        Ihre Wishlist ist leer
-      </h3>
-      <p class="text-gray-500 mb-6">
-        Fügen Sie Spiele hinzu, die Sie interessieren, um Preise zu verfolgen.
-      </p>
-      <NuxtLink
-        to="/deals"
-        class="inline-flex items-center px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
-        <Icon name="heroicons:magnifying-glass-20-solid" class="w-5 h-5 mr-2" />
-        Angebote durchsuchen
-      </NuxtLink>
+
+    <!-- Empty State -->
+    <div v-else-if="!wishlistStore.hasWishlistItems" class="text-center py-16">
+      <div
+        class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-12 max-w-md mx-auto">
+        <Icon
+          name="heroicons:heart"
+          class="w-16 h-16 text-gray-400 mx-auto mb-6" />
+        <h3 class="text-2xl font-bold text-white mb-4">
+          Deine Wishlist ist leer
+        </h3>
+        <p class="text-gray-400 mb-8">
+          Entdecke großartige Spiele und füge sie zu deiner Wunschliste hinzu,
+          um bei Angeboten benachrichtigt zu werden!
+        </p>
+        <NuxtLink
+          to="/search"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200">
+          <Icon name="heroicons:magnifying-glass" class="w-5 h-5" />
+          Spiele entdecken
+        </NuxtLink>
+      </div>
+    </div>
+
+    <!-- No Search Results -->
+    <div v-else class="text-center py-16">
+      <div
+        class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-12 max-w-md mx-auto">
+        <Icon
+          name="heroicons:magnifying-glass"
+          class="w-16 h-16 text-gray-400 mx-auto mb-6" />
+        <h3 class="text-2xl font-bold text-white mb-4">Keine Ergebnisse</h3>
+        <p class="text-gray-400 mb-8">
+          Keine Spiele in deiner Wishlist entsprechen deiner Suche nach "{{
+            searchQuery
+          }}".
+        </p>
+        <button
+          @click="searchQuery = ''"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors duration-200">
+          Filter zurücksetzen
+        </button>
+      </div>
     </div>
   </div>
 </template>
+
 <style scoped>
   .line-clamp-2 {
     display: -webkit-box;

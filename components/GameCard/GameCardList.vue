@@ -92,24 +92,37 @@
         }}</span>
       </div>
     </div>
-    <!-- Favorite Button (fixed width) -->
-    <div v-if="!isSelectionMode" class="w-10 flex-shrink-0 flex justify-center">
-      <button
-        @click.stop="toggleFavorite"
-        class="w-7 h-7 rounded-full bg-gray-700/50 hover:bg-gray-600/50 flex items-center justify-center transition-all duration-200 group/favorite">
-        <Icon
-          :name="
-            game.isFavorite
-              ? 'heroicons:heart-16-solid'
-              : 'heroicons:heart-16-solid'
-          "
-          :class="[
-            'w-3.5 h-3.5 transition-all duration-200',
-            game.isFavorite
-              ? 'text-red-500 scale-110'
-              : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
-          ]" />
-      </button>
+    <!-- Action Buttons Container -->
+    <div v-if="!isSelectionMode" class="flex-shrink-0 flex items-center gap-2">
+      <!-- Favorite Button -->
+      <div v-if="showFavoriteButton">
+        <button
+          @click.stop="toggleFavorite"
+          :disabled="!canToggleFavorite"
+          class="w-7 h-7 rounded-full bg-gray-700/50 hover:bg-gray-600/50 flex items-center justify-center transition-all duration-200 group/favorite disabled:opacity-50 disabled:cursor-not-allowed">
+          <Icon
+            :name="
+              game.isFavorite
+                ? 'heroicons:heart-16-solid'
+                : 'heroicons:heart-16-solid'
+            "
+            :class="[
+              'w-3.5 h-3.5 transition-all duration-200',
+              game.isFavorite
+                ? 'text-red-500 scale-110'
+                : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
+            ]" />
+        </button>
+      </div>
+
+      <!-- Wishlist Button -->
+      <div v-if="showWishlistButton">
+        <WishlistButton
+          :game-id="gameData.id"
+          variant="icon"
+          size="medium"
+          :show-text="false" />
+      </div>
     </div>
   </div>
 </template>
@@ -120,16 +133,30 @@
     game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
+    showFavoriteButton?: boolean;
+    showWishlistButton?: boolean;
   }
+
+  const props = withDefaults(defineProps<Props>(), {
+    showFavoriteButton: true,
+    showWishlistButton: true
+  });
 
   interface Emits {
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
-
-  const props = defineProps<Props>();
   const emit = defineEmits<Emits>();
   const { getPlatformIcon, getPlatformColor } = usePlatforms();
+
+  // Compute visibility of favorite button based on game being a UserGame
+  const canToggleFavorite = computed(() => {
+    return (
+      props.showFavoriteButton &&
+      props.game &&
+      typeof props.game.id === 'number'
+    );
+  });
 
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);

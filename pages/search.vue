@@ -121,6 +121,8 @@
           :viewMode="currentViewMode"
           :isSelectionMode="false"
           :isSelected="false"
+          :showFavoriteButton="false"
+          :showWishlistButton="true"
           @click="navigateToGame(game)" />
       </div>
     </div>

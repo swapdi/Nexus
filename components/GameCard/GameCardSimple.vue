@@ -5,6 +5,8 @@
     :game="gameWithUserInfo"
     :isSelectionMode="isSelectionMode"
     :isSelected="isSelected"
+    :showFavoriteButton="showFavoriteButton"
+    :showWishlistButton="showWishlistButton"
     @click="handleClick" />
 </template>
 
@@ -23,13 +25,18 @@
     isSelectionMode: boolean;
     isSelected: boolean;
     userGameId?: number; // Optional: ID der UserGame falls vorhanden
+    showFavoriteButton?: boolean;
+    showWishlistButton?: boolean;
   }
 
   interface Emits {
     (e: 'click'): void;
   }
 
-  const props = defineProps<Props>();
+  const props = withDefaults(defineProps<Props>(), {
+    showFavoriteButton: false, // Für reine Game-Objekte standardmäßig aus
+    showWishlistButton: true // Wishlist standardmäßig an
+  });
   const emit = defineEmits<Emits>();
   const userStore = useUserStore();
 
@@ -55,7 +62,7 @@
       userId: userStore.user?.id || 0,
       id: props.userGameId || 0, // 0 bedeutet nicht in Bibliothek
       gameId: props.game.id,
-      platformIds: [],
+      platformDRMs: [],
       addedAt: new Date(),
       playtimeMinutes: 0,
       lastPlayed: null,

@@ -45,10 +45,13 @@
         </div>
       </div>
       <!-- Favorite Icon -->
-      <div v-if="!isSelectionMode" class="absolute bottom-1 left-1 z-10">
+      <div
+        v-if="!isSelectionMode && showFavoriteButton"
+        class="absolute bottom-1 left-1 z-10">
         <button
           @click.stop="toggleFavorite"
-          class="w-6 h-6 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite">
+          :disabled="!canToggleFavorite"
+          class="w-6 h-6 rounded-full bg-black/70 backdrop-blur-sm hover:bg-black/90 flex items-center justify-center transition-all duration-200 group/favorite disabled:opacity-50 disabled:cursor-not-allowed">
           <Icon
             :name="
               game.isFavorite
@@ -62,6 +65,18 @@
                 : 'text-gray-400 group-hover/favorite:text-red-400 group-hover/favorite:scale-105'
             ]" />
         </button>
+      </div>
+
+      <!-- Wishlist Icon -->
+      <div
+        v-if="!isSelectionMode && showWishlistButton"
+        class="absolute bottom-1 left-1 z-10"
+        :class="{ 'left-8': showFavoriteButton }">
+        <WishlistButton
+          :game-id="gameData.id"
+          variant="floating"
+          size="small"
+          :show-text="false" />
       </div>
       <!-- Rating Badge -->
       <div
@@ -126,6 +141,8 @@
     game: UserGameWithDetails;
     isSelectionMode: boolean;
     isSelected: boolean;
+    showFavoriteButton?: boolean;
+    showWishlistButton?: boolean;
   }
 
   interface Emits {
@@ -133,19 +150,27 @@
     (e: 'toggleFavorite', userGameId: number): void;
   }
 
-  const props = defineProps<Props>();
+  const props = withDefaults(defineProps<Props>(), {
+    showFavoriteButton: true,
+    showWishlistButton: false
+  });
   const emit = defineEmits<Emits>();
   const { getPlatformIcon, getPlatformColor } = usePlatforms();
 
   // Zugriff auf die verschachtelten Spieldaten
   const gameData = computed(() => props.game.game);
 
+  // Favoriten können nur für echte UserGames getoggelt werden
+  const canToggleFavorite = computed(() => props.game.id > 0);
+
   const handleClick = () => {
     emit('click');
   };
 
   const toggleFavorite = () => {
-    emit('toggleFavorite', props.game.id);
+    if (canToggleFavorite.value) {
+      emit('toggleFavorite', props.game.id);
+    }
   };
 
   const handleImageError = (event: Event) => {

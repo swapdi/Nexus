@@ -1,6 +1,5 @@
 import { PrismaClient, type Wishlist } from '~/prisma/client';
 import { DealsService } from './deals.service';
-import { MessagesService } from './messages.service';
 
 const prisma = new PrismaClient();
 
@@ -210,12 +209,12 @@ export namespace WishlistService {
               }))
             });
 
-            // Server-Nachricht für Deals erstellen
-            await createDealNotificationMessage(
-              userId,
-              item.game.name,
-              relevantDeals
-            );
+            // Server-Nachricht für Deals erstellen - ENTFERNT
+            // await createDealNotificationMessage(
+            //   userId,
+            //   item.game.name,
+            //   relevantDeals
+            // );
           }
         }
       }
@@ -224,47 +223,6 @@ export namespace WishlistService {
     } catch (error) {
       console.error('Fehler beim Prüfen der Wishlist-Deals:', error);
       throw error;
-    }
-  }
-
-  /**
-   * Deal-Benachrichtigungsnachricht erstellen
-   */
-  async function createDealNotificationMessage(
-    userId: number,
-    gameName: string,
-    deals: any[]
-  ): Promise<void> {
-    try {
-      let messageText: string;
-
-      if (deals.length === 1) {
-        const deal = deals[0];
-        if (deal.isFreebie) {
-          messageText = `🎉 Großartige Neuigkeiten! "${gameName}" ist jetzt kostenlos bei ${deal.storeName} verfügbar!`;
-        } else {
-          messageText = `💰 Deal-Alert für "${gameName}"! Jetzt ${deal.discountPercent}% günstiger bei ${deal.storeName} für ${deal.price}€ (statt ${deal.originalPrice}€)`;
-        }
-      } else {
-        const freebies = deals.filter(d => d.isFreebie);
-        const discounts = deals.filter(d => !d.isFreebie);
-
-        if (freebies.length > 0) {
-          messageText = `🎉 "${gameName}" ist jetzt kostenlos verfügbar! Außerdem ${
-            deals.length - freebies.length
-          } weitere Deals gefunden.`;
-        } else {
-          const bestDiscount = Math.max(
-            ...discounts.map(d => d.discountPercent || 0)
-          );
-          messageText = `💰 ${deals.length} Deals für "${gameName}" gefunden! Bester Rabatt: ${bestDiscount}%`;
-        }
-      }
-
-      await MessagesService.createServerMessage(userId, messageText);
-    } catch (error) {
-      console.error('Fehler beim Erstellen der Deal-Benachrichtigung:', error);
-      // Nicht werfen, da dies die Hauptfunktion nicht beeinträchtigen soll
     }
   }
 
@@ -284,8 +242,6 @@ export namespace WishlistService {
           id: true
         }
       });
-
-      console.log(`Prüfe Wishlist-Deals für ${users.length} Benutzer...`);
 
       for (const user of users) {
         try {

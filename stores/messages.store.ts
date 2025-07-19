@@ -16,10 +16,14 @@ export const useMessagesStore = defineStore('messages', () => {
   // Computed
   const hasUnreadMessages = computed(() => unreadCount.value > 0);
   const sortedMessages = computed(() =>
-    [...messages.value].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
+    [...messages.value].sort((a, b) => {
+      // Erst nach Gelesen-Status sortieren (ungelesen zuerst)
+      if (a.isRead !== b.isRead) {
+        return a.isRead ? 1 : -1;
+      }
+      // Dann nach Datum sortieren (neuste zuerst)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
   );
 
   // Actions

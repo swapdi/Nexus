@@ -5,6 +5,8 @@
     :game="game"
     :isSelectionMode="isSelectionMode"
     :isSelected="isSelected"
+    :showFavoriteButton="showFavoriteButton"
+    :showWishlistButton="showWishlistButton"
     @click="handleClick"
     @toggleFavorite="handleToggleFavorite" />
 </template>
@@ -20,12 +22,17 @@
     viewMode: ViewMode;
     isSelectionMode: boolean;
     isSelected: boolean;
+    showFavoriteButton?: boolean;
+    showWishlistButton?: boolean;
   }
   interface Emits {
     (e: 'click'): void;
     (e: 'toggleFavorite', userGameId: number): void;
   }
-  const props = defineProps<Props>();
+  const props = withDefaults(defineProps<Props>(), {
+    showFavoriteButton: true,
+    showWishlistButton: false
+  });
   const emit = defineEmits<Emits>();
   const cardComponent = computed(() => {
     switch (props.viewMode) {
