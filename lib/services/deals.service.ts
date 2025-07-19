@@ -6,10 +6,10 @@ import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
 const prisma = new PrismaClient();
 export interface DealWithGame extends Deal {
-  game: Game;
+  game: Game | null; // Game kann null sein für Bundles/DLCs ohne direktes Game
 }
 export interface DealCreateInput {
-  gameId: number;
+  gameId?: number | null; // gameId ist optional für Bundles/DLCs ohne direktes Game
   title: string;
   storeName: string;
   price?: number;
@@ -21,6 +21,8 @@ export interface DealCreateInput {
   isFreebie?: boolean;
   externalId?: string;
   source?: string;
+  thumb?: string; // Thumbnail URL hinzugefügt
+  rating?: number; // Deal Rating aus CheapShark API (0.0 - 10.0)
 }
 export interface DealSearchFilters {
   gameId?: number;
@@ -74,7 +76,7 @@ export namespace DealsService {
       const deals = await prisma.deal.findMany({
         where,
         include: {
-          game: true
+          game: true // Game kann null sein
         },
         orderBy: [{ discoveredAt: 'desc' }, { id: 'desc' }],
         take: filters.limit,
@@ -153,6 +155,7 @@ export namespace DealsService {
       const salePrice = parseFloat(cheapSharkDeal.salePrice || '0');
       const normalPrice = parseFloat(cheapSharkDeal.normalPrice || '0');
       const savings = parseFloat(cheapSharkDeal.savings || '0');
+      const dealRating = parseFloat(cheapSharkDeal.dealRating || '0');
       // Grund: Store-Namen aus CheapShark Service holen
       const storeName = useStoreUtils().getStoreName(cheapSharkDeal.storeID);
       // Grund: Spiel finden oder erstellen wenn keine gameId gegeben
@@ -164,21 +167,19 @@ export namespace DealsService {
           if (foundGame) {
             finalGameId = foundGame.id;
           } else {
-            console.warn(
-              `Could not find/create game for deal: ${cheapSharkDeal.title}`
+            console.log(
+              `Creating deal without game for: ${cheapSharkDeal.title} (Bundle/DLC)`
             );
-            return null;
+            // Grund: Deal auch ohne Game erstellen für Bundles/DLCs
+            finalGameId = null;
           }
         } catch (error) {
           console.error('Error finding/creating game for deal:', error);
-          return null;
+          // Grund: Deal trotzdem erstellen auch wenn Game-Suche fehlschlägt
+          finalGameId = null;
         }
       }
-      // Grund: Prüfe ob gameId gefunden wurde
-      if (!finalGameId) {
-        console.warn(`No valid gameId found for deal: ${cheapSharkDeal.title}`);
-        return null;
-      }
+
       return {
         gameId: finalGameId,
         title: cheapSharkDeal.title,
@@ -190,7 +191,9 @@ export namespace DealsService {
         validFrom: new Date(), // Grund: Aktuelles Datum setzen
         isFreebie: salePrice === 0,
         externalId: cheapSharkDeal.dealID,
-        source: 'CheapShark'
+        source: 'CheapShark',
+        thumb: cheapSharkDeal.thumb || undefined, // Grund: Thumbnail URL speichern
+        rating: dealRating > 0 ? dealRating : undefined // Grund: Deal Rating hinzufügen
       };
     } catch (error) {
       console.error('Error converting CheapShark deal:', error);

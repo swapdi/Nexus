@@ -179,7 +179,6 @@ exports.Prisma.DealScalarFieldEnum = {
   gameId: 'gameId',
   title: 'title',
   storeName: 'storeName',
-  platformDRM: 'platformDRM',
   price: 'price',
   discountPercent: 'discountPercent',
   originalPrice: 'originalPrice',
@@ -190,7 +189,9 @@ exports.Prisma.DealScalarFieldEnum = {
   discoveredAt: 'discoveredAt',
   updatedAt: 'updatedAt',
   externalId: 'externalId',
-  source: 'source'
+  source: 'source',
+  thumb: 'thumb',
+  rating: 'rating'
 };
 
 exports.Prisma.WishlistScalarFieldEnum = {

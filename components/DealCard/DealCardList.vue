@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\components\DealCard\DealCardList.vue -->
 <template>
   <div
     class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 p-4 hover:border-green-500/50 transition-all duration-300 group cursor-pointer"
@@ -88,15 +87,20 @@
   const dealsStore = useDealsStore();
   const { getStoreLogoURL } = useStoreUtils();
   const getCoverUrl = (deal: DealWithGame): string => {
-    return deal.game.coverUrl || '/gameplaceholder.jpg';
+    // Grund: Thumbnail aus Deal verwenden, falls vorhanden, sonst Game Cover
+    if (deal.thumb) {
+      return deal.thumb;
+    }
+    return deal?.game?.coverUrl || '/gameplaceholder.jpg';
   };
 
   const getGenreDisplay = (deal: DealWithGame): string => {
-    return deal.game.genres.slice(0, 2).join(', ') || 'Unbekannt';
+    return deal?.game?.genres?.slice(0, 2).join(', ') || 'Unbekannt';
   };
   const isGameOwned = (deal: DealWithGame): boolean => {
     // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
     const gamesStore = useGamesStore();
+    if (!deal.game) return false;
     return gamesStore.games.some(
       (userGame: any) => userGame.gameId === deal.gameId
     );

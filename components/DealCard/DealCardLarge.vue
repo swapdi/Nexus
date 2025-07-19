@@ -4,7 +4,7 @@
     class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer"
     @click="handleClick">
     <!-- Cover Image -->
-    <div class="relative aspect-[3/4] overflow-hidden">
+    <div class="relative aspect-[2/1] overflow-hidden">
       <img
         :src="getCoverUrl(deal)"
         :alt="deal.title"
@@ -53,7 +53,7 @@
         <!-- Genres - Fixed space for consistent layout -->
         <div class="flex-1 flex items-start">
           <div
-            v-if="deal.game.genres && deal.game.genres.length > 0"
+            v-if="deal.game?.genres && deal.game.genres.length > 0"
             class="flex flex-wrap gap-1">
             <span
               v-for="genre in deal.game.genres.slice(0, 2)"
@@ -66,6 +66,22 @@
               class="px-2 py-1 bg-gray-600/30 text-gray-400 text-xs rounded-md">
               +{{ deal.game.genres.length - 2 }}
             </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div v-if="deal.rating && deal.rating > 0" class="mb-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-400">Bewertung:</span>
+          <div class="flex items-center space-x-1">
+            <Icon
+              name="heroicons:star-16-solid"
+              class="w-4 h-4 text-yellow-400" />
+            <span class="text-yellow-400 font-medium">{{
+              deal.rating.toFixed(1)
+            }}</span>
+            <span class="text-gray-500 text-xs">/10</span>
           </div>
         </div>
       </div>
@@ -114,9 +130,14 @@
   const { getStoreBannerURL } = useStoreUtils();
 
   const getCoverUrl = (deal: DealWithGame): string => {
-    return deal.game.coverUrl || '/gameplaceholder.jpg';
+    // Grund: Thumbnail aus Deal verwenden, falls vorhanden, sonst Game Cover
+    if (deal.thumb) {
+      return deal.thumb;
+    }
+    return deal?.game?.coverUrl || '/gameplaceholder.jpg';
   };
   const isGameOwned = (deal: DealWithGame): boolean => {
+    if (!deal.game) return false;
     return gamesStore.isGameOwned(deal.game.id);
   };
   const formatPrice = (price: number | null): string => {

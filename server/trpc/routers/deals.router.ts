@@ -2,6 +2,7 @@
 // Grund: Nur noch syncAndLoadDeals Workflow für optimale Performance
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+import { useStoreUtils } from '~/composables/useStoreUtils';
 import { DealsService } from '~/lib/services/deals.service';
 import { publicProcedure, router } from '../trpc';
 export const dealsRouter = router({
@@ -23,22 +24,24 @@ export const dealsRouter = router({
     .input(
       z
         .object({
-          limit: z.number().min(1).max(500).default(100),
+          limit: z.number().min(1),
           offset: z.number().min(0).default(0)
         })
         .optional()
     )
     .query(async ({ input }) => {
       try {
-        const { limit = 100, offset = 0 } = input || {};
+        const { limit, offset } = input || {};
+
+        // Lade die Deals für die aktuelle Seite
         const deals = await DealsService.searchDeals({
           isActive: true,
           limit,
           offset
         });
+
         return {
-          deals,
-          totalDeals: deals.length
+          deals
         };
       } catch (error) {
         throw new TRPCError({

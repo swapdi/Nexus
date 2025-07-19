@@ -4,7 +4,7 @@
     class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer flex flex-col h-full"
     @click="handleClick">
     <!-- Cover Image -->
-    <div class="relative aspect-[3/4] overflow-hidden">
+    <div class="relative aspect-[2/1] overflow-hidden">
       <img
         :src="getCoverUrl(deal)"
         :alt="deal.title"
@@ -54,6 +54,21 @@
         </div>
       </div>
 
+      <!-- Rating -->
+      <div v-if="deal.rating && deal.rating > 0" class="mb-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-400">Rating:</span>
+          <div class="flex items-center space-x-1">
+            <Icon
+              name="heroicons:star-16-solid"
+              class="w-3 h-3 text-yellow-400" />
+            <span class="text-yellow-400 font-medium text-xs">{{
+              deal.rating.toFixed(1)
+            }}</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Spacer to push price to bottom -->
       <div class="flex-1 min-h-4"></div>
 
@@ -92,15 +107,20 @@
   const dealsStore = useDealsStore();
   const { getStoreLogoURL } = useStoreUtils();
   const getCoverUrl = (deal: DealWithGame): string => {
+    // Grund: Thumbnail aus Deal verwenden, falls vorhanden, sonst Game Cover
+    if (deal.thumb) {
+      return deal.thumb;
+    }
     return deal?.game?.coverUrl || '/gameplaceholder.jpg';
   };
 
   const getGenreDisplay = (deal: DealWithGame): string => {
-    return deal?.game?.genres.slice(0, 1).join(', ') || 'Unbekannt';
+    return deal?.game?.genres?.slice(0, 1).join(', ') || 'Unbekannt';
   };
   const isGameOwned = (deal: DealWithGame): boolean => {
     // Prüfe ob das Spiel in der Bibliothek des Users vorhanden ist
     const gamesStore = useGamesStore();
+    if (!deal.game) return false;
     return gamesStore.games.some(
       (userGame: any) => userGame.gameId === deal.gameId
     );

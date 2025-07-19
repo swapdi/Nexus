@@ -12,7 +12,12 @@
   const user = computed(() => userStore.user);
   const stats = computed(() => userStore.stats);
   const recentGames = computed(() => gamesStore.recentlyPlayed.slice(0, 4));
-  const featuredDeals = computed(() => dealsStore.deals.slice(0, 3));
+  const featuredDeals = computed(() =>
+    dealsStore.deals
+      .filter(deal => deal.discountPercent && deal.discountPercent > 0)
+      .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
+      .slice(0, 3)
+  );
 
   // Aktuelle Uhrzeit für Begrüßung
   const currentTime = ref(new Date());
@@ -21,16 +26,6 @@
     if (hour < 12) return 'Guten Morgen';
     if (hour < 18) return 'Guten Tag';
     return 'Guten Abend';
-  });
-
-  // Gaming-Aktivität (Mock-Daten basierend auf echten Stats)
-  const gameActivity = computed(() => {
-    // Grund: Einfache Darstellung der Wochenaktivität basierend auf totalPlaytimeHours
-    const totalHours = stats.value?.totalPlaytimeHours || 0;
-    const avgPerDay = Math.floor(totalHours / 7) || 1;
-    return Array.from({ length: 7 }, (_, i) =>
-      Math.max(avgPerDay + Math.floor(Math.random() * 3) - 1, 0)
-    );
   });
 
   // Update Zeit jede Minute

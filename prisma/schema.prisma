@@ -84,7 +84,6 @@ model Deal {
   gameId          Int?
   title           String
   storeName       String
-  platformDRM     Int? 
   price           Float?
   discountPercent Float?
   originalPrice   Float?
@@ -96,6 +95,8 @@ model Deal {
   updatedAt       DateTime @updatedAt
   externalId      String?
   source          String?
+  thumb           String?   // Thumbnail URL from API
+  rating          Float?    // Deal Rating from CheapShark API (0.0 - 10.0)
   game            Game?    @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@map("deals")

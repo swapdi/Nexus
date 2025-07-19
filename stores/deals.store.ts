@@ -6,7 +6,9 @@ export type DealSortOptions =
   | 'discount-desc'
   | 'price-asc'
   | 'recent'
-  | 'ending-soon';
+  | 'ending-soon'
+  | 'rating-desc'
+  | 'rating-asc';
 export interface DealSearchFilters {
   gameId?: number;
   storeName?: string;
@@ -52,11 +54,12 @@ export const useDealsStore = defineStore('deals', () => {
       async () => {
         error.value = null;
         try {
-          const response = await $client.deals.loadDealsFromDB.query({
-            limit: 100
-          });
+          const response = await $client.deals.loadDealsFromDB.query();
           deals.value = response.deals;
-          return response;
+          return {
+            deals: response.deals,
+            totalCount: response.deals.length
+          };
         } catch (err: any) {
           error.value = err.message || 'Fehler beim Laden der Deals';
           notifyStore.notify(error.value, 3);
@@ -86,7 +89,7 @@ export const useDealsStore = defineStore('deals', () => {
         `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen`,
         0
       );
-      // Grund: Deals nach Hintergrund-Sync neu laden
+      // Grund: Deals nach Hintergrund-Sync neu laden mit aktuellen Pagination-Settings
       await loadDealsFromDB();
       return response;
     } catch (err: any) {
@@ -98,22 +101,10 @@ export const useDealsStore = defineStore('deals', () => {
     }
   }
   /**
-   * Optimierte Kombination: Schneller Load + Hintergrund-Sync
-   * Grund: Beste UX - sofortige Anzeige + vollständige Daten im Hintergrund
-   */
-  async function loadDealsWithBackgroundSync() {
-    // Schritt 1: Schnell aus DB laden für sofortige UI
-    const dbResult = await loadDealsFromDB();
-    // Schritt 2: Hintergrund-Sync starten (ohne await)
-    syncAllDealsInBackground().catch(console.error);
-    return dbResult;
-  }
-  /**
    * Setze Sortierung und lade Deals neu
    */
   async function setSortBy(sortBy: DealSortOptions) {
     currentSortBy.value = sortBy;
-    // Sortierung wird lokal angewendet, kein API-Call nötig
   }
   /**
    * Hole verfügbare Stores aus aktuellen Deals
@@ -215,6 +206,10 @@ export const useDealsStore = defineStore('deals', () => {
             new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
           );
         });
+      case 'rating-desc':
+        return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      case 'rating-asc':
+        return sorted.sort((a, b) => (a.rating || 0) - (b.rating || 0));
       default:
         return sorted;
     }
@@ -257,7 +252,6 @@ export const useDealsStore = defineStore('deals', () => {
     // Actions - Optimiert für bessere UX
     loadDealsFromDB,
     syncAllDealsInBackground,
-    loadDealsWithBackgroundSync,
     refreshAllDeals,
     setSortBy,
     updateAvailableStores,

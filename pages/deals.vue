@@ -17,16 +17,41 @@
   const showOnlyFree = ref(false);
   const hideOwned = ref(false);
   const sortBy = ref<DealSortOptions>('discount-desc');
+
+  // Pagination state
+  const currentPage = ref(1);
+  const pageSize = ref(25); // Standard: 25 Deals pro Seite
+  const pageSizeOptions = [25, 50, 100];
+  const totalDeals = ref(0);
+
   // Loading state aus LoadingStore
   const isLoading = computed(() => loadingStore.isLoading);
   // Initialize data
   onMounted(async () => {
     await userStore.init();
-    await dealsStore.loadDealsFromDB();
+    await loadAllDeals(); // Lade alle Deals für Filter und Suche
     dealsStore.updateAvailableStores();
   });
-  // Computed properties for filters
 
+  // Load all deals for filtering and searching
+  const loadAllDeals = async () => {
+    // Lade alle Deals ohne Limit für vollständige Filter-/Suchfunktionalität
+    const result = await dealsStore.loadDealsFromDB(); // Hoher Wert um alle zu laden
+    totalDeals.value = result?.totalCount || dealsStore.deals.length;
+  };
+
+  // Computed properties for pagination
+  const totalPages = computed(() =>
+    Math.ceil(filteredDealsAll.value.length / pageSize.value)
+  );
+  const startItem = computed(
+    () => (currentPage.value - 1) * pageSize.value + 1
+  );
+  const endItem = computed(() =>
+    Math.min(currentPage.value * pageSize.value, filteredDealsAll.value.length)
+  );
+
+  // Computed properties for filters
   const availableStores = computed(() => {
     const stores = new Set<string>();
     dealsStore.deals.forEach(deal => {
@@ -46,7 +71,10 @@
   const availableGenres = computed(() => {
     const genres = new Set<string>();
     dealsStore.deals.forEach(deal => {
-      deal.game.genres.forEach(genre => genres.add(genre));
+      // Grund: Prüfe ob Game existiert bevor auf genres zugegriffen wird
+      if (deal.game?.genres) {
+        deal.game.genres.forEach(genre => genres.add(genre));
+      }
     });
     return [
       { value: 'all', label: 'Alle Genres' },
@@ -57,15 +85,16 @@
     ];
   });
   const selectedGenre = ref<string>('all');
-  // Filtered and sorted deals
-  const filteredDeals = computed(() => {
+
+  // Alle gefilterten und sortierten Deals (für Statistiken und Gesamtzahl)
+  const filteredDealsAll = computed(() => {
     let filtered = dealsStore.searchDeals(searchQuery.value);
     filtered = filtered.filter(deal => {
       const matchesStore =
         selectedStore.value === 'all' || deal.storeName === selectedStore.value;
       const matchesGenre =
         selectedGenre.value === 'all' ||
-        deal.game.genres.includes(selectedGenre.value);
+        (deal.game?.genres && deal.game.genres.includes(selectedGenre.value));
       const matchesFree = !showOnlyFree.value || deal.isFreebie;
       const matchesOwned = !hideOwned.value || !isGameOwned(deal);
       return matchesStore && matchesGenre && matchesFree && matchesOwned;
@@ -101,31 +130,102 @@
     }
     return sortedDeals;
   });
-  // Statistics
+
+  // Aktuelle Seite der gefilterten Deals für die Anzeige
+  const filteredDeals = computed(() => {
+    const startIndex = (currentPage.value - 1) * pageSize.value;
+    const endIndex = startIndex + pageSize.value;
+    return filteredDealsAll.value.slice(startIndex, endIndex);
+  });
+  // Statistics basierend auf allen Deals (nicht nur aktuelle Seite)
   const statistics = computed(() => {
+    const allDeals = dealsStore.deals;
+    const freeDeals = allDeals.filter(deal => deal.isFreebie);
     return {
-      totalDeals: dealsStore.deals.length,
-      freeGames: dealsStore.freebies.length,
+      totalDeals: allDeals.length,
+      freeGames: freeDeals.length,
       averageDiscount:
-        dealsStore.deals.length > 0
+        allDeals.length > 0
           ? Math.round(
-              dealsStore.deals.reduce(
+              allDeals.reduce(
                 (sum, deal) => sum + (deal.discountPercent || 0),
                 0
-              ) / dealsStore.deals.length
+              ) / allDeals.length
             )
           : 0,
       maxDiscount:
         Math.round(
-          Math.max(...dealsStore.deals.map(d => d.discountPercent || 0), 0) *
-            100
+          Math.max(...allDeals.map(d => d.discountPercent || 0), 0) * 100
         ) / 100
     };
+  });
+
+  // Watch für Filter-Änderungen um auf Seite 1 zurückzusetzen
+  watch(
+    [searchQuery, selectedStore, selectedGenre, showOnlyFree, hideOwned],
+    () => {
+      currentPage.value = 1; // Bei Filter-Änderung zurück zu Seite 1
+    }
+  );
+
+  // Intelligente Pagination: Zeige einen Bereich um die aktuelle Seite
+  const visiblePages = computed(() => {
+    const total = totalPages.value;
+    const current = currentPage.value;
+    const pages = [];
+
+    if (total <= 7) {
+      // Wenn weniger als 7 Seiten: Zeige alle
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Komplexere Logik für mehr als 7 Seiten
+      if (current <= 4) {
+        // Am Anfang: 1,2,3,4,5,...,total
+        for (let i = 1; i <= 5; i++) {
+          pages.push(i);
+        }
+        if (total > 6) {
+          pages.push('...');
+          pages.push(total);
+        }
+      } else if (current >= total - 3) {
+        // Am Ende: 1,...,total-4,total-3,total-2,total-1,total
+        pages.push(1);
+        if (total > 6) {
+          pages.push('...');
+        }
+        for (let i = Math.max(1, total - 4); i <= total; i++) {
+          if (i > 1 || total <= 6) {
+            pages.push(i);
+          }
+        }
+      } else {
+        // In der Mitte: 1,...,current-1,current,current+1,...,total
+        pages.push(1);
+        pages.push('...');
+        for (let i = current - 1; i <= current + 1; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(total);
+      }
+    }
+
+    return pages;
   });
   // Watch for sort changes and apply to backend
   watch(sortBy, async newSort => {
     if (
-      ['discount-desc', 'price-asc', 'recent', 'ending-soon'].includes(newSort)
+      [
+        'discount-desc',
+        'price-asc',
+        'recent',
+        'ending-soon',
+        'rating-desc',
+        'rating-asc'
+      ].includes(newSort)
     ) {
       await dealsStore.setSortBy(newSort as DealSortOptions);
     }
@@ -244,7 +344,7 @@
     <div
       v-if="!isLoading && !dealsStore.error"
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">
-      <div class="grid grid-cols-1 lg:grid-cols-7 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
         <!-- Suche -->
         <div class="lg:col-span-2">
           <label class="block text-sm font-medium text-gray-300 mb-2"
@@ -305,6 +405,8 @@
             <option value="price-asc">Niedrigster Preis</option>
             <option value="recent">Neueste zuerst</option>
             <option value="ending-soon">Läuft bald ab</option>
+            <option value="rating-desc">Beste Bewertung</option>
+            <option value="rating-asc">Schlechteste Bewertung</option>
           </select>
         </div>
         <!-- Toggle Filter -->
@@ -327,14 +429,75 @@
             </label>
           </div>
         </div>
-
-        <!-- View Mode Toggle -->
-        <div class="space-y-3">
-          <label class="block text-sm font-medium text-gray-300">Ansicht</label>
-          <ViewModeToggle />
-        </div>
       </div>
     </div>
+
+    <!-- Pagination Controls -->
+    <div
+      v-if="!isLoading && !dealsStore.error && filteredDealsAll.length > 0"
+      class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-4">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Pagination Info and Page Size Selector -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-300">Pro Seite:</label>
+            <select
+              v-model="pageSize"
+              @change="currentPage = 1"
+              class="px-3 py-1.5 bg-gray-700/50 border border-gray-600/50 rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option v-for="size in pageSizeOptions" :key="size" :value="size">
+                {{ size }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pagination Navigation -->
+        <div class="flex items-center gap-2">
+          <button
+            @click="currentPage = Math.max(1, currentPage - 1)"
+            :disabled="currentPage === 1"
+            class="px-3 py-1.5 text-sm bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600/50 rounded text-white transition-colors flex items-center gap-1">
+            <Icon name="heroicons:chevron-left-20-solid" class="w-4 h-4" />
+            Zurück
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="flex items-center gap-1">
+            <template
+              v-for="(page, index) in visiblePages"
+              :key="`page-${index}`">
+              <!-- Ellipsis -->
+              <span v-if="page === '...'" class="text-gray-400 px-2 text-sm">
+                ...
+              </span>
+              <!-- Page Number -->
+              <button
+                v-else
+                @click="typeof page === 'number' && (currentPage = page)"
+                class="px-3 py-1.5 text-sm rounded transition-colors"
+                :class="
+                  page === currentPage
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-700/50 hover:bg-gray-600/50 text-white border border-gray-600/50'
+                ">
+                {{ page }}
+              </button>
+            </template>
+          </div>
+
+          <button
+            @click="currentPage = Math.min(totalPages, currentPage + 1)"
+            :disabled="currentPage === totalPages"
+            class="px-3 py-1.5 text-sm bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600/50 rounded text-white transition-colors flex items-center gap-1">
+            Weiter
+            <Icon name="heroicons:chevron-right-20-solid" class="w-4 h-4" />
+          </button>
+        </div>
+        <ViewModeToggle />
+      </div>
+    </div>
+
     <!-- Deals Grid/List -->
     <div
       v-if="!isLoading && !dealsStore.error"

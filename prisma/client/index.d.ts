@@ -6142,19 +6142,19 @@ export namespace Prisma {
   export type DealAvgAggregateOutputType = {
     id: number | null
     gameId: number | null
-    platformDRM: number | null
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
+    rating: number | null
   }
 
   export type DealSumAggregateOutputType = {
     id: number | null
     gameId: number | null
-    platformDRM: number | null
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
+    rating: number | null
   }
 
   export type DealMinAggregateOutputType = {
@@ -6162,7 +6162,6 @@ export namespace Prisma {
     gameId: number | null
     title: string | null
     storeName: string | null
-    platformDRM: number | null
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
@@ -6174,6 +6173,8 @@ export namespace Prisma {
     updatedAt: Date | null
     externalId: string | null
     source: string | null
+    thumb: string | null
+    rating: number | null
   }
 
   export type DealMaxAggregateOutputType = {
@@ -6181,7 +6182,6 @@ export namespace Prisma {
     gameId: number | null
     title: string | null
     storeName: string | null
-    platformDRM: number | null
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
@@ -6193,6 +6193,8 @@ export namespace Prisma {
     updatedAt: Date | null
     externalId: string | null
     source: string | null
+    thumb: string | null
+    rating: number | null
   }
 
   export type DealCountAggregateOutputType = {
@@ -6200,7 +6202,6 @@ export namespace Prisma {
     gameId: number
     title: number
     storeName: number
-    platformDRM: number
     price: number
     discountPercent: number
     originalPrice: number
@@ -6212,6 +6213,8 @@ export namespace Prisma {
     updatedAt: number
     externalId: number
     source: number
+    thumb: number
+    rating: number
     _all: number
   }
 
@@ -6219,19 +6222,19 @@ export namespace Prisma {
   export type DealAvgAggregateInputType = {
     id?: true
     gameId?: true
-    platformDRM?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
+    rating?: true
   }
 
   export type DealSumAggregateInputType = {
     id?: true
     gameId?: true
-    platformDRM?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
+    rating?: true
   }
 
   export type DealMinAggregateInputType = {
@@ -6239,7 +6242,6 @@ export namespace Prisma {
     gameId?: true
     title?: true
     storeName?: true
-    platformDRM?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
@@ -6251,6 +6253,8 @@ export namespace Prisma {
     updatedAt?: true
     externalId?: true
     source?: true
+    thumb?: true
+    rating?: true
   }
 
   export type DealMaxAggregateInputType = {
@@ -6258,7 +6262,6 @@ export namespace Prisma {
     gameId?: true
     title?: true
     storeName?: true
-    platformDRM?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
@@ -6270,6 +6273,8 @@ export namespace Prisma {
     updatedAt?: true
     externalId?: true
     source?: true
+    thumb?: true
+    rating?: true
   }
 
   export type DealCountAggregateInputType = {
@@ -6277,7 +6282,6 @@ export namespace Prisma {
     gameId?: true
     title?: true
     storeName?: true
-    platformDRM?: true
     price?: true
     discountPercent?: true
     originalPrice?: true
@@ -6289,6 +6293,8 @@ export namespace Prisma {
     updatedAt?: true
     externalId?: true
     source?: true
+    thumb?: true
+    rating?: true
     _all?: true
   }
 
@@ -6383,7 +6389,6 @@ export namespace Prisma {
     gameId: number | null
     title: string
     storeName: string
-    platformDRM: number | null
     price: number | null
     discountPercent: number | null
     originalPrice: number | null
@@ -6395,6 +6400,8 @@ export namespace Prisma {
     updatedAt: Date
     externalId: string | null
     source: string | null
+    thumb: string | null
+    rating: number | null
     _count: DealCountAggregateOutputType | null
     _avg: DealAvgAggregateOutputType | null
     _sum: DealSumAggregateOutputType | null
@@ -6421,7 +6428,6 @@ export namespace Prisma {
     gameId?: boolean
     title?: boolean
     storeName?: boolean
-    platformDRM?: boolean
     price?: boolean
     discountPercent?: boolean
     originalPrice?: boolean
@@ -6433,6 +6439,8 @@ export namespace Prisma {
     updatedAt?: boolean
     externalId?: boolean
     source?: boolean
+    thumb?: boolean
+    rating?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
@@ -6441,7 +6449,6 @@ export namespace Prisma {
     gameId?: boolean
     title?: boolean
     storeName?: boolean
-    platformDRM?: boolean
     price?: boolean
     discountPercent?: boolean
     originalPrice?: boolean
@@ -6453,6 +6460,8 @@ export namespace Prisma {
     updatedAt?: boolean
     externalId?: boolean
     source?: boolean
+    thumb?: boolean
+    rating?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
@@ -6461,7 +6470,6 @@ export namespace Prisma {
     gameId?: boolean
     title?: boolean
     storeName?: boolean
-    platformDRM?: boolean
     price?: boolean
     discountPercent?: boolean
     originalPrice?: boolean
@@ -6473,6 +6481,8 @@ export namespace Prisma {
     updatedAt?: boolean
     externalId?: boolean
     source?: boolean
+    thumb?: boolean
+    rating?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
@@ -6481,7 +6491,6 @@ export namespace Prisma {
     gameId?: boolean
     title?: boolean
     storeName?: boolean
-    platformDRM?: boolean
     price?: boolean
     discountPercent?: boolean
     originalPrice?: boolean
@@ -6493,9 +6502,11 @@ export namespace Prisma {
     updatedAt?: boolean
     externalId?: boolean
     source?: boolean
+    thumb?: boolean
+    rating?: boolean
   }
 
-  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "title" | "storeName" | "platformDRM" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source", ExtArgs["result"]["deal"]>
+  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source" | "thumb" | "rating", ExtArgs["result"]["deal"]>
   export type DealInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | Deal$gameArgs<ExtArgs>
   }
@@ -6516,7 +6527,6 @@ export namespace Prisma {
       gameId: number | null
       title: string
       storeName: string
-      platformDRM: number | null
       price: number | null
       discountPercent: number | null
       originalPrice: number | null
@@ -6528,6 +6538,8 @@ export namespace Prisma {
       updatedAt: Date
       externalId: string | null
       source: string | null
+      thumb: string | null
+      rating: number | null
     }, ExtArgs["result"]["deal"]>
     composites: {}
   }
@@ -6956,7 +6968,6 @@ export namespace Prisma {
     readonly gameId: FieldRef<"Deal", 'Int'>
     readonly title: FieldRef<"Deal", 'String'>
     readonly storeName: FieldRef<"Deal", 'String'>
-    readonly platformDRM: FieldRef<"Deal", 'Int'>
     readonly price: FieldRef<"Deal", 'Float'>
     readonly discountPercent: FieldRef<"Deal", 'Float'>
     readonly originalPrice: FieldRef<"Deal", 'Float'>
@@ -6968,6 +6979,8 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Deal", 'DateTime'>
     readonly externalId: FieldRef<"Deal", 'String'>
     readonly source: FieldRef<"Deal", 'String'>
+    readonly thumb: FieldRef<"Deal", 'String'>
+    readonly rating: FieldRef<"Deal", 'Float'>
   }
     
 
@@ -8581,7 +8594,6 @@ export namespace Prisma {
     gameId: 'gameId',
     title: 'title',
     storeName: 'storeName',
-    platformDRM: 'platformDRM',
     price: 'price',
     discountPercent: 'discountPercent',
     originalPrice: 'originalPrice',
@@ -8592,7 +8604,9 @@ export namespace Prisma {
     discoveredAt: 'discoveredAt',
     updatedAt: 'updatedAt',
     externalId: 'externalId',
-    source: 'source'
+    source: 'source',
+    thumb: 'thumb',
+    rating: 'rating'
   };
 
   export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
@@ -9090,7 +9104,6 @@ export namespace Prisma {
     gameId?: IntNullableFilter<"Deal"> | number | null
     title?: StringFilter<"Deal"> | string
     storeName?: StringFilter<"Deal"> | string
-    platformDRM?: IntNullableFilter<"Deal"> | number | null
     price?: FloatNullableFilter<"Deal"> | number | null
     discountPercent?: FloatNullableFilter<"Deal"> | number | null
     originalPrice?: FloatNullableFilter<"Deal"> | number | null
@@ -9102,6 +9115,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
+    thumb?: StringNullableFilter<"Deal"> | string | null
+    rating?: FloatNullableFilter<"Deal"> | number | null
     game?: XOR<GameNullableScalarRelationFilter, GameWhereInput> | null
   }
 
@@ -9110,7 +9125,6 @@ export namespace Prisma {
     gameId?: SortOrderInput | SortOrder
     title?: SortOrder
     storeName?: SortOrder
-    platformDRM?: SortOrderInput | SortOrder
     price?: SortOrderInput | SortOrder
     discountPercent?: SortOrderInput | SortOrder
     originalPrice?: SortOrderInput | SortOrder
@@ -9122,6 +9136,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     externalId?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
+    thumb?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
   }
 
@@ -9133,7 +9149,6 @@ export namespace Prisma {
     gameId?: IntNullableFilter<"Deal"> | number | null
     title?: StringFilter<"Deal"> | string
     storeName?: StringFilter<"Deal"> | string
-    platformDRM?: IntNullableFilter<"Deal"> | number | null
     price?: FloatNullableFilter<"Deal"> | number | null
     discountPercent?: FloatNullableFilter<"Deal"> | number | null
     originalPrice?: FloatNullableFilter<"Deal"> | number | null
@@ -9145,6 +9160,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
+    thumb?: StringNullableFilter<"Deal"> | string | null
+    rating?: FloatNullableFilter<"Deal"> | number | null
     game?: XOR<GameNullableScalarRelationFilter, GameWhereInput> | null
   }, "id">
 
@@ -9153,7 +9170,6 @@ export namespace Prisma {
     gameId?: SortOrderInput | SortOrder
     title?: SortOrder
     storeName?: SortOrder
-    platformDRM?: SortOrderInput | SortOrder
     price?: SortOrderInput | SortOrder
     discountPercent?: SortOrderInput | SortOrder
     originalPrice?: SortOrderInput | SortOrder
@@ -9165,6 +9181,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     externalId?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
+    thumb?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
     _count?: DealCountOrderByAggregateInput
     _avg?: DealAvgOrderByAggregateInput
     _max?: DealMaxOrderByAggregateInput
@@ -9180,7 +9198,6 @@ export namespace Prisma {
     gameId?: IntNullableWithAggregatesFilter<"Deal"> | number | null
     title?: StringWithAggregatesFilter<"Deal"> | string
     storeName?: StringWithAggregatesFilter<"Deal"> | string
-    platformDRM?: IntNullableWithAggregatesFilter<"Deal"> | number | null
     price?: FloatNullableWithAggregatesFilter<"Deal"> | number | null
     discountPercent?: FloatNullableWithAggregatesFilter<"Deal"> | number | null
     originalPrice?: FloatNullableWithAggregatesFilter<"Deal"> | number | null
@@ -9192,6 +9209,8 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Deal"> | Date | string
     externalId?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     source?: StringNullableWithAggregatesFilter<"Deal"> | string | null
+    thumb?: StringNullableWithAggregatesFilter<"Deal"> | string | null
+    rating?: FloatNullableWithAggregatesFilter<"Deal"> | number | null
   }
 
   export type WishlistWhereInput = {
@@ -9637,7 +9656,6 @@ export namespace Prisma {
   export type DealCreateInput = {
     title: string
     storeName: string
-    platformDRM?: number | null
     price?: number | null
     discountPercent?: number | null
     originalPrice?: number | null
@@ -9649,6 +9667,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
+    thumb?: string | null
+    rating?: number | null
     game?: GameCreateNestedOneWithoutDealsInput
   }
 
@@ -9657,7 +9677,6 @@ export namespace Prisma {
     gameId?: number | null
     title: string
     storeName: string
-    platformDRM?: number | null
     price?: number | null
     discountPercent?: number | null
     originalPrice?: number | null
@@ -9669,12 +9688,13 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
+    thumb?: string | null
+    rating?: number | null
   }
 
   export type DealUpdateInput = {
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -9686,6 +9706,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
     game?: GameUpdateOneWithoutDealsNestedInput
   }
 
@@ -9694,7 +9716,6 @@ export namespace Prisma {
     gameId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -9706,6 +9727,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type DealCreateManyInput = {
@@ -9713,7 +9736,6 @@ export namespace Prisma {
     gameId?: number | null
     title: string
     storeName: string
-    platformDRM?: number | null
     price?: number | null
     discountPercent?: number | null
     originalPrice?: number | null
@@ -9725,12 +9747,13 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
+    thumb?: string | null
+    rating?: number | null
   }
 
   export type DealUpdateManyMutationInput = {
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -9742,6 +9765,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type DealUncheckedUpdateManyInput = {
@@ -9749,7 +9774,6 @@ export namespace Prisma {
     gameId?: NullableIntFieldUpdateOperationsInput | number | null
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -9761,6 +9785,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type WishlistCreateInput = {
@@ -10353,7 +10379,6 @@ export namespace Prisma {
     gameId?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
-    platformDRM?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
@@ -10365,15 +10390,17 @@ export namespace Prisma {
     updatedAt?: SortOrder
     externalId?: SortOrder
     source?: SortOrder
+    thumb?: SortOrder
+    rating?: SortOrder
   }
 
   export type DealAvgOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformDRM?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
+    rating?: SortOrder
   }
 
   export type DealMaxOrderByAggregateInput = {
@@ -10381,7 +10408,6 @@ export namespace Prisma {
     gameId?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
-    platformDRM?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
@@ -10393,6 +10419,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     externalId?: SortOrder
     source?: SortOrder
+    thumb?: SortOrder
+    rating?: SortOrder
   }
 
   export type DealMinOrderByAggregateInput = {
@@ -10400,7 +10428,6 @@ export namespace Prisma {
     gameId?: SortOrder
     title?: SortOrder
     storeName?: SortOrder
-    platformDRM?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
@@ -10412,15 +10439,17 @@ export namespace Prisma {
     updatedAt?: SortOrder
     externalId?: SortOrder
     source?: SortOrder
+    thumb?: SortOrder
+    rating?: SortOrder
   }
 
   export type DealSumOrderByAggregateInput = {
     id?: SortOrder
     gameId?: SortOrder
-    platformDRM?: SortOrder
     price?: SortOrder
     discountPercent?: SortOrder
     originalPrice?: SortOrder
+    rating?: SortOrder
   }
 
   export type WishlistUserIdGameIdCompoundUniqueInput = {
@@ -11213,7 +11242,6 @@ export namespace Prisma {
   export type DealCreateWithoutGameInput = {
     title: string
     storeName: string
-    platformDRM?: number | null
     price?: number | null
     discountPercent?: number | null
     originalPrice?: number | null
@@ -11225,13 +11253,14 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
+    thumb?: string | null
+    rating?: number | null
   }
 
   export type DealUncheckedCreateWithoutGameInput = {
     id?: number
     title: string
     storeName: string
-    platformDRM?: number | null
     price?: number | null
     discountPercent?: number | null
     originalPrice?: number | null
@@ -11243,6 +11272,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
+    thumb?: string | null
+    rating?: number | null
   }
 
   export type DealCreateOrConnectWithoutGameInput = {
@@ -11333,7 +11364,6 @@ export namespace Prisma {
     gameId?: IntNullableFilter<"Deal"> | number | null
     title?: StringFilter<"Deal"> | string
     storeName?: StringFilter<"Deal"> | string
-    platformDRM?: IntNullableFilter<"Deal"> | number | null
     price?: FloatNullableFilter<"Deal"> | number | null
     discountPercent?: FloatNullableFilter<"Deal"> | number | null
     originalPrice?: FloatNullableFilter<"Deal"> | number | null
@@ -11345,6 +11375,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Deal"> | Date | string
     externalId?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
+    thumb?: StringNullableFilter<"Deal"> | string | null
+    rating?: FloatNullableFilter<"Deal"> | number | null
   }
 
   export type UserGameUpsertWithWhereUniqueWithoutGameInput = {
@@ -11903,7 +11935,6 @@ export namespace Prisma {
     id?: number
     title: string
     storeName: string
-    platformDRM?: number | null
     price?: number | null
     discountPercent?: number | null
     originalPrice?: number | null
@@ -11915,6 +11946,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     externalId?: string | null
     source?: string | null
+    thumb?: string | null
+    rating?: number | null
   }
 
   export type UserGameCreateManyGameInput = {
@@ -11938,7 +11971,6 @@ export namespace Prisma {
   export type DealUpdateWithoutGameInput = {
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11950,13 +11982,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type DealUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11968,13 +12001,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type DealUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
-    platformDRM?: NullableIntFieldUpdateOperationsInput | number | null
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11986,6 +12020,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type UserGameUpdateWithoutGameInput = {
