@@ -117,14 +117,11 @@
 
       <!-- Wishlist Button -->
       <div v-if="showWishlistButton">
-        <EnhancedWishlistButton
+        <WishlistButton
           :game-id="gameData.id"
-          :game-title="gameData.name"
           variant="icon"
           size="medium"
-          :show-text="false"
-          mode="both"
-          :enable-i-t-a-d="true" />
+          :show-text="false" />
       </div>
     </div>
   </div>

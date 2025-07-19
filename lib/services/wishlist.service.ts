@@ -10,11 +10,6 @@ export interface FullWishlistItem extends Wishlist {
     coverUrl: string | null;
     slug: string | null;
   };
-  // Erweiterte Eigenschaften für bessere Organisation
-  priority?: 'low' | 'medium' | 'high';
-  category?: 'action' | 'rpg' | 'strategy' | 'indie' | 'other';
-  priceAlert?: number; // Gewünschter Zielpreis
-  notes?: string; // Persönliche Notizen
 }
 
 export interface WishlistDealNotification {
@@ -175,7 +170,6 @@ export namespace WishlistService {
 
   /**
    * Aktuelle Deals für Wishlist-Games prüfen und Benachrichtigungen erstellen
-   * Verbesserte Version mit Deal-ID basierter Duplikatsvermeidung (vereinfacht)
    */
   export async function checkWishlistDeals(
     userId: number
@@ -185,12 +179,6 @@ export namespace WishlistService {
       const wishlistItems = await getUserWishlist(userId);
       const notifications: WishlistDealNotification[] = [];
 
-      // Global processedDealIds für diese Session
-      const processedDealIds = new Set<number>();
-
-      // Optional: Lade bereits heute verarbeitete Deal-IDs aus Datenbank
-      // (Wird implementiert nach Prisma Client Update)
-
       for (const item of wishlistItems) {
         // Aktuelle Deals für das Spiel abrufen
         const deals = await DealsService.searchDeals({
@@ -199,23 +187,12 @@ export namespace WishlistService {
         });
 
         if (deals.length > 0) {
-          // Nur relevante Deals (mit Rabatt oder Freebies) die noch nicht verarbeitet wurden
-          const relevantDeals = deals.filter((deal: any) => {
-            // Prüfe Deal-Relevanz
-            const isRelevant =
+          // Nur relevante Deals (mit Rabatt oder Freebies)
+          const relevantDeals = deals.filter(
+            (deal: any) =>
               deal.isFreebie ||
-              (deal.discountPercent && deal.discountPercent > 0);
-
-            // Prüfe Duplikate anhand Deal-ID in dieser Session
-            const isNotDuplicate = !processedDealIds.has(deal.id);
-
-            // Füge Deal-ID zu verarbeiteten hinzu wenn relevant
-            if (isRelevant && isNotDuplicate) {
-              processedDealIds.add(deal.id);
-            }
-
-            return isRelevant && isNotDuplicate;
-          });
+              (deal.discountPercent && deal.discountPercent > 0)
+          );
 
           if (relevantDeals.length > 0) {
             notifications.push({
@@ -232,40 +209,20 @@ export namespace WishlistService {
               }))
             });
 
-            // Log für Debugging
-            console.log(
-              `📋 ${relevantDeals.length} neue Deals für "${
-                item.game.name
-              }" gefunden (Deal-IDs: ${relevantDeals
-                .map((d: any) => d.id)
-                .join(', ')})`
-            );
+            // Server-Nachricht für Deals erstellen - ENTFERNT
+            // await createDealNotificationMessage(
+            //   userId,
+            //   item.game.name,
+            //   relevantDeals
+            // );
           }
         }
       }
 
-      console.log(
-        `✅ Insgesamt ${notifications.length} Spiele mit neuen Deals, ${processedDealIds.size} unique Deal-IDs verarbeitet`
-      );
       return notifications;
     } catch (error) {
       console.error('Fehler beim Prüfen der Wishlist-Deals:', error);
       throw error;
-    }
-  }
-
-  /**
-   * Geplante Erweiterung: Persistente Deal-ID-Speicherung
-   * (Wird nach Prisma Client Update implementiert)
-   */
-  export async function cleanupOldWishlistDealNotifications(): Promise<void> {
-    try {
-      // Placeholder für zukünftige Implementation
-      console.log(
-        '🕐 Cleanup-Feature wird nach Prisma Client Update verfügbar sein'
-      );
-    } catch (error) {
-      console.error('Fehler beim Bereinigen:', error);
     }
   }
 
