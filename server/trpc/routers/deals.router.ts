@@ -199,28 +199,41 @@ export const dealsRouter = router({
         const liveITADDeals: any[] = [];
         try {
           const ITADGames = await ITADService.searchGamesByTitle(gameName);
-          ITADGames.forEach(async game => {
-            const deals = await ITADService.getGamePrice([game.id]);
-            const dealGame = deals[0];
-            dealGame.deals.forEach(deal => {
-              liveITADDeals.push({
-                gameId,
-                title: game.title,
-                storeName: deal.shop.name,
-                price: deal.price.amount.toString(),
-                originalPrice: parseFloat(deal.regular.amount.toString()),
-                discountPercent: parseFloat(deal.cut.toString()),
-                url: deal.url,
-                validFrom: new Date(),
-                validUntil: deal.expiry,
-                isFreebie: deal.price.amount === 0,
-                discoveredAt: new Date(),
-                updatedAt: new Date(),
-                externalId: game.id,
-                source: 'itad'
-              });
-            });
-          });
+          // Grund: for...of verwenden statt forEach für async/await
+          for (const game of ITADGames) {
+            try {
+              const deals = await ITADService.getGamePrice([game.id]);
+              // Grund: Prüfung ob dealGame und deals existieren
+              const dealGame = deals[0];
+              if (dealGame && dealGame.deals && dealGame.deals.length > 0) {
+                dealGame.deals.forEach(deal => {
+                  liveITADDeals.push({
+                    gameId,
+                    title: game.title,
+                    storeName: deal.shop.name,
+                    price: parseFloat(deal.price.amount.toString()),
+                    originalPrice: parseFloat(deal.regular.amount.toString()),
+                    discountPercent: parseFloat(deal.cut.toString()),
+                    url: deal.url,
+                    validFrom: new Date(),
+                    validUntil: deal.expiry,
+                    isFreebie: deal.price.amount === 0,
+                    discoveredAt: new Date(),
+                    updatedAt: new Date(),
+                    externalId: game.id,
+                    source: 'itad'
+                  });
+                });
+              }
+            } catch (gameError) {
+              console.warn(
+                `Fehler beim Laden der Deals für Spiel ${game.title}:`,
+                gameError
+              );
+              // Grund: Einzelne Spiel-Fehler nicht den gesamten Prozess stoppen lassen
+              continue;
+            }
+          }
         } catch (apiError) {
           console.warn('ITAD API Fehler bei Live-Suche:', apiError);
         }
@@ -228,12 +241,36 @@ export const dealsRouter = router({
         // Kombiniere gespeicherte und Live-Deals
         const allDeals = [...savedDeals, ...liveCSDeals, ...liveITADDeals];
 
-        // Entferne Duplikate basierend auf externalId
-        const uniqueDeals = allDeals.filter(
-          (deal, index, self) =>
-            !deal.externalId ||
-            self.findIndex(d => d.externalId === deal.externalId) === index
-        );
+        // Entferne Duplikate basierend auf externalId ODER Store+Preis-Kombination
+        // Grund: Verschiedene APIs können gleiche Deals mit unterschiedlichen IDs haben
+        const uniqueDeals = allDeals.filter((deal, index, self) => {
+          const firstOccurrenceIndex = self.findIndex(d => {
+            // Duplikat wenn externalId gleich ist (und beide haben eine)
+            if (
+              deal.externalId &&
+              d.externalId &&
+              deal.externalId === d.externalId
+            ) {
+              return true;
+            }
+
+            // Duplikat wenn Store und Preis gleich sind
+            if (
+              deal.storeName === d.storeName &&
+              deal.price === d.price &&
+              deal.storeName && // Store muss existieren
+              deal.price !== undefined &&
+              deal.price !== null // Preis muss existieren
+            ) {
+              return true;
+            }
+
+            return false;
+          });
+
+          // Deal beibehalten wenn es das erste Vorkommen ist oder kein Duplikat gefunden wurde
+          return firstOccurrenceIndex === -1 || firstOccurrenceIndex === index;
+        });
 
         return uniqueDeals;
       } catch (error) {

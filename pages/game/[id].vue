@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
   import MediaCarousel from '~/components/MediaCarousel.vue';
+  import PriceHistoryChart from '~/components/PriceHistoryChart.vue';
   import type { DealWithGame } from '~/lib/services/deals.service';
   import type { UserGameWithDetails } from '~/lib/services/games.service';
   import type { Game } from '~/prisma/client';
@@ -639,7 +640,12 @@
                   >{{ relatedDeals.length }} Deals gefunden</span
                 >
               </div>
-
+              <!-- Price History Section -->
+              <div class="mx-4 lg:mx-8 mb-12">
+                <PriceHistoryChart
+                  v-if="currentGame"
+                  :gameTitle="currentGame.name" />
+              </div>
               <!-- Loading state for deals -->
               <div v-if="isLoadingDeals" class="text-center py-8">
                 <div
@@ -752,6 +758,7 @@
             </div>
           </div>
         </div>
+
         <!-- Game Details Section -->
         <div class="mx-4 lg:mx-8">
           <!-- Enhanced Details Card -->

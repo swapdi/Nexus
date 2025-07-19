@@ -192,6 +192,51 @@ export const useDealsStore = defineStore('deals', () => {
     );
   };
 
+  /**
+   * Holt ITAD-Preishistorie für ein bestimmtes Spiel
+   * @param gameTitle Spielname für die Suche
+   * @returns Preishistorie und aktuelle Angebote
+   */
+  const getGamePriceHistory = async (gameTitle: string) => {
+    return await loading(
+      `game-price-history-${gameTitle}`,
+      'Lade Preishistorie...',
+      async () => {
+        try {
+          // Schritt 1: Suche Spiel bei ITAD
+          const searchResults = await $client.deals.searchITADGames.query({
+            title: gameTitle,
+            results: 5 // Weniger Ergebnisse für bessere Performance
+          });
+
+          if (!searchResults || searchResults.length === 0) {
+            return null;
+          }
+
+          // Schritt 2: Nimm das erste/beste Suchergebnis
+          const bestMatch = searchResults[0];
+
+          // Schritt 3: Hole Preishistorie für dieses Spiel
+          const priceOverview = await $client.deals.getITADPriceOverview.query({
+            gameIds: [bestMatch.id],
+            country: 'DE',
+            vouchers: true
+          });
+
+          return {
+            game: bestMatch,
+            priceData: priceOverview
+          };
+        } catch (err: any) {
+          console.error('Fehler beim Laden der Preishistorie:', err);
+          notifyStore.notify('Fehler beim Laden der Preishistorie', 3);
+          return null;
+        }
+      },
+      'data'
+    );
+  };
+
   const removeFromWaitlist = async (id: string) => {
     return await loading(
       `remove-from-itad-waitlist-${id}`,
@@ -321,6 +366,7 @@ export const useDealsStore = defineStore('deals', () => {
     formatPrice,
     formatDiscount,
     searchGameDeals,
+    getGamePriceHistory,
     addToWaitlist,
     removeFromWaitlist,
     isInWaitlist

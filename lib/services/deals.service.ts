@@ -167,10 +167,6 @@ export namespace DealsService {
           if (foundGame) {
             finalGameId = foundGame.id;
           } else {
-            console.log(
-              `Creating deal without game for: ${cheapSharkDeal.title} (Bundle/DLC)`
-            );
-            // Grund: Deal auch ohne Game erstellen für Bundles/DLCs
             finalGameId = null;
           }
         } catch (error) {
