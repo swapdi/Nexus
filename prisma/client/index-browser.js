@@ -194,6 +194,16 @@ exports.Prisma.DealScalarFieldEnum = {
   rating: 'rating'
 };
 
+exports.Prisma.WishlistDealNotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  gameId: 'gameId',
+  dealId: 'dealId',
+  notificationSent: 'notificationSent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.WishlistScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -244,6 +254,7 @@ exports.Prisma.ModelName = {
   Platform: 'Platform',
   UserGame: 'UserGame',
   Deal: 'Deal',
+  WishlistDealNotification: 'WishlistDealNotification',
   Wishlist: 'Wishlist',
   Message: 'Message'
 };

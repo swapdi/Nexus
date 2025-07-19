@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useStoreUtils } from '~/composables/useStoreUtils';
 import { DealsService } from '~/lib/services/deals.service';
 import { CheapSharkService } from '../../../lib/services/cheapshark.service';
-import { ITADService } from '../../../lib/services/itad.service';
+import { itadService } from '../../../lib/services/itad.service';
 import { publicProcedure, router } from '../trpc';
 export const dealsRouter = router({
   searchDeals: publicProcedure
@@ -198,15 +198,15 @@ export const dealsRouter = router({
         }
         const liveITADDeals: any[] = [];
         try {
-          const ITADGames = await ITADService.searchGamesByTitle(gameName);
+          const ITADGames = await itadService.searchGames(gameName);
           // Grund: for...of verwenden statt forEach für async/await
           for (const game of ITADGames) {
             try {
-              const deals = await ITADService.getGamePrice([game.id]);
-              // Grund: Prüfung ob dealGame und deals existieren
-              const dealGame = deals[0];
-              if (dealGame && dealGame.deals && dealGame.deals.length > 0) {
-                dealGame.deals.forEach(deal => {
+              const priceData = await itadService.getCurrentPrices([game.id]);
+              // Grund: Prüfung ob priceData und deals existieren
+              const gameData = priceData[0];
+              if (gameData && gameData.deals && gameData.deals.length > 0) {
+                gameData.deals.forEach(deal => {
                   liveITADDeals.push({
                     gameId,
                     title: game.title,
@@ -216,7 +216,7 @@ export const dealsRouter = router({
                     discountPercent: parseFloat(deal.cut.toString()),
                     url: deal.url,
                     validFrom: new Date(),
-                    validUntil: deal.expiry,
+                    validUntil: null, // ITAD API v2.7.0 hat keine Expiry-Informationen
                     isFreebie: deal.price.amount === 0,
                     discoveredAt: new Date(),
                     updatedAt: new Date(),
@@ -297,7 +297,7 @@ export const dealsRouter = router({
     )
     .query(async ({ input }) => {
       try {
-        return await ITADService.searchGamesByTitle(input.title, input.results);
+        return await itadService.searchGames(input.title, input.results);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -309,21 +309,41 @@ export const dealsRouter = router({
     }),
 
   /**
-   * ITAD-Preis-Übersicht für Spiele abrufen
+   * ITAD Game-ID für einen Titel finden
    */
-  getITADPriceOverview: publicProcedure
+  findITADGameId: publicProcedure
     .input(
       z.object({
-        gameIds: z.array(z.string()).min(1).max(200),
-        country: z.string().optional(),
-        shops: z.array(z.number()).optional(),
-        vouchers: z.boolean().optional()
+        gameTitle: z.string().min(1)
       })
     )
     .query(async ({ input }) => {
       try {
-        const { gameIds, ...options } = input;
-        return await ITADService.getPriceOverview(gameIds, options);
+        const { itadService } = await import('~/lib/services/itad.service');
+        return await itadService.findGameId(input.gameTitle);
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to find ITAD game ID: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        });
+      }
+    }),
+
+  /**
+   * ITAD-Preisübersicht für ein Spiel abrufen
+   */
+  getITADPriceOverview: publicProcedure
+    .input(
+      z.object({
+        gameId: z.string().min(1),
+        country: z.string().default('DE')
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        return await itadService.getPriceOverview(input.gameId, input.country);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -338,10 +358,10 @@ export const dealsRouter = router({
    * ITAD-Shops abrufen
    */
   getITADShops: publicProcedure
-    .input(z.object({ country: z.string().optional() }))
+    .input(z.object({ country: z.string().default('DE') }))
     .query(async ({ input }) => {
       try {
-        return await ITADService.getAllShops(input.country);
+        return await itadService.getShops(input.country);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -353,22 +373,22 @@ export const dealsRouter = router({
     }),
 
   /**
-   * Zur ITAD-Waitlist hinzufügen (OAuth erforderlich)
+   * ITAD historische Tiefstpreise abrufen
    */
-  addToITADWaitlist: publicProcedure
+  getITADHistoryLow: publicProcedure
     .input(
       z.object({
-        gameIds: z.array(z.string()).min(1)
+        gameIds: z.array(z.string()).min(1).max(50),
+        country: z.string().default('DE')
       })
     )
-    .mutation(async ({ input }) => {
+    .query(async ({ input }) => {
       try {
-        const response = await ITADService.addGamesToWaitlist(input.gameIds);
-        return response;
+        return await itadService.getHistoryLow(input.gameIds, input.country);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to add to ITAD waitlist: ${
+          message: `Failed to get ITAD history low: ${
             error instanceof Error ? error.message : 'Unknown error'
           }`
         });
@@ -376,43 +396,30 @@ export const dealsRouter = router({
     }),
 
   /**
-   * Von ITAD-Waitlist entfernen (OAuth erforderlich)
+   * ITAD aktuelle Preise abrufen
    */
-  removeFromITADWaitlist: publicProcedure
+  getITADCurrentPrices: publicProcedure
     .input(
       z.object({
-        gameIds: z.array(z.string()).min(1)
+        gameIds: z.array(z.string()).min(1).max(50),
+        country: z.string().default('DE'),
+        dealsOnly: z.boolean().default(true)
       })
     )
-    .mutation(async ({ input }) => {
+    .query(async ({ input }) => {
       try {
-        const response = await ITADService.removeGamesFromWaitlist(
-          input.gameIds
+        return await itadService.getCurrentPrices(
+          input.gameIds,
+          input.country,
+          input.dealsOnly
         );
-        return response;
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to remove from ITAD waitlist: ${
+          message: `Failed to get ITAD current prices: ${
             error instanceof Error ? error.message : 'Unknown error'
           }`
         });
       }
-    }),
-
-  /**
-   * ITAD-Waitlist-Spiele abrufen (OAuth erforderlich)
-   */
-  getITADWaitlistGames: publicProcedure.query(async () => {
-    try {
-      return await ITADService.getWaitlistGames();
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to get ITAD waitlist games: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      });
-    }
-  })
+    })
 });

@@ -374,6 +374,18 @@
                       </span>
                     </h1>
 
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-4 mb-6">
+                      <!-- Wishlist Button -->
+                      <WishlistButton
+                        v-if="currentGame?.id"
+                        :game-id="currentGame.id"
+                        variant="button"
+                        size="large"
+                        :show-text="true"
+                        :animated="true" />
+                    </div>
+
                     <!-- Release Year & Rating Badge -->
                     <div class="flex items-center gap-3 mb-6">
                       <div
@@ -646,6 +658,7 @@
                   v-if="currentGame"
                   :gameTitle="currentGame.name" />
               </div>
+
               <!-- Loading state for deals -->
               <div v-if="isLoadingDeals" class="text-center py-8">
                 <div

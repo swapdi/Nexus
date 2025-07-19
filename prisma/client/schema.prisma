@@ -9,43 +9,47 @@ datasource db {
 }
 
 model User {
-  id            Int        @id @default(autoincrement())
-  supabase_uid  String     @unique
-  display_name  String?
-  xp            Int        @default(0)
-  level         Int        @default(1)
-  credits       Int        @default(0)
-  steamId       String?
-  epicConnect   Boolean?   @default(false)
-  gogConnect    Boolean?   @default(false)
-  userGames     UserGame[]
-  wishlistItems Wishlist[]
+  id                        Int                        @id @default(autoincrement())
+  supabase_uid              String                     @unique
+  display_name              String?
+  xp                        Int                        @default(0)
+  level                     Int                        @default(1)
+  credits                   Int                        @default(0)
+  steamId                   String?
+  epicConnect               Boolean?                   @default(false)
+  gogConnect                Boolean?                   @default(false)
+  userGames                 UserGame[]
+  wishlistItems             Wishlist[]
+  wishlistDealNotifications WishlistDealNotification[]
+  sentMessages              Message[]                  @relation("SentMessages")
+  receivedMessages          Message[]                  @relation("ReceivedMessages")
 
   @@map("users")
 }
 
 model Game {
-  id               Int        @id @default(autoincrement())
-  igdbId           Int?       @unique
-  name             String
-  slug             String?
-  summary          String?
-  storyline        String?
-  firstReleaseDate DateTime?
-  coverUrl         String?
-  screenshots      String[]
-  videos           String[]   @default([])
-  totalRating      Float?
-  genres           String[]
-  developers       String[]
-  publishers       String[]
-  websites         Json?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  lastSyncedAt     DateTime?
-  deals            Deal[]
-  userGames        UserGame[]
-  wishlistedBy     Wishlist[]
+  id                Int                        @id @default(autoincrement())
+  igdbId            Int?                       @unique
+  name              String
+  slug              String?
+  summary           String?
+  storyline         String?
+  firstReleaseDate  DateTime?
+  coverUrl          String?
+  screenshots       String[]
+  videos            String[]                   @default([])
+  totalRating       Float?
+  genres            String[]
+  developers        String[]
+  publishers        String[]
+  websites          Json?
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+  lastSyncedAt      DateTime?
+  deals             Deal[]
+  userGames         UserGame[]
+  wishlistedBy      Wishlist[]
+  dealNotifications WishlistDealNotification[]
 
   @@map("games")
 }
@@ -80,25 +84,44 @@ model UserGame {
 }
 
 model Deal {
-  id              Int       @id @default(autoincrement())
+  id              Int                        @id @default(autoincrement())
   gameId          Int?
   title           String
   storeName       String
-  platformDRM     Int?
   price           Float?
   discountPercent Float?
   originalPrice   Float?
   url             String
   validFrom       DateTime?
   validUntil      DateTime?
-  isFreebie       Boolean   @default(false)
-  discoveredAt    DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  isFreebie       Boolean                    @default(false)
+  discoveredAt    DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
   externalId      String?
   source          String?
-  game            Game?     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  thumb           String? // Thumbnail URL from API
+  rating          Float? // Deal Rating from CheapShark API (0.0 - 10.0)
+  game            Game?                      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  notifications   WishlistDealNotification[]
 
   @@map("deals")
+}
+
+model WishlistDealNotification {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  gameId           Int
+  dealId           Int
+  notificationSent Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dealId])
+  @@map("wishlist_deal_notifications")
 }
 
 model Wishlist {
@@ -112,4 +135,18 @@ model Wishlist {
   @@unique([userId, gameId])
   @@unique([userId, gameId], map: "wishlist_items_userid_gameid_unique")
   @@map("wishlist_items")
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int?
+  receiverId Int
+  text       String
+  media      String?
+  createdAt  DateTime @default(now())
+  isRead     Boolean  @default(false)
+  sender     User?    @relation("SentMessages", fields: [senderId], references: [id], onDelete: SetNull)
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }

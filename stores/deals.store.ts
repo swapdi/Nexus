@@ -34,7 +34,6 @@ export const useDealsStore = defineStore('deals', () => {
   const freeGames = ref<DealWithGame[]>([]);
   const availableStores = ref<string[]>([]);
   const searchResults = ref<ITADGame[]>([]);
-  const waitlist = ref<ITADGame[]>([]);
   const error = ref<string | null>(null);
   // Current filters und sorting
   const currentSortBy = ref<DealSortOptions>('recent');
@@ -166,31 +165,6 @@ export const useDealsStore = defineStore('deals', () => {
       }
     });
   }
-  const addToWaitlist = async (id: string) => {
-    return await loading(
-      `add-to-itad-waitlist-${id}`,
-      'Füge zur Waitlist hinzu...',
-      async () => {
-        try {
-          await $client.deals.addToITADWaitlist.mutate({
-            gameIds: [id]
-          });
-
-          notifyStore.notify(`Spiel zur Wishlist hinzugefügt!`, 1);
-
-          return true;
-        } catch (error) {
-          console.error('Error adding to ITAD waitlist:', error);
-          notifyStore.notify(
-            'Fehler beim Hinzufügen zur Waitlist. Bitte versuche es später erneut.',
-            3
-          );
-          throw error;
-        }
-      },
-      'api'
-    );
-  };
 
   /**
    * Holt ITAD-Preishistorie für ein bestimmtes Spiel
@@ -218,9 +192,8 @@ export const useDealsStore = defineStore('deals', () => {
 
           // Schritt 3: Hole Preishistorie für dieses Spiel
           const priceOverview = await $client.deals.getITADPriceOverview.query({
-            gameIds: [bestMatch.id],
-            country: 'DE',
-            vouchers: true
+            gameId: bestMatch.id,
+            country: 'DE'
           });
 
           return {
@@ -237,34 +210,30 @@ export const useDealsStore = defineStore('deals', () => {
     );
   };
 
-  const removeFromWaitlist = async (id: string) => {
+  // Helper für ITAD-ID-Suche
+  const findITADGameId = async (gameTitle: string) => {
     return await loading(
-      `remove-from-itad-waitlist-${id}`,
-      'Entferne von Waitlist...',
+      `itad-id-search-${gameTitle}`,
+      'Suche ITAD-ID...',
       async () => {
         try {
-          await $client.deals.removeFromITADWaitlist.mutate({
-            gameIds: [id]
+          const searchResults = await $client.deals.searchITADGames.query({
+            title: gameTitle,
+            results: 1 // Nur das beste Ergebnis
           });
 
-          notifyStore.notify(`"Spiel von Wishlist entfernt!`, 1);
+          if (searchResults && searchResults.length > 0) {
+            return searchResults[0].id;
+          }
 
-          return true;
+          return null;
         } catch (error) {
-          console.error('Error removing from ITAD waitlist:', error);
-          notifyStore.notify(
-            'Fehler beim Entfernen von der Waitlist. Bitte versuche es später erneut.',
-            3
-          );
-          throw error;
+          console.error('Error finding ITAD game ID:', error);
+          return null;
         }
       },
       'api'
     );
-  };
-
-  const isInWaitlist = (id: string): boolean => {
-    return waitlist.value.some(game => game.id === id);
   };
 
   // Computed Properties
@@ -367,8 +336,6 @@ export const useDealsStore = defineStore('deals', () => {
     formatDiscount,
     searchGameDeals,
     getGamePriceHistory,
-    addToWaitlist,
-    removeFromWaitlist,
-    isInWaitlist
+    findITADGameId
   };
 });

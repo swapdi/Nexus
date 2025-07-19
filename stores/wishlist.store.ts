@@ -15,14 +15,55 @@ export const useWishlistStore = defineStore('wishlist', () => {
   const wishlistItems = ref<FullWishlistItem[]>([]);
   const wishlistCount = ref<number>(0);
   const dealNotifications = ref<WishlistDealNotification[]>([]);
+  const sortBy = ref<'date' | 'name' | 'priority'>('date');
+  const filterBy = ref<'all' | 'high' | 'medium' | 'low'>('all');
 
   // Computed
   const hasWishlistItems = computed(() => wishlistItems.value.length > 0);
-  const sortedWishlistItems = computed(() =>
-    [...wishlistItems.value].sort(
-      (a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
-    )
-  );
+
+  const sortedWishlistItems = computed(() => {
+    let items = [...wishlistItems.value];
+
+    // Filter anwenden
+    if (filterBy.value !== 'all') {
+      items = items.filter(item => item.priority === filterBy.value);
+    }
+
+    // Sortierung anwenden
+    switch (sortBy.value) {
+      case 'date':
+        items.sort(
+          (a, b) =>
+            new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+        );
+        break;
+      case 'name':
+        items.sort((a, b) => a.game.name.localeCompare(b.game.name));
+        break;
+      case 'priority':
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        items.sort((a, b) => {
+          const priorityA =
+            priorityOrder[a.priority as keyof typeof priorityOrder] || 2;
+          const priorityB =
+            priorityOrder[b.priority as keyof typeof priorityOrder] || 2;
+          return priorityB - priorityA;
+        });
+        break;
+    }
+
+    return items;
+  });
+
+  // Kategorisierte Items
+  const categorizedItems = computed(() => {
+    const categories = {
+      high: wishlistItems.value.filter(item => item.priority === 'high'),
+      medium: wishlistItems.value.filter(item => item.priority === 'medium'),
+      low: wishlistItems.value.filter(item => item.priority === 'low')
+    };
+    return categories;
+  });
 
   // Actions
   const loadWishlist = async () => {
@@ -48,7 +89,15 @@ export const useWishlistStore = defineStore('wishlist', () => {
     );
   };
 
-  const addToWishlist = async (gameId: number) => {
+  const addToWishlist = async (
+    gameId: number,
+    options?: {
+      priority?: 'low' | 'medium' | 'high';
+      category?: 'action' | 'rpg' | 'strategy' | 'indie' | 'other';
+      priceAlert?: number;
+      notes?: string;
+    }
+  ) => {
     return await loading(
       'add-to-wishlist',
       'Spiel wird zur Wishlist hinzugefügt...',
@@ -58,12 +107,20 @@ export const useWishlistStore = defineStore('wishlist', () => {
             gameId
           });
 
-          // Zur lokalen Liste hinzufügen
-          wishlistItems.value.unshift(result);
+          // Zur lokalen Liste hinzufügen mit erweiterten Properties (temporär)
+          const enhancedResult: FullWishlistItem = {
+            ...result,
+            priority: options?.priority || 'medium',
+            category: options?.category,
+            priceAlert: options?.priceAlert,
+            notes: options?.notes
+          };
+
+          wishlistItems.value.unshift(enhancedResult);
           wishlistCount.value = wishlistItems.value.length;
 
           notifyStore.notify('Spiel erfolgreich zur Wishlist hinzugefügt', 1);
-          return result;
+          return enhancedResult;
         } catch (error: any) {
           console.error('Error adding to wishlist:', error);
 
@@ -181,10 +238,46 @@ export const useWishlistStore = defineStore('wishlist', () => {
     return wishlistItems.value.some(item => item.gameId === gameId);
   };
 
+  // Erweiterte Filter- und Sortier-Funktionen
+  const setSortBy = (sort: 'date' | 'name' | 'priority') => {
+    sortBy.value = sort;
+  };
+
+  const setFilterBy = (filter: 'all' | 'high' | 'medium' | 'low') => {
+    filterBy.value = filter;
+  };
+
+  // Spezifische Priority-Listen
+  const getHighPriorityItems = computed(() =>
+    wishlistItems.value.filter(item => item.priority === 'high')
+  );
+
+  const getMediumPriorityItems = computed(() =>
+    wishlistItems.value.filter(item => item.priority === 'medium')
+  );
+
+  const getLowPriorityItems = computed(() =>
+    wishlistItems.value.filter(item => item.priority === 'low')
+  );
+
+  // Preis-Alert Items
+  const getPriceAlertItems = computed(() =>
+    wishlistItems.value.filter(item => item.priceAlert && item.priceAlert > 0)
+  );
+
+  // Items mit Notizen
+  const getItemsWithNotes = computed(() =>
+    wishlistItems.value.filter(
+      item => item.notes && item.notes.trim().length > 0
+    )
+  );
+
   const reset = () => {
     wishlistItems.value = [];
     wishlistCount.value = 0;
     dealNotifications.value = [];
+    sortBy.value = 'date';
+    filterBy.value = 'all';
   };
 
   return {
@@ -192,10 +285,18 @@ export const useWishlistStore = defineStore('wishlist', () => {
     wishlistItems,
     wishlistCount,
     dealNotifications,
+    sortBy,
+    filterBy,
 
     // Computed
     hasWishlistItems,
     sortedWishlistItems,
+    categorizedItems,
+    getHighPriorityItems,
+    getMediumPriorityItems,
+    getLowPriorityItems,
+    getPriceAlertItems,
+    getItemsWithNotes,
 
     // Actions
     loadWishlist,
@@ -209,6 +310,8 @@ export const useWishlistStore = defineStore('wishlist', () => {
     // Helpers
     findWishlistItem,
     isInWishlistLocal,
+    setSortBy,
+    setFilterBy,
     reset
   };
 });

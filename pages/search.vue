@@ -218,6 +218,14 @@
               </div>
               <!-- Actions -->
               <div class="flex-shrink-0 flex items-center gap-2">
+                <!-- Wishlist Button -->
+                <WishlistButton
+                  v-if="igdbGame.id"
+                  :game-id="igdbGame.id"
+                  variant="button"
+                  size="medium"
+                  :show-text="false" />
+
                 <button
                   @click="navigateToIGDBGame(igdbGame)"
                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">

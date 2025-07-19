@@ -6,12 +6,17 @@
     size?: 'small' | 'medium' | 'large';
     variant?: 'icon' | 'button' | 'floating';
     showText?: boolean;
+    showCount?: boolean;
+    animated?: boolean;
   }
 
   const props = withDefaults(defineProps<Props>(), {
     size: 'medium',
     variant: 'icon',
-    showText: true
+    showText: true,
+    showCount: false,
+    animated: true,
+    priority: 'medium'
   });
 
   const wishlistStore = useWishlistStore();
@@ -51,7 +56,8 @@
     const variantClasses = {
       icon: 'rounded-full',
       button: 'rounded-lg px-3 py-2',
-      floating: 'rounded-full shadow-lg'
+      floating: 'rounded-full shadow-lg',
+      detailed: 'rounded-lg px-4 py-3 flex-col gap-1'
     };
 
     const stateClasses = isInWishlist.value
@@ -85,6 +91,11 @@
       ? 'Aus Wishlist entfernen'
       : 'Zur Wishlist hinzufügen';
   });
+
+  // Wishlist-Anzahl (falls gewünscht)
+  const wishlistCount = computed(() => {
+    return wishlistStore.wishlistCount;
+  });
 </script>
 
 <template>
@@ -93,14 +104,28 @@
     :title="buttonText"
     :disabled="isLoading"
     @click="handleToggleWishlist">
-    <Icon v-if="!isLoading" :name="iconName" :class="iconClasses" />
+    <!-- Standard Icon -->
+    <Icon
+      v-if="!isLoading"
+      :name="iconName"
+      :class="[iconClasses, animated && isInWishlist ? 'animate-pulse' : '']" />
+
+    <!-- Loading Icon -->
     <Icon
       v-else
       name="heroicons:arrow-path"
       :class="[iconClasses, 'animate-spin']" />
 
+    <!-- Text für Button-Variante -->
     <span v-if="showText && variant === 'button'" class="ml-2 text-sm">
       {{ isInWishlist ? 'In Wishlist' : 'Zur Wishlist' }}
     </span>
+
+    <!-- Wishlist Counter Badge -->
+    <div
+      v-if="showCount && wishlistCount > 0"
+      class="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+      {{ wishlistCount > 99 ? '99+' : wishlistCount }}
+    </div>
   </button>
 </template>

@@ -39,6 +39,11 @@ export type UserGame = $Result.DefaultSelection<Prisma.$UserGamePayload>
  */
 export type Deal = $Result.DefaultSelection<Prisma.$DealPayload>
 /**
+ * Model WishlistDealNotification
+ * 
+ */
+export type WishlistDealNotification = $Result.DefaultSelection<Prisma.$WishlistDealNotificationPayload>
+/**
  * Model Wishlist
  * 
  */
@@ -223,6 +228,16 @@ export class PrismaClient<
     * ```
     */
   get deal(): Prisma.DealDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.wishlistDealNotification`: Exposes CRUD operations for the **WishlistDealNotification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WishlistDealNotifications
+    * const wishlistDealNotifications = await prisma.wishlistDealNotification.findMany()
+    * ```
+    */
+  get wishlistDealNotification(): Prisma.WishlistDealNotificationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.wishlist`: Exposes CRUD operations for the **Wishlist** model.
@@ -688,6 +703,7 @@ export namespace Prisma {
     Platform: 'Platform',
     UserGame: 'UserGame',
     Deal: 'Deal',
+    WishlistDealNotification: 'WishlistDealNotification',
     Wishlist: 'Wishlist',
     Message: 'Message'
   };
@@ -708,7 +724,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "game" | "platform" | "userGame" | "deal" | "wishlist" | "message"
+      modelProps: "user" | "game" | "platform" | "userGame" | "deal" | "wishlistDealNotification" | "wishlist" | "message"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1082,6 +1098,80 @@ export namespace Prisma {
           }
         }
       }
+      WishlistDealNotification: {
+        payload: Prisma.$WishlistDealNotificationPayload<ExtArgs>
+        fields: Prisma.WishlistDealNotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WishlistDealNotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WishlistDealNotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.WishlistDealNotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WishlistDealNotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>
+          }
+          findMany: {
+            args: Prisma.WishlistDealNotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>[]
+          }
+          create: {
+            args: Prisma.WishlistDealNotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>
+          }
+          createMany: {
+            args: Prisma.WishlistDealNotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WishlistDealNotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.WishlistDealNotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>
+          }
+          update: {
+            args: Prisma.WishlistDealNotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.WishlistDealNotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WishlistDealNotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WishlistDealNotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.WishlistDealNotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WishlistDealNotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.WishlistDealNotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWishlistDealNotification>
+          }
+          groupBy: {
+            args: Prisma.WishlistDealNotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WishlistDealNotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WishlistDealNotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<WishlistDealNotificationCountAggregateOutputType> | number
+          }
+        }
+      }
       Wishlist: {
         payload: Prisma.$WishlistPayload<ExtArgs>
         fields: Prisma.WishlistFieldRefs
@@ -1319,6 +1409,7 @@ export namespace Prisma {
     platform?: PlatformOmit
     userGame?: UserGameOmit
     deal?: DealOmit
+    wishlistDealNotification?: WishlistDealNotificationOmit
     wishlist?: WishlistOmit
     message?: MessageOmit
   }
@@ -1417,6 +1508,7 @@ export namespace Prisma {
   export type UserCountOutputType = {
     userGames: number
     wishlistItems: number
+    wishlistDealNotifications: number
     sentMessages: number
     receivedMessages: number
   }
@@ -1424,6 +1516,7 @@ export namespace Prisma {
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userGames?: boolean | UserCountOutputTypeCountUserGamesArgs
     wishlistItems?: boolean | UserCountOutputTypeCountWishlistItemsArgs
+    wishlistDealNotifications?: boolean | UserCountOutputTypeCountWishlistDealNotificationsArgs
     sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
     receivedMessages?: boolean | UserCountOutputTypeCountReceivedMessagesArgs
   }
@@ -1456,6 +1549,13 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountWishlistDealNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WishlistDealNotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountSentMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
   }
@@ -1476,12 +1576,14 @@ export namespace Prisma {
     deals: number
     userGames: number
     wishlistedBy: number
+    dealNotifications: number
   }
 
   export type GameCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     deals?: boolean | GameCountOutputTypeCountDealsArgs
     userGames?: boolean | GameCountOutputTypeCountUserGamesArgs
     wishlistedBy?: boolean | GameCountOutputTypeCountWishlistedByArgs
+    dealNotifications?: boolean | GameCountOutputTypeCountDealNotificationsArgs
   }
 
   // Custom InputTypes
@@ -1514,6 +1616,44 @@ export namespace Prisma {
    */
   export type GameCountOutputTypeCountWishlistedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WishlistWhereInput
+  }
+
+  /**
+   * GameCountOutputType without action
+   */
+  export type GameCountOutputTypeCountDealNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WishlistDealNotificationWhereInput
+  }
+
+
+  /**
+   * Count Type DealCountOutputType
+   */
+
+  export type DealCountOutputType = {
+    notifications: number
+  }
+
+  export type DealCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    notifications?: boolean | DealCountOutputTypeCountNotificationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DealCountOutputType without action
+   */
+  export type DealCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealCountOutputType
+     */
+    select?: DealCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DealCountOutputType without action
+   */
+  export type DealCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WishlistDealNotificationWhereInput
   }
 
 
@@ -1765,6 +1905,7 @@ export namespace Prisma {
     gogConnect?: boolean
     userGames?: boolean | User$userGamesArgs<ExtArgs>
     wishlistItems?: boolean | User$wishlistItemsArgs<ExtArgs>
+    wishlistDealNotifications?: boolean | User$wishlistDealNotificationsArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
     receivedMessages?: boolean | User$receivedMessagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1810,6 +1951,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     userGames?: boolean | User$userGamesArgs<ExtArgs>
     wishlistItems?: boolean | User$wishlistItemsArgs<ExtArgs>
+    wishlistDealNotifications?: boolean | User$wishlistDealNotificationsArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
     receivedMessages?: boolean | User$receivedMessagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1822,6 +1964,7 @@ export namespace Prisma {
     objects: {
       userGames: Prisma.$UserGamePayload<ExtArgs>[]
       wishlistItems: Prisma.$WishlistPayload<ExtArgs>[]
+      wishlistDealNotifications: Prisma.$WishlistDealNotificationPayload<ExtArgs>[]
       sentMessages: Prisma.$MessagePayload<ExtArgs>[]
       receivedMessages: Prisma.$MessagePayload<ExtArgs>[]
     }
@@ -2231,6 +2374,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     userGames<T extends User$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, User$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     wishlistItems<T extends User$wishlistItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$wishlistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    wishlistDealNotifications<T extends User$wishlistDealNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$wishlistDealNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentMessages<T extends User$sentMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     receivedMessages<T extends User$receivedMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -2707,6 +2851,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.wishlistDealNotifications
+   */
+  export type User$wishlistDealNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    where?: WishlistDealNotificationWhereInput
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WishlistDealNotificationScalarFieldEnum | WishlistDealNotificationScalarFieldEnum[]
+  }
+
+  /**
    * User.sentMessages
    */
   export type User$sentMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3062,6 +3230,7 @@ export namespace Prisma {
     deals?: boolean | Game$dealsArgs<ExtArgs>
     userGames?: boolean | Game$userGamesArgs<ExtArgs>
     wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
+    dealNotifications?: boolean | Game$dealNotificationsArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["game"]>
 
@@ -3133,6 +3302,7 @@ export namespace Prisma {
     deals?: boolean | Game$dealsArgs<ExtArgs>
     userGames?: boolean | Game$userGamesArgs<ExtArgs>
     wishlistedBy?: boolean | Game$wishlistedByArgs<ExtArgs>
+    dealNotifications?: boolean | Game$dealNotificationsArgs<ExtArgs>
     _count?: boolean | GameCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type GameIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3144,6 +3314,7 @@ export namespace Prisma {
       deals: Prisma.$DealPayload<ExtArgs>[]
       userGames: Prisma.$UserGamePayload<ExtArgs>[]
       wishlistedBy: Prisma.$WishlistPayload<ExtArgs>[]
+      dealNotifications: Prisma.$WishlistDealNotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3561,6 +3732,7 @@ export namespace Prisma {
     deals<T extends Game$dealsArgs<ExtArgs> = {}>(args?: Subset<T, Game$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userGames<T extends Game$userGamesArgs<ExtArgs> = {}>(args?: Subset<T, Game$userGamesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGamePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     wishlistedBy<T extends Game$wishlistedByArgs<ExtArgs> = {}>(args?: Subset<T, Game$wishlistedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    dealNotifications<T extends Game$dealNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, Game$dealNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4065,6 +4237,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WishlistScalarFieldEnum | WishlistScalarFieldEnum[]
+  }
+
+  /**
+   * Game.dealNotifications
+   */
+  export type Game$dealNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    where?: WishlistDealNotificationWhereInput
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WishlistDealNotificationScalarFieldEnum | WishlistDealNotificationScalarFieldEnum[]
   }
 
   /**
@@ -6607,6 +6803,8 @@ export namespace Prisma {
     thumb?: boolean
     rating?: boolean
     game?: boolean | Deal$gameArgs<ExtArgs>
+    notifications?: boolean | Deal$notificationsArgs<ExtArgs>
+    _count?: boolean | DealCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["deal"]>
 
   export type DealSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6674,6 +6872,8 @@ export namespace Prisma {
   export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gameId" | "title" | "storeName" | "price" | "discountPercent" | "originalPrice" | "url" | "validFrom" | "validUntil" | "isFreebie" | "discoveredAt" | "updatedAt" | "externalId" | "source" | "thumb" | "rating", ExtArgs["result"]["deal"]>
   export type DealInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | Deal$gameArgs<ExtArgs>
+    notifications?: boolean | Deal$notificationsArgs<ExtArgs>
+    _count?: boolean | DealCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DealIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | Deal$gameArgs<ExtArgs>
@@ -6686,6 +6886,7 @@ export namespace Prisma {
     name: "Deal"
     objects: {
       game: Prisma.$GamePayload<ExtArgs> | null
+      notifications: Prisma.$WishlistDealNotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -7100,6 +7301,7 @@ export namespace Prisma {
   export interface Prisma__DealClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     game<T extends Deal$gameArgs<ExtArgs> = {}>(args?: Subset<T, Deal$gameArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    notifications<T extends Deal$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, Deal$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7561,6 +7763,30 @@ export namespace Prisma {
   }
 
   /**
+   * Deal.notifications
+   */
+  export type Deal$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    where?: WishlistDealNotificationWhereInput
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WishlistDealNotificationScalarFieldEnum | WishlistDealNotificationScalarFieldEnum[]
+  }
+
+  /**
    * Deal without action
    */
   export type DealDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7576,6 +7802,1152 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: DealInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WishlistDealNotification
+   */
+
+  export type AggregateWishlistDealNotification = {
+    _count: WishlistDealNotificationCountAggregateOutputType | null
+    _avg: WishlistDealNotificationAvgAggregateOutputType | null
+    _sum: WishlistDealNotificationSumAggregateOutputType | null
+    _min: WishlistDealNotificationMinAggregateOutputType | null
+    _max: WishlistDealNotificationMaxAggregateOutputType | null
+  }
+
+  export type WishlistDealNotificationAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    dealId: number | null
+  }
+
+  export type WishlistDealNotificationSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    dealId: number | null
+  }
+
+  export type WishlistDealNotificationMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    dealId: number | null
+    notificationSent: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WishlistDealNotificationMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    gameId: number | null
+    dealId: number | null
+    notificationSent: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WishlistDealNotificationCountAggregateOutputType = {
+    id: number
+    userId: number
+    gameId: number
+    dealId: number
+    notificationSent: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WishlistDealNotificationAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    dealId?: true
+  }
+
+  export type WishlistDealNotificationSumAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    dealId?: true
+  }
+
+  export type WishlistDealNotificationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    dealId?: true
+    notificationSent?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WishlistDealNotificationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    dealId?: true
+    notificationSent?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WishlistDealNotificationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    gameId?: true
+    dealId?: true
+    notificationSent?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WishlistDealNotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WishlistDealNotification to aggregate.
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WishlistDealNotifications to fetch.
+     */
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WishlistDealNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WishlistDealNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WishlistDealNotifications
+    **/
+    _count?: true | WishlistDealNotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WishlistDealNotificationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WishlistDealNotificationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WishlistDealNotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WishlistDealNotificationMaxAggregateInputType
+  }
+
+  export type GetWishlistDealNotificationAggregateType<T extends WishlistDealNotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateWishlistDealNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWishlistDealNotification[P]>
+      : GetScalarType<T[P], AggregateWishlistDealNotification[P]>
+  }
+
+
+
+
+  export type WishlistDealNotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WishlistDealNotificationWhereInput
+    orderBy?: WishlistDealNotificationOrderByWithAggregationInput | WishlistDealNotificationOrderByWithAggregationInput[]
+    by: WishlistDealNotificationScalarFieldEnum[] | WishlistDealNotificationScalarFieldEnum
+    having?: WishlistDealNotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WishlistDealNotificationCountAggregateInputType | true
+    _avg?: WishlistDealNotificationAvgAggregateInputType
+    _sum?: WishlistDealNotificationSumAggregateInputType
+    _min?: WishlistDealNotificationMinAggregateInputType
+    _max?: WishlistDealNotificationMaxAggregateInputType
+  }
+
+  export type WishlistDealNotificationGroupByOutputType = {
+    id: number
+    userId: number
+    gameId: number
+    dealId: number
+    notificationSent: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: WishlistDealNotificationCountAggregateOutputType | null
+    _avg: WishlistDealNotificationAvgAggregateOutputType | null
+    _sum: WishlistDealNotificationSumAggregateOutputType | null
+    _min: WishlistDealNotificationMinAggregateOutputType | null
+    _max: WishlistDealNotificationMaxAggregateOutputType | null
+  }
+
+  type GetWishlistDealNotificationGroupByPayload<T extends WishlistDealNotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WishlistDealNotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WishlistDealNotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WishlistDealNotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], WishlistDealNotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WishlistDealNotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    gameId?: boolean
+    dealId?: boolean
+    notificationSent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    game?: boolean | GameDefaultArgs<ExtArgs>
+    deal?: boolean | DealDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["wishlistDealNotification"]>
+
+  export type WishlistDealNotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    gameId?: boolean
+    dealId?: boolean
+    notificationSent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    game?: boolean | GameDefaultArgs<ExtArgs>
+    deal?: boolean | DealDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["wishlistDealNotification"]>
+
+  export type WishlistDealNotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    gameId?: boolean
+    dealId?: boolean
+    notificationSent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    game?: boolean | GameDefaultArgs<ExtArgs>
+    deal?: boolean | DealDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["wishlistDealNotification"]>
+
+  export type WishlistDealNotificationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    gameId?: boolean
+    dealId?: boolean
+    notificationSent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WishlistDealNotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "dealId" | "notificationSent" | "createdAt" | "updatedAt", ExtArgs["result"]["wishlistDealNotification"]>
+  export type WishlistDealNotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    game?: boolean | GameDefaultArgs<ExtArgs>
+    deal?: boolean | DealDefaultArgs<ExtArgs>
+  }
+  export type WishlistDealNotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    game?: boolean | GameDefaultArgs<ExtArgs>
+    deal?: boolean | DealDefaultArgs<ExtArgs>
+  }
+  export type WishlistDealNotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    game?: boolean | GameDefaultArgs<ExtArgs>
+    deal?: boolean | DealDefaultArgs<ExtArgs>
+  }
+
+  export type $WishlistDealNotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WishlistDealNotification"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      game: Prisma.$GamePayload<ExtArgs>
+      deal: Prisma.$DealPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      gameId: number
+      dealId: number
+      notificationSent: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["wishlistDealNotification"]>
+    composites: {}
+  }
+
+  type WishlistDealNotificationGetPayload<S extends boolean | null | undefined | WishlistDealNotificationDefaultArgs> = $Result.GetResult<Prisma.$WishlistDealNotificationPayload, S>
+
+  type WishlistDealNotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WishlistDealNotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WishlistDealNotificationCountAggregateInputType | true
+    }
+
+  export interface WishlistDealNotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WishlistDealNotification'], meta: { name: 'WishlistDealNotification' } }
+    /**
+     * Find zero or one WishlistDealNotification that matches the filter.
+     * @param {WishlistDealNotificationFindUniqueArgs} args - Arguments to find a WishlistDealNotification
+     * @example
+     * // Get one WishlistDealNotification
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WishlistDealNotificationFindUniqueArgs>(args: SelectSubset<T, WishlistDealNotificationFindUniqueArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WishlistDealNotification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WishlistDealNotificationFindUniqueOrThrowArgs} args - Arguments to find a WishlistDealNotification
+     * @example
+     * // Get one WishlistDealNotification
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WishlistDealNotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, WishlistDealNotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WishlistDealNotification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationFindFirstArgs} args - Arguments to find a WishlistDealNotification
+     * @example
+     * // Get one WishlistDealNotification
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WishlistDealNotificationFindFirstArgs>(args?: SelectSubset<T, WishlistDealNotificationFindFirstArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WishlistDealNotification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationFindFirstOrThrowArgs} args - Arguments to find a WishlistDealNotification
+     * @example
+     * // Get one WishlistDealNotification
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WishlistDealNotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, WishlistDealNotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WishlistDealNotifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WishlistDealNotifications
+     * const wishlistDealNotifications = await prisma.wishlistDealNotification.findMany()
+     * 
+     * // Get first 10 WishlistDealNotifications
+     * const wishlistDealNotifications = await prisma.wishlistDealNotification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const wishlistDealNotificationWithIdOnly = await prisma.wishlistDealNotification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WishlistDealNotificationFindManyArgs>(args?: SelectSubset<T, WishlistDealNotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WishlistDealNotification.
+     * @param {WishlistDealNotificationCreateArgs} args - Arguments to create a WishlistDealNotification.
+     * @example
+     * // Create one WishlistDealNotification
+     * const WishlistDealNotification = await prisma.wishlistDealNotification.create({
+     *   data: {
+     *     // ... data to create a WishlistDealNotification
+     *   }
+     * })
+     * 
+     */
+    create<T extends WishlistDealNotificationCreateArgs>(args: SelectSubset<T, WishlistDealNotificationCreateArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WishlistDealNotifications.
+     * @param {WishlistDealNotificationCreateManyArgs} args - Arguments to create many WishlistDealNotifications.
+     * @example
+     * // Create many WishlistDealNotifications
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WishlistDealNotificationCreateManyArgs>(args?: SelectSubset<T, WishlistDealNotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WishlistDealNotifications and returns the data saved in the database.
+     * @param {WishlistDealNotificationCreateManyAndReturnArgs} args - Arguments to create many WishlistDealNotifications.
+     * @example
+     * // Create many WishlistDealNotifications
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WishlistDealNotifications and only return the `id`
+     * const wishlistDealNotificationWithIdOnly = await prisma.wishlistDealNotification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WishlistDealNotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, WishlistDealNotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WishlistDealNotification.
+     * @param {WishlistDealNotificationDeleteArgs} args - Arguments to delete one WishlistDealNotification.
+     * @example
+     * // Delete one WishlistDealNotification
+     * const WishlistDealNotification = await prisma.wishlistDealNotification.delete({
+     *   where: {
+     *     // ... filter to delete one WishlistDealNotification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WishlistDealNotificationDeleteArgs>(args: SelectSubset<T, WishlistDealNotificationDeleteArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WishlistDealNotification.
+     * @param {WishlistDealNotificationUpdateArgs} args - Arguments to update one WishlistDealNotification.
+     * @example
+     * // Update one WishlistDealNotification
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WishlistDealNotificationUpdateArgs>(args: SelectSubset<T, WishlistDealNotificationUpdateArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WishlistDealNotifications.
+     * @param {WishlistDealNotificationDeleteManyArgs} args - Arguments to filter WishlistDealNotifications to delete.
+     * @example
+     * // Delete a few WishlistDealNotifications
+     * const { count } = await prisma.wishlistDealNotification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WishlistDealNotificationDeleteManyArgs>(args?: SelectSubset<T, WishlistDealNotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WishlistDealNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WishlistDealNotifications
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WishlistDealNotificationUpdateManyArgs>(args: SelectSubset<T, WishlistDealNotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WishlistDealNotifications and returns the data updated in the database.
+     * @param {WishlistDealNotificationUpdateManyAndReturnArgs} args - Arguments to update many WishlistDealNotifications.
+     * @example
+     * // Update many WishlistDealNotifications
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WishlistDealNotifications and only return the `id`
+     * const wishlistDealNotificationWithIdOnly = await prisma.wishlistDealNotification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WishlistDealNotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, WishlistDealNotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WishlistDealNotification.
+     * @param {WishlistDealNotificationUpsertArgs} args - Arguments to update or create a WishlistDealNotification.
+     * @example
+     * // Update or create a WishlistDealNotification
+     * const wishlistDealNotification = await prisma.wishlistDealNotification.upsert({
+     *   create: {
+     *     // ... data to create a WishlistDealNotification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WishlistDealNotification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WishlistDealNotificationUpsertArgs>(args: SelectSubset<T, WishlistDealNotificationUpsertArgs<ExtArgs>>): Prisma__WishlistDealNotificationClient<$Result.GetResult<Prisma.$WishlistDealNotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WishlistDealNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationCountArgs} args - Arguments to filter WishlistDealNotifications to count.
+     * @example
+     * // Count the number of WishlistDealNotifications
+     * const count = await prisma.wishlistDealNotification.count({
+     *   where: {
+     *     // ... the filter for the WishlistDealNotifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends WishlistDealNotificationCountArgs>(
+      args?: Subset<T, WishlistDealNotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WishlistDealNotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WishlistDealNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WishlistDealNotificationAggregateArgs>(args: Subset<T, WishlistDealNotificationAggregateArgs>): Prisma.PrismaPromise<GetWishlistDealNotificationAggregateType<T>>
+
+    /**
+     * Group by WishlistDealNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WishlistDealNotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WishlistDealNotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WishlistDealNotificationGroupByArgs['orderBy'] }
+        : { orderBy?: WishlistDealNotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WishlistDealNotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWishlistDealNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WishlistDealNotification model
+   */
+  readonly fields: WishlistDealNotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WishlistDealNotification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WishlistDealNotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    game<T extends GameDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GameDefaultArgs<ExtArgs>>): Prisma__GameClient<$Result.GetResult<Prisma.$GamePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    deal<T extends DealDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DealDefaultArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WishlistDealNotification model
+   */
+  interface WishlistDealNotificationFieldRefs {
+    readonly id: FieldRef<"WishlistDealNotification", 'Int'>
+    readonly userId: FieldRef<"WishlistDealNotification", 'Int'>
+    readonly gameId: FieldRef<"WishlistDealNotification", 'Int'>
+    readonly dealId: FieldRef<"WishlistDealNotification", 'Int'>
+    readonly notificationSent: FieldRef<"WishlistDealNotification", 'Boolean'>
+    readonly createdAt: FieldRef<"WishlistDealNotification", 'DateTime'>
+    readonly updatedAt: FieldRef<"WishlistDealNotification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WishlistDealNotification findUnique
+   */
+  export type WishlistDealNotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which WishlistDealNotification to fetch.
+     */
+    where: WishlistDealNotificationWhereUniqueInput
+  }
+
+  /**
+   * WishlistDealNotification findUniqueOrThrow
+   */
+  export type WishlistDealNotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which WishlistDealNotification to fetch.
+     */
+    where: WishlistDealNotificationWhereUniqueInput
+  }
+
+  /**
+   * WishlistDealNotification findFirst
+   */
+  export type WishlistDealNotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which WishlistDealNotification to fetch.
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WishlistDealNotifications to fetch.
+     */
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WishlistDealNotifications.
+     */
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WishlistDealNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WishlistDealNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WishlistDealNotifications.
+     */
+    distinct?: WishlistDealNotificationScalarFieldEnum | WishlistDealNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * WishlistDealNotification findFirstOrThrow
+   */
+  export type WishlistDealNotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which WishlistDealNotification to fetch.
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WishlistDealNotifications to fetch.
+     */
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WishlistDealNotifications.
+     */
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WishlistDealNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WishlistDealNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WishlistDealNotifications.
+     */
+    distinct?: WishlistDealNotificationScalarFieldEnum | WishlistDealNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * WishlistDealNotification findMany
+   */
+  export type WishlistDealNotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which WishlistDealNotifications to fetch.
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WishlistDealNotifications to fetch.
+     */
+    orderBy?: WishlistDealNotificationOrderByWithRelationInput | WishlistDealNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WishlistDealNotifications.
+     */
+    cursor?: WishlistDealNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WishlistDealNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WishlistDealNotifications.
+     */
+    skip?: number
+    distinct?: WishlistDealNotificationScalarFieldEnum | WishlistDealNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * WishlistDealNotification create
+   */
+  export type WishlistDealNotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WishlistDealNotification.
+     */
+    data: XOR<WishlistDealNotificationCreateInput, WishlistDealNotificationUncheckedCreateInput>
+  }
+
+  /**
+   * WishlistDealNotification createMany
+   */
+  export type WishlistDealNotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WishlistDealNotifications.
+     */
+    data: WishlistDealNotificationCreateManyInput | WishlistDealNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WishlistDealNotification createManyAndReturn
+   */
+  export type WishlistDealNotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many WishlistDealNotifications.
+     */
+    data: WishlistDealNotificationCreateManyInput | WishlistDealNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WishlistDealNotification update
+   */
+  export type WishlistDealNotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WishlistDealNotification.
+     */
+    data: XOR<WishlistDealNotificationUpdateInput, WishlistDealNotificationUncheckedUpdateInput>
+    /**
+     * Choose, which WishlistDealNotification to update.
+     */
+    where: WishlistDealNotificationWhereUniqueInput
+  }
+
+  /**
+   * WishlistDealNotification updateMany
+   */
+  export type WishlistDealNotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WishlistDealNotifications.
+     */
+    data: XOR<WishlistDealNotificationUpdateManyMutationInput, WishlistDealNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which WishlistDealNotifications to update
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * Limit how many WishlistDealNotifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WishlistDealNotification updateManyAndReturn
+   */
+  export type WishlistDealNotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update WishlistDealNotifications.
+     */
+    data: XOR<WishlistDealNotificationUpdateManyMutationInput, WishlistDealNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which WishlistDealNotifications to update
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * Limit how many WishlistDealNotifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WishlistDealNotification upsert
+   */
+  export type WishlistDealNotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WishlistDealNotification to update in case it exists.
+     */
+    where: WishlistDealNotificationWhereUniqueInput
+    /**
+     * In case the WishlistDealNotification found by the `where` argument doesn't exist, create a new WishlistDealNotification with this data.
+     */
+    create: XOR<WishlistDealNotificationCreateInput, WishlistDealNotificationUncheckedCreateInput>
+    /**
+     * In case the WishlistDealNotification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WishlistDealNotificationUpdateInput, WishlistDealNotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * WishlistDealNotification delete
+   */
+  export type WishlistDealNotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
+    /**
+     * Filter which WishlistDealNotification to delete.
+     */
+    where: WishlistDealNotificationWhereUniqueInput
+  }
+
+  /**
+   * WishlistDealNotification deleteMany
+   */
+  export type WishlistDealNotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WishlistDealNotifications to delete
+     */
+    where?: WishlistDealNotificationWhereInput
+    /**
+     * Limit how many WishlistDealNotifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WishlistDealNotification without action
+   */
+  export type WishlistDealNotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WishlistDealNotification
+     */
+    select?: WishlistDealNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WishlistDealNotification
+     */
+    omit?: WishlistDealNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WishlistDealNotificationInclude<ExtArgs> | null
   }
 
 
@@ -9930,6 +11302,19 @@ export namespace Prisma {
   export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
 
 
+  export const WishlistDealNotificationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    gameId: 'gameId',
+    dealId: 'dealId',
+    notificationSent: 'notificationSent',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WishlistDealNotificationScalarFieldEnum = (typeof WishlistDealNotificationScalarFieldEnum)[keyof typeof WishlistDealNotificationScalarFieldEnum]
+
+
   export const WishlistScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -10094,6 +11479,7 @@ export namespace Prisma {
     gogConnect?: BoolNullableFilter<"User"> | boolean | null
     userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
+    wishlistDealNotifications?: WishlistDealNotificationListRelationFilter
     sentMessages?: MessageListRelationFilter
     receivedMessages?: MessageListRelationFilter
   }
@@ -10110,6 +11496,7 @@ export namespace Prisma {
     gogConnect?: SortOrderInput | SortOrder
     userGames?: UserGameOrderByRelationAggregateInput
     wishlistItems?: WishlistOrderByRelationAggregateInput
+    wishlistDealNotifications?: WishlistDealNotificationOrderByRelationAggregateInput
     sentMessages?: MessageOrderByRelationAggregateInput
     receivedMessages?: MessageOrderByRelationAggregateInput
   }
@@ -10129,6 +11516,7 @@ export namespace Prisma {
     gogConnect?: BoolNullableFilter<"User"> | boolean | null
     userGames?: UserGameListRelationFilter
     wishlistItems?: WishlistListRelationFilter
+    wishlistDealNotifications?: WishlistDealNotificationListRelationFilter
     sentMessages?: MessageListRelationFilter
     receivedMessages?: MessageListRelationFilter
   }, "id" | "supabase_uid">
@@ -10190,6 +11578,7 @@ export namespace Prisma {
     deals?: DealListRelationFilter
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
+    dealNotifications?: WishlistDealNotificationListRelationFilter
   }
 
   export type GameOrderByWithRelationInput = {
@@ -10214,6 +11603,7 @@ export namespace Prisma {
     deals?: DealOrderByRelationAggregateInput
     userGames?: UserGameOrderByRelationAggregateInput
     wishlistedBy?: WishlistOrderByRelationAggregateInput
+    dealNotifications?: WishlistDealNotificationOrderByRelationAggregateInput
   }
 
   export type GameWhereUniqueInput = Prisma.AtLeast<{
@@ -10241,6 +11631,7 @@ export namespace Prisma {
     deals?: DealListRelationFilter
     userGames?: UserGameListRelationFilter
     wishlistedBy?: WishlistListRelationFilter
+    dealNotifications?: WishlistDealNotificationListRelationFilter
   }, "id" | "igdbId">
 
   export type GameOrderByWithAggregationInput = {
@@ -10455,6 +11846,7 @@ export namespace Prisma {
     thumb?: StringNullableFilter<"Deal"> | string | null
     rating?: FloatNullableFilter<"Deal"> | number | null
     game?: XOR<GameNullableScalarRelationFilter, GameWhereInput> | null
+    notifications?: WishlistDealNotificationListRelationFilter
   }
 
   export type DealOrderByWithRelationInput = {
@@ -10476,6 +11868,7 @@ export namespace Prisma {
     thumb?: SortOrderInput | SortOrder
     rating?: SortOrderInput | SortOrder
     game?: GameOrderByWithRelationInput
+    notifications?: WishlistDealNotificationOrderByRelationAggregateInput
   }
 
   export type DealWhereUniqueInput = Prisma.AtLeast<{
@@ -10500,6 +11893,7 @@ export namespace Prisma {
     thumb?: StringNullableFilter<"Deal"> | string | null
     rating?: FloatNullableFilter<"Deal"> | number | null
     game?: XOR<GameNullableScalarRelationFilter, GameWhereInput> | null
+    notifications?: WishlistDealNotificationListRelationFilter
   }, "id">
 
   export type DealOrderByWithAggregationInput = {
@@ -10548,6 +11942,80 @@ export namespace Prisma {
     source?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     thumb?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     rating?: FloatNullableWithAggregatesFilter<"Deal"> | number | null
+  }
+
+  export type WishlistDealNotificationWhereInput = {
+    AND?: WishlistDealNotificationWhereInput | WishlistDealNotificationWhereInput[]
+    OR?: WishlistDealNotificationWhereInput[]
+    NOT?: WishlistDealNotificationWhereInput | WishlistDealNotificationWhereInput[]
+    id?: IntFilter<"WishlistDealNotification"> | number
+    userId?: IntFilter<"WishlistDealNotification"> | number
+    gameId?: IntFilter<"WishlistDealNotification"> | number
+    dealId?: IntFilter<"WishlistDealNotification"> | number
+    notificationSent?: BoolFilter<"WishlistDealNotification"> | boolean
+    createdAt?: DateTimeFilter<"WishlistDealNotification"> | Date | string
+    updatedAt?: DateTimeFilter<"WishlistDealNotification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    game?: XOR<GameScalarRelationFilter, GameWhereInput>
+    deal?: XOR<DealScalarRelationFilter, DealWhereInput>
+  }
+
+  export type WishlistDealNotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+    notificationSent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    game?: GameOrderByWithRelationInput
+    deal?: DealOrderByWithRelationInput
+  }
+
+  export type WishlistDealNotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userId_dealId?: WishlistDealNotificationUserIdDealIdCompoundUniqueInput
+    AND?: WishlistDealNotificationWhereInput | WishlistDealNotificationWhereInput[]
+    OR?: WishlistDealNotificationWhereInput[]
+    NOT?: WishlistDealNotificationWhereInput | WishlistDealNotificationWhereInput[]
+    userId?: IntFilter<"WishlistDealNotification"> | number
+    gameId?: IntFilter<"WishlistDealNotification"> | number
+    dealId?: IntFilter<"WishlistDealNotification"> | number
+    notificationSent?: BoolFilter<"WishlistDealNotification"> | boolean
+    createdAt?: DateTimeFilter<"WishlistDealNotification"> | Date | string
+    updatedAt?: DateTimeFilter<"WishlistDealNotification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    game?: XOR<GameScalarRelationFilter, GameWhereInput>
+    deal?: XOR<DealScalarRelationFilter, DealWhereInput>
+  }, "id" | "userId_dealId">
+
+  export type WishlistDealNotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+    notificationSent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WishlistDealNotificationCountOrderByAggregateInput
+    _avg?: WishlistDealNotificationAvgOrderByAggregateInput
+    _max?: WishlistDealNotificationMaxOrderByAggregateInput
+    _min?: WishlistDealNotificationMinOrderByAggregateInput
+    _sum?: WishlistDealNotificationSumOrderByAggregateInput
+  }
+
+  export type WishlistDealNotificationScalarWhereWithAggregatesInput = {
+    AND?: WishlistDealNotificationScalarWhereWithAggregatesInput | WishlistDealNotificationScalarWhereWithAggregatesInput[]
+    OR?: WishlistDealNotificationScalarWhereWithAggregatesInput[]
+    NOT?: WishlistDealNotificationScalarWhereWithAggregatesInput | WishlistDealNotificationScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"WishlistDealNotification"> | number
+    userId?: IntWithAggregatesFilter<"WishlistDealNotification"> | number
+    gameId?: IntWithAggregatesFilter<"WishlistDealNotification"> | number
+    dealId?: IntWithAggregatesFilter<"WishlistDealNotification"> | number
+    notificationSent?: BoolWithAggregatesFilter<"WishlistDealNotification"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"WishlistDealNotification"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"WishlistDealNotification"> | Date | string
   }
 
   export type WishlistWhereInput = {
@@ -10687,6 +12155,7 @@ export namespace Prisma {
     gogConnect?: boolean | null
     userGames?: UserGameCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
   }
@@ -10703,6 +12172,7 @@ export namespace Prisma {
     gogConnect?: boolean | null
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
   }
@@ -10718,6 +12188,7 @@ export namespace Prisma {
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
   }
@@ -10734,6 +12205,7 @@ export namespace Prisma {
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
   }
@@ -10794,6 +12266,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateInput = {
@@ -10818,6 +12291,7 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameUpdateInput = {
@@ -10841,6 +12315,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateInput = {
@@ -10865,6 +12340,7 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutGameNestedInput
   }
 
   export type GameCreateManyInput = {
@@ -11085,6 +12561,7 @@ export namespace Prisma {
     thumb?: string | null
     rating?: number | null
     game?: GameCreateNestedOneWithoutDealsInput
+    notifications?: WishlistDealNotificationCreateNestedManyWithoutDealInput
   }
 
   export type DealUncheckedCreateInput = {
@@ -11105,6 +12582,7 @@ export namespace Prisma {
     source?: string | null
     thumb?: string | null
     rating?: number | null
+    notifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutDealInput
   }
 
   export type DealUpdateInput = {
@@ -11124,6 +12602,7 @@ export namespace Prisma {
     thumb?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     game?: GameUpdateOneWithoutDealsNestedInput
+    notifications?: WishlistDealNotificationUpdateManyWithoutDealNestedInput
   }
 
   export type DealUncheckedUpdateInput = {
@@ -11144,6 +12623,7 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     thumb?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    notifications?: WishlistDealNotificationUncheckedUpdateManyWithoutDealNestedInput
   }
 
   export type DealCreateManyInput = {
@@ -11202,6 +12682,70 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     thumb?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
+  export type WishlistDealNotificationCreateInput = {
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWishlistDealNotificationsInput
+    game: GameCreateNestedOneWithoutDealNotificationsInput
+    deal: DealCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type WishlistDealNotificationUncheckedCreateInput = {
+    id?: number
+    userId: number
+    gameId: number
+    dealId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationUpdateInput = {
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWishlistDealNotificationsNestedInput
+    game?: GameUpdateOneRequiredWithoutDealNotificationsNestedInput
+    deal?: DealUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    dealId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationCreateManyInput = {
+    id?: number
+    userId: number
+    gameId: number
+    dealId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationUpdateManyMutationInput = {
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    dealId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type WishlistCreateInput = {
@@ -11371,6 +12915,12 @@ export namespace Prisma {
     none?: WishlistWhereInput
   }
 
+  export type WishlistDealNotificationListRelationFilter = {
+    every?: WishlistDealNotificationWhereInput
+    some?: WishlistDealNotificationWhereInput
+    none?: WishlistDealNotificationWhereInput
+  }
+
   export type MessageListRelationFilter = {
     every?: MessageWhereInput
     some?: MessageWhereInput
@@ -11387,6 +12937,10 @@ export namespace Prisma {
   }
 
   export type WishlistOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WishlistDealNotificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -11942,6 +13496,60 @@ export namespace Prisma {
     rating?: SortOrder
   }
 
+  export type DealScalarRelationFilter = {
+    is?: DealWhereInput
+    isNot?: DealWhereInput
+  }
+
+  export type WishlistDealNotificationUserIdDealIdCompoundUniqueInput = {
+    userId: number
+    dealId: number
+  }
+
+  export type WishlistDealNotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+    notificationSent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WishlistDealNotificationAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+  }
+
+  export type WishlistDealNotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+    notificationSent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WishlistDealNotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+    notificationSent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WishlistDealNotificationSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gameId?: SortOrder
+    dealId?: SortOrder
+  }
+
   export type WishlistUserIdGameIdCompoundUniqueInput = {
     userId: number
     gameId: number
@@ -12041,6 +13649,13 @@ export namespace Prisma {
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
 
+  export type WishlistDealNotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutUserInput, WishlistDealNotificationUncheckedCreateWithoutUserInput> | WishlistDealNotificationCreateWithoutUserInput[] | WishlistDealNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutUserInput | WishlistDealNotificationCreateOrConnectWithoutUserInput[]
+    createMany?: WishlistDealNotificationCreateManyUserInputEnvelope
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+  }
+
   export type MessageCreateNestedManyWithoutSenderInput = {
     create?: XOR<MessageCreateWithoutSenderInput, MessageUncheckedCreateWithoutSenderInput> | MessageCreateWithoutSenderInput[] | MessageUncheckedCreateWithoutSenderInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutSenderInput | MessageCreateOrConnectWithoutSenderInput[]
@@ -12067,6 +13682,13 @@ export namespace Prisma {
     connectOrCreate?: WishlistCreateOrConnectWithoutUserInput | WishlistCreateOrConnectWithoutUserInput[]
     createMany?: WishlistCreateManyUserInputEnvelope
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+  }
+
+  export type WishlistDealNotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutUserInput, WishlistDealNotificationUncheckedCreateWithoutUserInput> | WishlistDealNotificationCreateWithoutUserInput[] | WishlistDealNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutUserInput | WishlistDealNotificationCreateOrConnectWithoutUserInput[]
+    createMany?: WishlistDealNotificationCreateManyUserInputEnvelope
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
   }
 
   export type MessageUncheckedCreateNestedManyWithoutSenderInput = {
@@ -12131,6 +13753,20 @@ export namespace Prisma {
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
+  export type WishlistDealNotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutUserInput, WishlistDealNotificationUncheckedCreateWithoutUserInput> | WishlistDealNotificationCreateWithoutUserInput[] | WishlistDealNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutUserInput | WishlistDealNotificationCreateOrConnectWithoutUserInput[]
+    upsert?: WishlistDealNotificationUpsertWithWhereUniqueWithoutUserInput | WishlistDealNotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: WishlistDealNotificationCreateManyUserInputEnvelope
+    set?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    disconnect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    delete?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    update?: WishlistDealNotificationUpdateWithWhereUniqueWithoutUserInput | WishlistDealNotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: WishlistDealNotificationUpdateManyWithWhereWithoutUserInput | WishlistDealNotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
+  }
+
   export type MessageUpdateManyWithoutSenderNestedInput = {
     create?: XOR<MessageCreateWithoutSenderInput, MessageUncheckedCreateWithoutSenderInput> | MessageCreateWithoutSenderInput[] | MessageUncheckedCreateWithoutSenderInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutSenderInput | MessageCreateOrConnectWithoutSenderInput[]
@@ -12185,6 +13821,20 @@ export namespace Prisma {
     update?: WishlistUpdateWithWhereUniqueWithoutUserInput | WishlistUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: WishlistUpdateManyWithWhereWithoutUserInput | WishlistUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutUserInput, WishlistDealNotificationUncheckedCreateWithoutUserInput> | WishlistDealNotificationCreateWithoutUserInput[] | WishlistDealNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutUserInput | WishlistDealNotificationCreateOrConnectWithoutUserInput[]
+    upsert?: WishlistDealNotificationUpsertWithWhereUniqueWithoutUserInput | WishlistDealNotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: WishlistDealNotificationCreateManyUserInputEnvelope
+    set?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    disconnect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    delete?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    update?: WishlistDealNotificationUpdateWithWhereUniqueWithoutUserInput | WishlistDealNotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: WishlistDealNotificationUpdateManyWithWhereWithoutUserInput | WishlistDealNotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
   }
 
   export type MessageUncheckedUpdateManyWithoutSenderNestedInput = {
@@ -12256,6 +13906,13 @@ export namespace Prisma {
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
   }
 
+  export type WishlistDealNotificationCreateNestedManyWithoutGameInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutGameInput, WishlistDealNotificationUncheckedCreateWithoutGameInput> | WishlistDealNotificationCreateWithoutGameInput[] | WishlistDealNotificationUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutGameInput | WishlistDealNotificationCreateOrConnectWithoutGameInput[]
+    createMany?: WishlistDealNotificationCreateManyGameInputEnvelope
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+  }
+
   export type DealUncheckedCreateNestedManyWithoutGameInput = {
     create?: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput> | DealCreateWithoutGameInput[] | DealUncheckedCreateWithoutGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
@@ -12275,6 +13932,13 @@ export namespace Prisma {
     connectOrCreate?: WishlistCreateOrConnectWithoutGameInput | WishlistCreateOrConnectWithoutGameInput[]
     createMany?: WishlistCreateManyGameInputEnvelope
     connect?: WishlistWhereUniqueInput | WishlistWhereUniqueInput[]
+  }
+
+  export type WishlistDealNotificationUncheckedCreateNestedManyWithoutGameInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutGameInput, WishlistDealNotificationUncheckedCreateWithoutGameInput> | WishlistDealNotificationCreateWithoutGameInput[] | WishlistDealNotificationUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutGameInput | WishlistDealNotificationCreateOrConnectWithoutGameInput[]
+    createMany?: WishlistDealNotificationCreateManyGameInputEnvelope
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -12368,6 +14032,20 @@ export namespace Prisma {
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
+  export type WishlistDealNotificationUpdateManyWithoutGameNestedInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutGameInput, WishlistDealNotificationUncheckedCreateWithoutGameInput> | WishlistDealNotificationCreateWithoutGameInput[] | WishlistDealNotificationUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutGameInput | WishlistDealNotificationCreateOrConnectWithoutGameInput[]
+    upsert?: WishlistDealNotificationUpsertWithWhereUniqueWithoutGameInput | WishlistDealNotificationUpsertWithWhereUniqueWithoutGameInput[]
+    createMany?: WishlistDealNotificationCreateManyGameInputEnvelope
+    set?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    disconnect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    delete?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    update?: WishlistDealNotificationUpdateWithWhereUniqueWithoutGameInput | WishlistDealNotificationUpdateWithWhereUniqueWithoutGameInput[]
+    updateMany?: WishlistDealNotificationUpdateManyWithWhereWithoutGameInput | WishlistDealNotificationUpdateManyWithWhereWithoutGameInput[]
+    deleteMany?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
+  }
+
   export type DealUncheckedUpdateManyWithoutGameNestedInput = {
     create?: XOR<DealCreateWithoutGameInput, DealUncheckedCreateWithoutGameInput> | DealCreateWithoutGameInput[] | DealUncheckedCreateWithoutGameInput[]
     connectOrCreate?: DealCreateOrConnectWithoutGameInput | DealCreateOrConnectWithoutGameInput[]
@@ -12408,6 +14086,20 @@ export namespace Prisma {
     update?: WishlistUpdateWithWhereUniqueWithoutGameInput | WishlistUpdateWithWhereUniqueWithoutGameInput[]
     updateMany?: WishlistUpdateManyWithWhereWithoutGameInput | WishlistUpdateManyWithWhereWithoutGameInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyWithoutGameNestedInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutGameInput, WishlistDealNotificationUncheckedCreateWithoutGameInput> | WishlistDealNotificationCreateWithoutGameInput[] | WishlistDealNotificationUncheckedCreateWithoutGameInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutGameInput | WishlistDealNotificationCreateOrConnectWithoutGameInput[]
+    upsert?: WishlistDealNotificationUpsertWithWhereUniqueWithoutGameInput | WishlistDealNotificationUpsertWithWhereUniqueWithoutGameInput[]
+    createMany?: WishlistDealNotificationCreateManyGameInputEnvelope
+    set?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    disconnect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    delete?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    update?: WishlistDealNotificationUpdateWithWhereUniqueWithoutGameInput | WishlistDealNotificationUpdateWithWhereUniqueWithoutGameInput[]
+    updateMany?: WishlistDealNotificationUpdateManyWithWhereWithoutGameInput | WishlistDealNotificationUpdateManyWithWhereWithoutGameInput[]
+    deleteMany?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
   }
 
   export type UserGameCreateplatformDRMsInput = {
@@ -12457,6 +14149,20 @@ export namespace Prisma {
     connect?: GameWhereUniqueInput
   }
 
+  export type WishlistDealNotificationCreateNestedManyWithoutDealInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutDealInput, WishlistDealNotificationUncheckedCreateWithoutDealInput> | WishlistDealNotificationCreateWithoutDealInput[] | WishlistDealNotificationUncheckedCreateWithoutDealInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutDealInput | WishlistDealNotificationCreateOrConnectWithoutDealInput[]
+    createMany?: WishlistDealNotificationCreateManyDealInputEnvelope
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+  }
+
+  export type WishlistDealNotificationUncheckedCreateNestedManyWithoutDealInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutDealInput, WishlistDealNotificationUncheckedCreateWithoutDealInput> | WishlistDealNotificationCreateWithoutDealInput[] | WishlistDealNotificationUncheckedCreateWithoutDealInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutDealInput | WishlistDealNotificationCreateOrConnectWithoutDealInput[]
+    createMany?: WishlistDealNotificationCreateManyDealInputEnvelope
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+  }
+
   export type GameUpdateOneWithoutDealsNestedInput = {
     create?: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
     connectOrCreate?: GameCreateOrConnectWithoutDealsInput
@@ -12465,6 +14171,76 @@ export namespace Prisma {
     delete?: GameWhereInput | boolean
     connect?: GameWhereUniqueInput
     update?: XOR<XOR<GameUpdateToOneWithWhereWithoutDealsInput, GameUpdateWithoutDealsInput>, GameUncheckedUpdateWithoutDealsInput>
+  }
+
+  export type WishlistDealNotificationUpdateManyWithoutDealNestedInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutDealInput, WishlistDealNotificationUncheckedCreateWithoutDealInput> | WishlistDealNotificationCreateWithoutDealInput[] | WishlistDealNotificationUncheckedCreateWithoutDealInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutDealInput | WishlistDealNotificationCreateOrConnectWithoutDealInput[]
+    upsert?: WishlistDealNotificationUpsertWithWhereUniqueWithoutDealInput | WishlistDealNotificationUpsertWithWhereUniqueWithoutDealInput[]
+    createMany?: WishlistDealNotificationCreateManyDealInputEnvelope
+    set?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    disconnect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    delete?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    update?: WishlistDealNotificationUpdateWithWhereUniqueWithoutDealInput | WishlistDealNotificationUpdateWithWhereUniqueWithoutDealInput[]
+    updateMany?: WishlistDealNotificationUpdateManyWithWhereWithoutDealInput | WishlistDealNotificationUpdateManyWithWhereWithoutDealInput[]
+    deleteMany?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyWithoutDealNestedInput = {
+    create?: XOR<WishlistDealNotificationCreateWithoutDealInput, WishlistDealNotificationUncheckedCreateWithoutDealInput> | WishlistDealNotificationCreateWithoutDealInput[] | WishlistDealNotificationUncheckedCreateWithoutDealInput[]
+    connectOrCreate?: WishlistDealNotificationCreateOrConnectWithoutDealInput | WishlistDealNotificationCreateOrConnectWithoutDealInput[]
+    upsert?: WishlistDealNotificationUpsertWithWhereUniqueWithoutDealInput | WishlistDealNotificationUpsertWithWhereUniqueWithoutDealInput[]
+    createMany?: WishlistDealNotificationCreateManyDealInputEnvelope
+    set?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    disconnect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    delete?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    connect?: WishlistDealNotificationWhereUniqueInput | WishlistDealNotificationWhereUniqueInput[]
+    update?: WishlistDealNotificationUpdateWithWhereUniqueWithoutDealInput | WishlistDealNotificationUpdateWithWhereUniqueWithoutDealInput[]
+    updateMany?: WishlistDealNotificationUpdateManyWithWhereWithoutDealInput | WishlistDealNotificationUpdateManyWithWhereWithoutDealInput[]
+    deleteMany?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutWishlistDealNotificationsInput = {
+    create?: XOR<UserCreateWithoutWishlistDealNotificationsInput, UserUncheckedCreateWithoutWishlistDealNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWishlistDealNotificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GameCreateNestedOneWithoutDealNotificationsInput = {
+    create?: XOR<GameCreateWithoutDealNotificationsInput, GameUncheckedCreateWithoutDealNotificationsInput>
+    connectOrCreate?: GameCreateOrConnectWithoutDealNotificationsInput
+    connect?: GameWhereUniqueInput
+  }
+
+  export type DealCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<DealCreateWithoutNotificationsInput, DealUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: DealCreateOrConnectWithoutNotificationsInput
+    connect?: DealWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutWishlistDealNotificationsNestedInput = {
+    create?: XOR<UserCreateWithoutWishlistDealNotificationsInput, UserUncheckedCreateWithoutWishlistDealNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWishlistDealNotificationsInput
+    upsert?: UserUpsertWithoutWishlistDealNotificationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWishlistDealNotificationsInput, UserUpdateWithoutWishlistDealNotificationsInput>, UserUncheckedUpdateWithoutWishlistDealNotificationsInput>
+  }
+
+  export type GameUpdateOneRequiredWithoutDealNotificationsNestedInput = {
+    create?: XOR<GameCreateWithoutDealNotificationsInput, GameUncheckedCreateWithoutDealNotificationsInput>
+    connectOrCreate?: GameCreateOrConnectWithoutDealNotificationsInput
+    upsert?: GameUpsertWithoutDealNotificationsInput
+    connect?: GameWhereUniqueInput
+    update?: XOR<XOR<GameUpdateToOneWithWhereWithoutDealNotificationsInput, GameUpdateWithoutDealNotificationsInput>, GameUncheckedUpdateWithoutDealNotificationsInput>
+  }
+
+  export type DealUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<DealCreateWithoutNotificationsInput, DealUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: DealCreateOrConnectWithoutNotificationsInput
+    upsert?: DealUpsertWithoutNotificationsInput
+    connect?: DealWhereUniqueInput
+    update?: XOR<XOR<DealUpdateToOneWithWhereWithoutNotificationsInput, DealUpdateWithoutNotificationsInput>, DealUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type GameCreateNestedOneWithoutWishlistedByInput = {
@@ -12832,6 +14608,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type WishlistDealNotificationCreateWithoutUserInput = {
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    game: GameCreateNestedOneWithoutDealNotificationsInput
+    deal: DealCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type WishlistDealNotificationUncheckedCreateWithoutUserInput = {
+    id?: number
+    gameId: number
+    dealId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationCreateOrConnectWithoutUserInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    create: XOR<WishlistDealNotificationCreateWithoutUserInput, WishlistDealNotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type WishlistDealNotificationCreateManyUserInputEnvelope = {
+    data: WishlistDealNotificationCreateManyUserInput | WishlistDealNotificationCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MessageCreateWithoutSenderInput = {
     text: string
     media?: string | null
@@ -12944,6 +14747,35 @@ export namespace Prisma {
     addedAt?: DateTimeFilter<"Wishlist"> | Date | string
   }
 
+  export type WishlistDealNotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    update: XOR<WishlistDealNotificationUpdateWithoutUserInput, WishlistDealNotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<WishlistDealNotificationCreateWithoutUserInput, WishlistDealNotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type WishlistDealNotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    data: XOR<WishlistDealNotificationUpdateWithoutUserInput, WishlistDealNotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type WishlistDealNotificationUpdateManyWithWhereWithoutUserInput = {
+    where: WishlistDealNotificationScalarWhereInput
+    data: XOR<WishlistDealNotificationUpdateManyMutationInput, WishlistDealNotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type WishlistDealNotificationScalarWhereInput = {
+    AND?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
+    OR?: WishlistDealNotificationScalarWhereInput[]
+    NOT?: WishlistDealNotificationScalarWhereInput | WishlistDealNotificationScalarWhereInput[]
+    id?: IntFilter<"WishlistDealNotification"> | number
+    userId?: IntFilter<"WishlistDealNotification"> | number
+    gameId?: IntFilter<"WishlistDealNotification"> | number
+    dealId?: IntFilter<"WishlistDealNotification"> | number
+    notificationSent?: BoolFilter<"WishlistDealNotification"> | boolean
+    createdAt?: DateTimeFilter<"WishlistDealNotification"> | Date | string
+    updatedAt?: DateTimeFilter<"WishlistDealNotification"> | Date | string
+  }
+
   export type MessageUpsertWithWhereUniqueWithoutSenderInput = {
     where: MessageWhereUniqueInput
     update: XOR<MessageUpdateWithoutSenderInput, MessageUncheckedUpdateWithoutSenderInput>
@@ -13005,6 +14837,7 @@ export namespace Prisma {
     source?: string | null
     thumb?: string | null
     rating?: number | null
+    notifications?: WishlistDealNotificationCreateNestedManyWithoutDealInput
   }
 
   export type DealUncheckedCreateWithoutGameInput = {
@@ -13024,6 +14857,7 @@ export namespace Prisma {
     source?: string | null
     thumb?: string | null
     rating?: number | null
+    notifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutDealInput
   }
 
   export type DealCreateOrConnectWithoutGameInput = {
@@ -13087,6 +14921,33 @@ export namespace Prisma {
 
   export type WishlistCreateManyGameInputEnvelope = {
     data: WishlistCreateManyGameInput | WishlistCreateManyGameInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WishlistDealNotificationCreateWithoutGameInput = {
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWishlistDealNotificationsInput
+    deal: DealCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type WishlistDealNotificationUncheckedCreateWithoutGameInput = {
+    id?: number
+    userId: number
+    dealId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationCreateOrConnectWithoutGameInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    create: XOR<WishlistDealNotificationCreateWithoutGameInput, WishlistDealNotificationUncheckedCreateWithoutGameInput>
+  }
+
+  export type WishlistDealNotificationCreateManyGameInputEnvelope = {
+    data: WishlistDealNotificationCreateManyGameInput | WishlistDealNotificationCreateManyGameInput[]
     skipDuplicates?: boolean
   }
 
@@ -13161,6 +15022,22 @@ export namespace Prisma {
     data: XOR<WishlistUpdateManyMutationInput, WishlistUncheckedUpdateManyWithoutGameInput>
   }
 
+  export type WishlistDealNotificationUpsertWithWhereUniqueWithoutGameInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    update: XOR<WishlistDealNotificationUpdateWithoutGameInput, WishlistDealNotificationUncheckedUpdateWithoutGameInput>
+    create: XOR<WishlistDealNotificationCreateWithoutGameInput, WishlistDealNotificationUncheckedCreateWithoutGameInput>
+  }
+
+  export type WishlistDealNotificationUpdateWithWhereUniqueWithoutGameInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    data: XOR<WishlistDealNotificationUpdateWithoutGameInput, WishlistDealNotificationUncheckedUpdateWithoutGameInput>
+  }
+
+  export type WishlistDealNotificationUpdateManyWithWhereWithoutGameInput = {
+    where: WishlistDealNotificationScalarWhereInput
+    data: XOR<WishlistDealNotificationUpdateManyMutationInput, WishlistDealNotificationUncheckedUpdateManyWithoutGameInput>
+  }
+
   export type GameCreateWithoutUserGamesInput = {
     igdbId?: number | null
     name: string
@@ -13181,6 +15058,7 @@ export namespace Prisma {
     lastSyncedAt?: Date | string | null
     deals?: DealCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateWithoutUserGamesInput = {
@@ -13204,6 +15082,7 @@ export namespace Prisma {
     lastSyncedAt?: Date | string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameCreateOrConnectWithoutUserGamesInput = {
@@ -13221,6 +15100,7 @@ export namespace Prisma {
     epicConnect?: boolean | null
     gogConnect?: boolean | null
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
   }
@@ -13236,6 +15116,7 @@ export namespace Prisma {
     epicConnect?: boolean | null
     gogConnect?: boolean | null
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
   }
@@ -13276,6 +15157,7 @@ export namespace Prisma {
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateWithoutUserGamesInput = {
@@ -13299,6 +15181,7 @@ export namespace Prisma {
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutGameNestedInput
   }
 
   export type UserUpsertWithoutUserGamesInput = {
@@ -13322,6 +15205,7 @@ export namespace Prisma {
     epicConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
   }
@@ -13337,6 +15221,7 @@ export namespace Prisma {
     epicConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
   }
@@ -13361,6 +15246,7 @@ export namespace Prisma {
     lastSyncedAt?: Date | string | null
     userGames?: UserGameCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateWithoutDealsInput = {
@@ -13384,11 +15270,39 @@ export namespace Prisma {
     lastSyncedAt?: Date | string | null
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
     wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameCreateOrConnectWithoutDealsInput = {
     where: GameWhereUniqueInput
     create: XOR<GameCreateWithoutDealsInput, GameUncheckedCreateWithoutDealsInput>
+  }
+
+  export type WishlistDealNotificationCreateWithoutDealInput = {
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWishlistDealNotificationsInput
+    game: GameCreateNestedOneWithoutDealNotificationsInput
+  }
+
+  export type WishlistDealNotificationUncheckedCreateWithoutDealInput = {
+    id?: number
+    userId: number
+    gameId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationCreateOrConnectWithoutDealInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    create: XOR<WishlistDealNotificationCreateWithoutDealInput, WishlistDealNotificationUncheckedCreateWithoutDealInput>
+  }
+
+  export type WishlistDealNotificationCreateManyDealInputEnvelope = {
+    data: WishlistDealNotificationCreateManyDealInput | WishlistDealNotificationCreateManyDealInput[]
+    skipDuplicates?: boolean
   }
 
   export type GameUpsertWithoutDealsInput = {
@@ -13422,6 +15336,7 @@ export namespace Prisma {
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userGames?: UserGameUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateWithoutDealsInput = {
@@ -13445,6 +15360,305 @@ export namespace Prisma {
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
     wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutGameNestedInput
+  }
+
+  export type WishlistDealNotificationUpsertWithWhereUniqueWithoutDealInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    update: XOR<WishlistDealNotificationUpdateWithoutDealInput, WishlistDealNotificationUncheckedUpdateWithoutDealInput>
+    create: XOR<WishlistDealNotificationCreateWithoutDealInput, WishlistDealNotificationUncheckedCreateWithoutDealInput>
+  }
+
+  export type WishlistDealNotificationUpdateWithWhereUniqueWithoutDealInput = {
+    where: WishlistDealNotificationWhereUniqueInput
+    data: XOR<WishlistDealNotificationUpdateWithoutDealInput, WishlistDealNotificationUncheckedUpdateWithoutDealInput>
+  }
+
+  export type WishlistDealNotificationUpdateManyWithWhereWithoutDealInput = {
+    where: WishlistDealNotificationScalarWhereInput
+    data: XOR<WishlistDealNotificationUpdateManyMutationInput, WishlistDealNotificationUncheckedUpdateManyWithoutDealInput>
+  }
+
+  export type UserCreateWithoutWishlistDealNotificationsInput = {
+    supabase_uid: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    steamId?: string | null
+    epicConnect?: boolean | null
+    gogConnect?: boolean | null
+    userGames?: UserGameCreateNestedManyWithoutUserInput
+    wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
+  }
+
+  export type UserUncheckedCreateWithoutWishlistDealNotificationsInput = {
+    id?: number
+    supabase_uid: string
+    display_name?: string | null
+    xp?: number
+    level?: number
+    credits?: number
+    steamId?: string | null
+    epicConnect?: boolean | null
+    gogConnect?: boolean | null
+    userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
+    wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
+  }
+
+  export type UserCreateOrConnectWithoutWishlistDealNotificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutWishlistDealNotificationsInput, UserUncheckedCreateWithoutWishlistDealNotificationsInput>
+  }
+
+  export type GameCreateWithoutDealNotificationsInput = {
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
+    coverUrl?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
+    totalRating?: number | null
+    genres?: GameCreategenresInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    deals?: DealCreateNestedManyWithoutGameInput
+    userGames?: UserGameCreateNestedManyWithoutGameInput
+    wishlistedBy?: WishlistCreateNestedManyWithoutGameInput
+  }
+
+  export type GameUncheckedCreateWithoutDealNotificationsInput = {
+    id?: number
+    igdbId?: number | null
+    name: string
+    slug?: string | null
+    summary?: string | null
+    storyline?: string | null
+    firstReleaseDate?: Date | string | null
+    coverUrl?: string | null
+    screenshots?: GameCreatescreenshotsInput | string[]
+    videos?: GameCreatevideosInput | string[]
+    totalRating?: number | null
+    genres?: GameCreategenresInput | string[]
+    developers?: GameCreatedevelopersInput | string[]
+    publishers?: GameCreatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastSyncedAt?: Date | string | null
+    deals?: DealUncheckedCreateNestedManyWithoutGameInput
+    userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
+    wishlistedBy?: WishlistUncheckedCreateNestedManyWithoutGameInput
+  }
+
+  export type GameCreateOrConnectWithoutDealNotificationsInput = {
+    where: GameWhereUniqueInput
+    create: XOR<GameCreateWithoutDealNotificationsInput, GameUncheckedCreateWithoutDealNotificationsInput>
+  }
+
+  export type DealCreateWithoutNotificationsInput = {
+    title: string
+    storeName: string
+    price?: number | null
+    discountPercent?: number | null
+    originalPrice?: number | null
+    url: string
+    validFrom?: Date | string | null
+    validUntil?: Date | string | null
+    isFreebie?: boolean
+    discoveredAt?: Date | string
+    updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
+    thumb?: string | null
+    rating?: number | null
+    game?: GameCreateNestedOneWithoutDealsInput
+  }
+
+  export type DealUncheckedCreateWithoutNotificationsInput = {
+    id?: number
+    gameId?: number | null
+    title: string
+    storeName: string
+    price?: number | null
+    discountPercent?: number | null
+    originalPrice?: number | null
+    url: string
+    validFrom?: Date | string | null
+    validUntil?: Date | string | null
+    isFreebie?: boolean
+    discoveredAt?: Date | string
+    updatedAt?: Date | string
+    externalId?: string | null
+    source?: string | null
+    thumb?: string | null
+    rating?: number | null
+  }
+
+  export type DealCreateOrConnectWithoutNotificationsInput = {
+    where: DealWhereUniqueInput
+    create: XOR<DealCreateWithoutNotificationsInput, DealUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type UserUpsertWithoutWishlistDealNotificationsInput = {
+    update: XOR<UserUpdateWithoutWishlistDealNotificationsInput, UserUncheckedUpdateWithoutWishlistDealNotificationsInput>
+    create: XOR<UserCreateWithoutWishlistDealNotificationsInput, UserUncheckedCreateWithoutWishlistDealNotificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutWishlistDealNotificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutWishlistDealNotificationsInput, UserUncheckedUpdateWithoutWishlistDealNotificationsInput>
+  }
+
+  export type UserUpdateWithoutWishlistDealNotificationsInput = {
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    steamId?: NullableStringFieldUpdateOperationsInput | string | null
+    epicConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    userGames?: UserGameUpdateManyWithoutUserNestedInput
+    wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWishlistDealNotificationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    supabase_uid?: StringFieldUpdateOperationsInput | string
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    xp?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    credits?: IntFieldUpdateOperationsInput | number
+    steamId?: NullableStringFieldUpdateOperationsInput | string | null
+    epicConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
+    wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
+  }
+
+  export type GameUpsertWithoutDealNotificationsInput = {
+    update: XOR<GameUpdateWithoutDealNotificationsInput, GameUncheckedUpdateWithoutDealNotificationsInput>
+    create: XOR<GameCreateWithoutDealNotificationsInput, GameUncheckedCreateWithoutDealNotificationsInput>
+    where?: GameWhereInput
+  }
+
+  export type GameUpdateToOneWithWhereWithoutDealNotificationsInput = {
+    where?: GameWhereInput
+    data: XOR<GameUpdateWithoutDealNotificationsInput, GameUncheckedUpdateWithoutDealNotificationsInput>
+  }
+
+  export type GameUpdateWithoutDealNotificationsInput = {
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    genres?: GameUpdategenresInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deals?: DealUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUpdateManyWithoutGameNestedInput
+    wishlistedBy?: WishlistUpdateManyWithoutGameNestedInput
+  }
+
+  export type GameUncheckedUpdateWithoutDealNotificationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    igdbId?: NullableIntFieldUpdateOperationsInput | number | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    storyline?: NullableStringFieldUpdateOperationsInput | string | null
+    firstReleaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    screenshots?: GameUpdatescreenshotsInput | string[]
+    videos?: GameUpdatevideosInput | string[]
+    totalRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    genres?: GameUpdategenresInput | string[]
+    developers?: GameUpdatedevelopersInput | string[]
+    publishers?: GameUpdatepublishersInput | string[]
+    websites?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deals?: DealUncheckedUpdateManyWithoutGameNestedInput
+    userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
+    wishlistedBy?: WishlistUncheckedUpdateManyWithoutGameNestedInput
+  }
+
+  export type DealUpsertWithoutNotificationsInput = {
+    update: XOR<DealUpdateWithoutNotificationsInput, DealUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<DealCreateWithoutNotificationsInput, DealUncheckedCreateWithoutNotificationsInput>
+    where?: DealWhereInput
+  }
+
+  export type DealUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: DealWhereInput
+    data: XOR<DealUpdateWithoutNotificationsInput, DealUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type DealUpdateWithoutNotificationsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    storeName?: StringFieldUpdateOperationsInput | string
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    url?: StringFieldUpdateOperationsInput | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isFreebie?: BoolFieldUpdateOperationsInput | boolean
+    discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    game?: GameUpdateOneWithoutDealsNestedInput
+  }
+
+  export type DealUncheckedUpdateWithoutNotificationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    gameId?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    storeName?: StringFieldUpdateOperationsInput | string
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    originalPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    url?: StringFieldUpdateOperationsInput | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isFreebie?: BoolFieldUpdateOperationsInput | boolean
+    discoveredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    thumb?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type GameCreateWithoutWishlistedByInput = {
@@ -13467,6 +15681,7 @@ export namespace Prisma {
     lastSyncedAt?: Date | string | null
     deals?: DealCreateNestedManyWithoutGameInput
     userGames?: UserGameCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationCreateNestedManyWithoutGameInput
   }
 
   export type GameUncheckedCreateWithoutWishlistedByInput = {
@@ -13490,6 +15705,7 @@ export namespace Prisma {
     lastSyncedAt?: Date | string | null
     deals?: DealUncheckedCreateNestedManyWithoutGameInput
     userGames?: UserGameUncheckedCreateNestedManyWithoutGameInput
+    dealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutGameInput
   }
 
   export type GameCreateOrConnectWithoutWishlistedByInput = {
@@ -13507,6 +15723,7 @@ export namespace Prisma {
     epicConnect?: boolean | null
     gogConnect?: boolean | null
     userGames?: UserGameCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
   }
@@ -13522,6 +15739,7 @@ export namespace Prisma {
     epicConnect?: boolean | null
     gogConnect?: boolean | null
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
   }
@@ -13562,6 +15780,7 @@ export namespace Prisma {
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deals?: DealUpdateManyWithoutGameNestedInput
     userGames?: UserGameUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUpdateManyWithoutGameNestedInput
   }
 
   export type GameUncheckedUpdateWithoutWishlistedByInput = {
@@ -13585,6 +15804,7 @@ export namespace Prisma {
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deals?: DealUncheckedUpdateManyWithoutGameNestedInput
     userGames?: UserGameUncheckedUpdateManyWithoutGameNestedInput
+    dealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutGameNestedInput
   }
 
   export type UserUpsertWithoutWishlistItemsInput = {
@@ -13608,6 +15828,7 @@ export namespace Prisma {
     epicConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
   }
@@ -13623,6 +15844,7 @@ export namespace Prisma {
     epicConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
   }
@@ -13638,6 +15860,7 @@ export namespace Prisma {
     gogConnect?: boolean | null
     userGames?: UserGameCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationCreateNestedManyWithoutUserInput
     receivedMessages?: MessageCreateNestedManyWithoutReceiverInput
   }
 
@@ -13653,6 +15876,7 @@ export namespace Prisma {
     gogConnect?: boolean | null
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutUserInput
     receivedMessages?: MessageUncheckedCreateNestedManyWithoutReceiverInput
   }
 
@@ -13672,6 +15896,7 @@ export namespace Prisma {
     gogConnect?: boolean | null
     userGames?: UserGameCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
   }
 
@@ -13687,6 +15912,7 @@ export namespace Prisma {
     gogConnect?: boolean | null
     userGames?: UserGameUncheckedCreateNestedManyWithoutUserInput
     wishlistItems?: WishlistUncheckedCreateNestedManyWithoutUserInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
   }
 
@@ -13717,6 +15943,7 @@ export namespace Prisma {
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUpdateManyWithoutUserNestedInput
     receivedMessages?: MessageUpdateManyWithoutReceiverNestedInput
   }
 
@@ -13732,6 +15959,7 @@ export namespace Prisma {
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutUserNestedInput
     receivedMessages?: MessageUncheckedUpdateManyWithoutReceiverNestedInput
   }
 
@@ -13757,6 +15985,7 @@ export namespace Prisma {
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
   }
 
@@ -13772,6 +16001,7 @@ export namespace Prisma {
     gogConnect?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userGames?: UserGameUncheckedUpdateManyWithoutUserNestedInput
     wishlistItems?: WishlistUncheckedUpdateManyWithoutUserNestedInput
+    wishlistDealNotifications?: WishlistDealNotificationUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
   }
 
@@ -13791,6 +16021,15 @@ export namespace Prisma {
     id?: number
     gameId: number
     addedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationCreateManyUserInput = {
+    id?: number
+    gameId: number
+    dealId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MessageCreateManySenderInput = {
@@ -13861,6 +16100,32 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     gameId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationUpdateWithoutUserInput = {
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    game?: GameUpdateOneRequiredWithoutDealNotificationsNestedInput
+    deal?: DealUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    dealId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    dealId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MessageUpdateWithoutSenderInput = {
@@ -13952,6 +16217,15 @@ export namespace Prisma {
     addedAt?: Date | string
   }
 
+  export type WishlistDealNotificationCreateManyGameInput = {
+    id?: number
+    userId: number
+    dealId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type DealUpdateWithoutGameInput = {
     title?: StringFieldUpdateOperationsInput | string
     storeName?: StringFieldUpdateOperationsInput | string
@@ -13968,6 +16242,7 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     thumb?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    notifications?: WishlistDealNotificationUpdateManyWithoutDealNestedInput
   }
 
   export type DealUncheckedUpdateWithoutGameInput = {
@@ -13987,6 +16262,7 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     thumb?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    notifications?: WishlistDealNotificationUncheckedUpdateManyWithoutDealNestedInput
   }
 
   export type DealUncheckedUpdateManyWithoutGameInput = {
@@ -14058,6 +16334,67 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationUpdateWithoutGameInput = {
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWishlistDealNotificationsNestedInput
+    deal?: DealUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    dealId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyWithoutGameInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    dealId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationCreateManyDealInput = {
+    id?: number
+    userId: number
+    gameId: number
+    notificationSent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WishlistDealNotificationUpdateWithoutDealInput = {
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWishlistDealNotificationsNestedInput
+    game?: GameUpdateOneRequiredWithoutDealNotificationsNestedInput
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateWithoutDealInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WishlistDealNotificationUncheckedUpdateManyWithoutDealInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    gameId?: IntFieldUpdateOperationsInput | number
+    notificationSent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
