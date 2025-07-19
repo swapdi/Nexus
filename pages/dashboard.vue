@@ -9,6 +9,8 @@
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const dealsStore = useDealsStore();
+  const wishlistStore = useWishlistStore();
+  const messagesStore = useMessagesStore();
 
   const user = computed(() => userStore.user);
   const stats = computed(() => userStore.stats);
@@ -85,6 +87,14 @@
         }),
         dealsStore.loadDealsFromDB().catch(err => {
           console.error('Fehler beim Laden der Deals:', err);
+          return null;
+        }),
+        wishlistStore.checkWishlistDeals().catch(err => {
+          console.error('Fehler beim Prüfen der Wishlist-Deals:', err);
+          return null;
+        }),
+        messagesStore.refreshUnreadCount().catch(err => {
+          console.error('Fehler beim Laden der Nachrichten-Anzahl:', err);
           return null;
         })
       ]);
@@ -398,8 +408,80 @@
           </div>
         </div>
       </div>
-      <!-- Second Row: Platform Status & Gaming Tips -->
+      <!-- Third Row: Messages and Gaming Tips -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Messages Widget - Takes 2/3 of the width -->
+        <div class="lg:col-span-2">
+          <MessagesWidget :max-messages="5" />
+        </div>
+
+        <!-- Gaming Tip des Tages - Takes 1/3 of the width -->
+        <div
+          class="bg-gradient-to-br from-cyan-800/60 via-cyan-800/50 to-blue-900/60 backdrop-blur-sm rounded-2xl border border-cyan-700/50 p-6 hover:border-cyan-400/50 transition-all duration-500 relative overflow-hidden">
+          <!-- Animated Background Effects -->
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-pulse-slow"></div>
+          <div
+            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 rounded-full blur-2xl transform translate-x-12 -translate-y-12"></div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-bold text-white flex items-center">
+                <div
+                  class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                  <Icon
+                    name="heroicons:light-bulb-20-solid"
+                    class="w-6 h-6 text-white" />
+                </div>
+                Gaming Tipp
+              </h2>
+              <div class="animate-pulse-slow">
+                <Icon
+                  name="heroicons:arrow-path-20-solid"
+                  class="w-5 h-5 text-cyan-300" />
+              </div>
+            </div>
+
+            <!-- Tip Content -->
+            <div class="relative overflow-hidden mb-6">
+              <div
+                class="relative z-10 p-6 bg-gradient-to-br from-gray-900/60 to-gray-800/40 rounded-xl border border-cyan-500/20 backdrop-blur-sm">
+                <!-- Decorative Quote Mark -->
+                <div class="absolute top-3 left-3 w-8 h-8 text-cyan-400/30">
+                  <Icon
+                    name="heroicons:chat-bubble-left-ellipsis-20-solid"
+                    class="w-full h-full" />
+                </div>
+
+                <div class="flex items-start space-x-4 pl-6">
+                  <div class="flex-shrink-0 mt-1">
+                    <div
+                      class="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center border border-cyan-400/30">
+                      <Icon
+                        :name="randomTip.icon"
+                        class="w-5 h-5 text-cyan-400" />
+                    </div>
+                  </div>
+                  <p class="text-gray-100 leading-relaxed font-medium">
+                    {{ randomTip.text }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Dots -->
+            <div class="flex justify-center mt-4 space-x-2">
+              <div
+                v-for="i in 5"
+                :key="i"
+                class="w-2 h-2 bg-cyan-400/30 rounded-full animate-pulse"
+                :style="`animation-delay: ${i * 0.2}s`"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Second Row: Platform Status & Gaming Tips -->
+      <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
         <!-- Platform Integration Status - Takes 2/3 of the width -->
         <div
           class="lg:col-span-2 bg-gradient-to-br from-gray-800/60 via-gray-800/50 to-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8 hover:border-orange-400/50 transition-all duration-500 relative overflow-hidden">
@@ -639,83 +721,6 @@
                   name="heroicons:arrow-right-20-solid"
                   class="w-4 h-4 ml-2" />
               </NuxtLink>
-            </div>
-          </div>
-        </div>
-
-        <!-- Gaming Tip des Tages - Takes 1/3 of the width -->
-        <div
-          class="bg-gradient-to-br from-cyan-800/60 via-cyan-800/50 to-blue-900/60 backdrop-blur-sm rounded-2xl border border-cyan-700/50 p-6 hover:border-cyan-400/50 transition-all duration-500 relative overflow-hidden">
-          <!-- Animated Background Effects -->
-          <div
-            class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-pulse-slow"></div>
-          <div
-            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 rounded-full blur-2xl transform translate-x-12 -translate-y-12"></div>
-
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-xl font-bold text-white flex items-center">
-                <div
-                  class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                  <Icon
-                    name="heroicons:light-bulb-20-solid"
-                    class="w-6 h-6 text-white" />
-                </div>
-                Gaming Tipp
-              </h2>
-              <div class="animate-pulse-slow">
-                <Icon
-                  name="heroicons:arrow-path-20-solid"
-                  class="w-5 h-5 text-cyan-300" />
-              </div>
-            </div>
-
-            <!-- Tip Content -->
-            <div class="relative overflow-hidden mb-6">
-              <div
-                class="relative z-10 p-6 bg-gradient-to-br from-gray-900/60 to-gray-800/40 rounded-xl border border-cyan-500/20 backdrop-blur-sm">
-                <!-- Decorative Quote Mark -->
-                <div class="absolute top-3 left-3 w-8 h-8 text-cyan-400/30">
-                  <Icon
-                    name="heroicons:chat-bubble-left-ellipsis-20-solid"
-                    class="w-full h-full" />
-                </div>
-
-                <div class="flex items-start space-x-4 pl-6">
-                  <div class="flex-shrink-0 mt-1">
-                    <div
-                      class="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center border border-cyan-400/30">
-                      <Icon
-                        :name="randomTip.icon"
-                        class="w-5 h-5 text-cyan-400" />
-                    </div>
-                  </div>
-                  <p class="text-gray-100 leading-relaxed font-medium">
-                    {{ randomTip.text }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Update Info -->
-            <div class="flex items-center justify-center">
-              <div
-                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full border border-cyan-400/30 backdrop-blur-sm">
-                <div
-                  class="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></div>
-                <span class="text-sm text-cyan-300 font-medium"
-                  >Aktualisiert alle 30 Sekunden</span
-                >
-              </div>
-            </div>
-
-            <!-- Progress Dots -->
-            <div class="flex justify-center mt-4 space-x-2">
-              <div
-                v-for="i in 5"
-                :key="i"
-                class="w-2 h-2 bg-cyan-400/30 rounded-full animate-pulse"
-                :style="`animation-delay: ${i * 0.2}s`"></div>
             </div>
           </div>
         </div>

@@ -201,6 +201,16 @@ exports.Prisma.WishlistScalarFieldEnum = {
   addedAt: 'addedAt'
 };
 
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  senderId: 'senderId',
+  receiverId: 'receiverId',
+  text: 'text',
+  media: 'media',
+  createdAt: 'createdAt',
+  isRead: 'isRead'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -234,7 +244,8 @@ exports.Prisma.ModelName = {
   Platform: 'Platform',
   UserGame: 'UserGame',
   Deal: 'Deal',
-  Wishlist: 'Wishlist'
+  Wishlist: 'Wishlist',
+  Message: 'Message'
 };
 
 /**
