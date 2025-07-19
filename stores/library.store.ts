@@ -121,7 +121,7 @@ export const useLibraryStore = defineStore('library', () => {
             userId: userStore.user?.id.toString() || ''
           });
 
-          if (result && result.status) {
+          if (result && result.authenticated) {
             notifyStore.notify('Epic Games erfolgreich authentifiziert!', 1);
             // Daten neu laden nach erfolgreicher Authentifizierung
             await gamesStore.refreshData();

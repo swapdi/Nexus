@@ -19,7 +19,7 @@ export namespace EpicGamesService {
     userId: number
   ) => {
     try {
-      const data = await $fetch<{ status: string }>(
+      const data = await $fetch<{ authenticated: boolean }>(
         `${backendUrl}/auth/complete`,
         {
           method: 'POST',
@@ -32,7 +32,9 @@ export namespace EpicGamesService {
       );
 
       // Wenn die Epic Games Authentifizierung erfolgreich war, setze epicConnect auf true
-      if (data && data.status === 'success') {
+      console.log(data);
+      if (data && data.authenticated) {
+        console.log('changing Prisma');
         await prisma.user.update({
           where: { id: userId },
           data: { epicConnect: true }
@@ -93,6 +95,11 @@ export namespace EpicGamesService {
         response &&
         response.message === 'Benutzer wurde erfolgreich abgemeldet.'
       ) {
+        // Prisma-Update, um epicConnect auf false zu setzen
+        await prisma.user.update({
+          where: { id: userId },
+          data: { epicConnect: false }
+        });
         return true;
       }
     } catch (error) {

@@ -4,7 +4,8 @@
     title: 'Dashboard - Gaming Nexus',
     layout: 'authenticated'
   });
-  const { getStoreBannerURL } = useStoreUtils();
+  const { getStoreBannerURL, getStoreLogoURL, getStoreIconURL } =
+    useStoreUtils();
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const dealsStore = useDealsStore();
@@ -17,6 +18,34 @@
       .filter(deal => deal.discountPercent && deal.discountPercent > 0)
       .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
       .slice(0, 3)
+  );
+
+  // Gaming-Tipps
+  const gamingTips = [
+    {
+      text: 'Tipp: Nutze die Wishlist-Funktion, um bei Preisreduktionen benachrichtigt zu werden!',
+      icon: 'heroicons:heart-20-solid'
+    },
+    {
+      text: 'Wusstest du? Die Deal-Synchronisation läuft automatisch im Hintergrund!',
+      icon: 'heroicons:fire-20-solid'
+    },
+    {
+      text: 'Pro-Tipp: Sortiere Deals nach Rating, um die besten Angebote zu finden!',
+      icon: 'heroicons:star-20-solid'
+    },
+    {
+      text: 'Organisiere deine Bibliothek mit Favoriten für schnelleren Zugriff!',
+      icon: 'heroicons:squares-2x2-20-solid'
+    },
+    {
+      text: 'Nutze die globale Suche, um schnell Spiele und Deals zu finden!',
+      icon: 'heroicons:magnifying-glass-20-solid'
+    }
+  ];
+
+  const randomTip = ref(
+    gamingTips[Math.floor(Math.random() * gamingTips.length)]
   );
 
   // Aktuelle Uhrzeit für Begrüßung
@@ -33,6 +62,12 @@
     setInterval(() => {
       currentTime.value = new Date();
     }, 60000);
+
+    // Rotiere Tipps alle 30 Sekunden
+    setInterval(() => {
+      randomTip.value =
+        gamingTips[Math.floor(Math.random() * gamingTips.length)];
+    }, 30000);
 
     // Benutzer initialisieren (falls noch nicht geschehen)
     await userStore.init();
@@ -363,7 +398,328 @@
           </div>
         </div>
       </div>
-      <!-- Second Row: Gaming Activity -->
+      <!-- Second Row: Platform Status & Gaming Tips -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Platform Integration Status - Takes 2/3 of the width -->
+        <div
+          class="lg:col-span-2 bg-gradient-to-br from-gray-800/60 via-gray-800/50 to-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8 hover:border-orange-400/50 transition-all duration-500 relative overflow-hidden">
+          <!-- Animated Background Effects -->
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-purple-500/5 to-blue-500/5 animate-pulse-slow"></div>
+          <div
+            class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-purple-500/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16"></div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-2xl font-bold text-white flex items-center">
+                <div
+                  class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                  <Icon
+                    name="heroicons:squares-plus-20-solid"
+                    class="w-6 h-6 text-white" />
+                </div>
+                Gaming Plattformen
+              </h2>
+              <div class="text-sm text-gray-400">Verbindungsstatus</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Steam Status -->
+              <div
+                class="group relative bg-gradient-to-br from-gray-900/50 to-gray-800/30 rounded-xl p-6 border border-gray-600/30 hover:border-blue-400/50 transition-all duration-500 transform hover:-translate-y-1">
+                <!-- Steam Logo Background -->
+                <div
+                  class="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                  <img
+                    :src="getStoreBannerURL('Steam')"
+                    alt="Steam Logo"
+                    class="w-16 h-16 object-contain filter brightness-200" />
+                </div>
+
+                <div class="relative z-10">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                      <div
+                        class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <img
+                          :src="getStoreLogoURL('Steam')"
+                          alt="Steam"
+                          class="w-8 h-8 object-contain filter brightness-200" />
+                      </div>
+                      <div>
+                        <div class="font-bold text-white text-lg">Steam</div>
+                        <div class="text-sm text-gray-400">Gaming Platform</div>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div
+                        :class="`w-4 h-4 rounded-full shadow-lg ${
+                          user?.steamId
+                            ? 'bg-green-400 shadow-green-400/50'
+                            : 'bg-gray-500'
+                        }`">
+                        <div
+                          :class="`w-full h-full rounded-full ${
+                            user?.steamId ? 'animate-pulse bg-green-300' : ''
+                          }`"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-300">Status</span>
+                      <span
+                        :class="`text-sm font-medium ${
+                          user?.steamId ? 'text-green-400' : 'text-gray-400'
+                        }`">
+                        {{ user?.steamId ? 'Verbunden' : 'Nicht verbunden' }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="user?.steamId"
+                      class="flex justify-between items-center">
+                      <span class="text-sm text-gray-300">Steam ID</span>
+                      <span class="text-sm font-mono text-blue-400"
+                        >{{ user.steamId.slice(0, 10) }}...</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Epic Games Status -->
+              <div
+                class="group relative bg-gradient-to-br from-gray-900/50 to-gray-800/30 rounded-xl p-6 border border-gray-600/30 hover:border-purple-400/50 transition-all duration-500 transform hover:-translate-y-1">
+                <!-- Epic Logo Background -->
+                <div
+                  class="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                  <img
+                    :src="getStoreBannerURL('Epic Games Store')"
+                    alt="Epic Games Logo"
+                    class="w-16 h-16 object-contain filter brightness-200" />
+                </div>
+
+                <div class="relative z-10">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                      <div
+                        class="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <img
+                          :src="getStoreBannerURL('Epic Games Store')"
+                          alt="Epic Games"
+                          class="w-8 h-8 object-contain filter brightness-200" />
+                      </div>
+                      <div>
+                        <div class="font-bold text-white text-lg">
+                          Epic Games
+                        </div>
+                        <div class="text-sm text-gray-400">Gaming Platform</div>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div
+                        :class="`w-4 h-4 rounded-full shadow-lg ${
+                          user?.epicConnect
+                            ? 'bg-green-400 shadow-green-400/50'
+                            : 'bg-gray-500'
+                        }`">
+                        <div
+                          :class="`w-full h-full rounded-full ${
+                            user?.epicConnect
+                              ? 'animate-pulse bg-green-300'
+                              : ''
+                          }`"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-300">Status</span>
+                      <span
+                        :class="`text-sm font-medium ${
+                          user?.epicConnect ? 'text-green-400' : 'text-gray-400'
+                        }`">
+                        {{
+                          user?.epicConnect ? 'Verbunden' : 'Nicht verbunden'
+                        }}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-300">Free Games</span>
+                      <span class="text-sm text-purple-400">Verfügbar</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GOG Status -->
+              <div
+                class="group relative bg-gradient-to-br from-gray-900/50 to-gray-800/30 rounded-xl p-6 border border-gray-600/30 hover:border-red-400/50 transition-all duration-500 transform hover:-translate-y-1">
+                <!-- GOG Logo Background -->
+                <div
+                  class="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                  <img
+                    :src="getStoreBannerURL('GOG')"
+                    alt="GOG Logo"
+                    class="w-16 h-16 object-contain filter brightness-200" />
+                </div>
+
+                <div class="relative z-10">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                      <div
+                        class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <img
+                          :src="getStoreLogoURL('GOG')"
+                          alt="GOG"
+                          class="w-8 h-8 object-contain filter brightness-200" />
+                      </div>
+                      <div>
+                        <div class="font-bold text-white text-lg">GOG</div>
+                        <div class="text-sm text-gray-400">DRM-Free Games</div>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div
+                        :class="`w-4 h-4 rounded-full shadow-lg ${
+                          user?.gogConnect
+                            ? 'bg-green-400 shadow-green-400/50'
+                            : 'bg-gray-500'
+                        }`">
+                        <div
+                          :class="`w-full h-full rounded-full ${
+                            user?.gogConnect ? 'animate-pulse bg-green-300' : ''
+                          }`"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-300">Status</span>
+                      <span
+                        :class="`text-sm font-medium ${
+                          user?.gogConnect ? 'text-green-400' : 'text-gray-400'
+                        }`">
+                        {{ user?.gogConnect ? 'Verbunden' : 'Nicht verbunden' }}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-300">DRM-Free</span>
+                      <span class="text-sm text-red-400">✓ Garantiert</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connection Management -->
+            <div
+              class="mt-8 flex items-center justify-between p-4 bg-gradient-to-r from-orange-500/10 to-purple-500/10 rounded-xl border border-orange-500/20">
+              <div class="flex items-center space-x-3">
+                <Icon
+                  name="heroicons:cog-6-tooth-20-solid"
+                  class="w-6 h-6 text-orange-400" />
+                <div>
+                  <div class="font-medium text-white">
+                    Verbindungen verwalten
+                  </div>
+                  <div class="text-sm text-gray-400">
+                    Plattformen verbinden oder trennen
+                  </div>
+                </div>
+              </div>
+              <NuxtLink
+                to="/settings"
+                class="flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg text-white font-medium hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25">
+                Einstellungen
+                <Icon
+                  name="heroicons:arrow-right-20-solid"
+                  class="w-4 h-4 ml-2" />
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gaming Tip des Tages - Takes 1/3 of the width -->
+        <div
+          class="bg-gradient-to-br from-cyan-800/60 via-cyan-800/50 to-blue-900/60 backdrop-blur-sm rounded-2xl border border-cyan-700/50 p-6 hover:border-cyan-400/50 transition-all duration-500 relative overflow-hidden">
+          <!-- Animated Background Effects -->
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-pulse-slow"></div>
+          <div
+            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 rounded-full blur-2xl transform translate-x-12 -translate-y-12"></div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-bold text-white flex items-center">
+                <div
+                  class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                  <Icon
+                    name="heroicons:light-bulb-20-solid"
+                    class="w-6 h-6 text-white" />
+                </div>
+                Gaming Tipp
+              </h2>
+              <div class="animate-pulse-slow">
+                <Icon
+                  name="heroicons:arrow-path-20-solid"
+                  class="w-5 h-5 text-cyan-300" />
+              </div>
+            </div>
+
+            <!-- Tip Content -->
+            <div class="relative overflow-hidden mb-6">
+              <div
+                class="relative z-10 p-6 bg-gradient-to-br from-gray-900/60 to-gray-800/40 rounded-xl border border-cyan-500/20 backdrop-blur-sm">
+                <!-- Decorative Quote Mark -->
+                <div class="absolute top-3 left-3 w-8 h-8 text-cyan-400/30">
+                  <Icon
+                    name="heroicons:chat-bubble-left-ellipsis-20-solid"
+                    class="w-full h-full" />
+                </div>
+
+                <div class="flex items-start space-x-4 pl-6">
+                  <div class="flex-shrink-0 mt-1">
+                    <div
+                      class="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center border border-cyan-400/30">
+                      <Icon
+                        :name="randomTip.icon"
+                        class="w-5 h-5 text-cyan-400" />
+                    </div>
+                  </div>
+                  <p class="text-gray-100 leading-relaxed font-medium">
+                    {{ randomTip.text }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Update Info -->
+            <div class="flex items-center justify-center">
+              <div
+                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full border border-cyan-400/30 backdrop-blur-sm">
+                <div
+                  class="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></div>
+                <span class="text-sm text-cyan-300 font-medium"
+                  >Aktualisiert alle 30 Sekunden</span
+                >
+              </div>
+            </div>
+
+            <!-- Progress Dots -->
+            <div class="flex justify-center mt-4 space-x-2">
+              <div
+                v-for="i in 5"
+                :key="i"
+                class="w-2 h-2 bg-cyan-400/30 rounded-full animate-pulse"
+                :style="`animation-delay: ${i * 0.2}s`"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- Loading Overlay -->

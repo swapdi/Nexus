@@ -67,12 +67,6 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">
                 {{ isEpicConnected ? 'Verbunden' : 'Nicht verbunden' }}
               </p>
-              <p
-                v-if="isEpicConnected /* && user?.epicId */"
-                class="text-xs text-gray-400">
-                Epic ID:
-                <!-- {{ user.steamId }} -->
-              </p>
             </div>
           </div>
           <div class="flex space-x-2">
@@ -269,10 +263,7 @@
           Dein Epic Games-Konto wurde erfolgreich verknüpft.
         </p>
         <button
-          @click="
-            showEpicLinking = false;
-            resetEpicFlow();
-          "
+          @click="finishEpicSetup"
           class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
           Fertig
         </button>
@@ -296,7 +287,7 @@
   });
 
   const isEpicConnected = computed(() => {
-    return !!user.value?.epicConnect || false
+    return user.value?.epicConnect || false
   });
 
   // Epic Games connection variables
@@ -319,6 +310,12 @@
     }
   };
 
+  const finishEpicSetup = () => {
+    showEpicLinking.value = false;
+    resetEpicFlow();
+    window.location.reload();
+  };
+
   // Steam profile disconnect function
   const disconnectSteamProfile = async () => {
     if (!user.value) return;
@@ -331,8 +328,13 @@
   };
 
   const disconnectEpicProfile = () => {
-    console.log('Epic profile disconnect clicked');
-    // TODO: Implement the logic to disconnect Epic profile
+    if(!user.value) return;
+    try {
+      libraryStore.disconnectEpic();
+      resetEpicFlow();
+    } catch (error) {
+      console.error('Epic profile disconnect error:', error);
+    }
   };
 
   const resetEpicFlow = () => {
