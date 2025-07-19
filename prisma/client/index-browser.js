@@ -142,7 +142,6 @@ exports.Prisma.GameScalarFieldEnum = {
   firstReleaseDate: 'firstReleaseDate',
   coverUrl: 'coverUrl',
   screenshots: 'screenshots',
-  videos: 'videos',
   totalRating: 'totalRating',
   genres: 'genres',
   developers: 'developers',
@@ -150,7 +149,8 @@ exports.Prisma.GameScalarFieldEnum = {
   websites: 'websites',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  lastSyncedAt: 'lastSyncedAt'
+  lastSyncedAt: 'lastSyncedAt',
+  videos: 'videos'
 };
 
 exports.Prisma.PlatformScalarFieldEnum = {
@@ -165,13 +165,13 @@ exports.Prisma.UserGameScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   gameId: 'gameId',
-  platformDRMs: 'platformDRMs',
   addedAt: 'addedAt',
   playtimeMinutes: 'playtimeMinutes',
   lastPlayed: 'lastPlayed',
   isInstalled: 'isInstalled',
   isFavorite: 'isFavorite',
-  notes: 'notes'
+  notes: 'notes',
+  platformDRMs: 'platformDRMs'
 };
 
 exports.Prisma.DealScalarFieldEnum = {
@@ -211,6 +211,16 @@ exports.Prisma.MessageScalarFieldEnum = {
   isRead: 'isRead'
 };
 
+exports.Prisma.Wishlist_deal_notificationsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  gameId: 'gameId',
+  dealId: 'dealId',
+  notificationSent: 'notificationSent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -245,7 +255,8 @@ exports.Prisma.ModelName = {
   UserGame: 'UserGame',
   Deal: 'Deal',
   Wishlist: 'Wishlist',
-  Message: 'Message'
+  Message: 'Message',
+  wishlist_deal_notifications: 'wishlist_deal_notifications'
 };
 
 /**

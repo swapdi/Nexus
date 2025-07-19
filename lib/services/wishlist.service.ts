@@ -1,42 +1,10 @@
 import { PrismaClient, type Wishlist } from '~/prisma/client';
+import { useStoreUtils } from '../../composables/useStoreUtils';
 import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
 import { ITADService } from './itad.service';
 
 const prisma = new PrismaClient();
-
-// Store-Namen Mapping für CheapShark Store-IDs
-const STORE_NAMES: Record<string, string> = {
-  '1': 'Steam',
-  '2': 'GamersGate',
-  '3': 'Green Man Gaming',
-  '4': 'Get Games',
-  '5': 'GameStop',
-  '6': 'Origin',
-  '7': 'GOG',
-  '8': 'Humble Store',
-  '9': 'GameFly',
-  '10': 'Impulse',
-  '11': 'Gamers Gate',
-  '12': 'IndieGala',
-  '13': 'Humble Bundle',
-  '14': 'Bundlestars',
-  '15': 'MacGameStore',
-  '16': 'WinGameStore',
-  '17': 'Coinbase',
-  '18': 'Groupees',
-  '19': 'Flying Bundle',
-  '20': 'Bundle Stars',
-  '21': 'Groupees Bundle',
-  '22': 'Coinbase Commerce',
-  '23': 'Fanatical',
-  '24': 'Newegg',
-  '25': 'Epic Games Store'
-};
-
-const getStoreName = (storeId: string): string => {
-  return STORE_NAMES[storeId] || 'Unbekannter Store';
-};
 
 export interface FullWishlistItem extends Wishlist {
   game: {
@@ -215,12 +183,6 @@ export namespace WishlistService {
       const notifications: WishlistDealNotification[] = [];
 
       for (const item of wishlistItems) {
-        console.log(
-          `Prüfe Deals für "${item.game.name}" (ID: ${item.gameId})...`
-        );
-
-        // Aktuelle Deals für das Spiel abrufen - sowohl aus DB als auch live von APIs
-        // Grund: Wir verwenden direkt den DealsService.searchGameDeals für Live-API-Abfragen
         try {
           // Zuerst lokale DB-Deals abrufen
           const dbDeals = await DealsService.searchDeals({
@@ -246,7 +208,7 @@ export namespace WishlistService {
                 liveDeals.push({
                   gameId: item.gameId,
                   title: gameInfo.info.title,
-                  storeName: getStoreName(deal.storeID),
+                  storeName: useStoreUtils().getStoreName(deal.storeID),
                   price: parseFloat(deal.price),
                   originalPrice: parseFloat(deal.retailPrice),
                   discountPercent: parseFloat(deal.savings),
@@ -292,22 +254,12 @@ export namespace WishlistService {
           // Kombiniere alle Deals
           const allDeals = [...dbDeals, ...liveDeals];
 
-          console.log(
-            `Gefundene Deals für "${item.game.name}":`,
-            allDeals.length
-          );
-
           if (allDeals.length > 0) {
             // Nur relevante Deals (mit Rabatt oder Freebies)
             const relevantDeals = allDeals.filter(
               (deal: any) =>
                 deal.isFreebie ||
                 (deal.discountPercent && deal.discountPercent > 0)
-            );
-
-            console.log(
-              `Relevante Deals für "${item.game.name}":`,
-              relevantDeals.length
             );
 
             if (relevantDeals.length > 0) {
@@ -325,12 +277,11 @@ export namespace WishlistService {
                 }))
               });
 
-              // Server-Nachricht für Deals erstellen - ENTFERNT
-              // await createDealNotificationMessage(
-              //   userId,
-              //   item.game.name,
-              //   relevantDeals
-              // );
+              await createDealNotificationMessage(
+                userId,
+                item.game.name,
+                relevantDeals
+              );
             }
           }
         } catch (itemError) {
@@ -345,42 +296,6 @@ export namespace WishlistService {
       return notifications;
     } catch (error) {
       console.error('Fehler beim Prüfen der Wishlist-Deals:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Wishlist-Deals für alle Benutzer prüfen (für Cron-Job)
-   */
-  export async function checkAllUsersWishlistDeals(): Promise<void> {
-    try {
-      // Alle Benutzer mit Wishlist-Items abrufen
-      const users = await prisma.user.findMany({
-        where: {
-          wishlistItems: {
-            some: {}
-          }
-        },
-        select: {
-          id: true
-        }
-      });
-
-      for (const user of users) {
-        try {
-          await checkWishlistDeals(user.id);
-        } catch (error) {
-          console.error(
-            `Fehler beim Prüfen der Wishlist-Deals für Benutzer ${user.id}:`,
-            error
-          );
-          // Weiter mit nächstem Benutzer
-        }
-      }
-
-      console.log('Wishlist-Deal-Prüfung abgeschlossen');
-    } catch (error) {
-      console.error('Fehler beim Prüfen aller Benutzer-Wishlist-Deals:', error);
       throw error;
     }
   }
