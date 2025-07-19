@@ -184,12 +184,19 @@
               :alt="item.game.name"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
-            <!-- Remove Button -->
+            <!-- Enhanced Remove Button -->
             <button
               @click="handleRemoveFromWishlist(item.gameId)"
-              class="absolute top-3 right-3 p-2 bg-red-600/80 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+              class="absolute top-3 right-3 group/remove p-1.5 bg-black/60 backdrop-blur-sm hover:bg-red-500/20 text-gray-300 hover:text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-600/30 hover:border-red-400/50 shadow-lg"
               title="Aus Wishlist entfernen">
-              <Icon name="heroicons:x-mark" class="w-4 h-4" />
+              <div class="relative">
+                <Icon
+                  name="heroicons:x-mark"
+                  class="w-4 h-4 transition-all duration-200 group-hover/remove:rotate-90" />
+                <!-- Subtle glow effect -->
+                <div
+                  class="absolute inset-0 bg-red-400/20 rounded blur-md opacity-0 group-hover/remove:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
             </button>
           </div>
 

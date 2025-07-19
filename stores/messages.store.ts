@@ -28,47 +28,30 @@ export const useMessagesStore = defineStore('messages', () => {
 
   // Actions
   const loadMessages = async () => {
-    return await loading(
-      'load-messages',
-      'Lade Nachrichten...',
-      async () => {
-        try {
-          const result = await $client.messages.getUserMessages.query();
-          messages.value = result;
-          return result;
-        } catch (error) {
-          console.error('Error loading messages:', error);
-          notifyStore.notify(
-            'Fehler beim Laden der Nachrichten. Bitte versuche es später erneut.',
-            3
-          );
-          throw error;
-        }
-      },
-      'data'
-    );
+    try {
+      const result = await $client.messages.getUserMessages.query();
+      messages.value = result;
+      return result;
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      notifyStore.notify(
+        'Fehler beim Laden der Nachrichten. Bitte versuche es später erneut.',
+        3
+      );
+      throw error;
+    }
   };
 
   const loadUnreadMessages = async () => {
-    return await loading(
-      'load-unread-messages',
-      'Lade ungelesene Nachrichten...',
-      async () => {
-        try {
-          const result = await $client.messages.getUnreadMessages.query();
-          unreadMessages.value = result;
-          return result;
-        } catch (error) {
-          console.error('Error loading unread messages:', error);
-          notifyStore.notify(
-            'Fehler beim Laden der ungelesenen Nachrichten.',
-            3
-          );
-          throw error;
-        }
-      },
-      'data'
-    );
+    try {
+      const result = await $client.messages.getUnreadMessages.query();
+      unreadMessages.value = result;
+      return result;
+    } catch (error) {
+      console.error('Error loading unread messages:', error);
+      notifyStore.notify('Fehler beim Laden der ungelesenen Nachrichten.', 3);
+      throw error;
+    }
   };
 
   const loadUnreadCount = async () => {

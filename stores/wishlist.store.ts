@@ -152,15 +152,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
               (sum, notif) => sum + notif.deals.length,
               0
             );
-
-            notifyStore.notify(
-              `${totalDeals} neue Deal${
-                totalDeals === 1 ? '' : 's'
-              } für deine Wishlist gefunden!`,
-              1
-            );
           }
-
           return notifications;
         } catch (error) {
           console.error('Error checking wishlist deals:', error);

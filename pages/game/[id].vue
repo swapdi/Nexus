@@ -13,6 +13,7 @@
   // Stores
   const gamesStore = useGamesStore();
   const dealsStore = useDealsStore();
+  const wishlistStore = useWishlistStore();
 
   // State
   const userGame = ref<UserGameWithDetails | null>(null);
@@ -409,6 +410,16 @@
                       <p class="text-gray-300 leading-relaxed text-base">
                         {{ currentGame?.summary }}
                       </p>
+                    </div>
+
+                    <!-- Wishlist Button (immer anzeigen, auch wenn nicht in Bibliothek) -->
+                    <div class="mb-8">
+                      <WishlistButton
+                        v-if="currentGame"
+                        :gameId="currentGame.id"
+                        size="large"
+                        variant="button"
+                        class="w-full sm:w-auto" />
                     </div>
                   </div>
                   <!-- Enhanced Stats Grid mit Animationen - 2x2 Layout (nur für Bibliotheksspiele) -->
