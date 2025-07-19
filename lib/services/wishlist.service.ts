@@ -3,6 +3,7 @@ import { useStoreUtils } from '../../composables/useStoreUtils';
 import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
 import { ITADService } from './itad.service';
+import { MessagesService } from './messages.service';
 
 const prisma = new PrismaClient();
 
@@ -251,12 +252,27 @@ export namespace WishlistService {
             console.warn('ITAD API Fehler:', itadError);
           }
 
-          // Kombiniere alle Deals
+          // Kombiniere alle Deals und dedupliziere sie
           const allDeals = [...dbDeals, ...liveDeals];
 
-          if (allDeals.length > 0) {
+          // Grund: Deduplizierung basierend auf eindeutigen Kriterien (storeName + gameId + ähnlicher Preis)
+          const uniqueDeals = allDeals.filter((deal, index, arr) => {
+            const key = `${deal.storeName}-${item.gameId}-${Math.round(
+              deal.price || 0
+            )}`;
+            return (
+              arr.findIndex(
+                d =>
+                  `${d.storeName}-${item.gameId}-${Math.round(
+                    d.price || 0
+                  )}` === key
+              ) === index
+            );
+          });
+
+          if (uniqueDeals.length > 0) {
             // Nur relevante Deals (mit Rabatt oder Freebies)
-            const relevantDeals = allDeals.filter(
+            const relevantDeals = uniqueDeals.filter(
               (deal: any) =>
                 deal.isFreebie ||
                 (deal.discountPercent && deal.discountPercent > 0)
@@ -277,11 +293,32 @@ export namespace WishlistService {
                 }))
               });
 
-              await createDealNotificationMessage(
-                userId,
-                item.game.name,
-                relevantDeals
-              );
+              // Für jeden relevanten Deal eine Benachrichtigung erstellen
+              for (const deal of relevantDeals) {
+                try {
+                  await MessagesService.createDealNotificationMessage(
+                    userId,
+                    item.gameId,
+                    String(deal.id), // Sicherstellen, dass es ein String ist
+                    item.game.name,
+                    [
+                      {
+                        storeName: deal.storeName,
+                        price: deal.price,
+                        discountPercent: deal.discountPercent,
+                        originalPrice: deal.originalPrice,
+                        url: deal.url
+                      }
+                    ]
+                  );
+                } catch (notificationError) {
+                  console.warn(
+                    `Fehler bei der Benachrichtigung für ${item.game.name} (Deal ${deal.id}):`,
+                    notificationError
+                  );
+                  // Weitermachen mit dem nächsten Deal
+                }
+              }
             }
           }
         } catch (itemError) {

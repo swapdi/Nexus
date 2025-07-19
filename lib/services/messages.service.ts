@@ -170,6 +170,141 @@ export namespace MessagesService {
   }
 
   /**
+   * Deal-Benachrichtigung für ein Wishlist-Item erstellen
+   * Prüft automatisch auf Duplikate über die wishlist_deal_notifications Tabelle
+   */
+  export async function createDealNotificationMessage(
+    userId: number,
+    gameId: number,
+    dealId: string,
+    gameName: string,
+    deals: Array<{
+      storeName: string;
+      price: number | null;
+      discountPercent: number | null;
+      originalPrice: number | null;
+      url: string;
+    }>
+  ): Promise<FullMessage | null> {
+    try {
+      // Nachrichtentext erstellen
+      const dealTexts = deals.map(deal => {
+        if (deal.price === 0) {
+          return `🆓 Kostenlos bei ${deal.storeName}`;
+        } else {
+          const discount = deal.discountPercent
+            ? ` (-${deal.discountPercent.toFixed(0)}%)`
+            : '';
+          const priceText = deal.price
+            ? `${deal.price.toFixed(2)}€`
+            : 'Preis unbekannt';
+          return `💰 ${priceText}${discount} bei ${deal.storeName}`;
+        }
+      });
+
+      const messageText = `🎮 ${gameName} ist im Angebot!\n\n${dealTexts.join(
+        '\n'
+      )}`;
+
+      // Deal-Record finden oder erstellen
+      let dealRecord;
+      try {
+        dealRecord = await prisma.deal.findFirst({
+          where: {
+            OR: [
+              { id: parseInt(dealId) || 0 },
+              {
+                AND: [
+                  { title: gameName },
+                  { storeName: deals[0]?.storeName },
+                  { gameId: gameId }
+                ]
+              }
+            ]
+          }
+        });
+
+        if (!dealRecord) {
+          // Deal erstellen falls nicht vorhanden
+          const bestDeal = deals[0]; // Nehme den ersten Deal als Repräsentant
+          dealRecord = await prisma.deal.create({
+            data: {
+              gameId,
+              title: gameName,
+              storeName: bestDeal.storeName,
+              price: bestDeal.price || 0,
+              originalPrice: bestDeal.originalPrice || 0,
+              discountPercent: bestDeal.discountPercent || 0,
+              url: bestDeal.url,
+              isFreebie: bestDeal.price === 0
+            }
+          });
+        }
+
+        // JETZT prüfen ob bereits eine Benachrichtigung für diesen Deal existiert
+        const existingNotification =
+          await prisma.wishlist_deal_notifications.findUnique({
+            where: {
+              userId_dealId: {
+                userId: userId,
+                dealId: dealRecord.id
+              }
+            }
+          });
+
+        if (existingNotification) {
+          console.log(
+            `Deal-Benachrichtigung für ${gameName} (Deal: ${dealId}) existiert bereits`
+          );
+          return null;
+        }
+
+        // Wishlist-Deal-Notification erstellen
+        await prisma.wishlist_deal_notifications.create({
+          data: {
+            userId,
+            gameId,
+            dealId: dealRecord.id,
+            notificationSent: true,
+            updatedAt: new Date()
+          }
+        });
+
+        // Server-Nachricht an den Benutzer erstellen
+        const message = await createServerMessage(userId, messageText);
+
+        console.log(
+          `✅ Deal-Benachrichtigung für ${gameName} an Benutzer ${userId} erstellt`
+        );
+        return message;
+      } catch (dealError: any) {
+        // Prüfen ob es ein Unique Constraint Fehler ist
+        if (
+          dealError.code === 'P2002' &&
+          dealError.meta?.target?.includes('userId_dealId')
+        ) {
+          console.log(
+            `Deal-Benachrichtigung für ${gameName} (Deal: ${dealId}) existiert bereits (Unique Constraint)`
+          );
+          return null;
+        }
+
+        console.warn(
+          `Warnung beim Erstellen des Deal-Records für ${gameName}:`,
+          dealError
+        );
+        throw dealError;
+      }
+    } catch (error) {
+      console.error(
+        `Fehler beim Erstellen der Deal-Benachrichtigung für ${gameName}:`,
+        error
+      );
+      throw error;
+    }
+  }
+
+  /**
    * Nachricht als gelesen markieren
    */
   export async function markMessageAsRead(
