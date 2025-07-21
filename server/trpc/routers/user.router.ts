@@ -9,38 +9,7 @@ export const userRouter = router({
       dbUser: ctx.dbUser
     };
   }),
-  // Benutzer über ID abrufen
-  getUserById: protectedProcedure
-    .input(
-      z.object({
-        userId: z.number()
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      try {
-        // Nur eigene Daten oder Admin-Rechte prüfen
-        if (input.userId !== ctx.dbUser.id) {
-          throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Nicht berechtigt, andere Benutzerdaten abzurufen'
-          });
-        }
-        const user = await UserService.getUserById(input.userId);
-        if (!user) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Benutzer nicht gefunden'
-          });
-        }
-        return user;
-      } catch (error) {
-        console.error('Error fetching user by ID:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Fehler beim Abrufen der Benutzerdaten'
-        });
-      }
-    }),
+
   // Benutzerstatistiken abrufen
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     try {

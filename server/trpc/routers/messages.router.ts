@@ -17,19 +17,6 @@ export const messagesRouter = router({
     }
   }),
 
-  // Ungelesene Nachrichten abrufen
-  getUnreadMessages: protectedProcedure.query(async ({ ctx }) => {
-    try {
-      return await MessagesService.getUnreadMessages(ctx.dbUser.id);
-    } catch (error) {
-      console.error('Error fetching unread messages:', error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Fehler beim Abrufen der ungelesenen Nachrichten'
-      });
-    }
-  }),
-
   // Anzahl ungelesener Nachrichten abrufen
   getUnreadMessageCount: protectedProcedure.query(async ({ ctx }) => {
     try {

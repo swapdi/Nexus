@@ -121,27 +121,6 @@ export const gamesRouter = router({
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     return await GamesService.getUserStats(ctx.dbUser.id);
   }),
-  getGameActivity: protectedProcedure.query(async ({ ctx }) => {
-    const userGames = await GamesService.getUserGames(ctx.dbUser.id);
-    const activity = new Array(7).fill(0);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    for (const userGame of userGames) {
-      if (userGame.lastPlayed) {
-        const lastPlayed = new Date(userGame.lastPlayed);
-        lastPlayed.setHours(0, 0, 0, 0);
-        const diffDays = Math.floor(
-          (today.getTime() - lastPlayed.getTime()) / (1000 * 60 * 60 * 24)
-        );
-        if (diffDays < 7) {
-          activity[6 - diffDays] += userGame.playtimeMinutes || 0;
-        }
-      }
-    }
-
-    return activity.map(minutes => Math.round(minutes / 60));
-  }),
   // Favoriten-Status für ein Spiel umschalten
   toggleFavorite: protectedProcedure
     .input(
