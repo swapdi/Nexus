@@ -42,18 +42,6 @@ export const useMessagesStore = defineStore('messages', () => {
     }
   };
 
-  const loadUnreadMessages = async () => {
-    try {
-      const result = await $client.messages.getUnreadMessages.query();
-      unreadMessages.value = result;
-      return result;
-    } catch (error) {
-      console.error('Error loading unread messages:', error);
-      notifyStore.notify('Fehler beim Laden der ungelesenen Nachrichten.', 3);
-      throw error;
-    }
-  };
-
   const loadUnreadCount = async () => {
     try {
       const count = await $client.messages.getUnreadMessageCount.query();
@@ -203,7 +191,6 @@ export const useMessagesStore = defineStore('messages', () => {
 
     // Actions
     loadMessages,
-    loadUnreadMessages,
     loadUnreadCount,
     createMessage,
     markAsRead,

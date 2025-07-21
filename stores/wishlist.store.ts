@@ -164,11 +164,6 @@ export const useWishlistStore = defineStore('wishlist', () => {
     );
   };
 
-  // Hilfsfunktion: Spiel in lokaler Wishlist suchen
-  const findWishlistItem = (gameId: number) => {
-    return wishlistItems.value.find(item => item.gameId === gameId);
-  };
-
   // Hilfsfunktion: Lokaler Wishlist-Status (ohne API-Aufruf)
   const isInWishlistLocal = (gameId: number): boolean => {
     return wishlistItems.value.some(item => item.gameId === gameId);
@@ -200,7 +195,6 @@ export const useWishlistStore = defineStore('wishlist', () => {
     checkWishlistDeals,
 
     // Helpers
-    findWishlistItem,
     isInWishlistLocal,
     reset
   };

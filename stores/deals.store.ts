@@ -30,8 +30,6 @@ export const useDealsStore = defineStore('deals', () => {
   const { loading } = useLoading();
   // State
   const deals = ref<DealWithGame[]>([]);
-  const bestDeals = ref<DealWithGame[]>([]);
-  const freeGames = ref<DealWithGame[]>([]);
   const availableStores = ref<string[]>([]);
   const waitlist = ref<ITADGame[]>([]);
   const error = ref<string | null>(null);
@@ -293,8 +291,6 @@ export const useDealsStore = defineStore('deals', () => {
   return {
     // State
     deals: readonly(deals),
-    bestDeals: readonly(bestDeals),
-    freeGames: readonly(freeGames),
     availableStores: readonly(availableStores),
     error: readonly(error),
     isBackgroundSyncing: readonly(isBackgroundSyncing),

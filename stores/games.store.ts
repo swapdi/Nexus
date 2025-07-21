@@ -236,31 +236,7 @@ export const useGamesStore = defineStore('games', () => {
     );
   };
   // Neue Funktion: Finde Spiel nach UserGame ID
-  const getGameByUserGameId = async (userGameId: number) => {
-    return await loading(
-      'game-details',
-      'Lade Spiel-Details...',
-      async () => {
-        try {
-          error.value = null;
-          const gameData = await $client.games.getGameById.query({
-            gameId: userGameId
-          });
-          return gameData;
-        } catch (err: any) {
-          const errorMessage =
-            err.message || 'Fehler beim Laden der Spiel-Details';
-          notifyStore.notify(errorMessage, 3);
-          console.error('Fehler beim Laden der Spiel-Details:', err);
-          throw err;
-        }
-      },
-      'data'
-    );
-  };
-  const getGameWithPlatforms = async (
-    userGameId: number
-  ): Promise<UserGameWithDetails | null> => {
+  const getUserGameById = async (userGameId: number) => {
     return await loading(
       'game-details',
       'Lade Spiel-Details...',
@@ -360,28 +336,6 @@ export const useGamesStore = defineStore('games', () => {
     return remainingMinutes > 0
       ? `${hours}h ${remainingMinutes}min`
       : `${hours}h`;
-  };
-  // Neue Hilfsfunktionen basierend auf games.service
-  const getGamesByGenre = (genre: string) => {
-    return games.value.filter(game =>
-      game.game.genres.some(g => g.toLowerCase().includes(genre.toLowerCase()))
-    );
-  };
-  const getTopRatedGames = (limit: number = 10) => {
-    return games.value
-      .filter(game => game.game.totalRating && game.game.totalRating > 0)
-      .sort((a, b) => (b.game.totalRating || 0) - (a.game.totalRating || 0))
-      .slice(0, limit);
-  };
-
-  const getGamesByPlaytime = (minHours: number = 0) => {
-    const minMinutes = minHours * 60;
-    return games.value.filter(
-      game => (game.playtimeMinutes || 0) >= minMinutes
-    );
-  };
-  const getGamesByPlatformName = (platformName: string) => {
-    return filterGamesByPlatform(platformName);
   };
   const getAvailableGenres = computed(() => {
     const genres = new Set<string>();
@@ -547,17 +501,12 @@ export const useGamesStore = defineStore('games', () => {
     loadStats,
     refreshData,
     getGameById,
-    getGameByUserGameId,
-    getGameWithPlatforms,
+    getUserGameById,
     updateGameNotes,
     searchGames,
     filterGamesByPlatform,
     sortGames,
     formatPlayTime,
-    getGamesByGenre,
-    getTopRatedGames,
-    getGamesByPlaytime,
-    getGamesByPlatformName,
     getPlatformNameById,
     getPlatformSlugById,
     init,
