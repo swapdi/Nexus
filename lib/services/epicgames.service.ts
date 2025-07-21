@@ -30,7 +30,6 @@ export namespace EpicGamesService {
       );
 
       // Wenn die Epic Games Authentifizierung erfolgreich war, setze epicConnect auf true
-      console.log(data);
       if (data && data.authenticated) {
         console.log('changing Prisma');
         await prisma.user.update({

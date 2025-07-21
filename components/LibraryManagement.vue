@@ -129,7 +129,7 @@
         </h3>
       </div>
       <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        Geben Sie Ihre Steam-ID oder Ihren Steam-Benutzernamen ein:
+        Geben Sie Ihre Steam-ID ein:
       </p>
       <input
         v-model="steamProfileId"

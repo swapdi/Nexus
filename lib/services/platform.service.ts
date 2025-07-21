@@ -7,6 +7,7 @@ export namespace PlatformService {
     iconUrl?: string;
     siteUrl?: string;
   }
+
   /**
    * Hole Platform nach Slug
    */
