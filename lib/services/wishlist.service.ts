@@ -1,9 +1,9 @@
 import { PrismaClient } from '~/prisma/client';
+import { useStoreUtils } from '../../composables/useStoreUtils';
 import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
 import { ITADService } from './itad.service';
 import { MessagesService } from './messages.service';
-
 const prisma = new PrismaClient();
 
 export interface FullWishlistItem extends PrismaWishlist {
@@ -278,45 +278,57 @@ export namespace WishlistService {
             );
 
             if (relevantDeals.length > 0) {
+              // Grund: Finde den besten Deal - Freebies haben Priorität, sonst niedrigster Preis
+              const bestDeal = relevantDeals.reduce((best, current) => {
+                // Freebies haben absolute Priorität
+                if (current.isFreebie && !best.isFreebie) return current;
+                if (best.isFreebie && !current.isFreebie) return best;
+
+                // Wenn beide Freebies oder beide kostenpflichtig sind, vergleiche Preise
+                const currentPrice = current.price || 0;
+                const bestPrice = best.price || 0;
+
+                return currentPrice < bestPrice ? current : best;
+              });
+
               notifications.push({
                 gameId: item.gameId,
                 gameName: item.game.name,
-                deals: relevantDeals.map((deal: any) => ({
-                  id: deal.id,
-                  title: deal.title,
-                  storeName: deal.storeName,
-                  price: deal.price,
-                  discountPercent: deal.discountPercent,
-                  originalPrice: deal.originalPrice,
-                  url: deal.url
-                }))
+                deals: [
+                  {
+                    id: bestDeal.id,
+                    title: bestDeal.title,
+                    storeName: bestDeal.storeName,
+                    price: bestDeal.price,
+                    discountPercent: bestDeal.discountPercent,
+                    originalPrice: bestDeal.originalPrice,
+                    url: bestDeal.url
+                  }
+                ]
               });
 
-              // Für jeden relevanten Deal eine Benachrichtigung erstellen
-              for (const deal of relevantDeals) {
-                try {
-                  await MessagesService.createDealNotificationMessage(
-                    userId,
-                    item.gameId,
-                    String(deal.id), // Sicherstellen, dass es ein String ist
-                    item.game.name,
-                    [
-                      {
-                        storeName: deal.storeName,
-                        price: deal.price,
-                        discountPercent: deal.discountPercent,
-                        originalPrice: deal.originalPrice,
-                        url: deal.url
-                      }
-                    ]
-                  );
-                } catch (notificationError) {
-                  console.warn(
-                    `Fehler bei der Benachrichtigung für ${item.game.name} (Deal ${deal.id}):`,
-                    notificationError
-                  );
-                  // Weitermachen mit dem nächsten Deal
-                }
+              // Nur für den besten Deal eine Benachrichtigung erstellen
+              try {
+                await MessagesService.createDealNotificationMessage(
+                  userId,
+                  item.gameId,
+                  String(bestDeal.id), // Sicherstellen, dass es ein String ist
+                  item.game.name,
+                  [
+                    {
+                      storeName: bestDeal.storeName,
+                      price: bestDeal.price,
+                      discountPercent: bestDeal.discountPercent,
+                      originalPrice: bestDeal.originalPrice,
+                      url: bestDeal.url
+                    }
+                  ]
+                );
+              } catch (notificationError) {
+                console.warn(
+                  `Fehler bei der Benachrichtigung für ${item.game.name} (Deal ${bestDeal.id}):`,
+                  notificationError
+                );
               }
             }
           }

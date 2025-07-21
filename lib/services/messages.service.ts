@@ -253,10 +253,6 @@ export namespace MessagesService {
 
         // Server-Nachricht an den Benutzer erstellen
         const message = await createServerMessage(userId, messageText);
-
-        console.log(
-          `✅ Deal-Benachrichtigung für ${gameName} an Benutzer ${userId} erstellt`
-        );
         return message;
       } catch (dealError: any) {
         // Prüfen ob es ein Unique Constraint Fehler ist
@@ -264,16 +260,8 @@ export namespace MessagesService {
           dealError.code === 'P2002' &&
           dealError.meta?.target?.includes('userId_dealId')
         ) {
-          console.log(
-            `Deal-Benachrichtigung für ${gameName} (Deal: ${dealId}) existiert bereits (Unique Constraint)`
-          );
           return null;
         }
-
-        console.warn(
-          `Warnung beim Erstellen des Deal-Records für ${gameName}:`,
-          dealError
-        );
         throw dealError;
       }
     } catch (error) {
