@@ -31,7 +31,6 @@ export namespace EpicGamesService {
 
       // Wenn die Epic Games Authentifizierung erfolgreich war, setze epicConnect auf true
       if (data && data.authenticated) {
-        console.log('changing Prisma');
         await prisma.user.update({
           where: { id: userId },
           data: { epicConnect: true }
@@ -154,62 +153,66 @@ export namespace EpicGamesService {
             );
             continue;
           }
-          // Prüfe ob Spiel bereits existiert oder erstelle es
+          // Schritt 1: Prüfe ob Spiel bereits in der lokalen Datenbank existiert (nach Titel)
           const existingGame = await GamesService.findGameByName(gameName);
-          let gameId: number;
+          let gameId: number | null = null;
 
           if (existingGame) {
             gameId = existingGame.id;
           } else {
-            // Erstelle neues Spiel mit IGDB-Anreicherung
-            const gameResult =
-              await GamesService.findOrCreateGameWithIGDBRelevance(gameName);
-            if (!gameResult?.game) {
-              throw new Error(`Failed to create game for ${gameName}`);
+            // Schritt 2: Spiel nicht in Datenbank - suche bei IGDB
+            try {
+              const gameResult =
+                await GamesService.findOrCreateGameWithIGDBRelevance(gameName);
+              if (gameResult?.game) {
+                gameId = gameResult.game.id;
+              }
+              // Schritt 3: Kein Spiel in IGDB gefunden - gameId bleibt null
+            } catch (igdbError) {
+              console.error(
+                `IGDB-Suche für "${gameName}" fehlgeschlagen:`,
+                igdbError
+              );
             }
-            gameId = gameResult.game.id;
           }
-
-          // Prüfe ob UserGame bereits existiert
-          const existingUserGame = await prisma.userGame.findFirst({
-            where: {
-              userId,
-              gameId
-            }
-          });
-
-          if (existingUserGame) {
-            // Aktualisiere bestehendes UserGame und füge Epic Platform hinzu wenn nicht vorhanden
-            const currentPlatforms = existingUserGame.platformDRMs || [];
-            const updatedPlatforms = currentPlatforms.includes(epicPlatformId)
-              ? currentPlatforms
-              : [...currentPlatforms, epicPlatformId];
-
-            await prisma.userGame.update({
-              where: { id: existingUserGame.id },
-              data: {
-                platformDRMs: updatedPlatforms
-              }
-            });
-            console.log(
-              `UserGame für "${gameName}" aktualisiert - Epic Platform hinzugefügt`
-            );
-            result.updated++;
-          } else {
-            // Erstelle neues UserGame mit Epic Platform
-            await prisma.userGame.create({
-              data: {
+          if (gameId) {
+            // Prüfe ob UserGame bereits existiert
+            const existingUserGame = await prisma.userGame.findFirst({
+              where: {
                 userId,
-                gameId,
-                playtimeMinutes: 0, // Epic liefert meist keine Spielzeiten
-                lastPlayed: null,
-                isInstalled: false, // Epic API zeigt nicht direkt Installationsstatus
-                isFavorite: false,
-                platformDRMs: [epicPlatformId]
+                gameId
               }
             });
-            console.log(`UserGame für "${gameName}" erstellt`);
-            result.imported++;
+
+            if (existingUserGame) {
+              // Aktualisiere bestehendes UserGame und füge Epic Platform hinzu wenn nicht vorhanden
+              const currentPlatforms = existingUserGame.platformDRMs || [];
+              const updatedPlatforms = currentPlatforms.includes(epicPlatformId)
+                ? currentPlatforms
+                : [...currentPlatforms, epicPlatformId];
+
+              await prisma.userGame.update({
+                where: { id: existingUserGame.id },
+                data: {
+                  platformDRMs: updatedPlatforms
+                }
+              });
+              result.updated++;
+            } else {
+              // Erstelle neues UserGame mit Epic Platform
+              await prisma.userGame.create({
+                data: {
+                  userId,
+                  gameId: gameId, // gameId ist garantiert nicht null in diesem Block
+                  isInstalled: false, // Epic API zeigt nicht direkt Installationsstatus
+                  isFavorite: false,
+                  platformDRMs: [epicPlatformId]
+                }
+              });
+              result.imported++;
+            }
+          } else {
+            result.skipped++;
           }
         } catch (error) {
           const errorMsg = `Fehler beim Importieren von "${

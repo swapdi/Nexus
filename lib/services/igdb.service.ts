@@ -167,98 +167,6 @@ export namespace IGDBService {
   };
 
   /**
-   * Berechnet String-Ähnlichkeit zwischen zwei Texten
-   * Verwendet eine Kombination aus Wort-Übereinstimmungen und Levenshtein-Distanz
-   */
-  const calculateStringSimilarity = (query: string, target: string): number => {
-    // Wort-basierte Ähnlichkeit
-    const queryWords = query.split(/\s+/).filter(w => w.length > 0);
-    const targetWords = target.split(/\s+/).filter(w => w.length > 0);
-
-    if (queryWords.length === 0 || targetWords.length === 0) return 0;
-
-    // Berechne prozentuale Übereinstimmung der Wörter
-    let totalMatches = 0;
-
-    for (const queryWord of queryWords) {
-      let bestWordMatch = 0;
-
-      for (const targetWord of targetWords) {
-        let wordScore = 0;
-
-        // Exakte Übereinstimmung
-        if (queryWord === targetWord) {
-          wordScore = 1.0;
-        }
-        // Eines enthält das andere
-        else if (
-          queryWord.includes(targetWord) ||
-          targetWord.includes(queryWord)
-        ) {
-          const longer =
-            queryWord.length > targetWord.length ? queryWord : targetWord;
-          const shorter =
-            queryWord.length <= targetWord.length ? queryWord : targetWord;
-          wordScore = shorter.length / longer.length;
-        }
-        // Levenshtein-basierte Ähnlichkeit für längere Wörter
-        else if (queryWord.length >= 3 && targetWord.length >= 3) {
-          const distance = levenshteinDistance(queryWord, targetWord);
-          const maxLen = Math.max(queryWord.length, targetWord.length);
-          const similarity = 1 - distance / maxLen;
-          // Nur akzeptieren wenn Ähnlichkeit hoch genug ist
-          if (similarity >= 0.8) {
-            wordScore = similarity;
-          }
-        }
-
-        if (wordScore > bestWordMatch) {
-          bestWordMatch = wordScore;
-        }
-      }
-
-      totalMatches += bestWordMatch;
-    }
-
-    // Durchschnittliche Wort-Übereinstimmung
-    const avgWordMatch = totalMatches / queryWords.length;
-
-    // Zusätzliche Strafe für sehr unterschiedliche Wortanzahl
-    const wordCountPenalty =
-      Math.abs(queryWords.length - targetWords.length) /
-      Math.max(queryWords.length, targetWords.length);
-
-    return Math.max(0, avgWordMatch - wordCountPenalty * 0.3);
-  };
-
-  /**
-   * Berechnet Levenshtein-Distanz zwischen zwei Strings
-   */
-  const levenshteinDistance = (str1: string, str2: string): number => {
-    const matrix = [];
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-    return matrix[str2.length][str1.length];
-  };
-
-  /**
    * ZENTRALE FUNKTION: Spiel anhand Titel finden mit dynamischer Titel-Anpassung
    * Grund: Einzige Schnittstelle für alle Spielsuchen (Steam-Import, Deal-Sync, etc.)
    */
@@ -311,9 +219,6 @@ export namespace IGDBService {
           // Enthält Suchbegriff
           else if (normalizedName.includes(normalizedQuery)) {
             score = 0.7;
-          } else {
-            // Erweiterte Wort-basierte Ähnlichkeitsberechnung
-            score = calculateStringSimilarity(normalizedQuery, normalizedName);
           }
 
           // Zusätzliche Bewertung: Länge der Namen berücksichtigen
@@ -348,19 +253,8 @@ export namespace IGDBService {
 
     // Nur Ergebnisse zurückgeben, die einen Mindest-Ähnlichkeitsscore erreichen
     if (bestResult && bestScore >= 0.5) {
-      console.log(
-        `IGDB Match gefunden: "${gameTitle}" -> "${
-          bestResult.name
-        }" (Score: ${bestScore.toFixed(2)})`
-      );
       return bestResult;
     }
-
-    console.log(
-      `Kein ausreichend ähnliches Spiel für "${gameTitle}" gefunden (Best Score: ${bestScore.toFixed(
-        2
-      )})`
-    );
     return null;
   };
   /**
