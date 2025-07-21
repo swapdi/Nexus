@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\components\DealCard\DealCardMini.vue -->
 <template>
   <div
     class="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden hover:border-green-500/50 transition-all duration-300 group cursor-pointer flex flex-col h-full"
@@ -82,7 +81,6 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { DealWithGame } from '~/lib/services/deals.service';
   interface Props {
     deal: DealWithGame;
   }

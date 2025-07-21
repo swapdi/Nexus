@@ -74,7 +74,6 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { DealWithGame } from '~/lib/services/deals.service';
   interface Props {
     deal: DealWithGame;
   }

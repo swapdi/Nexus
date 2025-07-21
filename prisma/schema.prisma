@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "./client"
 }
 
@@ -74,9 +74,9 @@ model UserGame {
   isInstalled     Boolean   @default(false)
   isFavorite      Boolean   @default(false)
   notes           String?
+  platformDRMs    Int[]     @default([])
   game            Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  platformDRMs    Int[]     @default([])
 
   @@unique([userId, gameId])
   @@unique([userId, gameId], map: "user_games_userid_gameid_unique")

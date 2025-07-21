@@ -114,14 +114,13 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { Game } from '~/prisma/client';
   // References
   const searchInput = ref<HTMLInputElement | null>(null);
   const { $client } = useNuxtApp();
   const router = useRouter();
   // State
   const searchQuery = ref('');
-  const suggestions = ref<Game[]>([]);
+  const suggestions = ref<PrismaGame[]>([]);
   const showSuggestions = ref(false);
   const isLoading = ref(false);
   const highlightedIndex = ref(-1);
@@ -178,7 +177,7 @@
     }
   };
   // Selection methods
-  const selectSuggestion = (game: Game) => {
+  const selectSuggestion = (game: PrismaGame) => {
     router.push(`/game/${game.id}`);
     clearSearch();
   };

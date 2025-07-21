@@ -2,8 +2,6 @@
   <component :is="cardComponent" :deal="deal" @click="handleClick" />
 </template>
 <script setup lang="ts">
-  import type { ViewMode } from '~/composables/useViewMode';
-  import type { DealWithGame } from '~/lib/services/deals.service';
   import DealCardLarge from './DealCardLarge.vue';
   import DealCardList from './DealCardList.vue';
   import DealCardMedium from './DealCardMedium.vue';

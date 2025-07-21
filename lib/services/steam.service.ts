@@ -1,6 +1,6 @@
 import { PrismaClient } from '~/prisma/client';
-import type { GameImportResult } from './games.service';
 import { GamesService } from './games.service';
+import { IGDBService } from './igdb.service';
 import { PlatformService } from './platform.service';
 
 const prisma = new PrismaClient();
@@ -16,7 +16,6 @@ export namespace SteamService {
     skipped: number;
     errors: string[];
   }> {
-    const { useSteamImport } = await import('../../composables/useSteamImport');
     const steamImport = useSteamImport();
     const result = {
       success: true,
@@ -26,20 +25,16 @@ export namespace SteamService {
       errors: [] as string[]
     };
     try {
+      if (!steamImport.isValidSteamID(steamInput)) {
+        result.success = false;
+        result.errors.push('Ungültige Steam ID');
+        return result;
+      }
       // Hole Steam Platform ID
       const steamPlatformId = await PlatformService.getSteamPlatformId();
 
-      // Validiere Steam Input
-      const validation = await steamImport.validateSteamInput(steamInput);
-      if (!validation.isValid || !validation.steamId) {
-        result.success = false;
-        result.errors.push('Ungültige Steam ID oder Profil-URL');
-        return result;
-      }
       // Hole Steam Library
-      const steamGames = await steamImport.fetchSteamLibrary(
-        validation.steamId
-      );
+      const steamGames = await steamImport.fetchSteamLibrary(steamInput);
       if (!steamGames || steamGames.length === 0) {
         result.success = false;
         result.errors.push(
@@ -166,7 +161,6 @@ export namespace SteamService {
       }
       // Versuche IGDB-Daten zu finden (optional)
       try {
-        const { IGDBService } = await import('./igdb.service');
         const igdbGameData = await IGDBService.findGameByTitle(gameName);
         if (igdbGameData) {
           // Prüfe ob bereits ein Spiel mit dieser IGDB-ID existiert

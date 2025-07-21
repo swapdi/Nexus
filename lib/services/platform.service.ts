@@ -1,7 +1,5 @@
 import { PrismaClient } from '~/prisma/client';
-
 const prisma = new PrismaClient();
-
 export namespace PlatformService {
   export interface PlatformData {
     name: string;
@@ -9,7 +7,6 @@ export namespace PlatformService {
     iconUrl?: string;
     siteUrl?: string;
   }
-
   /**
    * Hole Platform nach Slug
    */
@@ -18,7 +15,6 @@ export namespace PlatformService {
       where: { slug }
     });
   }
-
   /**
    * Hole Steam Platform ID
    */
@@ -29,7 +25,6 @@ export namespace PlatformService {
     }
     return platform.id;
   }
-
   /**
    * Hole Epic Games Platform ID
    */

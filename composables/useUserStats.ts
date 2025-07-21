@@ -2,31 +2,8 @@
  * Composable für Benutzer-Statistiken und Level-System
  * Grund: Komplexe Berechnungslogik aus UserService in wiederverwendbares Composable auslagern
  */
-export interface UserStatsCalculation {
-  totalGames: number;
-  totalPlaytimeHours: number;
-}
 
 export const useUserStats = () => {
-  /**
-   * Berechne Benutzer-Statistiken aus rohen Daten
-   */
-  const calculateUserStats = (userData: {
-    userGames: Array<{ playtimeMinutes: number | null; isFavorite?: boolean }>;
-  }): UserStatsCalculation => {
-    // Gesamtspielzeit in Stunden berechnen
-    const totalPlaytimeMinutes = userData.userGames.reduce(
-      (sum, game) => sum + (game.playtimeMinutes || 0),
-      0
-    );
-    const totalPlaytimeHours = Math.floor(totalPlaytimeMinutes / 60);
-
-    return {
-      totalGames: userData.userGames.length,
-      totalPlaytimeHours
-    };
-  };
-
   /**
    * Formatiere Spielzeit für Anzeige
    */
@@ -47,7 +24,6 @@ export const useUserStats = () => {
   };
 
   return {
-    calculateUserStats,
     formatPlaytime
   };
 };

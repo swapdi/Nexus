@@ -133,8 +133,6 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { UserGameWithDetails } from '~/lib/services/games.service';
-
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;

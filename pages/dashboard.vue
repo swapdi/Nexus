@@ -4,8 +4,7 @@
     title: 'Dashboard - Gaming Nexus',
     layout: 'authenticated'
   });
-  const { getStoreBannerURL, getStoreLogoURL, getStoreIconURL } =
-    useStoreUtils();
+  const { getStoreBannerURL, getStoreLogoURL } = useStoreUtils();
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const dealsStore = useDealsStore();
@@ -727,8 +726,6 @@
       </div>
     </div>
   </div>
-  <!-- Loading Overlay -->
-  <LoadingOverlay />
 </template>
 <style scoped>
   /* Animations */

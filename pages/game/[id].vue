@@ -1,10 +1,6 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref } from 'vue';
   import MediaCarousel from '~/components/MediaCarousel.vue';
   import PriceHistoryChart from '~/components/PriceHistoryChart.vue';
-  import type { DealWithGame } from '~/lib/services/deals.service';
-  import type { UserGameWithDetails } from '~/lib/services/games.service';
-  import type { Game } from '~/prisma/client';
 
   // Route Parameter (Game ID, nicht UserGame ID)
   const route = useRoute();
@@ -13,11 +9,10 @@
   // Stores
   const gamesStore = useGamesStore();
   const dealsStore = useDealsStore();
-  const wishlistStore = useWishlistStore();
 
   // State
   const userGame = ref<UserGameWithDetails | null>(null);
-  const gameData = ref<Game | null>(null);
+  const gameData = ref<PrismaGame | null>(null);
   const relatedDeals = ref<DealWithGame[]>([]);
   const isLoading = ref(true);
   const isLoadingDeals = ref(false);
@@ -265,13 +260,8 @@
 
 <template>
   <div class="min-h-screen overflow-hidden">
-    <!-- Loading State -->
-    <LoadingOverlay v-if="isLoading" />
-
     <!-- Error State -->
-    <div
-      v-else-if="error"
-      class="flex items-center justify-center min-h-screen">
+    <div v-if="error" class="flex items-center justify-center min-h-screen">
       <div class="text-center">
         <div class="text-red-400 text-6xl mb-4">⚠️</div>
         <h2 class="text-xl font-bold text-white mb-2">Fehler</h2>

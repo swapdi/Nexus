@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import type { DealWithGame } from '~/lib/services/deals.service';
-  import type { DealSortOptions } from '~/stores/deals.store';
   const userStore = useUserStore();
   const dealsStore = useDealsStore();
   const gamesStore = useGamesStore();

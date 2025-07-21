@@ -1,5 +1,4 @@
 import { PrismaClient } from '~/prisma/client';
-import type { FullUser, UserStats, UserUpdateData } from '~/types';
 const prisma = new PrismaClient();
 
 export namespace UserService {

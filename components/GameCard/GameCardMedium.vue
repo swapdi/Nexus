@@ -135,8 +135,6 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { UserGameWithDetails } from '~/lib/services/games.service';
-
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;
@@ -206,9 +204,7 @@
     const slug = platformMap[platformId];
     return getPlatformColor(slug || 'unknown');
   };
-  const formatRating = (rating: number) => {
-    return rating.toFixed(1);
-  };
+
   const formatPlayTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;

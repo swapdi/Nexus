@@ -1,12 +1,5 @@
-import { PrismaClient, type Game } from '~/prisma/client';
+import { PrismaClient } from '~/prisma/client';
 import { IGDBService } from './igdb.service';
-
-import type {
-  GameImportResult,
-  GameSearchOptions,
-  IGDBGameData,
-  UserGameWithDetails
-} from '~/types';
 const prisma = new PrismaClient();
 
 export namespace GamesService {
@@ -14,7 +7,7 @@ export namespace GamesService {
    * Suche nach Spielen in der zentralen Datenbank
    */
   export async function searchGames(options: GameSearchOptions = {}): Promise<{
-    games: Game[];
+    games: PrismaGame[];
     total: number;
     hasMore: boolean;
   }> {
@@ -72,7 +65,7 @@ export namespace GamesService {
   /**
    * Hole ein Spiel anhand der ID
    */
-  export async function getGameById(id: number): Promise<Game | null> {
+  export async function getGameById(id: number): Promise<PrismaGame | null> {
     return prisma.game.findUnique({
       where: { id }
     });
@@ -133,7 +126,7 @@ export namespace GamesService {
 
   export async function createGameFromIGDB(
     gameData: IGDBGameData
-  ): Promise<Game> {
+  ): Promise<PrismaGame> {
     // Prüfe ob das Spiel bereits mit IGDB-ID existiert
     const existingGame = await prisma.game.findUnique({
       where: { igdbId: gameData.id }
@@ -326,7 +319,9 @@ export namespace GamesService {
     };
   }
 
-  export async function findGameByName(gameName: string): Promise<Game | null> {
+  export async function findGameByName(
+    gameName: string
+  ): Promise<PrismaGame | null> {
     const normalizedName = gameName.trim();
     // Zuerst exakte Suche (case-insensitive)
     const exactMatch = await prisma.game.findFirst({

@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\components\GameCard\GameCardList.vue -->
 <template>
   <div
     :class="[
@@ -127,8 +126,6 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { UserGameWithDetails } from '~/lib/services/games.service';
-
   interface Props {
     game: UserGameWithDetails;
     isSelectionMode: boolean;

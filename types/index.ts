@@ -82,6 +82,48 @@ export interface UserGameWithDetails extends UserGame {
     iconUrl: string | null;
   }>;
 }
+export interface GameData {
+  // IGDB Fields
+  id?: number;
+  name: string;
+  summary?: string;
+  developers?: string[];
+  publishers?: string[];
+  firstReleaseDate?: Date | string;
+  totalRating?: number;
+  coverUrl?: string;
+  screenshots?: string[];
+  genres?: string[];
+  themes?: string[];
+  gameModes?: string[];
+  keywords?: string[];
+  // Common Fields
+  platforms?: string[];
+  isFavorite?: boolean;
+  playtimeMinutes?: number;
+}
+export interface GameStats {
+  totalGames: number;
+  totalPlaytimeHours: number;
+  averageRating: number;
+  topGenres: Array<{ genre: string; count: number }>;
+  platformDistribution: Record<string, number>;
+  completionStats: {
+    completed: number;
+    inProgress: number;
+    notStarted: number;
+  };
+}
+export interface PlatformStats {
+  name: string;
+  gameCount: number;
+  totalPlaytime: number;
+  averagePlaytime: number;
+  topGames: Array<{
+    name: string;
+    playtime: number;
+  }>;
+}
 
 // ============================================================================
 // USER TYPES
@@ -473,4 +515,54 @@ export interface ITADShop {
   deals: number;
   games: number;
   update: string | null;
+}
+
+// ============================================================================
+// STEAM TYPES
+// ============================================================================
+
+export interface SteamGame {
+  appid: number;
+  name: string;
+  playtime_forever: number;
+  rtime_last_played?: number;
+  img_icon_url?: string;
+  img_logo_url?: string;
+}
+export interface SteamLibraryResponse {
+  response: {
+    game_count: number;
+    games: SteamGame[];
+  };
+}
+export interface SteamResolveResponse {
+  response: {
+    steamid?: string;
+    success: number;
+  };
+}
+// Steam Import Interfaces
+export interface SteamImportOptions {
+  userId: number;
+  platformId: number;
+  withIGDBEnrichment?: boolean;
+  batchSize?: number;
+  operationId?: string;
+}
+export interface SteamImportProgress {
+  current: number;
+  total: number;
+  phase: 'validation' | 'fetching' | 'importing' | 'enriching' | 'completed';
+  message: string;
+}
+export interface SteamImportResult {
+  success: boolean;
+  totalGames: number;
+  imported: number;
+  updated: number;
+  skipped: number;
+  errors: number;
+  enriched?: number;
+  enrichmentErrors?: number;
+  message?: string;
 }

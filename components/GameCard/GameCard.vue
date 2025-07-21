@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\jgram\git\Nexus\components\GameCard\GameCard.vue -->
 <template>
   <component
     :is="cardComponent"
@@ -11,8 +10,6 @@
     @toggleFavorite="handleToggleFavorite" />
 </template>
 <script setup lang="ts">
-  import type { ViewMode } from '~/composables/useViewMode';
-  import type { UserGameWithDetails } from '~/lib/services/games.service';
   import GameCardLarge from './GameCardLarge.vue';
   import GameCardList from './GameCardList.vue';
   import GameCardMedium from './GameCardMedium.vue';

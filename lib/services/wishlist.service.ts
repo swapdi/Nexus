@@ -1,5 +1,4 @@
-import { PrismaClient, type Wishlist } from '~/prisma/client';
-import { useStoreUtils } from '../../composables/useStoreUtils';
+import { PrismaClient } from '~/prisma/client';
 import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
 import { ITADService } from './itad.service';
@@ -7,7 +6,7 @@ import { MessagesService } from './messages.service';
 
 const prisma = new PrismaClient();
 
-export interface FullWishlistItem extends Wishlist {
+export interface FullWishlistItem extends PrismaWishlist {
   game: {
     id: number;
     name: string;

@@ -1,6 +1,4 @@
 import { PrismaClient } from '~/prisma/client';
-import type { CreateMessageData, FullMessage } from '~/types';
-
 const prisma = new PrismaClient();
 
 export namespace MessagesService {

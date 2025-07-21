@@ -11,16 +11,13 @@
 </template>
 
 <script setup lang="ts">
-  import type { ViewMode } from '~/composables/useViewMode';
-  import type { UserGameWithDetails } from '~/lib/services/games.service';
-  import type { Game } from '~/prisma/client';
   import GameCardLarge from './GameCardLarge.vue';
   import GameCardList from './GameCardList.vue';
   import GameCardMedium from './GameCardMedium.vue';
   import GameCardMini from './GameCardMini.vue';
 
   interface Props {
-    game: Game;
+    game: PrismaGame;
     viewMode: ViewMode;
     isSelectionMode: boolean;
     isSelected: boolean;

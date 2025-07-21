@@ -910,8 +910,6 @@
         </button>
       </div>
     </div>
-    <!-- Loading Overlay -->
-    <LoadingOverlay />
     <!-- Confirm Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
