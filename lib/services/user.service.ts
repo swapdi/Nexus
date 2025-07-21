@@ -1,43 +1,7 @@
-import { PrismaClient, type User } from '~/prisma/client';
+import { PrismaClient } from '~/prisma/client';
+import type { FullUser, UserStats, UserUpdateData } from '~/types';
 const prisma = new PrismaClient();
-export interface FullUser extends User {
-  userGames: Array<{
-    id: number;
-    gameId: number;
-    playtimeMinutes: number | null;
-    lastPlayed: Date | null;
-    notes: string | null;
-    isInstalled: boolean;
-    isFavorite: boolean;
-    addedAt: Date;
-    game: {
-      id: number;
-      name: string;
-      coverUrl: string | null;
-    };
-  }>;
-  wishlistItems: Array<{
-    id: number;
-    gameId: number;
-    addedAt: Date;
-    game: {
-      id: number;
-      name: string;
-      coverUrl: string | null;
-    };
-  }>;
-}
-export interface UserUpdateData {
-  display_name?: string;
-  email?: string;
-  steamId?: string | null;
-  epicConnect?: boolean;
-  gogConnect?: boolean;
-}
-export interface UserStats {
-  totalGames: number;
-  totalPlaytimeHours: number;
-}
+
 export namespace UserService {
   /**
    * Benutzer über Supabase UID finden (Auth-Funktion)

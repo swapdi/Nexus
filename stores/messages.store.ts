@@ -1,8 +1,3 @@
-import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-import type { FullMessage } from '~/lib/services/messages.service';
-import { useLoading } from '~/stores/loading.store';
-
 export const useMessagesStore = defineStore('messages', () => {
   const notifyStore = useNotifyStore();
   const { $client } = useNuxtApp();

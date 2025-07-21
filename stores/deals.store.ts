@@ -1,26 +1,3 @@
-import { defineStore } from 'pinia';
-import { computed, readonly, ref } from 'vue';
-import type { ITADGame } from '~/lib/services/itad.service';
-import { useLoading } from '~/stores/loading.store';
-export type DealSortOptions =
-  | 'discount-desc'
-  | 'price-asc'
-  | 'recent'
-  | 'ending-soon'
-  | 'rating-desc'
-  | 'rating-asc';
-export interface DealSearchFilters {
-  gameId?: number;
-  storeName?: string;
-  priceMax?: number;
-  priceMin?: number;
-  discountMin?: number;
-  isFreebie?: boolean;
-  isActive?: boolean;
-  source?: string;
-  limit?: number;
-  offset?: number;
-}
 export const useDealsStore = defineStore('deals', () => {
   const { $client } = useNuxtApp();
   const notifyStore = useNotifyStore();
@@ -100,7 +77,7 @@ export const useDealsStore = defineStore('deals', () => {
     }
   }
   /**
-   * Setze Sortierung und lade Deals neu
+   * Setze Sortierung
    */
   async function setSortBy(sortBy: DealSortOptions) {
     currentSortBy.value = sortBy;
@@ -115,7 +92,6 @@ export const useDealsStore = defineStore('deals', () => {
   }
   /**
    * Manuelle Aktualisierung aller Deals
-   * Grund: Benutzer kann explizit alle Deals neu laden
    */
   async function refreshAllDeals() {
     return await loading(
@@ -140,7 +116,6 @@ export const useDealsStore = defineStore('deals', () => {
   }
   /**
    * Sucht Deals für ein bestimmtes Spiel
-   * Grund: Game-Detail-Seite soll verwandte Deals anzeigen
    */
   async function searchGameDeals(
     gameId: number,
@@ -212,7 +187,6 @@ export const useDealsStore = defineStore('deals', () => {
     return waitlist.value.some(game => game.id === id);
   };
 
-  // Computed Properties
   /**
    * Lokale Suche in geladenen Deals
    */
@@ -268,7 +242,6 @@ export const useDealsStore = defineStore('deals', () => {
   const freebies = computed(() =>
     deals.value.filter((deal: DealWithGame) => deal.isFreebie)
   );
-  // Helper Functions
   /**
    * Formatiere Preis
    */
@@ -288,24 +261,20 @@ export const useDealsStore = defineStore('deals', () => {
   }
 
   return {
-    // State
     deals: readonly(deals),
     availableStores: readonly(availableStores),
     error: readonly(error),
     isBackgroundSyncing: readonly(isBackgroundSyncing),
     lastSyncTime: readonly(lastSyncTime),
     syncProgress: readonly(syncProgress),
-    // Actions - Optimiert für bessere UX
     loadDealsFromDB,
     syncAllDealsInBackground,
     refreshAllDeals,
     setSortBy,
     updateAvailableStores,
-    // Computed
     freebies,
     searchDeals,
     sortedDeals,
-    // Helpers
     formatPrice,
     formatDiscount,
     searchGameDeals,

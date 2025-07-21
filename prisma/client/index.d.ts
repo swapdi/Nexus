@@ -5328,7 +5328,6 @@ export namespace Prisma {
     userId: number | null
     gameId: number | null
     playtimeMinutes: number | null
-    platformDRMs: number | null
   }
 
   export type UserGameSumAggregateOutputType = {
@@ -5336,7 +5335,6 @@ export namespace Prisma {
     userId: number | null
     gameId: number | null
     playtimeMinutes: number | null
-    platformDRMs: number[]
   }
 
   export type UserGameMinAggregateOutputType = {
@@ -5373,7 +5371,6 @@ export namespace Prisma {
     isInstalled: number
     isFavorite: number
     notes: number
-    platformDRMs: number
     _all: number
   }
 
@@ -5383,7 +5380,6 @@ export namespace Prisma {
     userId?: true
     gameId?: true
     playtimeMinutes?: true
-    platformDRMs?: true
   }
 
   export type UserGameSumAggregateInputType = {
@@ -5391,7 +5387,6 @@ export namespace Prisma {
     userId?: true
     gameId?: true
     playtimeMinutes?: true
-    platformDRMs?: true
   }
 
   export type UserGameMinAggregateInputType = {
@@ -5428,7 +5423,6 @@ export namespace Prisma {
     isInstalled?: true
     isFavorite?: true
     notes?: true
-    platformDRMs?: true
     _all?: true
   }
 
@@ -5528,7 +5522,6 @@ export namespace Prisma {
     isInstalled: boolean
     isFavorite: boolean
     notes: string | null
-    platformDRMs: number[]
     _count: UserGameCountAggregateOutputType | null
     _avg: UserGameAvgAggregateOutputType | null
     _sum: UserGameSumAggregateOutputType | null
@@ -5560,7 +5553,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: boolean
-    platformDRMs?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
@@ -5575,7 +5567,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: boolean
-    platformDRMs?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
@@ -5590,7 +5581,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: boolean
-    platformDRMs?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userGame"]>
@@ -5605,10 +5595,9 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: boolean
-    platformDRMs?: boolean
   }
 
-  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "isFavorite" | "notes" | "platformDRMs", ExtArgs["result"]["userGame"]>
+  export type UserGameOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gameId" | "addedAt" | "playtimeMinutes" | "lastPlayed" | "isInstalled" | "isFavorite" | "notes", ExtArgs["result"]["userGame"]>
   export type UserGameInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5638,7 +5627,6 @@ export namespace Prisma {
       isInstalled: boolean
       isFavorite: boolean
       notes: string | null
-      platformDRMs: number[]
     }, ExtArgs["result"]["userGame"]>
     composites: {}
   }
@@ -6073,7 +6061,6 @@ export namespace Prisma {
     readonly isInstalled: FieldRef<"UserGame", 'Boolean'>
     readonly isFavorite: FieldRef<"UserGame", 'Boolean'>
     readonly notes: FieldRef<"UserGame", 'String'>
-    readonly platformDRMs: FieldRef<"UserGame", 'Int[]'>
   }
     
 
@@ -11272,8 +11259,7 @@ export namespace Prisma {
     lastPlayed: 'lastPlayed',
     isInstalled: 'isInstalled',
     isFavorite: 'isFavorite',
-    notes: 'notes',
-    platformDRMs: 'platformDRMs'
+    notes: 'notes'
   };
 
   export type UserGameScalarFieldEnum = (typeof UserGameScalarFieldEnum)[keyof typeof UserGameScalarFieldEnum]
@@ -11751,7 +11737,6 @@ export namespace Prisma {
     isInstalled?: BoolFilter<"UserGame"> | boolean
     isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
-    platformDRMs?: IntNullableListFilter<"UserGame">
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -11766,7 +11751,6 @@ export namespace Prisma {
     isInstalled?: SortOrder
     isFavorite?: SortOrder
     notes?: SortOrderInput | SortOrder
-    platformDRMs?: SortOrder
     game?: GameOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
@@ -11785,7 +11769,6 @@ export namespace Prisma {
     isInstalled?: BoolFilter<"UserGame"> | boolean
     isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
-    platformDRMs?: IntNullableListFilter<"UserGame">
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_gameId" | "userId_gameId">
@@ -11800,7 +11783,6 @@ export namespace Prisma {
     isInstalled?: SortOrder
     isFavorite?: SortOrder
     notes?: SortOrderInput | SortOrder
-    platformDRMs?: SortOrder
     _count?: UserGameCountOrderByAggregateInput
     _avg?: UserGameAvgOrderByAggregateInput
     _max?: UserGameMaxOrderByAggregateInput
@@ -11821,7 +11803,6 @@ export namespace Prisma {
     isInstalled?: BoolWithAggregatesFilter<"UserGame"> | boolean
     isFavorite?: BoolWithAggregatesFilter<"UserGame"> | boolean
     notes?: StringNullableWithAggregatesFilter<"UserGame"> | string | null
-    platformDRMs?: IntNullableListFilter<"UserGame">
   }
 
   export type DealWhereInput = {
@@ -12465,7 +12446,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
     game: GameCreateNestedOneWithoutUserGamesInput
     user: UserCreateNestedOneWithoutUserGamesInput
   }
@@ -12480,7 +12460,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
   }
 
   export type UserGameUpdateInput = {
@@ -12490,7 +12469,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
@@ -12505,7 +12483,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type UserGameCreateManyInput = {
@@ -12518,7 +12495,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
   }
 
   export type UserGameUpdateManyMutationInput = {
@@ -12528,7 +12504,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type UserGameUncheckedUpdateManyInput = {
@@ -12541,7 +12516,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type DealCreateInput = {
@@ -13329,14 +13303,6 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type IntNullableListFilter<$PrismaModel = never> = {
-    equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    has?: number | IntFieldRefInput<$PrismaModel> | null
-    hasEvery?: number[] | ListIntFieldRefInput<$PrismaModel>
-    hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
-    isEmpty?: boolean
-  }
-
   export type GameScalarRelationFilter = {
     is?: GameWhereInput
     isNot?: GameWhereInput
@@ -13362,7 +13328,6 @@ export namespace Prisma {
     isInstalled?: SortOrder
     isFavorite?: SortOrder
     notes?: SortOrder
-    platformDRMs?: SortOrder
   }
 
   export type UserGameAvgOrderByAggregateInput = {
@@ -13370,7 +13335,6 @@ export namespace Prisma {
     userId?: SortOrder
     gameId?: SortOrder
     playtimeMinutes?: SortOrder
-    platformDRMs?: SortOrder
   }
 
   export type UserGameMaxOrderByAggregateInput = {
@@ -13402,7 +13366,6 @@ export namespace Prisma {
     userId?: SortOrder
     gameId?: SortOrder
     playtimeMinutes?: SortOrder
-    platformDRMs?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -14102,10 +14065,6 @@ export namespace Prisma {
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
   }
 
-  export type UserGameCreateplatformDRMsInput = {
-    set: number[]
-  }
-
   export type GameCreateNestedOneWithoutUserGamesInput = {
     create?: XOR<GameCreateWithoutUserGamesInput, GameUncheckedCreateWithoutUserGamesInput>
     connectOrCreate?: GameCreateOrConnectWithoutUserGamesInput
@@ -14120,11 +14079,6 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
-  }
-
-  export type UserGameUpdateplatformDRMsInput = {
-    set?: number[]
-    push?: number | number[]
   }
 
   export type GameUpdateOneRequiredWithoutUserGamesNestedInput = {
@@ -14615,7 +14569,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
     game: GameCreateNestedOneWithoutUserGamesInput
   }
 
@@ -14628,7 +14581,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
   }
 
   export type UserGameCreateOrConnectWithoutUserInput = {
@@ -14763,7 +14715,6 @@ export namespace Prisma {
     isInstalled?: BoolFilter<"UserGame"> | boolean
     isFavorite?: BoolFilter<"UserGame"> | boolean
     notes?: StringNullableFilter<"UserGame"> | string | null
-    platformDRMs?: IntNullableListFilter<"UserGame">
   }
 
   export type wishlist_deal_notificationsUpsertWithWhereUniqueWithoutUsersInput = {
@@ -14877,7 +14828,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
     user: UserCreateNestedOneWithoutUserGamesInput
   }
 
@@ -14890,7 +14840,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
   }
 
   export type UserGameCreateOrConnectWithoutGameInput = {
@@ -16032,7 +15981,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
   }
 
   export type wishlist_deal_notificationsCreateManyUsersInput = {
@@ -16109,7 +16057,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
     game?: GameUpdateOneRequiredWithoutUserGamesNestedInput
   }
 
@@ -16122,7 +16069,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type UserGameUncheckedUpdateManyWithoutUserInput = {
@@ -16134,7 +16080,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type wishlist_deal_notificationsUpdateWithoutUsersInput = {
@@ -16208,7 +16153,6 @@ export namespace Prisma {
     isInstalled?: boolean
     isFavorite?: boolean
     notes?: string | null
-    platformDRMs?: UserGameCreateplatformDRMsInput | number[]
   }
 
   export type wishlist_deal_notificationsCreateManyGamesInput = {
@@ -16291,7 +16235,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
     user?: UserUpdateOneRequiredWithoutUserGamesNestedInput
   }
 
@@ -16304,7 +16247,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type UserGameUncheckedUpdateManyWithoutGameInput = {
@@ -16316,7 +16258,6 @@ export namespace Prisma {
     isInstalled?: BoolFieldUpdateOperationsInput | boolean
     isFavorite?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    platformDRMs?: UserGameUpdateplatformDRMsInput | number[]
   }
 
   export type wishlist_deal_notificationsUpdateWithoutGamesInput = {

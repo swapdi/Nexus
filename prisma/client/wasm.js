@@ -170,8 +170,7 @@ exports.Prisma.UserGameScalarFieldEnum = {
   lastPlayed: 'lastPlayed',
   isInstalled: 'isInstalled',
   isFavorite: 'isFavorite',
-  notes: 'notes',
-  platformDRMs: 'platformDRMs'
+  notes: 'notes'
 };
 
 exports.Prisma.DealScalarFieldEnum = {

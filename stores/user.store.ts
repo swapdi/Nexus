@@ -1,7 +1,3 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import type { FullUser, UserStats } from '~/lib/services/user.service';
-import { useLoading } from '~/stores/loading.store';
 export const useUserStore = defineStore('user', () => {
   const notifyStore = useNotifyStore();
   const { $client } = useNuxtApp();

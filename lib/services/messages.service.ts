@@ -1,24 +1,7 @@
-import { PrismaClient, type Message } from '~/prisma/client';
+import { PrismaClient } from '~/prisma/client';
+import type { CreateMessageData, FullMessage } from '~/types';
 
 const prisma = new PrismaClient();
-
-export interface FullMessage extends Message {
-  sender: {
-    id: number;
-    display_name: string | null;
-  } | null;
-  receiver: {
-    id: number;
-    display_name: string | null;
-  };
-}
-
-export interface CreateMessageData {
-  senderId?: number | null; // null für Server-Nachrichten
-  receiverId: number;
-  text: string;
-  media?: string;
-}
 
 export namespace MessagesService {
   /**

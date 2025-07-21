@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     'nuxt-icon'
   ],
   imports: {
-    dirs: ['./stores']
+    dirs: ['./stores', './types']
   },
   app: {
     head: {

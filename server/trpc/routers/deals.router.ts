@@ -1,11 +1,9 @@
-// Deals Router - BEREINIGT
-// Grund: Nur noch syncAndLoadDeals Workflow für optimale Performance
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { useStoreUtils } from '~/composables/useStoreUtils';
+import { CheapSharkService } from '~/lib/services/cheapshark.service';
 import { DealsService } from '~/lib/services/deals.service';
-import { CheapSharkService } from '../../../lib/services/cheapshark.service';
-import { ITADService } from '../../../lib/services/itad.service';
+import { ITADService } from '~/lib/services/itad.service';
 import { publicProcedure, router } from '../trpc';
 export const dealsRouter = router({
   /**
@@ -190,11 +188,9 @@ export const dealsRouter = router({
         const liveITADDeals: any[] = [];
         try {
           const ITADGames = await ITADService.searchGamesByTitle(gameName);
-          // Grund: for...of verwenden statt forEach für async/await
           for (const game of ITADGames) {
             try {
               const deals = await ITADService.getGamePrice([game.id]);
-              // Grund: Prüfung ob dealGame und deals existieren
               const dealGame = deals[0];
               if (dealGame && dealGame.deals && dealGame.deals.length > 0) {
                 dealGame.deals.forEach(deal => {
@@ -231,12 +227,9 @@ export const dealsRouter = router({
 
         // Kombiniere gespeicherte und Live-Deals
         const allDeals = [...savedDeals, ...liveCSDeals, ...liveITADDeals];
-
         // Entferne Duplikate basierend auf externalId ODER Store+Preis-Kombination
-        // Grund: Verschiedene APIs können gleiche Deals mit unterschiedlichen IDs haben
         const uniqueDeals = allDeals.filter((deal, index, self) => {
           const firstOccurrenceIndex = self.findIndex(d => {
-            // Duplikat wenn externalId gleich ist (und beide haben eine)
             if (
               deal.externalId &&
               d.externalId &&
@@ -244,7 +237,6 @@ export const dealsRouter = router({
             ) {
               return true;
             }
-
             // Duplikat wenn Store und Preis gleich sind
             if (
               deal.storeName === d.storeName &&
@@ -258,7 +250,6 @@ export const dealsRouter = router({
 
             return false;
           });
-
           // Deal beibehalten wenn es das erste Vorkommen ist oder kein Duplikat gefunden wurde
           return firstOccurrenceIndex === -1 || firstOccurrenceIndex === index;
         });

@@ -1,93 +1,4 @@
 // CheapShark API Service
-// Grund: Zentrale Schnittstelle zur CheapShark API für Deal-Aggregation
-export interface CheapSharkDeal {
-  internalName: string;
-  title: string;
-  metacriticLink: string;
-  dealID: string;
-  storeID: string;
-  gameID: string;
-  salePrice: string;
-  normalPrice: string;
-  isOnSale: string;
-  savings: string;
-  metacriticScore: string;
-  steamRatingText: string;
-  steamRatingPercent: string;
-  steamRatingCount: string;
-  steamAppID: string;
-  releaseDate: number;
-  lastChange: number;
-  dealRating: string;
-  thumb: string;
-}
-export interface CheapSharkStore {
-  storeID: string;
-  storeName: string;
-  isActive: number;
-  images: {
-    banner: string;
-    logo: string;
-    icon: string;
-  };
-}
-export interface CheapSharkGameSearch {
-  gameID: string;
-  steamAppID: string | null;
-  cheapest: string;
-  cheapestDealID: string;
-  external: string;
-  internalName: string;
-  thumb: string;
-}
-export interface CheapSharkGameDeal {
-  storeID: string;
-  dealID: string;
-  price: string;
-  retailPrice: string;
-  savings: string;
-}
-export interface CheapSharkGameInfo {
-  deals: CheapSharkGameDeal[];
-  info: {
-    title: string;
-    steamAppID: string | null;
-    thumb: string;
-  };
-  cheapestPriceEver?: {
-    price: string;
-    date: number;
-  };
-}
-export interface CheapSharkDealDetails {
-  gameInfo: {
-    storeID: string;
-    gameID: string;
-    name: string;
-    steamAppID: string;
-    salePrice: string;
-    retailPrice: string;
-    steamRatingText: string;
-    steamRatingPercent: string;
-    steamRatingCount: string;
-    metacriticScore: string;
-    metacriticLink: string;
-    releaseDate: number;
-    publisher: string;
-    steamworks: string;
-    thumb: string;
-  };
-  cheaperStores: Array<{
-    dealID: string;
-    storeID: string;
-    salePrice: string;
-    retailPrice: string;
-  }>;
-  cheapestPrice: {
-    price: string;
-    date: number;
-  };
-}
 export namespace CheapSharkService {
   const BASE_URL = 'https://www.cheapshark.com/api/1.0';
   /**
@@ -100,16 +11,7 @@ export namespace CheapSharkService {
       storeID?: string;
       pageNumber?: number;
       pageSize?: number;
-      sortBy?:
-        | 'Deal Rating'
-        | 'Title'
-        | 'Savings'
-        | 'Price'
-        | 'Metacritic'
-        | 'Reviews'
-        | 'Release'
-        | 'Store'
-        | 'Recent';
+      sortBy?: string;
       desc?: boolean;
       lowerPrice?: number;
       upperPrice?: number;
@@ -164,11 +66,6 @@ export namespace CheapSharkService {
       );
     }
   }
-  /**
-   * Holt Deals für ein spezifisches Spiel anhand der gameID
-   * @param gameID Die CheapShark gameID
-   * @returns Game info mit verfügbaren Deals
-   */
   /**
    * Holt Deals für ein spezifisches Spiel anhand der gameID
    * @param gameID Die CheapShark gameID

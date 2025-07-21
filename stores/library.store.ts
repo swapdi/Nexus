@@ -1,12 +1,8 @@
-import { useGamesStore } from './games.store';
-import { useUserStore } from './user.store';
-
 export const useLibraryStore = defineStore('library', () => {
   const userStore = useUserStore();
   const gamesStore = useGamesStore();
   const notifyStore = useNotifyStore();
   const { $client } = useNuxtApp();
-  // Loading store integration
   const { loading } = useLoading();
   const error = ref<string | null>(null);
 

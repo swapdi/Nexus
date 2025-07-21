@@ -76,6 +76,7 @@ model UserGame {
   notes           String?
   game            Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformDRMs    Int[]     @default([])
 
   @@unique([userId, gameId])
   @@unique([userId, gameId], map: "user_games_userid_gameid_unique")

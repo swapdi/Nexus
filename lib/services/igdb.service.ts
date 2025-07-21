@@ -1,77 +1,3 @@
-import { TRPCError } from '@trpc/server';
-// IGDB API Interfaces
-export interface IGDBGame {
-  id: number;
-  name: string;
-  summary?: string;
-  cover?: {
-    id: number;
-    url: string;
-  };
-  screenshots?: Array<{
-    id: number;
-    url: string;
-  }>;
-  videos?: Array<{
-    id: number;
-    name?: string;
-    video_id: string;
-    checksum?: string;
-  }>;
-  genres?: Array<{
-    id: number;
-    name: string;
-  }>;
-  platforms?: Array<{
-    id: number;
-    name: string;
-    abbreviation?: string;
-  }>;
-  involved_companies?: Array<{
-    id: number;
-    company: {
-      id: number;
-      name: string;
-    };
-    developer: boolean;
-    publisher: boolean;
-  }>;
-  release_dates?: Array<{
-    id: number;
-    date: number;
-    platform: number;
-  }>;
-  rating?: number;
-  rating_count?: number;
-  aggregated_rating?: number;
-  aggregated_rating_count?: number;
-  first_release_date?: number;
-  total_rating?: number;
-  total_rating_count?: number;
-}
-export interface IGDBSearchResult {
-  id: number;
-  name: string;
-  first_release_date?: number;
-  platforms?: Array<{
-    id: number;
-    name: string;
-  }>;
-}
-export interface IGDBGameData {
-  id: number;
-  name: string;
-  summary?: string;
-  coverUrl?: string;
-  screenshotUrls?: string[];
-  videoUrls?: string[];
-  genres?: string[];
-  developers?: string[];
-  publishers?: string[];
-  firstReleaseDate?: Date;
-  totalRating?: number;
-  platforms?: string[];
-}
 export namespace IGDBService {
   // Cache für Access Token
   let cachedAccessToken: string | null = null;
@@ -81,11 +7,7 @@ export namespace IGDBService {
     const clientId = process.env.IGDB_CLIENT_ID;
     const clientSecret = process.env.IGDB_CLIENT_SECRET;
     if (!clientId || !clientSecret) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message:
-          'IGDB Credentials (IGDB_CLIENT_ID und IGDB_CLIENT_SECRET) nicht konfiguriert'
-      });
+      throw new Error(`Client ID und Secret für IGDB nicht konfiguriert`);
     }
     return { clientId, clientSecret };
   };
@@ -120,10 +42,7 @@ export namespace IGDBService {
       return cachedAccessToken!;
     } catch (error) {
       console.error('Fehler beim Abrufen des IGDB Access Tokens:', error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Konnte IGDB Access Token nicht abrufen'
-      });
+      throw new Error(`Token Request fehlgeschlagen`);
     }
   };
   // IGDB API Headers

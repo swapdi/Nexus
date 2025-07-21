@@ -1,33 +1,14 @@
-import { PrismaClient, type Game, type UserGame } from '~/prisma/client';
-import type { IGDBGameData } from './igdb.service';
+import { PrismaClient, type Game } from '~/prisma/client';
+import { IGDBService } from './igdb.service';
+
+import type {
+  GameImportResult,
+  GameSearchOptions,
+  IGDBGameData,
+  UserGameWithDetails
+} from '~/types';
 const prisma = new PrismaClient();
-// ============================================================================
-// TYPEN & INTERFACES
-// ============================================================================
-export interface GameSearchOptions {
-  searchTerm?: string;
-  genres?: string[];
-  developers?: string[];
-  publishers?: string[];
-  minRating?: number;
-  limit?: number;
-  offset?: number;
-}
-export interface GameImportResult {
-  success: boolean;
-  game: Game;
-  isNew: boolean;
-  message?: string;
-}
-export interface UserGameWithDetails extends UserGame {
-  game: Game;
-  platforms?: Array<{
-    id: number;
-    name: string;
-    slug: string;
-    iconUrl: string | null;
-  }>;
-}
+
 export namespace GamesService {
   /**
    * Suche nach Spielen in der zentralen Datenbank
@@ -115,8 +96,7 @@ export namespace GamesService {
         };
       }
       // Grund: Nutze die zentrale IGDB-Funktion mit integrierter dynamischer Suche
-      const { IGDBService } = await import('./igdb.service');
-      const igdbGameData: import('./igdb.service').IGDBGameData | null =
+      const igdbGameData: IGDBGameData | null =
         await IGDBService.findGameByTitle(gameName);
       if (!igdbGameData) {
         return undefined;

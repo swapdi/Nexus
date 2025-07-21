@@ -1,7 +1,3 @@
-import { defineStore } from 'pinia';
-import type { UserGameWithDetails } from '~/lib/services/games.service';
-import type { IGDBGame } from '~/lib/services/igdb.service';
-
 export const useGamesStore = defineStore('games', () => {
   const { $client } = useNuxtApp();
   const notifyStore = useNotifyStore();
@@ -10,7 +6,7 @@ export const useGamesStore = defineStore('games', () => {
   const { loading } = useLoading();
   // State
   const games = ref<UserGameWithDetails[]>([]);
-  const stats = ref<any | null>(null); // TODO: Define proper stats type
+  const stats = ref<any | null>(null);
   const error = ref<string | null>(null);
   // Neue State für Auswahlmodus
   const isSelectionMode = ref(false);

@@ -1,7 +1,4 @@
-import { useStoreUtils } from '~/composables/useStoreUtils';
-import type { Deal } from '~/prisma/client';
-import { PrismaClient } from '~/prisma/client';
-import { type CheapSharkDeal } from './cheapshark.service';
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export namespace DealsService {
@@ -173,8 +170,8 @@ export namespace DealsService {
   export async function saveCheapSharkDeals(
     cheapSharkDeals: CheapSharkDeal[],
     gameId?: number | null
-  ): Promise<Deal[]> {
-    const savedDeals: Deal[] = [];
+  ): Promise<PrismaDeal[]> {
+    const savedDeals: PrismaDeal[] = [];
     try {
       for (const cheapSharkDeal of cheapSharkDeals) {
         // Grund: Prüfen ob Deal bereits existiert (basierend auf externalId)

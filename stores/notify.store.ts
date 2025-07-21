@@ -1,9 +1,3 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-/*
-This store manages User and Account state including the ActiveAccount
-It is used in the Account administration page and the header due to it's account switching features.
-*/
 export interface Notification {
   message: string;
   type: NotificationType;

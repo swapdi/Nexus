@@ -5,10 +5,8 @@ import { PlatformService } from './platform.service';
 const prisma = new PrismaClient();
 
 export namespace EpicGamesService {
-  // Die Basis-URL deines Docker/Flask-Backends
-  // Für die Produktion sollte dies aus der Nuxt-Konfiguration kommen
+  // Die Basis-URL des Docker/Flask-Backends
   const backendUrl = 'https://epic.swapdi.de';
-
   export interface EpicGamesAuthData {
     auth_token: string;
     user_id: string;

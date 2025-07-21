@@ -1,11 +1,3 @@
-import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-import type {
-  FullWishlistItem,
-  WishlistDealNotification
-} from '~/lib/services/wishlist.service';
-import { useLoading } from '~/stores/loading.store';
-
 export const useWishlistStore = defineStore('wishlist', () => {
   const notifyStore = useNotifyStore();
   const { $client } = useNuxtApp();
