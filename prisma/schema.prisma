@@ -104,6 +104,7 @@ model Deal {
   game                        Game?                         @relation(fields: [gameId], references: [id], onDelete: Cascade)
   wishlist_deal_notifications wishlist_deal_notifications[]
 
+  @@unique([externalId, source], name: "deal_external_unique")
   @@map("deals")
 }
 

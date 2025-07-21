@@ -24,7 +24,8 @@ export const useLibraryStore = defineStore('library', () => {
           console.error('Fehler beim Aktualisieren der Bibliotheken:', err);
           throw err;
         }
-      }
+      },
+      'import' // Type als 'import' für lange laufende Operationen
     );
   };
   const importSteamLibrary = async (
@@ -63,7 +64,8 @@ export const useLibraryStore = defineStore('library', () => {
           console.error('Fehler beim Steam-Import:', err);
           throw err;
         }
-      }
+      },
+      'import' // Type als 'import' für lange laufende Operationen
     );
   };
 
@@ -99,7 +101,8 @@ export const useLibraryStore = defineStore('library', () => {
           console.error('Fehler beim Epic Games-Import:', err);
           throw err;
         }
-      }
+      },
+      'import' // Type als 'import' für lange laufende Operationen
     );
   };
 

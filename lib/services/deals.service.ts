@@ -1,4 +1,5 @@
 import { PrismaClient } from '~/prisma/client';
+import { useStoreUtils } from '../../composables/useStoreUtils';
 const prisma = new PrismaClient();
 
 export namespace DealsService {
@@ -172,27 +173,51 @@ export namespace DealsService {
     gameId?: number | null
   ): Promise<PrismaDeal[]> {
     const savedDeals: PrismaDeal[] = [];
+
     try {
       for (const cheapSharkDeal of cheapSharkDeals) {
-        // Grund: Prüfen ob Deal bereits existiert (basierend auf externalId)
-        const existingDeal = await prisma.deal.findFirst({
-          where: {
-            externalId: cheapSharkDeal.dealID,
-            source: 'CheapShark'
-          }
-        });
-        if (existingDeal) {
-          continue;
-        }
-        // Grund: Deal-Daten konvertieren (jetzt async)
+        // Grund: Deal-Daten konvertieren
         const dealData = await convertCheapSharkDeal(cheapSharkDeal, gameId);
-        if (!dealData) continue;
-        // Grund: Neuen Deal erstellen
-        const newDeal = await prisma.deal.create({
-          data: dealData
-        });
-        savedDeals.push(newDeal);
+        if (!dealData || !dealData.externalId) continue;
+
+        try {
+          // Grund: Verwende upsert um Duplikate auf DB-Ebene zu vermeiden
+          const deal = await prisma.deal.upsert({
+            where: {
+              deal_external_unique: {
+                externalId: dealData.externalId,
+                source: dealData.source || 'CheapShark'
+              }
+            },
+            create: dealData,
+            update: {
+              // Grund: Aktualisiere bestehende Deals mit neuen Preisen/Daten
+              price: dealData.price,
+              originalPrice: dealData.originalPrice,
+              discountPercent: dealData.discountPercent,
+              url: dealData.url,
+              thumb: dealData.thumb,
+              rating: dealData.rating,
+              updatedAt: new Date()
+            }
+          });
+
+          savedDeals.push(deal);
+        } catch (dbError: any) {
+          // Grund: Ignoriere Unique-Constraint-Fehler, da Deal bereits existiert
+          if (dbError.code === 'P2002') {
+            console.debug(
+              `Deal ${dealData.externalId} bereits vorhanden, überspringe`
+            );
+            continue;
+          }
+          console.error(
+            `Fehler beim Speichern von Deal ${dealData.externalId}:`,
+            dbError
+          );
+        }
       }
+
       return savedDeals;
     } catch (error) {
       console.error('Error saving CheapShark deals:', error);

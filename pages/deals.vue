@@ -22,8 +22,11 @@
   const pageSizeOptions = [25, 50, 100];
   const totalDeals = ref(0);
 
-  // Loading state aus LoadingStore
-  const isLoading = computed(() => loadingStore.isLoading);
+  // Loading state - nur für tatsächliche Deals-Loading, nicht für Background-Sync
+  const isLoading = computed(() => {
+    // Zeige Loading nur für die Deals-DB-Load-Operation, nicht für Background-Sync
+    return loadingStore.operationsList.some(op => op.id === 'load-deals-db');
+  });
   // Initialize data
   onMounted(async () => {
     await userStore.init();
@@ -245,8 +248,6 @@
 </script>
 <template>
   <div class="space-y-6">
-    <!-- Background Sync Status -->
-    <DealsBackgroundSync />
     <!-- Header mit Statistiken -->
     <div
       class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-6">

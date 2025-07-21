@@ -22,15 +22,25 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <!-- Fixed Header (über allem) -->
     <AppHeader />
+
     <!-- Sidebar -->
     <AppSidebar :user="user" @hover-change="handleSidebarHover" />
+
+    <!-- Loading States -->
+    <LoadingOverlay />
+    <!-- Blockierende Operationen -->
+    <LoadingIndicator />
+    <!-- Nicht-blockierende API-Calls -->
+    <LoadingMinimized />
+    <!-- Minimierte blockierende Operationen -->
+
+    <!-- Notifications -->
+    <Notifications />
+
     <!-- Main Content Area -->
-    <Notifications
-      class="mr-3 text-gray-400 hover:text-white transition-colors" />
     <div
       class="pt-1 transition-all duration-500 ease-out relative z-10"
       :class="sidebarHovered ? 'ml-64' : 'ml-20'">
-      <!-- Notifications -->
       <!-- Page Content -->
       <main class="min-h-[calc(100vh-4rem)] overflow-y-auto">
         <div class="container mx-auto py-6 sm:py-8 px-4">

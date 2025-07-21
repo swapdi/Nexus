@@ -51,30 +51,51 @@ export const useDealsStore = defineStore('deals', () => {
    * Grund: Vollständige Sync ohne UI-Blockierung mit Fortschrittsanzeige
    */
   async function syncAllDealsInBackground() {
+    const loadingStore = useLoadingStore();
+
     if (isBackgroundSyncing.value) {
       return;
     }
-    isBackgroundSyncing.value = true;
-    syncProgress.value = { current: 0, total: 0, message: 'Starte Sync...' };
-    try {
-      notifyStore.notify('Deals-Synchronisation im Hintergrund gestartet', 0);
-      const response = await $client.deals.syncAllDealsBackground.mutate();
-      lastSyncTime.value = new Date();
-      // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync
-      notifyStore.notify(
-        `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen`,
-        0
-      );
-      // Grund: Deals nach Hintergrund-Sync neu laden mit aktuellen Pagination-Settings
-      await loadDealsFromDB();
-      return response;
-    } catch (err: any) {
-      console.error('Background sync failed:', err);
-      notifyStore.notify('Hintergrund-Synchronisation fehlgeschlagen', 2);
-    } finally {
-      isBackgroundSyncing.value = false;
-      syncProgress.value = null;
-    }
+
+    return await loadingStore.withLoading(
+      'deals-background-sync',
+      'Deals werden synchronisiert...',
+      async () => {
+        isBackgroundSyncing.value = true;
+        syncProgress.value = {
+          current: 0,
+          total: 0,
+          message: 'Starte Sync...'
+        };
+
+        try {
+          notifyStore.notify(
+            'Deals-Synchronisation im Hintergrund gestartet',
+            0
+          );
+          const response = await $client.deals.syncAllDealsBackground.mutate();
+          lastSyncTime.value = new Date();
+
+          // Grund: Detaillierte Benachrichtigung über erfolgreiche Sync
+          notifyStore.notify(
+            `Hintergrund-Sync abgeschlossen: ${response.totalSynced} Deals aus ${response.pagesProcessed} Seiten geladen`,
+            0
+          );
+
+          // Grund: Deals nach Hintergrund-Sync neu laden mit aktuellen Pagination-Settings
+          await loadDealsFromDB();
+          return response;
+        } catch (err: any) {
+          console.error('Background sync failed:', err);
+          notifyStore.notify('Hintergrund-Synchronisation fehlgeschlagen', 2);
+          throw err;
+        } finally {
+          isBackgroundSyncing.value = false;
+          syncProgress.value = null;
+        }
+      },
+      'api' // Als API-Operation - nicht blockierend, zeigt nur kleinen Indikator
+    );
   }
   /**
    * Setze Sortierung

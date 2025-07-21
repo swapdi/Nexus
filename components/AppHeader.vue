@@ -15,6 +15,25 @@
       <!-- User Section - fest positioniert rechts -->
       <div
         class="absolute right-0 top-0 flex items-center space-x-4 h-full pr-4 sm:pr-6 lg:pr-8">
+        <!-- Minimiertes Loading-Icon für blockierende Operationen -->
+        <LoadingMinimized />
+        <!-- Header Loading-Indikator für non-blocking Operationen -->
+        <div
+          v-if="hasNonBlockingOperation"
+          class="flex items-center space-x-2 px-3 py-1.5 bg-gray-700/50 backdrop-blur-sm rounded-lg border border-gray-600/50">
+          <!-- Small Loading Spinner -->
+          <div
+            class="w-4 h-4 rounded-full border-2 border-gray-600 border-t-blue-400 animate-spin"></div>
+          <!-- Operation Label -->
+          <span class="text-sm text-gray-300 max-w-32 truncate">
+            {{ primaryNonBlockingOperation?.label || 'Lädt...' }}
+          </span>
+          <div
+            v-if="nonBlockingOperationCount > 1"
+            class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] text-center">
+            {{ nonBlockingOperationCount }}
+          </div>
+        </div>
         <UserCredits />
         <UserAccount />
       </div>
@@ -33,7 +52,27 @@
   </header>
 </template>
 <script setup lang="ts">
-  // Dunkles Gaming-Header ohne komplexe Ladeanzeigen
+  const loadingStore = useLoadingStore();
+
+  // Header Loading-Indikatoren für non-blocking Operationen
+  const hasNonBlockingOperation = computed(() => {
+    return loadingStore.hasNonBlockingOperation;
+  });
+
+  const nonBlockingOperations = computed(() => {
+    return loadingStore.operationsList.filter(
+      op => op.type === 'api' || op.type === 'data'
+    );
+  });
+
+  const primaryNonBlockingOperation = computed(() => {
+    const ops = nonBlockingOperations.value;
+    return ops[0] || null;
+  });
+
+  const nonBlockingOperationCount = computed(
+    () => nonBlockingOperations.value.length
+  );
 </script>
 <style scoped>
   /* Dunkles Gaming-Header Design */

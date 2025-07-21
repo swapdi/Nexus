@@ -5,8 +5,18 @@
 <template>
   <div class="flex flex-col min-h-screen bg-gray-900 text-white">
     <LandingHeader />
-    <Notifications
-      class="mr-3 text-gray-400 hover:text-white transition-colors" />
+
+    <!-- Loading States -->
+    <LoadingOverlay />
+    <!-- Blockierende Operationen -->
+    <LoadingIndicator />
+    <!-- Nicht-blockierende API-Calls -->
+    <LoadingMinimized />
+    <!-- Minimierte blockierende Operationen -->
+
+    <!-- Notifications -->
+    <Notifications />
+
     <div class="flex-grow">
       <main>
         <NuxtPage />

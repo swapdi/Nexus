@@ -359,6 +359,7 @@ export type DealOrderByWithRelationInput = {
 
 export type DealWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  deal_external_unique?: Prisma.DealDeal_external_uniqueCompoundUniqueInput
   AND?: Prisma.DealWhereInput | Prisma.DealWhereInput[]
   OR?: Prisma.DealWhereInput[]
   NOT?: Prisma.DealWhereInput | Prisma.DealWhereInput[]
@@ -380,7 +381,7 @@ export type DealWhereUniqueInput = Prisma.AtLeast<{
   rating?: Prisma.FloatNullableFilter<"Deal"> | number | null
   game?: Prisma.XOR<Prisma.GameNullableScalarRelationFilter, Prisma.GameWhereInput> | null
   wishlist_deal_notifications?: Prisma.Wishlist_deal_notificationsListRelationFilter
-}, "id">
+}, "id" | "deal_external_unique">
 
 export type DealOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -578,6 +579,11 @@ export type DealListRelationFilter = {
 
 export type DealOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type DealDeal_external_uniqueCompoundUniqueInput = {
+  externalId: string
+  source: string
 }
 
 export type DealCountOrderByAggregateInput = {
