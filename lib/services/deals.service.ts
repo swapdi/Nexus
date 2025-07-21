@@ -3,7 +3,7 @@
 import { useStoreUtils } from '~/composables/useStoreUtils';
 import type { Deal, Game } from '~/prisma/client';
 import { PrismaClient } from '~/prisma/client';
-import { CheapSharkService, type CheapSharkDeal } from './cheapshark.service';
+import { type CheapSharkDeal } from './cheapshark.service';
 const prisma = new PrismaClient();
 export interface DealWithGame extends Deal {
   game: Game | null; // Game kann null sein für Bundles/DLCs ohne direktes Game
@@ -278,84 +278,6 @@ export namespace DealsService {
         }`
       );
     }
-  }
-  /**
-   * Deal erstellen oder aktualisieren
-   */
-  export async function createOrUpdateDeal(
-    dealData: DealCreateInput
-  ): Promise<DealWithGame | null> {
-    try {
-      // Prüfen ob Deal bereits existiert
-      let existingDeal = null;
-
-      if (dealData.externalId) {
-        existingDeal = await prisma.deal.findFirst({
-          where: {
-            externalId: dealData.externalId,
-            source: dealData.source
-          },
-          include: {
-            game: true
-          }
-        });
-      }
-
-      if (existingDeal) {
-        // Deal aktualisieren
-        const updatedDeal = await prisma.deal.update({
-          where: { id: existingDeal.id },
-          data: {
-            price: dealData.price,
-            originalPrice: dealData.originalPrice,
-            discountPercent: dealData.discountPercent,
-            url: dealData.url,
-            isFreebie: dealData.isFreebie,
-            validUntil: dealData.validUntil
-            // updatedAt wird automatisch gesetzt
-          },
-          include: {
-            game: true
-          }
-        });
-        return updatedDeal as DealWithGame;
-      } else {
-        // Neuen Deal erstellen
-        const newDeal = await prisma.deal.create({
-          data: {
-            gameId: dealData.gameId,
-            title: dealData.title,
-            storeName: dealData.storeName,
-            price: dealData.price,
-            originalPrice: dealData.originalPrice,
-            discountPercent: dealData.discountPercent,
-            url: dealData.url,
-            validFrom: dealData.validFrom,
-            validUntil: dealData.validUntil,
-            isFreebie: dealData.isFreebie || false,
-            externalId: dealData.externalId,
-            source: dealData.source || 'unknown',
-            thumb: dealData.thumb,
-            rating: dealData.rating
-          },
-          include: {
-            game: true
-          }
-        });
-        return newDeal as DealWithGame;
-      }
-    } catch (error) {
-      console.error('Error creating/updating deal:', error);
-      return null;
-    }
-  }
-
-  // ===== CHEAPSHARK API WRAPPERS =====
-  /**
-   * Wrapper für CheapShark getAllDeals
-   */
-  export async function getAllCheapSharkDeals(options: any = {}) {
-    return await CheapSharkService.getAllDeals(options);
   }
 
   // ===== ITAD API INTEGRATION =====

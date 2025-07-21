@@ -8,16 +8,6 @@ import { CheapSharkService } from '../../../lib/services/cheapshark.service';
 import { ITADService } from '../../../lib/services/itad.service';
 import { publicProcedure, router } from '../trpc';
 export const dealsRouter = router({
-  searchDeals: publicProcedure
-    .input(
-      z.object({
-        limit: z.number().optional(),
-        isActive: z.boolean().optional()
-      })
-    )
-    .query(async ({ input }) => {
-      return await DealsService.searchDeals(input);
-    }),
   /**
    * Lädt Deals schnell aus der Datenbank (ohne CheapShark Sync)
    * Grund: Schneller UI-Load für bessere User Experience
@@ -77,7 +67,7 @@ export const dealsRouter = router({
       // Schritt 2: Lade alle verfügbaren Seiten bis keine Deals mehr gefunden werden
       while (currentPage < maxPages) {
         try {
-          const cheapSharkDeals = await DealsService.getAllCheapSharkDeals({
+          const cheapSharkDeals = await CheapSharkService.getAllDeals({
             pageNumber: currentPage,
             pageSize: 60,
             sortBy: 'Deal Rating',
@@ -196,6 +186,7 @@ export const dealsRouter = router({
           console.warn('CheapShark API Fehler bei Live-Suche:', apiError);
           // Ignoriere API-Fehler und fahre nur mit gespeicherten Deals fort
         }
+        // Schritt 3: Suche live Deals bei ITAD
         const liveITADDeals: any[] = [];
         try {
           const ITADGames = await ITADService.searchGamesByTitle(gameName);
@@ -328,24 +319,6 @@ export const dealsRouter = router({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to get ITAD price overview: ${
-            error instanceof Error ? error.message : 'Unknown error'
-          }`
-        });
-      }
-    }),
-
-  /**
-   * ITAD-Shops abrufen
-   */
-  getITADShops: publicProcedure
-    .input(z.object({ country: z.string().optional() }))
-    .query(async ({ input }) => {
-      try {
-        return await ITADService.getAllShops(input.country);
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to get ITAD shops: ${
             error instanceof Error ? error.message : 'Unknown error'
           }`
         });

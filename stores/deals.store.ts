@@ -33,7 +33,6 @@ export const useDealsStore = defineStore('deals', () => {
   const bestDeals = ref<DealWithGame[]>([]);
   const freeGames = ref<DealWithGame[]>([]);
   const availableStores = ref<string[]>([]);
-  const searchResults = ref<ITADGame[]>([]);
   const waitlist = ref<ITADGame[]>([]);
   const error = ref<string | null>(null);
   // Current filters und sorting
