@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { computed, readonly, ref } from 'vue';
-import type { DealWithGame } from '~/lib/services/deals.service';
 import type { ITADGame } from '~/lib/services/itad.service';
 import { useLoading } from '~/stores/loading.store';
 export type DealSortOptions =
@@ -111,7 +110,7 @@ export const useDealsStore = defineStore('deals', () => {
    */
   function updateAvailableStores() {
     const stores = new Set<string>();
-    deals.value.forEach(deal => stores.add(deal.storeName));
+    deals.value.forEach((deal: DealWithGame) => stores.add(deal.storeName));
     availableStores.value = Array.from(stores).sort();
   }
   /**

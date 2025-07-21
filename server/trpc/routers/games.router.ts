@@ -115,7 +115,7 @@ export const gamesRouter = router({
           message: 'Fehler beim Entfernen der Spiele aus der Bibliothek'
         });
       }
-    }), // Steam-Bibliothek importieren
+    }),
 
   // Benutzer-Statistiken
   getUserStats: protectedProcedure.query(async ({ ctx }) => {

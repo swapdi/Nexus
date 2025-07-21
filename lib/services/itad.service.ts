@@ -48,7 +48,7 @@ export interface ITADDeal {
   voucher?: string;
   flag?: string;
   url: string;
-  expiry?: string; // ISO date string
+  expiry?: string;
 }
 
 export interface ITADPrice {
@@ -308,12 +308,12 @@ export namespace ITADService {
       const params = {
         country: options.country || 'DE',
         shops: options.shops,
-        vouchers: options.vouchers !== false // Default: true
+        vouchers: options.vouchers !== false
       };
 
       return await apiRequest<ITADPriceOverview>('/games/overview/v2', {
         method: 'POST',
-        body: gameIds.slice(0, 200), // API Limit: max 200
+        body: gameIds.slice(0, 200),
         params,
         requiresAuth: true
       });
