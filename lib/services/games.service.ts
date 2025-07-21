@@ -141,10 +141,14 @@ export namespace GamesService {
         name: gameData.name,
         slug: gameData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         summary: gameData.summary,
+        storyline: gameData.storyline,
         firstReleaseDate: gameData.firstReleaseDate,
         coverUrl: gameData.coverUrl,
         screenshots: gameData.screenshotUrls || [],
         videos: gameData.videoUrls || [],
+        websites: gameData.websites
+          ? JSON.parse(JSON.stringify(gameData.websites))
+          : null,
         totalRating: gameData.totalRating,
         genres: gameData.genres || [],
         developers: gameData.developers || [],

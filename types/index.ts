@@ -277,9 +277,11 @@ export interface IGDBGameData {
   id: number;
   name: string;
   summary?: string;
+  storyline?: string;
   coverUrl?: string;
   screenshotUrls?: string[];
   videoUrls?: string[];
+  websites?: Array<{ category: number; url: string }>;
   genres?: string[];
   developers?: string[];
   publishers?: string[];
