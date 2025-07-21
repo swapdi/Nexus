@@ -272,8 +272,6 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { IGDBGame } from '~/lib/services/igdb.service';
-  import type { Game } from '~/prisma/client';
   definePageMeta({
     middleware: ['auth'],
     title: 'Suchergebnisse',
@@ -286,8 +284,8 @@
   // Search state
   const searchQuery = ref((route.query.q as string) || '');
   const newSearchQuery = ref('');
-  const dbResults = ref<Game[]>([]);
-  const filteredDbResults = ref<Game[]>([]);
+  const dbResults = ref<PrismaGame[]>([]);
+  const filteredDbResults = ref<PrismaGame[]>([]);
   const igdbResults = ref<IGDBGame[]>([]);
   const igdbSearched = ref(false);
   const isIgdbLoading = ref(false);
@@ -434,7 +432,7 @@
       isIgdbLoading.value = false;
     }
   };
-  const navigateToGame = (game: Game) => {
+  const navigateToGame = (game: PrismaGame) => {
     router.push(`/game/${game.id}`);
   };
 
