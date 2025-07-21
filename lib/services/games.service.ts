@@ -72,240 +72,6 @@ export namespace GamesService {
   }
 
   /**
-   * Suche nach ähnlichen Spielen in der lokalen Datenbank
-   * Verwendet String-Ähnlichkeitsalgorithmen zur besseren Zuordnung
-   */
-  export async function findSimilarGameInDatabase(
-    gameName: string
-  ): Promise<PrismaGame | null> {
-    try {
-      // Hole alle Spiele aus der DB (mit Limit für Performance)
-      const allGames = await prisma.game.findMany({
-        take: 10000 // Limit für Performance
-      });
-
-      if (allGames.length === 0) {
-        return null;
-      }
-
-      const normalizedSearchName = normalizeGameTitle(gameName);
-      let bestMatch: PrismaGame | null = null;
-      let bestScore = 0;
-      const minScore = 0.7; // Mindest-Ähnlichkeit für lokale DB
-
-      for (const game of allGames) {
-        const normalizedGameName = normalizeGameTitle(game.name);
-
-        // Verschiedene Ähnlichkeits-Checks
-        let score = 0;
-
-        // Exakte Übereinstimmung (sollte nicht vorkommen, da schon gecheckt)
-        if (normalizedGameName === normalizedSearchName) {
-          score = 1.0;
-        }
-        // Beginnt mit oder enthält
-        else if (
-          normalizedGameName.startsWith(normalizedSearchName) ||
-          normalizedSearchName.startsWith(normalizedGameName)
-        ) {
-          score = 0.9;
-        } else if (
-          normalizedGameName.includes(normalizedSearchName) ||
-          normalizedSearchName.includes(normalizedGameName)
-        ) {
-          score = 0.8;
-        } else {
-          // Verwende die gleiche String-Ähnlichkeit wie IGDB
-          score = calculateLocalStringSimilarity(
-            normalizedSearchName,
-            normalizedGameName
-          );
-        }
-
-        // Edition-spezifische Behandlung
-        score = adjustScoreForEditions(gameName, game.name, score);
-
-        if (score > bestScore && score >= minScore) {
-          bestScore = score;
-          bestMatch = game;
-        }
-      }
-
-      if (bestMatch && bestScore >= minScore) {
-        console.log(
-          `🎯 Lokale DB Ähnlichkeit: "${gameName}" -> "${
-            bestMatch.name
-          }" (Score: ${bestScore.toFixed(2)})`
-        );
-        return bestMatch;
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Fehler bei findSimilarGameInDatabase:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Normalisiert Spieltitel für lokale Vergleiche
-   */
-  function normalizeGameTitle(title: string): string {
-    return title
-      .toLowerCase()
-      .trim()
-      .replace(/[™®©]/g, '')
-      .replace(/['']/g, "'")
-      .replace(/[""]/g, '"')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  /**
-   * Berechnet String-Ähnlichkeit für lokale DB-Suche
-   */
-  function calculateLocalStringSimilarity(
-    query: string,
-    target: string
-  ): number {
-    const queryWords = query.split(/\s+/).filter(w => w.length > 0);
-    const targetWords = target.split(/\s+/).filter(w => w.length > 0);
-
-    if (queryWords.length === 0 || targetWords.length === 0) return 0;
-
-    let totalMatches = 0;
-
-    for (const queryWord of queryWords) {
-      let bestWordMatch = 0;
-
-      for (const targetWord of targetWords) {
-        let wordScore = 0;
-
-        if (queryWord === targetWord) {
-          wordScore = 1.0;
-        } else if (
-          queryWord.includes(targetWord) ||
-          targetWord.includes(queryWord)
-        ) {
-          const longer =
-            queryWord.length > targetWord.length ? queryWord : targetWord;
-          const shorter =
-            queryWord.length <= targetWord.length ? queryWord : targetWord;
-          wordScore = shorter.length / longer.length;
-        } else if (queryWord.length >= 3 && targetWord.length >= 3) {
-          const distance = levenshteinDistance(queryWord, targetWord);
-          const maxLen = Math.max(queryWord.length, targetWord.length);
-          const similarity = 1 - distance / maxLen;
-          if (similarity >= 0.8) {
-            wordScore = similarity;
-          }
-        }
-
-        if (wordScore > bestWordMatch) {
-          bestWordMatch = wordScore;
-        }
-      }
-
-      totalMatches += bestWordMatch;
-    }
-
-    const avgWordMatch = totalMatches / queryWords.length;
-    const wordCountPenalty =
-      Math.abs(queryWords.length - targetWords.length) /
-      Math.max(queryWords.length, targetWords.length);
-
-    return Math.max(0, avgWordMatch - wordCountPenalty * 0.2);
-  }
-
-  /**
-   * Levenshtein-Distanz für lokale String-Vergleiche
-   */
-  function levenshteinDistance(str1: string, str2: string): number {
-    const matrix = [];
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-    return matrix[str2.length][str1.length];
-  }
-
-  /**
-   * Passt den Score für Edition-spezifische Fälle an
-   * Z.B. "Cyberpunk 2077: Ultimate Edition" vs "Cyberpunk 2077"
-   */
-  function adjustScoreForEditions(
-    searchName: string,
-    dbName: string,
-    currentScore: number
-  ): number {
-    const editionKeywords = [
-      'Gold',
-      'Deluxe',
-      'Ultimate',
-      'Complete',
-      'GOTY',
-      'Premium',
-      'Special',
-      'Enhanced',
-      'Definitive',
-      'Remastered',
-      'HD',
-      "Director's Cut",
-      'Game of the Year',
-      "Collector's",
-      'Digital',
-      'Edition'
-    ];
-
-    const searchNormalized = normalizeGameTitle(searchName);
-    const dbNormalized = normalizeGameTitle(dbName);
-
-    // Entferne Edition-Keywords aus beiden Titeln
-    let searchBase = searchNormalized;
-    let dbBase = dbNormalized;
-
-    editionKeywords.forEach(keyword => {
-      const keywordLower = keyword.toLowerCase();
-      searchBase = searchBase
-        .replace(new RegExp(`\\s*${keywordLower}\\s*(edition)?`, 'gi'), '')
-        .trim();
-      dbBase = dbBase
-        .replace(new RegExp(`\\s*${keywordLower}\\s*(edition)?`, 'gi'), '')
-        .trim();
-    });
-
-    // Wenn die Basis-Titel identisch sind, sehr hoher Score
-    if (searchBase === dbBase && searchBase.length >= 3) {
-      return Math.max(currentScore, 0.95);
-    }
-
-    // Wenn einer den anderen enthält, guter Score
-    if (
-      (searchBase.includes(dbBase) || dbBase.includes(searchBase)) &&
-      Math.min(searchBase.length, dbBase.length) >= 3
-    ) {
-      return Math.max(currentScore, 0.85);
-    }
-
-    return currentScore;
-  }
-
-  /**
    * Verbesserte IGDB-Suche basierend auf Relevanz, Popularität und Erscheinungsjahr
    * Grund: Wie IGDB-Webseite - nimmt das relevanteste erste Ergebnis
    * Mit Fallback-Strategien für bereinigte Titel
@@ -316,9 +82,6 @@ export namespace GamesService {
       // Schritt 1: Prüfe exakte Übereinstimmung in lokaler Datenbank
       const exactMatch = await findGameByName(gameName);
       if (exactMatch) {
-        console.log(
-          `✅ Exakte Übereinstimmung gefunden: "${gameName}" -> "${exactMatch.name}"`
-        );
         return {
           success: true,
           game: exactMatch,
@@ -327,26 +90,10 @@ export namespace GamesService {
         };
       }
 
-      // Schritt 2: Prüfe ähnliche Spiele in lokaler Datenbank
-      const similarGame = await findSimilarGameInDatabase(gameName);
-      if (similarGame) {
-        console.log(
-          `✅ Ähnliches Spiel in DB gefunden: "${gameName}" -> "${similarGame.name}"`
-        );
-        return {
-          success: true,
-          game: similarGame,
-          isNew: false,
-          message: `Ähnliches Spiel in DB gefunden: "${similarGame.name}"`
-        };
-      }
-
-      // Schritt 3: Suche in IGDB API
-      console.log(`🔍 Suche in IGDB für: "${gameName}"`);
+      // Schritt 2: Suche in IGDB API
       const igdbGameData: IGDBGameData | null =
         await IGDBService.findGameByTitle(gameName);
       if (!igdbGameData) {
-        console.log(`❌ Kein IGDB-Ergebnis für: "${gameName}"`);
         return undefined;
       }
 
@@ -355,9 +102,6 @@ export namespace GamesService {
         where: { igdbId: igdbGameData.id }
       });
       if (existingByIGDB) {
-        console.log(
-          `✅ IGDB-Spiel bereits in DB: "${gameName}" -> "${existingByIGDB.name}" (IGDB ID: ${igdbGameData.id})`
-        );
         return {
           success: true,
           game: existingByIGDB,
@@ -367,9 +111,7 @@ export namespace GamesService {
       }
 
       // Schritt 5: Erstelle neues Spiel mit IGDB-Daten
-      console.log(
-        `➕ Erstelle neues Spiel: "${gameName}" -> "${igdbGameData.name}"`
-      );
+
       const newGame = await createGameFromIGDB(igdbGameData);
       return {
         success: true,
@@ -593,67 +335,9 @@ export namespace GamesService {
 
     // Nur exakte Suche (case-insensitive) - keine Fuzzy-Suche!
     const exactMatch = await prisma.game.findFirst({
-      where: { name: { equals: normalizedName, mode: 'insensitive' } }
+      where: { name: { equals: normalizedName } }
     });
 
     return exactMatch;
-    const normalizedSearchTitles = generateSimpleVariants(normalizedName);
-    if (normalizedSearchTitles.length > 0) {
-      const allGames = await prisma.game.findMany({
-        select: { id: true, name: true, slug: true }
-      });
-      for (const game of allGames) {
-        const normalizedGameTitles = generateSimpleVariants(game.name);
-        // Prüfe auf exakte Übereinstimmung zwischen allen Varianten
-        for (const searchVariant of normalizedSearchTitles) {
-          for (const gameVariant of normalizedGameTitles) {
-            if (searchVariant === gameVariant) {
-              return prisma.game.findUnique({ where: { id: game.id } });
-            }
-            // Prüfe auf enthält-Beziehung in beide Richtungen
-            if (
-              gameVariant.includes(searchVariant) ||
-              searchVariant.includes(gameVariant)
-            ) {
-              return prisma.game.findUnique({ where: { id: game.id } });
-            }
-          }
-        }
-      }
-    }
-    // Fallback: Versuche auch umgekehrt - wenn DB-Name im Suchbegriff enthalten ist
-    const reverseMatch = await prisma.game.findFirst({
-      where: {
-        OR: [
-          { name: { contains: normalizedName, mode: 'insensitive' } },
-          {
-            slug: {
-              contains: normalizedName
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-'),
-              mode: 'insensitive'
-            }
-          }
-        ]
-      }
-    });
-    return reverseMatch;
   }
-  // Hilfsfunktion für lokale DB-Suchen (vereinfacht)
-  const generateSimpleVariants = (title: string): string[] => {
-    const variants: string[] = [];
-    const cleanedTitle = title.trim();
-    if (!cleanedTitle) return [];
-    variants.push(cleanedTitle);
-    // Entferne Wörter von rechts
-    const words = cleanedTitle.split(/\s+/);
-    while (words.length > 1) {
-      words.pop();
-      const shortened = words.join(' ').trim();
-      if (shortened.length >= 2) {
-        variants.push(shortened);
-      }
-    }
-    return [...new Set(variants)];
-  };
 }

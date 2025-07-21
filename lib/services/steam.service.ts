@@ -3,6 +3,7 @@ import { useSteamImport } from '../../composables/useSteamImport';
 import { GamesService } from './games.service';
 import { IGDBService } from './igdb.service';
 import { PlatformService } from './platform.service';
+const steamImport = useSteamImport();
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,6 @@ export namespace SteamService {
     skipped: number;
     errors: string[];
   }> {
-    const steamImport = useSteamImport();
     const result = {
       success: true,
       imported: 0,
