@@ -165,44 +165,10 @@ export namespace CheapSharkService {
     }
   }
   /**
-   * Sucht nach Spielen anhand des Titels
-   * @param title Der Spieltitel nach dem gesucht werden soll
-   * @param limit Maximale Anzahl der Ergebnisse (default: 60)
-   * @param exact Exakte Übereinstimmung des Titels (default: false)
-   * @returns Array der gefundenen Spiele
+   * Holt Deals für ein spezifisches Spiel anhand der gameID
+   * @param gameID Die CheapShark gameID
+   * @returns Game info mit verfügbaren Deals
    */
-  export async function searchGamesByTitle(
-    title: string,
-    limit: number = 60,
-    exact: boolean = false
-  ): Promise<CheapSharkGameSearch[]> {
-    try {
-      if (!title.trim()) {
-        throw new Error('Game title cannot be empty');
-      }
-      const searchParams = new URLSearchParams({
-        title: title.trim(),
-        limit: limit.toString(),
-        exact: exact ? '1' : '0'
-      });
-      const url = `${BASE_URL}/games?${searchParams.toString()}`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(
-          `CheapShark API Error: ${response.status} ${response.statusText}`
-        );
-      }
-      const games: CheapSharkGameSearch[] = await response.json();
-      return games;
-    } catch (error) {
-      console.error('Error searching games on CheapShark:', error);
-      throw new Error(
-        `Failed to search games: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
   /**
    * Holt Deals für ein spezifisches Spiel anhand der gameID
    * @param gameID Die CheapShark gameID

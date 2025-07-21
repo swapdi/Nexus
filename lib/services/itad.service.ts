@@ -326,25 +326,4 @@ export namespace ITADService {
       );
     }
   }
-  /**
-   * Lädt alle verfügbaren Shops von der ITAD API
-   * @param country Land-Code für regionale Verfügbarkeit
-   * @returns Array der verfügbaren Shops
-   */
-  export async function getAllShops(
-    country: string = 'DE'
-  ): Promise<ITADShop[]> {
-    try {
-      return await apiRequest<ITADShop[]>('/service/shops/v1', {
-        params: { country }
-      });
-    } catch (error) {
-      console.error('Error fetching shops from ITAD:', error);
-      throw new Error(
-        `Failed to fetch shops: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
-  }
 }

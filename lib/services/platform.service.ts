@@ -67,26 +67,6 @@ export namespace PlatformService {
   }
 
   /**
-   * Hole alle Plattformen
-   */
-  export async function getAllPlatforms() {
-    return await prisma.platform.findMany({
-      orderBy: { name: 'asc' }
-    });
-  }
-
-  /**
-   * Hole Plattformen nach IDs
-   */
-  export async function getPlatformsByIds(platformIds: number[]) {
-    return await prisma.platform.findMany({
-      where: {
-        id: { in: platformIds }
-      }
-    });
-  }
-
-  /**
    * Hole Steam Platform ID
    */
   export async function getSteamPlatformId(): Promise<number> {
@@ -112,20 +92,6 @@ export namespace PlatformService {
       if (!epic)
         throw new Error('Epic Games Platform konnte nicht erstellt werden');
       return epic.id;
-    }
-    return platform.id;
-  }
-
-  /**
-   * Hole GOG Platform ID
-   */
-  export async function getGOGPlatformId(): Promise<number> {
-    const platform = await getPlatformBySlug('gog');
-    if (!platform) {
-      const platforms = await initializePlatforms();
-      const gog = platforms.find(p => p.slug === 'gog');
-      if (!gog) throw new Error('GOG Platform konnte nicht erstellt werden');
-      return gog.id;
     }
     return platform.id;
   }
