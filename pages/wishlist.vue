@@ -13,7 +13,7 @@
   const searchQuery = ref('');
   const showOnlyOnSale = ref(false);
 
-  // Computed für gefilterte Items
+  // Computed für gefilterte Items mit Deal-Informationen
   const filteredWishlistItems = computed(() => {
     let items = wishlistStore.sortedWishlistItems;
 
@@ -29,7 +29,17 @@
       );
       items = items.filter(item => gameIdsWithDeals.includes(item.gameId));
     }
-    return items;
+
+    // Deal-Informationen zu Items hinzufügen
+    return items.map(item => {
+      const dealNotification = wishlistStore.dealNotifications.find(
+        (notif: any) => notif.gameId === item.gameId
+      );
+      return {
+        ...item,
+        bestDeal: dealNotification?.deals?.[0] || null
+      };
+    });
   });
 
   onMounted(async () => {
@@ -117,54 +127,40 @@
       </div>
     </div>
 
-    <!-- Deal Notifications -->
+    <!-- Deal Notifications - Kompakter Banner -->
     <div v-if="wishlistStore.dealNotifications.length > 0" class="space-y-4">
-      <h2 class="text-2xl font-bold text-white">
-        Aktuelle Deals für deine Wishlist
-      </h2>
-      <div class="grid grid-cols-1 gap-4">
-        <div
-          v-for="notification in wishlistStore.dealNotifications"
-          :key="notification.gameId"
-          class="bg-gradient-to-r from-green-900/20 to-blue-900/20 border border-green-500/20 rounded-xl p-6">
-          <h3 class="text-xl font-bold text-white mb-4">
-            {{ notification.gameName }}
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              v-for="deal in notification.deals"
-              :key="deal.id"
-              class="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
-              <div class="flex justify-between items-start mb-2">
-                <h4 class="font-semibold text-white">{{ deal.storeName }}</h4>
-                <div class="text-right">
-                  <div
-                    v-if="deal.discountPercent"
-                    class="text-green-400 font-bold">
-                    -{{ deal.discountPercent }}%
-                  </div>
-                  <div v-if="deal.price" class="text-white font-bold">
-                    {{ deal.price.toFixed(2) }}€
-                  </div>
-                  <div
-                    v-if="
-                      deal.originalPrice && deal.originalPrice !== deal.price
-                    "
-                    class="text-gray-400 line-through text-sm">
-                    {{ deal.originalPrice.toFixed(2) }}€
-                  </div>
-                </div>
-              </div>
-              <a
-                :href="deal.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors duration-200">
-                <Icon name="heroicons:shopping-cart" class="w-4 h-4" />
-                Zum Deal
-              </a>
+      <div
+        class="bg-gradient-to-r from-green-900/10 to-blue-900/10 border border-green-500/20 rounded-xl p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-green-500/20 rounded-full p-2">
+              <Icon name="heroicons:fire" class="w-5 h-5 text-green-400" />
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-white">
+                Aktuelle Deals verfügbar!
+              </h2>
+              <p class="text-sm text-gray-400">
+                {{ wishlistStore.dealNotifications.length }}
+                {{
+                  wishlistStore.dealNotifications.length === 1
+                    ? 'Spiel hat'
+                    : 'Spiele haben'
+                }}
+                aktive Angebote
+              </p>
             </div>
           </div>
+          <button
+            @click="showOnlyOnSale = !showOnlyOnSale"
+            :class="[
+              'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+              showOnlyOnSale
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            ]">
+            {{ showOnlyOnSale ? 'Alle anzeigen' : 'Nur Deals' }}
+          </button>
         </div>
       </div>
     </div>
@@ -176,7 +172,26 @@
         <div
           v-for="item in filteredWishlistItems"
           :key="item.id"
-          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-purple-500/30 transition-all duration-300 group">
+          class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden hover:border-purple-500/30 transition-all duration-300 group relative">
+          <!-- Deal Badge - Top Left -->
+          <div v-if="item.bestDeal" class="absolute top-3 left-3 z-20">
+            <div
+              class="bg-gradient-to-r from-green-500 to-green-400 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg border border-green-400/50 backdrop-blur-sm">
+              <div
+                v-if="item.bestDeal.price === 0"
+                class="flex items-center gap-1">
+                <Icon name="heroicons:gift" class="w-3 h-3" />
+                GRATIS
+              </div>
+              <div
+                v-else-if="item.bestDeal.discountPercent"
+                class="flex items-center gap-1">
+                <Icon name="heroicons:fire" class="w-3 h-3" />
+                -{{ Math.round(item.bestDeal.discountPercent) }}%
+              </div>
+            </div>
+          </div>
+
           <!-- Game Cover -->
           <div class="aspect-[3/4] relative overflow-hidden">
             <img
@@ -205,6 +220,45 @@
             <h3 class="text-lg font-bold text-white mb-2 line-clamp-2">
               {{ item.game.name }}
             </h3>
+
+            <!-- Deal Info Compact -->
+            <div
+              v-if="item.bestDeal"
+              class="mb-3 p-3 bg-gradient-to-r from-green-900/20 to-blue-900/20 border border-green-500/20 rounded-lg">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-300">{{
+                  item.bestDeal.storeName
+                }}</span>
+                <div class="text-right">
+                  <div
+                    v-if="item.bestDeal.price === 0"
+                    class="text-green-400 font-bold text-lg">
+                    GRATIS
+                  </div>
+                  <div v-else class="flex items-center gap-2">
+                    <span
+                      v-if="
+                        item.bestDeal.originalPrice &&
+                        item.bestDeal.originalPrice !== item.bestDeal.price
+                      "
+                      class="text-gray-400 line-through text-sm">
+                      {{ item.bestDeal.originalPrice?.toFixed(2) }}€
+                    </span>
+                    <span class="text-green-400 font-bold text-lg">
+                      {{ item.bestDeal.price?.toFixed(2) }}€
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <a
+                :href="item.bestDeal.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105">
+                <Icon name="heroicons:shopping-cart" class="w-4 h-4" />
+                Zum Deal
+              </a>
+            </div>
 
             <p class="text-sm text-gray-400 mb-4">
               Hinzugefügt:
@@ -273,6 +327,7 @@
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
