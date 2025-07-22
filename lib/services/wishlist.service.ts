@@ -2,7 +2,6 @@ import { PrismaClient } from '~/prisma/client';
 import { useStoreUtils } from '../../composables/useStoreUtils';
 import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
-import { EmailService, type DealEmailData } from './email.service';
 import { ITADService } from './itad.service';
 import { MessagesService } from './messages.service';
 const prisma = new PrismaClient();
@@ -31,79 +30,6 @@ export interface WishlistDealNotification {
 }
 
 export namespace WishlistService {
-  /**
-   * E-Mail-Benachrichtigung für Deal senden
-   * Interne Hilfsfunktion für die Integration mit dem bestehenden Wishlist-System
-   */
-  async function sendDealNotificationEmail(
-    userId: number,
-    gameName: string,
-    deals: Array<{
-      storeName: string;
-      price: number;
-      discountPercent?: number;
-      originalPrice?: number;
-      url: string;
-    }>
-  ): Promise<void> {
-    try {
-      // Prüfe ob Benutzer E-Mail-Benachrichtigungen aktiviert hat
-      const shouldSend = await EmailService.shouldSendDealEmail(userId);
-      if (!shouldSend) {
-        console.log(
-          `E-Mail-Benachrichtigung für Benutzer ${userId} deaktiviert`
-        );
-        return;
-      }
-
-      // Hole Benutzer-E-Mail aus der Datenbank
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          supabase_uid: true,
-          display_name: true
-        }
-      });
-
-      if (!user?.supabase_uid) {
-        console.warn(`Kein Supabase-User für Benutzer ${userId} gefunden`);
-        return;
-      }
-
-      // E-Mail-Adresse aus Supabase Auth abrufen
-      const userEmail = await EmailService.getUserEmailFromAuth(
-        user.supabase_uid
-      );
-      if (!userEmail) {
-        console.warn(`Keine E-Mail-Adresse für Benutzer ${userId} gefunden`);
-        return;
-      }
-
-      // E-Mail senden
-      const emailData: DealEmailData = {
-        gameName,
-        deals,
-        userEmail,
-        userName: user.display_name || undefined
-      };
-
-      const success = await EmailService.sendDealNotificationEmail(emailData);
-
-      if (success) {
-        console.log(
-          `✅ E-Mail-Benachrichtigung für "${gameName}" an ${userEmail} gesendet`
-        );
-      } else {
-        console.warn(
-          `❌ E-Mail-Benachrichtigung für "${gameName}" konnte nicht gesendet werden`
-        );
-      }
-    } catch (error) {
-      console.error('Fehler beim Senden der E-Mail-Benachrichtigung:', error);
-      // Fehler nicht weiterwerfen, da E-Mail-Versand optional ist
-    }
-  }
-
   /**
    * Wishlist eines Benutzers abrufen
    */
@@ -273,9 +199,8 @@ export namespace WishlistService {
               await CheapSharkService.searchGameByTitle(item.game.name);
             if (cheapSharkSearchResults.length > 0) {
               const cheapSharkGameId = cheapSharkSearchResults[0].gameID;
-              const gameInfo = await CheapSharkService.getGameDeals(
-                cheapSharkGameId
-              );
+              const gameInfo =
+                await CheapSharkService.getGameDeals(cheapSharkGameId);
 
               // Grund: Konvertiere CheapShark Deals zu unserem Format
               for (const deal of gameInfo.deals.slice(0, 6)) {
@@ -398,17 +323,6 @@ export namespace WishlistService {
                     }
                   ]
                 );
-
-                // Zusätzlich E-Mail-Benachrichtigung senden
-                await sendDealNotificationEmail(userId, item.game.name, [
-                  {
-                    storeName: bestDeal.storeName,
-                    price: bestDeal.price || 0,
-                    discountPercent: bestDeal.discountPercent || undefined,
-                    originalPrice: bestDeal.originalPrice || undefined,
-                    url: bestDeal.url
-                  }
-                ]);
               } catch (notificationError) {
                 console.warn(
                   `Fehler bei der Benachrichtigung für ${item.game.name} (Deal ${bestDeal.id}):`,
@@ -422,7 +336,6 @@ export namespace WishlistService {
             `Fehler beim Prüfen der Deals für "${item.game.name}":`,
             itemError
           );
-          // Weiter mit dem nächsten Item
         }
       }
 

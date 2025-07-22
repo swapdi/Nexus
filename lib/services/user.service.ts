@@ -149,6 +149,46 @@ export namespace UserService {
     });
     return user as FullUser;
   }
+
+  /**
+   * E-Mail-Benachrichtigungseinstellungen aktualisieren
+   * Grund: Benutzer soll E-Mail-Benachrichtigungen ein/ausschalten können
+   */
+  export async function updateEmailNotifications(
+    user_id: number,
+    emailNotifications: boolean
+  ): Promise<FullUser> {
+    const user = await prisma.user.update({
+      where: { id: user_id },
+      data: { emailNotifications },
+      include: {
+        userGames: {
+          include: {
+            game: {
+              select: {
+                id: true,
+                name: true,
+                coverUrl: true
+              }
+            }
+          }
+        },
+        wishlistItems: {
+          include: {
+            game: {
+              select: {
+                id: true,
+                name: true,
+                coverUrl: true
+              }
+            }
+          }
+        }
+      }
+    });
+    return user as FullUser;
+  }
+
   /**
    * Benutzer löschen (Auth-Funktion mit Kaskadierung)
    */

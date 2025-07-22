@@ -158,12 +158,45 @@ export const useUserStore = defineStore('user', () => {
     user.value = null;
     stats.value = null;
   };
+
+  const updateEmailNotifications = async (enabled: boolean) => {
+    return await loading(
+      'update-email-notifications',
+      'E-Mail-Einstellungen werden aktualisiert...',
+      async () => {
+        try {
+          const updatedUser =
+            await $client.user.updateEmailNotifications.mutate({
+              emailNotifications: enabled
+            });
+          user.value = updatedUser;
+          notifyStore.notify(
+            enabled
+              ? 'E-Mail-Benachrichtigungen aktiviert'
+              : 'E-Mail-Benachrichtigungen deaktiviert',
+            1
+          );
+          return updatedUser;
+        } catch (error) {
+          console.error('Error updating email notifications:', error);
+          notifyStore.notify(
+            'Fehler beim Aktualisieren der E-Mail-Einstellungen',
+            3
+          );
+          throw error;
+        }
+      },
+      'process'
+    );
+  };
+
   return {
     user,
     stats,
     init,
     loadStats,
     updateProfile,
+    updateEmailNotifications,
     deleteAccount,
     linkSteamProfile,
     unlinkSteamProfile,

@@ -114,6 +114,29 @@ export const userRouter = router({
     }
   }),
 
+  // E-Mail-Benachrichtigungseinstellungen aktualisieren
+  updateEmailNotifications: protectedProcedure
+    .input(
+      z.object({
+        emailNotifications: z.boolean()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const updatedUser = await UserService.updateEmailNotifications(
+          ctx.dbUser.id,
+          input.emailNotifications
+        );
+        return updatedUser;
+      } catch (error) {
+        console.error('Error updating email notifications:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Fehler beim Aktualisieren der E-Mail-Einstellungen'
+        });
+      }
+    }),
+
   // Epic Games Profil trennen
   unlinkEpicProfile: protectedProcedure.mutation(async ({ ctx }) => {
     try {

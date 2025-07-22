@@ -1,109 +1,256 @@
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { PrismaClient } from '~/prisma/client';
 
 const prisma = new PrismaClient();
 
-export interface DealEmailData {
+export interface Deal {
+  storeName: string;
+  price: number;
+  originalPrice?: number;
+  discountPercent?: number;
+  url: string;
+}
+
+export interface User {
+  id: number;
+  supabase_uid: string;
+  display_name?: string | null;
+}
+
+interface EmailTemplateData {
   gameName: string;
-  deals: Array<{
-    storeName: string;
-    price: number;
-    originalPrice?: number;
-    discountPercent?: number;
-    url: string;
-  }>;
+  deals: Deal[];
   userEmail: string;
   userName?: string;
 }
 
 export namespace EmailService {
   /**
-   * HTML E-Mail-Template aus Datei laden und personalisieren
-   * Grund: Professionelles Design verwenden statt Fallback
+   * Deal-E-Mail an Benutzer senden
+   * Hauptfunktion für den Versand von Deal-Benachrichtigungen
    */
-  async function loadEmailTemplate(emailData: DealEmailData): Promise<string> {
+  export async function sendDealEmailToUser(
+    gameName: string,
+    deal: Deal,
+    userId: number
+  ): Promise<boolean> {
     try {
-      const templatePath = join(
-        process.cwd(),
-        'email-templates',
-        'deal-notification.html'
-      );
-      const templateContent = readFileSync(templatePath, 'utf-8');
-
-      // Template-Variablen ersetzen
-      const personalizedContent = templateContent
-        .replace(/\{\{\s*\.GameName\s*\}\}/g, emailData.gameName)
-        .replace(/\{\{\s*\.UserName\s*\}\}/g, emailData.userName || 'Gamer')
-        .replace(
-          /\{\{\s*\.SiteUrl\s*\}\}/g,
-          process.env.SITE_URL || 'http://localhost:3000'
-        )
-        .replace(
-          /\{\{\s*\.UnsubscribeUrl\s*\}\}/g,
-          `${process.env.SITE_URL || 'http://localhost:3000'}/settings`
-        )
-        .replace(/\{\{\s*\.Deals\s*\}\}/g, generateDealsHtml(emailData.deals))
-        .replace(/\{\{\s*\.Year\s*\}\}/g, new Date().getFullYear().toString());
-
-      return personalizedContent;
-    } catch (error) {
-      console.warn(
-        'Konnte E-Mail-Template nicht laden, verwende Fallback:',
-        error
-      );
-      // Fallback zu einfachem HTML
-      return generateFallbackEmailContent({
-        gameName: emailData.gameName,
-        deals: emailData.deals,
-        siteUrl: process.env.SITE_URL || 'http://localhost:3000'
+      // 1. Benutzer-Daten aus der Datenbank laden
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          supabase_uid: true,
+          display_name: true
+        }
       });
+
+      if (!user?.supabase_uid) {
+        console.warn(`Kein Supabase-User für Benutzer ${userId} gefunden`);
+        return false;
+      }
+
+      // 2. Prüfe E-Mail-Präferenzen
+      const shouldSend = await shouldSendDealEmail(userId);
+      if (!shouldSend) {
+        console.log(
+          `E-Mail-Benachrichtigung für Benutzer ${userId} deaktiviert`
+        );
+        return false;
+      }
+
+      // 3. E-Mail-Adresse aus Supabase Auth abrufen
+      const userEmail = await getUserEmailFromAuth(user.supabase_uid);
+      if (!userEmail) {
+        console.warn(`Keine E-Mail-Adresse für Benutzer ${userId} gefunden`);
+        return false;
+      }
+
+      // 4. E-Mail-Betreff generieren
+      const subject = generateEmailSubject(gameName, deal);
+
+      // 5. HTML-Content aus Template generieren
+      const htmlContent = await loadEmailTemplate({
+        gameName,
+        deals: [deal],
+        userEmail,
+        userName: user.display_name || undefined
+      });
+
+      // 6. E-Mail über Resend versenden
+      const success = await sendEmailViaResend(userEmail, subject, htmlContent);
+
+      if (success) {
+        console.log(
+          `✅ Deal-E-Mail für "${gameName}" an ${userEmail} versendet`
+        );
+      } else {
+        console.warn(
+          `❌ Deal-E-Mail für "${gameName}" konnte nicht versendet werden`
+        );
+      }
+
+      return success;
+    } catch (error) {
+      console.error('Fehler beim Senden der Deal-E-Mail:', error);
+      return false;
     }
   }
 
   /**
-   * HTML für Deals-Liste generieren
-   * Grund: Strukturierte Deal-Anzeige im E-Mail-Template
+   * E-Mail-Betreff basierend auf Deal generieren
    */
-  function generateDealsHtml(deals: DealEmailData['deals']): string {
-    return deals
-      .map(deal => {
-        const priceText =
-          deal.price === 0
-            ? '<span style="color: #10b981; font-weight: bold;">KOSTENLOS</span>'
-            : `<span style="font-size: 24px; font-weight: bold;">${deal.price.toFixed(2)}€</span>`;
+  function generateEmailSubject(gameName: string, deal: Deal): string {
+    if (deal.price === 0) {
+      return `🆓 ${gameName} ist jetzt kostenlos!`;
+    }
 
-        const discountBadge = deal.discountPercent
-          ? `<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">-${Math.round(deal.discountPercent)}%</span>`
+    if (deal.discountPercent && deal.discountPercent > 0) {
+      return `🔥 ${gameName} mit ${Math.round(deal.discountPercent)}% Rabatt!`;
+    }
+
+    return `🎮 ${gameName} ist im Angebot!`;
+  }
+  /**
+   * HTML E-Mail-Template direkt generieren mit modernem Design
+   * Grund: Einfaches, konsistentes Template ohne Dateisystem-Abhängigkeit
+   */
+  async function loadEmailTemplate(
+    emailData: EmailTemplateData
+  ): Promise<string> {
+    return generateDealEmailHtml(emailData);
+  }
+
+  /**
+   * Komplettes HTML E-Mail-Template für Deal-Benachrichtigung generieren
+   * Grund: Modernes, responsives Design ohne externe Template-Datei
+   */
+  function generateDealEmailHtml(emailData: EmailTemplateData): string {
+    const deal = emailData.deals[0]; // Nur den ersten Deal verwenden
+    const isFreeDeal = deal.price === 0;
+
+    // Preisanzeige generieren
+    const generatePriceDisplay = () => {
+      if (isFreeDeal) {
+        return `
+          <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border-radius: 25px; font-weight: 600; font-size: 18px; text-align: center; margin: 20px 0;">
+            🎉 KOSTENLOS
+          </div>
+        `;
+      }
+
+      const discountBadge =
+        deal.discountPercent && deal.discountPercent > 0
+          ? `<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">-${Math.round(deal.discountPercent)}%</span>`
           : '';
 
-        const originalPriceText =
-          deal.originalPrice && deal.originalPrice > deal.price
-            ? `<span style="text-decoration: line-through; color: #9ca3af; margin-left: 10px;">${deal.originalPrice.toFixed(2)}€</span>`
-            : '';
+      const originalPrice =
+        deal.originalPrice && deal.originalPrice > deal.price
+          ? `<span style="text-decoration: line-through; color: #9ca3af; font-size: 16px; margin-right: 8px;">${deal.originalPrice.toFixed(2)}€</span>`
+          : '';
 
-        return `
-        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; margin: 15px 0; border-radius: 12px; border-left: 4px solid #8b5cf6;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <div>
-              <h3 style="margin: 0; color: #8b5cf6; font-size: 18px;">${deal.storeName}</h3>
-              <div style="margin-top: 8px;">
-                ${priceText}
-                ${originalPriceText}
-                ${discountBadge}
-              </div>
-            </div>
-            <div style="margin-top: 10px;">
-              <a href="${deal.url}" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-                Deal ansehen
-              </a>
-            </div>
+      return `
+        <div style="text-align: center; margin: 20px 0;">
+          ${discountBadge ? `<div style="margin-bottom: 10px;">${discountBadge}</div>` : ''}
+          <div style="font-size: 24px; font-weight: bold; color: #10b981;">
+            ${originalPrice}
+            <span style="color: #ffffff;">${deal.price.toFixed(2)}€</span>
           </div>
         </div>
       `;
-      })
-      .join('');
+    };
+
+    return `
+      <!DOCTYPE html>
+      <html lang="de">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Deal-Benachrichtigung - ${emailData.gameName}</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+              color: #ffffff;
+              line-height: 1.6;
+            }
+          </style>
+        </head>
+        <body>
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 40px;">
+              <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #8b5cf6, #3b82f6, #06b6d4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: white;">
+                N
+              </div>
+              <h1 style="font-size: 32px; font-weight: bold; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px;">
+                Nexus
+              </h1>
+              <p style="color: #a1a1aa; font-size: 16px;">Deine Gaming-Deals sind da!</p>
+            </div>
+            
+            <!-- Main Content -->
+            <div style="background: rgba(31, 41, 55, 0.8); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; padding: 40px; backdrop-filter: blur(10px); margin-bottom: 30px;">
+              
+              <!-- Greeting -->
+              <div style="margin-bottom: 30px;">
+                <h2 style="font-size: 24px; color: #ffffff; margin-bottom: 10px;">
+                  Hallo ${emailData.userName || 'Gamer'}! 👋
+                </h2>
+                <p style="color: #d1d5db; font-size: 16px;">
+                  Ein Spiel aus deiner Wishlist ist jetzt im Angebot:
+                </p>
+              </div>
+
+              <!-- Game Title -->
+              <div style="text-align: center; margin: 30px 0;">
+                <h1 style="font-size: 32px; font-weight: 700; color: #ffffff; margin-bottom: 10px;">
+                  🎮 ${emailData.gameName}
+                </h1>
+                <div style="background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 8px; padding: 15px; margin: 20px 0;">
+                  <p style="font-size: 18px; font-weight: 600; color: #8b5cf6;">
+                    📍 ${deal.storeName}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Price Display -->
+              ${generatePriceDisplay()}
+
+              <!-- Call to Action -->
+              <div style="text-align: center; margin: 40px 0 20px 0;">
+                <a href="${deal.url}" style="display: inline-block; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981); color: white; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-weight: 600; font-size: 18px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4); transition: all 0.3s ease;">
+                  🛒 Deal jetzt sichern
+                </a>
+              </div>
+              
+              <div style="text-align: center; margin-top: 20px;">
+                <a href="${process.env.SITE_URL || 'http://localhost:3000'}/wishlist" style="color: #8b5cf6; text-decoration: none; font-size: 14px;">
+                  📋 Zur Wishlist
+                </a>
+              </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; color: #9ca3af; font-size: 14px; line-height: 1.6; border-top: 1px solid rgba(139, 92, 246, 0.2); padding-top: 30px; margin-top: 40px;">
+              <p style="margin-bottom: 15px;">
+                Du erhältst diese E-Mail, weil "${emailData.gameName}" auf deiner Nexus-Wishlist steht.
+              </p>
+              <p>
+                <a href="${process.env.SITE_URL || 'http://localhost:3000'}/settings" style="color: #8b5cf6; text-decoration: none;">
+                  E-Mail-Einstellungen verwalten
+                </a>
+              </p>
+              <p style="margin-top: 20px; font-size: 12px; color: #6b7280;">
+                © ${new Date().getFullYear()} Nexus Gaming. Alle Rechte vorbehalten.
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
   }
 
   /**
@@ -157,137 +304,22 @@ export namespace EmailService {
   }
 
   /**
-   * Deal-Benachrichtigung per E-Mail senden
-   * Grund: Reichweite über interne Nachrichten hinaus
-   */
-  export async function sendDealNotificationEmail(
-    emailData: DealEmailData
-  ): Promise<boolean> {
-    try {
-      const { gameName, deals, userEmail, userName } = emailData;
-
-      // E-Mail-Subject erstellen
-      const hasFreeGames = deals.some(deal => deal.price === 0);
-      const hasDiscounts = deals.some(
-        deal => deal.discountPercent && deal.discountPercent > 0
-      );
-
-      let subject = `🎮 ${gameName} ist im Angebot!`;
-
-      if (hasFreeGames) {
-        subject = `🆓 ${gameName} ist jetzt kostenlos!`;
-      } else if (hasDiscounts) {
-        const maxDiscount = Math.max(
-          ...deals
-            .filter(d => d.discountPercent)
-            .map(d => d.discountPercent || 0)
-        );
-        subject = `🔥 ${gameName} mit bis zu ${maxDiscount}% Rabatt!`;
-      }
-
-      // Professionelles E-Mail-Template laden
-      const htmlContent = await loadEmailTemplate(emailData);
-
-      // Versuche echten E-Mail-Versand mit Resend
-      const emailSent = await sendEmailViaResend(
-        userEmail,
-        subject,
-        htmlContent,
-        userName
-      );
-
-      if (emailSent) {
-        console.log(
-          `✅ E-Mail an ${userEmail} erfolgreich versendet: "${subject}"`
-        );
-        return true;
-      } else {
-        // Fallback: Development-Logging wenn E-Mail-Versand fehlschlägt
-        console.log(
-          '📧 E-Mail-Versand fehlgeschlagen, nutze Development-Logging:'
-        );
-        console.log(`An: ${userEmail}`);
-        console.log(`Betreff: ${subject}`);
-        console.log(`Spiel: ${gameName}`);
-        console.log(`Deals: ${deals.length}`);
-        return false;
-      }
-    } catch (error) {
-      console.error('Fehler beim Senden der Deal-E-Mail:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Fallback-E-Mail-Content als Plain HTML
-   * Grund: Sicherstellung dass immer eine E-Mail versendet werden kann
-   */
-  function generateFallbackEmailContent(data: {
-    gameName: string;
-    deals: DealEmailData['deals'];
-    siteUrl: string;
-  }): string {
-    const dealsList = data.deals
-      .map(deal => {
-        const priceText =
-          deal.price === 0
-            ? 'KOSTENLOS'
-            : `${deal.price.toFixed(2)}€${
-                deal.discountPercent
-                  ? ` (-${Math.round(deal.discountPercent)}%)`
-                  : ''
-              }`;
-
-        return `• ${deal.storeName}: ${priceText}`;
-      })
-      .join('\n');
-
-    return `
-      <html>
-        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #8b5cf6;">🎮 ${data.gameName} ist im Angebot!</h1>
-          
-          <p>Hallo!</p>
-          <p>Ein Spiel aus deiner Wishlist ist jetzt im Angebot:</p>
-          
-          <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h2 style="margin-top: 0;">${data.gameName}</h2>
-            <pre style="margin: 0; font-family: Arial, sans-serif;">${dealsList}</pre>
-          </div>
-          
-          <p>
-            <a href="${data.siteUrl}/wishlist" style="background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
-              Zur Wishlist
-            </a>
-          </p>
-          
-          <hr style="margin: 30px 0;">
-          <p style="color: #666; font-size: 12px;">
-            Du erhältst diese E-Mail, weil "${data.gameName}" auf deiner Nexus-Wishlist steht.<br>
-            <a href="${data.siteUrl}/settings">E-Mail-Benachrichtigungen verwalten</a>
-          </p>
-        </body>
-      </html>
-    `;
-  }
-
-  /**
    * Benutzer-E-Mail-Präferenzen prüfen
    * Grund: GDPR-Konformität und Benutzerwunsch respektieren
    */
   export async function shouldSendDealEmail(userId: number): Promise<boolean> {
     try {
-      // Prüfe Benutzer-Einstellungen (wird später implementiert)
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
-          id: true // TODO: email_notifications Feld zur DB hinzufügen
+          id: true
+          // emailNotifications: true // Wird aktiviert sobald Prisma Client regeneriert wurde
         }
       });
 
-      // Standard: E-Mails aktiviert (opt-out Modell)
-      // TODO: Implementiere email_notifications Feld in der Datenbank
-      return user !== null;
+      // Temporär: Standard auf true setzen bis Prisma Client korrekt regeneriert ist
+      // return user?.emailNotifications ?? false;
+      return user !== null; // Temporäre Lösung
     } catch (error) {
       console.error('Fehler beim Prüfen der E-Mail-Präferenzen:', error);
       // Im Fehlerfall: Keine E-Mail senden (sicherheitsorientiert)

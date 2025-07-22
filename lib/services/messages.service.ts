@@ -1,4 +1,5 @@
 import { PrismaClient } from '~/prisma/client';
+import { EmailService } from './email.service';
 const prisma = new PrismaClient();
 
 export namespace MessagesService {
@@ -253,6 +254,18 @@ export namespace MessagesService {
 
         // Server-Nachricht an den Benutzer erstellen
         const message = await createServerMessage(userId, messageText);
+        // Zusätzlich E-Mail-Benachrichtigung senden
+        await EmailService.sendDealEmailToUser(
+          gameName,
+          {
+            storeName: deals[0].storeName,
+            price: deals[0].price || 0,
+            discountPercent: deals[0].discountPercent || undefined,
+            originalPrice: deals[0].originalPrice || undefined,
+            url: deals[0].url
+          },
+          userId
+        );
         return message;
       } catch (dealError: any) {
         // Prüfen ob es ein Unique Constraint Fehler ist
