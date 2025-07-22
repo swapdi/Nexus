@@ -312,14 +312,12 @@ export namespace EmailService {
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
-          id: true
-          // emailNotifications: true // Wird aktiviert sobald Prisma Client regeneriert wurde
+          emailNotifications: true // Wird aktiviert sobald Prisma Client regeneriert wurde
         }
       });
 
       // Temporär: Standard auf true setzen bis Prisma Client korrekt regeneriert ist
-      // return user?.emailNotifications ?? false;
-      return user !== null; // Temporäre Lösung
+      return user?.emailNotifications ?? false;
     } catch (error) {
       console.error('Fehler beim Prüfen der E-Mail-Präferenzen:', error);
       // Im Fehlerfall: Keine E-Mail senden (sicherheitsorientiert)
