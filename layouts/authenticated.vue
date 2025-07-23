@@ -28,15 +28,8 @@
 
     <!-- Loading States -->
     <LoadingOverlay />
-    <!-- Blockierende Operationen -->
-    <LoadingIndicator />
-    <!-- Nicht-blockierende API-Calls -->
-    <LoadingMinimized />
-    <!-- Minimierte blockierende Operationen -->
-
     <!-- Notifications -->
     <Notifications />
-
     <!-- Main Content Area -->
     <div
       class="pt-1 transition-all duration-500 ease-out relative z-10"

@@ -11,7 +11,6 @@
 
   // Ref für Suche und Filter
   const searchQuery = ref('');
-  const showOnlyOnSale = ref(false);
 
   // Computed für gefilterte Items mit Deal-Informationen
   const filteredWishlistItems = computed(() => {
@@ -21,13 +20,6 @@
       items = items.filter(item =>
         item.game.name.toLowerCase().includes(searchQuery.value.toLowerCase())
       );
-    }
-    // Sale-Filter anwenden
-    if (showOnlyOnSale.value) {
-      const gameIdsWithDeals = wishlistStore.dealNotifications.map(
-        notif => notif.gameId
-      );
-      items = items.filter(item => gameIdsWithDeals.includes(item.gameId));
     }
 
     // Deal-Informationen zu Items hinzufügen
@@ -112,18 +104,6 @@
               class="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200" />
           </div>
         </div>
-
-        <!-- Only On Sale Filter -->
-        <div class="flex items-center gap-2">
-          <input
-            id="onSaleFilter"
-            v-model="showOnlyOnSale"
-            type="checkbox"
-            class="w-4 h-4 text-purple-600 bg-gray-900 border-gray-600 rounded focus:ring-purple-500 focus:ring-2" />
-          <label for="onSaleFilter" class="text-sm text-gray-300">
-            Nur Sale-Artikel
-          </label>
-        </div>
       </div>
     </div>
 
@@ -151,16 +131,6 @@
               </p>
             </div>
           </div>
-          <button
-            @click="showOnlyOnSale = !showOnlyOnSale"
-            :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
-              showOnlyOnSale
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            ]">
-            {{ showOnlyOnSale ? 'Alle anzeigen' : 'Nur Deals' }}
-          </button>
         </div>
       </div>
     </div>

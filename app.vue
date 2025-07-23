@@ -17,7 +17,6 @@
 <template>
   <div>
     <NuxtLayout>
-      <NuxtLoadingIndicator color="rgb(168 85 247 / 0.8)" :height="3" />
       <NuxtPage />
     </NuxtLayout>
     <LoadingOverlay />
