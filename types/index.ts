@@ -568,3 +568,28 @@ export interface SteamImportResult {
   enrichmentErrors?: number;
   message?: string;
 }
+
+// ============================================================================
+// EMAIL TYPES
+// ============================================================================
+
+export interface EmailDeal {
+  storeName: string;
+  price: number;
+  originalPrice?: number;
+  discountPercent?: number;
+  url: string;
+}
+
+export interface EmailUser {
+  id: number;
+  supabase_uid: string;
+  display_name?: string | null;
+}
+
+export interface EmailTemplateData {
+  gameName: string;
+  deals: EmailDeal[];
+  userEmail: string;
+  userName?: string;
+}

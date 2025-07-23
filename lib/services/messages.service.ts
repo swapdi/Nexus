@@ -208,7 +208,7 @@ export namespace MessagesService {
 
         if (!dealRecord) {
           // Deal erstellen falls nicht vorhanden
-          const bestDeal = deals[0]; // Nehme den ersten Deal als Repräsentant
+          const bestDeal = deals[0]; // Nur noch bester Deal wird übertragen
           dealRecord = await prisma.deal.create({
             data: {
               gameId,

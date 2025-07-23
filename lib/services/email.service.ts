@@ -3,27 +3,6 @@ import { PrismaClient } from '~/prisma/client';
 
 const prisma = new PrismaClient();
 
-export interface Deal {
-  storeName: string;
-  price: number;
-  originalPrice?: number;
-  discountPercent?: number;
-  url: string;
-}
-
-export interface User {
-  id: number;
-  supabase_uid: string;
-  display_name?: string | null;
-}
-
-interface EmailTemplateData {
-  gameName: string;
-  deals: Deal[];
-  userEmail: string;
-  userName?: string;
-}
-
 export namespace EmailService {
   /**
    * Deal-E-Mail an Benutzer senden
@@ -31,7 +10,7 @@ export namespace EmailService {
    */
   export async function sendDealEmailToUser(
     gameName: string,
-    deal: Deal,
+    deal: EmailDeal,
     userId: number
   ): Promise<boolean> {
     try {
@@ -79,16 +58,6 @@ export namespace EmailService {
       // 6. E-Mail über Resend versenden
       const success = await sendEmailViaResend(userEmail, subject, htmlContent);
 
-      if (success) {
-        console.log(
-          `✅ Deal-E-Mail für "${gameName}" an ${userEmail} versendet`
-        );
-      } else {
-        console.warn(
-          `❌ Deal-E-Mail für "${gameName}" konnte nicht versendet werden`
-        );
-      }
-
       return success;
     } catch (error) {
       console.error('Fehler beim Senden der Deal-E-Mail:', error);
@@ -99,7 +68,7 @@ export namespace EmailService {
   /**
    * E-Mail-Betreff basierend auf Deal generieren
    */
-  function generateEmailSubject(gameName: string, deal: Deal): string {
+  function generateEmailSubject(gameName: string, deal: EmailDeal): string {
     if (deal.price === 0) {
       return `🆓 ${gameName} ist jetzt kostenlos!`;
     }
@@ -140,17 +109,25 @@ export namespace EmailService {
 
       const discountBadge =
         deal.discountPercent && deal.discountPercent > 0
-          ? `<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">-${Math.round(deal.discountPercent)}%</span>`
+          ? `<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">-${Math.round(
+              deal.discountPercent
+            )}%</span>`
           : '';
 
       const originalPrice =
         deal.originalPrice && deal.originalPrice > deal.price
-          ? `<span style="text-decoration: line-through; color: #9ca3af; font-size: 16px; margin-right: 8px;">${deal.originalPrice.toFixed(2)}€</span>`
+          ? `<span style="text-decoration: line-through; color: #9ca3af; font-size: 16px; margin-right: 8px;">${deal.originalPrice.toFixed(
+              2
+            )}€</span>`
           : '';
 
       return `
         <div style="text-align: center; margin: 20px 0;">
-          ${discountBadge ? `<div style="margin-bottom: 10px;">${discountBadge}</div>` : ''}
+          ${
+            discountBadge
+              ? `<div style="margin-bottom: 10px;">${discountBadge}</div>`
+              : ''
+          }
           <div style="font-size: 24px; font-weight: bold; color: #10b981;">
             ${originalPrice}
             <span style="color: #ffffff;">${deal.price.toFixed(2)}€</span>
@@ -220,13 +197,17 @@ export namespace EmailService {
 
               <!-- Call to Action -->
               <div style="text-align: center; margin: 40px 0 20px 0;">
-                <a href="${deal.url}" style="display: inline-block; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981); color: white; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-weight: 600; font-size: 18px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4); transition: all 0.3s ease;">
+                <a href="${
+                  deal.url
+                }" style="display: inline-block; background: linear-gradient(90deg, #8b5cf6, #3b82f6, #10b981); color: white; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-weight: 600; font-size: 18px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4); transition: all 0.3s ease;">
                   🛒 Deal jetzt sichern
                 </a>
               </div>
               
               <div style="text-align: center; margin-top: 20px;">
-                <a href="${process.env.SITE_URL || 'http://localhost:3000'}/wishlist" style="color: #8b5cf6; text-decoration: none; font-size: 14px;">
+                <a href="${
+                  process.env.SITE_URL || 'http://localhost:3000'
+                }/wishlist" style="color: #8b5cf6; text-decoration: none; font-size: 14px;">
                   📋 Zur Wishlist
                 </a>
               </div>
@@ -236,10 +217,14 @@ export namespace EmailService {
             <!-- Footer -->
             <div style="text-align: center; color: #9ca3af; font-size: 14px; line-height: 1.6; border-top: 1px solid rgba(139, 92, 246, 0.2); padding-top: 30px; margin-top: 40px;">
               <p style="margin-bottom: 15px;">
-                Du erhältst diese E-Mail, weil "${emailData.gameName}" auf deiner Nexus-Wishlist steht.
+                Du erhältst diese E-Mail, weil "${
+                  emailData.gameName
+                }" auf deiner Nexus-Wishlist steht.
               </p>
               <p>
-                <a href="${process.env.SITE_URL || 'http://localhost:3000'}/settings" style="color: #8b5cf6; text-decoration: none;">
+                <a href="${
+                  process.env.SITE_URL || 'http://localhost:3000'
+                }/settings" style="color: #8b5cf6; text-decoration: none;">
                   E-Mail-Einstellungen verwalten
                 </a>
               </p>
@@ -260,8 +245,7 @@ export namespace EmailService {
   async function sendEmailViaResend(
     to: string,
     subject: string,
-    htmlContent: string,
-    userName?: string
+    htmlContent: string
   ): Promise<boolean> {
     try {
       const resendApiKey = process.env.RESEND_API_KEY;
@@ -343,8 +327,9 @@ export namespace EmailService {
 
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-      const { data: user, error } =
-        await supabase.auth.admin.getUserById(supabaseUid);
+      const { data: user, error } = await supabase.auth.admin.getUserById(
+        supabaseUid
+      );
 
       if (error || !user.user?.email) {
         console.error('Fehler beim Abrufen der Benutzer-E-Mail:', error);

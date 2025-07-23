@@ -68,7 +68,7 @@
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
     class="group fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] flex flex-col bg-gray-900 overflow-hidden transition-all duration-500 ease-out"
-    :style="{ width: showExpanded ? '256px' : '78px' }">
+    :style="{ width: showExpanded ? '256px' : '68px' }">
     <!-- Futuristischer Hintergrund mit Gradient und Glow -->
     <div
       class="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-gray-800/90 to-gray-900/95 backdrop-blur-lg border-r border-purple-500/20 shadow-2xl">

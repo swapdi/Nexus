@@ -36,16 +36,6 @@
             {{ currentOperationLabel }}
           </span>
 
-          <!-- Operation Counter (wenn mehr als 1) -->
-          <div
-            v-if="totalOperationCount > 1"
-            :class="[
-              'text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] text-center font-medium',
-              hasBlockingOperation ? 'bg-purple-600' : 'bg-blue-600'
-            ]">
-            {{ totalOperationCount }}
-          </div>
-
           <!-- Expand Icon (nur bei blocking operations) -->
           <svg
             v-if="hasBlockingOperation && loadingStore.isMinimized"
