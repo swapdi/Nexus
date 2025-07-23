@@ -1,217 +1,261 @@
-<img src="./public/favicon.ico" alt="Nexus Logo" width="150"/>
+<div align="center">
+  <img src="./public/favicon.ico" alt="Nexus Logo" width="150"/>
+  
+  # Nexus
+  
+  **Die zentrale Gaming-Plattform für PC-Spieler**
+  
+  Eine innovative Full-Stack-Anwendung zur Verwaltung digitaler Spielebibliotheken, Deal-Aggregation und Gamification mit modernem Tech-Stack.
+  
+  [![Version](https://img.shields.io/badge/version-1.4.3-blue.svg)]()
+  [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
+  [![Tech Stack](https://img.shields.io/badge/stack-Nuxt3%20%7C%20Vue.js%20%7C%20TypeScript%20%7C%20Supabase-purple.svg)]()
+</div>
 
-# Nexus
+---
 
-## Vision
+## 🚀 Vision & Kernfunktionen
 
-Nexus ist eine zentrale, plattformübergreifende Anwendung, die PC-Spielebibliotheken vereint, Angebote intelligent darstellt, Gamification integriert und ein innovatives Kaufmodell ermöglicht. Ziel ist es, die Verwaltung und das Erlebnis digitaler Spiele für PC-Gamer zu revolutionieren.
+**Nexus** revolutioniert die Verwaltung und das Erlebnis digitaler Spiele für PC-Gamer durch:
 
-## Kernfunktionen (Geplant)
+### 🎮 **Bibliotheks-Zentralisierung**
 
-- **Bibliotheks-Zentralisierung:** Import und Anzeige von Spielen von Hauptplattformen (Steam, Epic, GOG). Einheitliche Übersicht.
-- **Automatisierte Metadaten:** Anreicherung der importierten Spiele mit umfassenden Infos (Cover, Beschreibung, Genre) von externen Datenbanken (IGDB).
-- **Angebots-Aggregation:** Sammeln und Anzeigen aktueller Deals und kostenloser Spiele von verschiedenen Stores. Filtermöglichkeiten.
-- **Gamification-System:** Leveling, Achievements, In-App-Währung (Credits) basierend auf Nutzeraktionen und Bibliotheksdaten.
-- **Währungs- & Kaufmodell (Konzept für Uni-Projekt):**
-  - Credits verdienen (Gamification, Affiliate-Payback).
-  - Credits kaufen (In-App Purchase via Payment Gateway).
-  - Credits einlösen für store-spezifisches Guthaben/Keys (basierend auf angenommenen Partnerverträgen).
-- **Benutzerkonto-Management:** Registrierung, Login, Profilverwaltung (via Supabase Auth).
-- **User Interface:** Modernes, dunkles Design mit Fokus auf Usability und Gaming-Ästhetik (Vue.js + Tailwind CSS).
+- **Multi-Platform Import**: Steam, Epic Games, GOG Bibliotheken
+- **Einheitliche Übersicht**: Alle Spiele an einem Ort
+- **Duplikat-Schutz**: Intelligente Erkennung bereits vorhandener Spiele
+- **Automatische Metadaten**: Anreicherung mit IGDB-Daten (Cover, Beschreibungen, Genres)
 
-## Technische Architektur
+### 💰 **Deal-Aggregation & Preisvergleich**
 
-- **Frontend:** Vue.js (SPA), gerendert/strukturiert von Nuxt 3.
-- **Full-Stack Framework:** Nuxt 3 (für Seiten-Routing, Server-Side Rendering/Logik, API-Routen).
-- **Backend-as-a-Service:** Supabase (PostgreSQL-Datenbank, Authentifizierung, Storage).
-- **Datenbank-Interaktion:** Prisma ORM (mit Supabase).
-- **Styling:** Tailwind CSS.
-- **API-Integrationen:**
-  - Supabase Client (Auth, DB-Zugriff).
-  - Externe APIs: Steam Web API, IGDB API, Anbieter-Schnittstellen (konzeptionell für Kaufmodell).
-- **Payment Gateway (Konzeptionell):** Stripe (für Credit-Käufe).
-- **(Zukünftige Option) Desktop:** Electron (Wrapper für die Web-App, für OS-Integration wie Spielstart).
+- **Live Deal-Tracking**: CheapShark & IsThereAnyDeal (ITAD) Integration
+- **Intelligente Preishistorie**: Tracking von Preisentwicklungen
+- **Wishlist-Benachrichtigungen**: Automatische Alerts bei Preisreduktionen
+- **Multi-Store Vergleich**: Beste Angebote verschiedener Plattformen
 
-## Aktueller Implementierungsstand
+### 🏆 **Gamification-System**
 
-### ✅ Vollständig implementiert
+- **Credit-System**: Verdiene In-App-Währung durch Aktivitäten
+- **Achievement-System**: Belohnungen für Bibliotheks-Aktivitäten
+- **User Level & XP**: Progression durch Platform-Nutzung
+- **Community-Features**: Statistiken und Vergleiche
 
-- **Benutzerauthentifizierung:** Registrierung, Login, Logout über Supabase Auth
-- **Steam-Bibliotheksimport:** Vollständige Integration der Steam Web API mit einfacher Loading-Anzeige
-- **IGDB-Metadaten-Anreicherung:** Automatische Anreicherung mit Beschreibungen, Genres, Cover-Bildern
-- **Spielebibliotheks-Anzeige:** Filterable und sortierbare Spieleübersicht mit verschiedenen Ansichtsmodi
-- **View-Mode-System:** 4 verschiedene Ansichtsmodi (Große Kacheln, Mittlere Kacheln, Mini-Kacheln, Listenansicht) mit localStorage-Persistierung
-- **Responsive UI:** Modernes, dunkles Design mit Tailwind CSS
-- **Gamification-Grundlagen:** Credits-System und User-XP-Framework
-- **Vereinfachtes Loading-System:** Einheitliches Loading-Overlay für alle Operationen
+### 🔐 **Benutzer-Management**
 
-### 🚧 In Entwicklung
+- **Sichere Authentifizierung**: Supabase Auth Integration
+- **Profilverwaltung**: Personalisierte Gaming-Profile
+- **Platform-Verknüpfung**: Steam ID & Epic Games Verbindung
+- **Datenschutz**: DSGVO-konforme Datenverwaltung
 
-- **Epic Games Store Import:** API-Integration geplant
-- **GOG-Import:** API-Integration geplant
-- **Angebots-Aggregation:** Deal-Sammlungs-System
-- **Erweiterte Gamification:** Achievement-System und Level-Berechnung
+---
 
-### 🔧 Technische Features
+## 🛠️ Tech-Stack & Architektur
 
-#### Vereinfachtes Loading-System
+### **Frontend**
 
-Das Projekt verwendet ein einheitliches, vereinfachtes Loading-System:
+- **Framework**: Nuxt 3 (Vue.js 3) mit Server-Side Rendering
+- **Styling**: Tailwind CSS mit dunklem Gaming-Design
+- **State Management**: Pinia für reaktive Zustandsverwaltung
+- **Type Safety**: Vollständig typisiert mit TypeScript
 
-- **Globales Loading-Overlay:** Ein zentrales Overlay für alle Ladezustände
-- **Einheitliche Benutzeroberfläche:** Konsistente Ladeanzeige in der gesamten Anwendung
-- **Optimierte Performance:** Entfernung komplexer Progress-Tracking-Systeme
-- **Wartungsfreundlich:** Einfache Wartung und Erweiterung der Ladezustände
+### **Backend & APIs**
 
-#### Steam Import System
+- **Backend-as-a-Service**: Supabase (PostgreSQL + Auth + Storage)
+- **ORM**: Prisma für typsichere Datenbankoperationen
+- **API Layer**: tRPC für End-to-End Type Safety
+- **External APIs**:
+  - Steam Web API (Bibliotheks-Import)
+  - IGDB API (Metadaten & Cover)
+  - CheapShark API (Deal-Aggregation)
+  - IsThereAnyDeal API (Preisvergleich)
 
-Steam-Import mit optimierter Benutzeroberfläche:
+### **Development & DevOps**
 
-- **Einfacher Import-Dialog:** Klare und intuitive Benutzeroberfläche
-- **Sofortige Spielanzeige:** Importierte Spiele werden direkt angezeigt
-- **Einheitliches Loading:** Verwendung des globalen Loading-Overlays
-- **Benutzerfreundliche Fehlermeldungen:** Klare Rückmeldungen bei Problemen
+- **Testing**: Vitest für Unit & Integration Tests
+- **Code Quality**: TypeScript strict mode + ESLint
+- **Build**: Nuxt 3 optimierte Production-Builds
+- **Deployment**: Docker-ready mit Multi-Stage Builds
 
-**Dateien:**
+---
 
-- `components/LibraryImport.vue` - Vereinfachte Import-Komponente
-- `components/LoadingOverlay.vue` - Globales Loading-Overlay
-- `components/AppHeader.vue` - Vereinfachter Header ohne Progress-Anzeigen
-- `server/trpc/routers/games.router.ts` - Backend Steam-Import-Implementation
-- `stores/loading.store.ts` - Vereinfachte Loading-States
+## 📱 Features & Seiten
 
-### 🎮 Steam Import
+### **🏠 Dashboard**
 
-Der Steam-Import wurde für bessere Benutzerfreundlichkeit optimiert:
+- Übersicht über Gaming-Statistiken & Credits
+- Kürzlich gespielte Titel
+- Aktuelle Top-Deals mit Rabatt-Highlights
+- Gaming-Tipps & Neuigkeiten
 
-**Import-Workflow:**
+### **🎯 Meine Spiele**
 
-1. **Steam-Bibliothek-Import**: Steam-Spiele werden mit Basis-Metadaten importiert
-2. **Globales Loading-Overlay**: Ein einheitliches Loading-Overlay wird während des Imports angezeigt
-3. **Benutzerfreundliche Rückmeldungen**: Klare Status-Meldungen und Erfolgsmeldungen
+- Vollständige Bibliotheksübersicht aller Plattformen
+- **Filter & Sortierung**: Nach Platform, Genre, Spielzeit
+- **View-Modi**: Grid (Klein/Mittel/Groß), Liste, Kompakt
+- **Import-Management**: Steam/Epic Games Bibliotheks-Sync
+- **Spielstatistiken**: Spielzeit, letzter Start, Favoriten
 
-**UI-Verhalten:**
+### **🔥 Deals & Angebote**
 
-- **Einheitliche Ladeanzeige**: Globales Loading-Overlay für alle Operationen
-- **Responsive Design**: Optimiert für Desktop und mobile Geräte
-- **Intuitive Benutzeroberfläche**: Einfache und klare Benutzerführung
+- **Live Deal-Feed**: Aktuelle Rabatte von allen Stores
+- **Erweiterte Filter**: Preis, Store, Rating, Gratis-Spiele
+- **Deal-Details**: Preishistorie, Store-Links, Bewertungen
+- **Background-Sync**: Automatische Updates ohne UI-Blockierung
 
-**Technische Details:**
+### **💖 Wishlist**
 
-- Vereinfachte Loading Store mit `isLoading` und `primaryOperation`
-- Einheitliche Steam-Import-Mutation (`importSteamLibrary`)
-- Globales Loading-Overlay (`<LoadingOverlay />`) für alle Ladezustände
+- **Intelligente Überwachung**: Automatische Deal-Benachrichtigungen
+- **Preis-Alerts**: Email/In-App bei Wunschpreis erreicht
+- **Multi-Store Vergleich**: Beste Angebote für Wishlist-Titel
+- **Quick-Actions**: Schnelles Hinzufügen/Entfernen
 
-## Projektstruktur (Überblick)
+### **📧 Nachrichten**
 
-Das Projekt folgt einer typischen Nuxt 3 Struktur:
+- **Deal-Benachrichtigungen**: Neue Angebote für Wishlist-Spiele
+- **System-Nachrichten**: Import-Status, Achievements
+- **Filter & Archivierung**: Organisierte Inbox-Verwaltung
 
-- `components/`: Wiederverwendbare Vue-Komponenten.
-- `pages/`: Verzeichnisbasierte Routen und Ansichten.
-- `server/`: API-Endpunkte und serverseitige Logik.
-- `prisma/`: Datenbank-Schema (`schema.prisma`) und Prisma-Client.
-- `stores/`: Pinia-Stores für das State Management.
-- `layouts/`: Layout-Vorlagen für Seiten.
-- `public/`: Öffentlich zugängliche statische Dateien (z.B. `favicon.ico`).
-- `assets/`: Statische Projekt-Assets (z.B. CSS, Bilder die vom Build-Prozess verarbeitet werden).
+### **⚙️ Einstellungen**
 
-## Setup für die Entwicklung
+- **Profilverwaltung**: Avatar, Display Name, Gaming-Präferenzen
+- **Platform-Verknüpfung**: Steam ID, Epic Games Account
+- **Benachrichtigungen**: Email & Push-Notification Settings
+- **Datenschutz**: Account-Löschung, Datenexport
 
-### Voraussetzungen
+---
 
-- Node.js (aktuelle LTS-Version wird empfohlen)
-- pnpm (bevorzugter Paketmanager für dieses Projekt)
-  - Alternativ npm oder yarn, wobei pnpm für konsistente Abhängigkeitsinstallationen sorgt.
-- Ein Supabase-Konto und ein eingerichtetes Projekt.
-- (Optional für spätere Phasen) Ein Stripe-Konto für die Payment-Integration.
+## 🚦 Installation & Setup
 
-### Installationsschritte
-
-1.  **Repository klonen:**
-
-    ```bash
-    git clone <URL_DES_GIT_REPOSITORIES> Nexus
-    cd Nexus
-    ```
-
-2.  **Abhängigkeiten installieren:**
-
-    ```bash
-    pnpm install
-    ```
-
-3.  **Umgebungsvariablen einrichten:**
-
-    - Erstelle eine Datei namens `.env` im Stammverzeichnis des Projekts.
-    - Kopiere den Inhalt der Datei `.env.example` (falls vorhanden, ansonsten manuell die benötigten Variablen eintragen) in die `.env` Datei.
-    - Trage deine spezifischen Werte für die folgenden Variablen ein:
-
-      ```env
-      # Supabase
-      SUPABASE_URL="DEINE_SUPABASE_PROJEKT_URL"
-      SUPABASE_KEY="DEIN_SUPABASE_ANON_KEY" # Öffentlich, sicher für den Client-Side Gebrauch
-
-      # Prisma (Verbindung zur Supabase Datenbank)
-      DATABASE_URL="DEIN_POSTGRESQL_CONNECTION_STRING_VON_SUPABASE"
-      # Beispiel: postgresql://postgres:[DEIN_PASSWORT]@db.[DEINE_PROJEKT_ID].supabase.co:5432/postgres      # Steam API
-      STEAM_API_KEY="DEIN_STEAM_WEB_API_KEY"
-
-      # IGDB API (für Spiel-Metadaten) - Erfordert Twitch Developer Account
-      IGDB_CLIENT_ID="DEIN_IGDB_CLIENT_ID"
-      IGDB_CLIENT_SECRET="DEIN_IGDB_CLIENT_SECRET"
-
-      # Optional für Stripe (spätere Phasen)
-      # STRIPE_SECRET_KEY="DEIN_STRIPE_SECRET_KEY"
-      # STRIPE_ENDPOINT_SECRET="DEIN_STRIPE_WEBHOOK_SECRET"
-      ```
-
-    - **Steam API Key:** Erhalte einen API-Key von [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)
-    - **IGDB API:** Siehe detaillierte Anleitung in [IGDB_SETUP.md](./IGDB_SETUP.md)
-    - **Wichtig:** Den `DATABASE_URL` String findest du in deinem Supabase Projekt unter `Project Settings` > `Database` > `Connection string` (den URI-Typ verwenden). Stelle sicher, dass du `[YOUR-PASSWORD]` durch dein Datenbankpasswort ersetzt.
-
-4.  **Datenbank-Schema synchronisieren:**
-    Nachdem die `DATABASE_URL` in der `.env` Datei konfiguriert ist, synchronisiere dein lokales Prisma-Schema mit der Supabase-Datenbank:
-
-    ```bash
-    pnpm prisma db push
-    ```
-
-    Dieser Befehl erstellt die Tabellen und Strukturen gemäß `prisma/schema.prisma` in deiner Datenbank.
-
-5.  **Prisma Client generieren:**
-    Damit dein Code typsicheren Zugriff auf die Datenbank hat, generiere den Prisma Client:
-
-    ```bash
-    pnpm prisma generate
-    ```
-
-6.  **(Optional) Seed-Daten laden:**
-    Wenn ein Seed-Skript (`prisma/seed.ts`) vorhanden ist, um die Datenbank mit initialen Daten zu füllen:
-    ```bash
-    pnpm prisma db seed
-    ```
-
-### Entwicklungs-Server starten
-
-Führe folgenden Befehl aus, um den Nuxt 3 Entwicklungs-Server zu starten:
+### **Voraussetzungen**
 
 ```bash
-pnpm dev
+Node.js 18+
+npm oder yarn
+PostgreSQL Datenbank (lokal oder Supabase)
 ```
 
-Die Anwendung ist dann standardmäßig unter `http://localhost:3000` erreichbar.
+### **1. Repository klonen**
 
-## Wichtige Dokumente im Projekt
+```bash
+git clone https://github.com/yourusername/nexus.git
+cd nexus
+```
 
-- **`PLANNING.md`**: Enthält detailliertere Informationen zur Vision, Zielgruppen, Monetarisierungskonzepten und dem geplanten Projektfortschritt.
-- **`Tasks.md`**: Eine detaillierte Auflistung der Entwicklungsaufgaben, aufgeteilt in Phasen, mit ihrem jeweiligen Status.
-- **`nuxt.config.ts`**: Die Hauptkonfigurationsdatei für das Nuxt 3 Framework, inklusive Module, Build-Einstellungen und Laufzeitkonfiguration.
-- **`prisma/schema.prisma`**: Die maßgebliche Datei für die Definition des Datenbankschemas und der Modelle.
+### **2. Dependencies installieren**
 
-## Beitragende
+```bash
+npm install
+# oder
+yarn install
+```
 
-Informationen zu Beitragenden können hier ergänzt werden.
+### **3. Environment Setup**
 
-## Lizenz
+Kopiere `.env.example` zu `.env` und konfiguriere:
 
-Dieses Projekt steht unter der [MIT Lizenz](LICENSE) (sofern nicht anders angegeben).
+```bash
+# Database
+DATABASE_URL="postgresql://postgres:password@localhost:5432/nexus"
+
+# Supabase
+SUPABASE_URL="your-supabase-url"
+SUPABASE_ANON_KEY="your-supabase-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
+
+# Steam API
+STEAM_API_KEY="your-steam-api-key-here"
+
+# IGDB API (für Metadaten) - Erfordert Twitch Developer Account
+IGDB_CLIENT_ID="your-igdb-client-id"
+IGDB_CLIENT_SECRET="your-igdb-client-secret"
+
+# ITAD API (für Deal-Tracking und Webhooks)
+ITAD_API_KEY="your-itad-api-key"
+
+# Stripe (für Credit-Käufe)
+STRIPE_PUBLISHABLE_KEY="your-stripe-publishable-key"
+STRIPE_SECRET_KEY="your-stripe-secret-key"
+STRIPE_WEBHOOK_SECRET="your-stripe-webhook-secret"
+
+# Session Secret
+NUXT_SESSION_SECRET="your-session-secret-here"
+
+# Epic Games API
+EPIC_GAMES_API_KEY="your-epic-games-api-key"
+
+# E-Mail-Versand (Resend)
+RESEND_API_KEY="your-resend-api-key"
+FROM_EMAIL="noreply@yourdomain.com"
+SITE_URL="https://yourdomain.com"
+```
+
+### **4. Datenbank Setup**
+
+```bash
+# Prisma Migrationen ausführen
+npx prisma migrate dev
+
+# Seed-Daten laden (optional)
+npx prisma db seed
+```
+
+### **5. Development Server starten**
+
+```bash
+npm run dev
+# Zugänglich unter http://localhost:3000
+```
+
+---
+
+## 🔗 API-Integrationen & Services
+
+### **Steam Web API**
+
+- **Bibliotheks-Import**: Automatischer Import der Steam-Bibliothek
+- **Cover-Assets**: Hochauflösende Spiel-Cover von Steam CDN
+- **Spielzeit-Tracking**: Import der Steam-Spielzeiten
+
+### **IGDB (Internet Game Database)**
+
+- **Metadaten-Anreicherung**: Automatische Spiel-Informationen
+- **Cover & Screenshots**: Hochqualitative Gaming-Assets
+- **Genre & Developer**: Strukturierte Spiel-Kategorisierung
+
+### **CheapShark API**
+
+- **Deal-Aggregation**: 30+ Gaming-Stores überwacht
+- **Preishistorie**: Historische Preisentwicklung
+- **Store-Vergleich**: Multi-Platform Preisvergleich
+
+### **IsThereAnyDeal (ITAD)**
+
+- **Erweiterte Deal-Suche**: Präzise Spiel-Matching
+- **Voucher & Bundles**: Zusätzliche Rabatt-Optionen
+- **Wishlist-Integration**: Proaktive Deal-Benachrichtigungen
+
+---
+
+## 🚀 Deployment
+
+### **Docker Deployment**
+
+```bash
+# Docker Image erstellen
+docker build -t nexus .
+
+# Container starten
+docker run -p 3000:3000 nexus
+```
+
+### **Production Considerations**
+
+- **Environment Variables**: Sichere API-Keys in Production
+- **Database**: Supabase oder managed PostgreSQL
+- **CDN**: Nuxt Static Assets über CDN
+- **Monitoring**: Error Tracking & Performance Monitoring
+
+---
+
+## 📄 Lizenz
+
+Dieses Projekt steht unter der [MIT License](LICENSE).
