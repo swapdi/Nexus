@@ -11,36 +11,11 @@ services:
     container_name: nexus-portfolio-demo
     restart: unless-stopped
     ports:
-      - '3001:3000' # Host-Port 3001 -> Container-Port 3000 (3000 bereits von portfolio-app belegt)
+      - '3333:3333'
     environment:
-      # Database
-      - DATABASE_URL=${DATABASE_URL}
-
-      # Supabase
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-
-      # API Keys
-      - STEAM_API_KEY=${STEAM_API_KEY}
-      - IGDB_CLIENT_ID=${IGDB_CLIENT_ID}
-      - IGDB_CLIENT_SECRET=${IGDB_CLIENT_SECRET}
-      - ITAD_API_KEY=${ITAD_API_KEY}
-      - EPIC_GAMES_API_KEY=${EPIC_GAMES_API_KEY}
-
-      # Email (Resend)
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - FROM_EMAIL=${FROM_EMAIL}
-      - SITE_URL=${SITE_URL}
-
-      # Session
-      - NUXT_SESSION_SECRET=${NUXT_SESSION_SECRET}
-
-      # Node Environment
-      - NODE_ENV=production
+      - PORT=3333
       - HOST=0.0.0.0
-      - PORT=3000
-
+      - NODE_ENV=production
     env_file:
       - .env.production
     networks:
@@ -53,7 +28,7 @@ services:
           '--quiet',
           '--tries=1',
           '--spider',
-          'http://localhost:3000'
+          'http://localhost:3333'
         ]
       interval: 30s
       timeout: 10s

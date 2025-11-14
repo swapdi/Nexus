@@ -33,10 +33,10 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Setze Umgebungsvariablen für den Produktivbetrieb
 ENV HOST=0.0.0.0
-ENV PORT=3000
+ENV PORT=3333
 ENV NODE_ENV=production
 
-EXPOSE 3000
+EXPOSE 3333
 
 # Starte die Anwendung
 CMD [ "node", ".output/server/index.mjs" ]

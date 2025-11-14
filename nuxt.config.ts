@@ -28,11 +28,14 @@ export default defineNuxtConfig({
       ]
     }
   },
+  nitro: {
+    preset: 'node-server'
+  },
   runtimeConfig: {
     openAIKey: process.env.OPENAI_API_KEY,
     public: {
       debugMode: true,
-      siteRootUrl: process.env.URL || 'http://localhost:3000'
+      siteRootUrl: process.env.URL || 'http://localhost:3333'
     }
   },
   supabase: {
