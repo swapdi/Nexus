@@ -79,8 +79,8 @@ docker-compose logs -f nexus-app
 # Prüfe ob Container läuft
 docker ps | grep nexus
 
-# Test URL
-curl http://localhost:3000
+# Test URL (Port 3001, da 3000 bereits belegt)
+curl http://localhost:3001
 \`\`\`
 
 ## 🌐 Reverse Proxy Setup (Optional)
@@ -96,7 +96,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/nexus.deine-domain.de/privkey.pem;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:3001;  # Port 3001 für Nexus
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

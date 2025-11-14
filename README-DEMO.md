@@ -58,8 +58,10 @@ Diese Portfolio-Demo nutzt einen vorkonfigurierten Demo-Account:
 
 5. **Anwendung aufrufen**
    ```
-   http://localhost:3000
+   http://localhost:3001
    ```
+   
+   > **Hinweis**: Der Container läuft auf Port 3001 (Host) → 3000 (Container), da Port 3000 möglicherweise bereits von anderen Services belegt ist.
 
 ### Production Deployment (mit Reverse Proxy)
 
@@ -75,7 +77,7 @@ server {
     ssl_certificate_key /pfad/zu/key.pem;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:3001;  # Angepasst auf Port 3001
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
