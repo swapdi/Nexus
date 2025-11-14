@@ -10,6 +10,29 @@ export const userRouter = router({
     };
   }),
 
+  // ===== PORTFOLIO DEMO MODE =====
+  // Demo-User abrufen (ohne Auth)
+  getDemoUser: publicProcedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      try {
+        const demoUser = await UserService.getUserById(input.userId);
+        if (!demoUser) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Demo-User nicht gefunden'
+          });
+        }
+        return demoUser;
+      } catch (error) {
+        console.error('Error fetching demo user:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Fehler beim Abrufen des Demo-Users'
+        });
+      }
+    }),
+
   // Benutzerstatistiken abrufen
   getUserStats: protectedProcedure.query(async ({ ctx }) => {
     try {

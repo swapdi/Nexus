@@ -30,26 +30,37 @@
           Deine ultimative Spieleverwaltung für alle Plattformen
         </p>
         <p
-          class="text-lg text-gray-400 mb-12 animate-fade-in-up"
+          class="text-lg text-gray-400 mb-6 animate-fade-in-up"
           style="animation-delay: 0.8s">
           Steam, Epic Games, GOG und mehr - Alles an einem Ort
         </p>
+        <!-- Portfolio Demo Badge -->
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/50 rounded-full mb-8 animate-fade-in-up"
+          style="animation-delay: 1s">
+          <Icon name="heroicons:eye" class="text-purple-400 text-xl" />
+          <span class="text-sm font-medium text-purple-300">
+            Portfolio Demo - Interaktive Vorschau mit meiner Steam-Bibliothek
+          </span>
+        </div>
         <div
           class="flex flex-wrap gap-6 justify-center animate-fade-in-up"
           style="animation-delay: 1.1s">
-          <button
+          <NuxtLink
+            to="/signin"
             class="px-10 py-4 bg-gradient-to-r from-purple-600 via-blue-500 to-green-500 hover:from-purple-700 hover:via-blue-600 hover:to-green-600 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_25px_rgba(124,58,237,0.6),_0_0_25px_rgba(59,130,246,0.4),_0_0_25px_rgba(16,185,129,0.3)] focus:outline-none focus:ring-4 focus:ring-purple-500/50">
-            Kostenlos starten
-          </button>
-          <button
+            Demo ausprobieren
+          </NuxtLink>
+          <a
+            href="#features"
             class="px-10 py-4 bg-gray-700/70 hover:bg-gray-600/90 border border-gray-600 rounded-lg text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(100,116,139,0.4)] focus:outline-none focus:ring-4 focus:ring-gray-500/50">
             Mehr erfahren
-          </button>
+          </a>
         </div>
       </div>
     </section>
     <!-- Features-Bereich -->
-    <section class="py-24 bg-gray-800/60 relative backdrop-blur-sm">
+    <section id="features" class="py-24 bg-gray-800/60 relative backdrop-blur-sm">
       <div
         class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 animate-border-flow" />
       <div class="container mx-auto px-4">

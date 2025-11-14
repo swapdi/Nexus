@@ -159,6 +159,33 @@ export const useUserStore = defineStore('user', () => {
     stats.value = null;
   };
 
+  // ===== PORTFOLIO DEMO MODE =====
+  // Diese Funktion lädt den Demo-User ohne Supabase Auth
+  const loadDemoUser = async (userId: number) => {
+    return await loading(
+      'demo-user-init',
+      'Lade Demo-Benutzerdaten...',
+      async () => {
+        try {
+          // Lade Demo-User direkt aus der Datenbank
+          const demoUser = await $client.user.getDemoUser.query({ userId });
+          if (demoUser) {
+            user.value = demoUser as FullUser;
+          }
+        } catch (error) {
+          console.error('Error loading demo user:', error);
+          notifyStore.notify(
+            'Fehler beim Laden des Demo-Benutzers.',
+            3
+          );
+          user.value = null;
+          throw error;
+        }
+      },
+      'data'
+    );
+  };
+
   const updateEmailNotifications = async (enabled: boolean) => {
     return await loading(
       'update-email-notifications',
@@ -200,6 +227,7 @@ export const useUserStore = defineStore('user', () => {
     deleteAccount,
     linkSteamProfile,
     unlinkSteamProfile,
-    signout
+    signout,
+    loadDemoUser // Portfolio Demo Mode
   };
 });
