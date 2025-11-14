@@ -36,7 +36,10 @@
         await userStore.linkSteamProfile('76561198275522280');
         console.log('Demo: Steam ID wiederhergestellt');
       } catch (steamError) {
-        console.log('Demo: Steam ID konnte nicht wiederhergestellt werden', steamError);
+        console.log(
+          'Demo: Steam ID konnte nicht wiederhergestellt werden',
+          steamError
+        );
         // Nicht kritisch, weiter zum Dashboard
       }
 
