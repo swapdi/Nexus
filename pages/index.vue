@@ -60,15 +60,19 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           <!-- Feature 1 -->
           <div
-            class="p-8 bg-gray-800/80 rounded-xl border border-gray-700/70 hover:border-purple-500/70 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] group">
+            class="p-8 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl border border-purple-500/30 hover:border-purple-500/70 transition-all duration-500 transform hover:-translate-y-3 hover:shadow-[0_20px_50px_rgba(124,58,237,0.4)] group relative overflow-hidden">
             <div
-              class="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-700 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-              🎮
+              class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div
+              class="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mb-6 shadow-xl transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-[0_0_30px_rgba(124,58,237,0.6)]">
+              <Icon
+                name="heroicons:rectangle-group"
+                class="text-white text-4xl" />
             </div>
-            <h3 class="text-2xl font-semibold mb-4">
+            <h3 class="relative text-2xl font-bold mb-4 text-white">
               Alle Spiele an einem Ort
             </h3>
-            <p class="text-gray-400 leading-relaxed">
+            <p class="relative text-gray-400 leading-relaxed">
               Importiere und verwalte deine Spielebibliotheken von Steam, Epic
               Games, GOG und weiteren Plattformen in einer übersichtlichen,
               futuristischen Oberfläche.
@@ -76,28 +80,34 @@
           </div>
           <!-- Feature 2 -->
           <div
-            class="p-8 bg-gray-800/80 rounded-xl border border-gray-700/70 hover:border-blue-500/70 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] group">
+            class="p-8 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl border border-blue-500/30 hover:border-blue-500/70 transition-all duration-500 transform hover:-translate-y-3 hover:shadow-[0_20px_50px_rgba(59,130,246,0.4)] group relative overflow-hidden">
             <div
-              class="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-700 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-              💰
+              class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div
+              class="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]">
+              <Icon name="heroicons:tag" class="text-white text-4xl" />
             </div>
-            <h3 class="text-2xl font-semibold mb-4">Die besten Deals</h3>
-            <p class="text-gray-400 leading-relaxed">
+            <h3 class="relative text-2xl font-bold mb-4 text-white">
+              Die besten Deals
+            </h3>
+            <p class="relative text-gray-400 leading-relaxed">
               Verpasse nie wieder Angebote oder kostenlose Spiele. Nexus scannt
               alle Plattformen und informiert dich über Top-Deals.
             </p>
           </div>
           <!-- Feature 3 -->
           <div
-            class="p-8 bg-gray-800/80 rounded-xl border border-gray-700/70 hover:border-green-500/70 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] group">
+            class="p-8 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl border border-green-500/30 hover:border-green-500/70 transition-all duration-500 transform hover:-translate-y-3 hover:shadow-[0_20px_50px_rgba(16,185,129,0.4)] group relative overflow-hidden">
             <div
-              class="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-              🔄
+              class="absolute inset-0 bg-gradient-to-br from-green-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div
+              class="relative w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.6)]">
+              <Icon name="heroicons:arrow-path" class="text-white text-4xl" />
             </div>
-            <h3 class="text-2xl font-semibold mb-4">
+            <h3 class="relative text-2xl font-bold mb-4 text-white">
               Automatische Synchronisation
             </h3>
-            <p class="text-gray-400 leading-relaxed">
+            <p class="relative text-gray-400 leading-relaxed">
               Verbinde deine Gaming-Accounts und lasse deine Bibliothek
               automatisch aktualisieren, wenn du neue Spiele kaufst oder
               installierst.
@@ -122,34 +132,89 @@
           Unterstützte Plattformen
         </h2>
         <div
-          class="flex flex-wrap justify-center gap-x-8 gap-y-10 items-center max-w-5xl mx-auto">
+          class="flex flex-wrap justify-center gap-6 items-center max-w-6xl mx-auto">
+          <!-- Steam -->
           <div
-            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
-            Steam
+            class="group relative w-40 h-40 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl flex flex-col items-center justify-center border border-gray-700/50 hover:border-blue-400/70 transition-all duration-500 transform hover:scale-110 hover:shadow-[0_10px_40px_rgba(59,130,246,0.3)] cursor-pointer overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-blue-600/10 transition-all duration-500"></div>
+            <Icon
+              name="simple-icons:steam"
+              class="relative text-6xl text-gray-400 group-hover:text-blue-400 transition-all duration-300 transform group-hover:scale-110" />
+            <span
+              class="relative mt-3 text-sm font-semibold text-gray-400 group-hover:text-white transition-colors duration-300"
+              >Steam</span
+            >
           </div>
+          <!-- Epic Games -->
           <div
-            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
-            Epic
+            class="group relative w-40 h-40 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl flex flex-col items-center justify-center border border-gray-700/50 hover:border-slate-300/70 transition-all duration-500 transform hover:scale-110 hover:shadow-[0_10px_40px_rgba(226,232,240,0.3)] cursor-pointer overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-slate-100/0 to-slate-100/0 group-hover:from-slate-100/10 group-hover:to-slate-200/10 transition-all duration-500"></div>
+            <Icon
+              name="simple-icons:epicgames"
+              class="relative text-6xl text-gray-400 group-hover:text-slate-200 transition-all duration-300 transform group-hover:scale-110" />
+            <span
+              class="relative mt-3 text-sm font-semibold text-gray-400 group-hover:text-white transition-colors duration-300"
+              >Epic Games</span
+            >
           </div>
+          <!-- GOG -->
           <div
-            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
-            GOG
+            class="group relative w-40 h-40 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl flex flex-col items-center justify-center border border-gray-700/50 hover:border-purple-400/70 transition-all duration-500 transform hover:scale-110 hover:shadow-[0_10px_40px_rgba(168,85,247,0.3)] cursor-pointer overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/0 group-hover:from-purple-500/10 group-hover:to-purple-600/10 transition-all duration-500"></div>
+            <Icon
+              name="simple-icons:gogdotcom"
+              class="relative text-6xl text-gray-400 group-hover:text-purple-400 transition-all duration-300 transform group-hover:scale-110" />
+            <span
+              class="relative mt-3 text-sm font-semibold text-gray-400 group-hover:text-white transition-colors duration-300"
+              >GOG</span
+            >
           </div>
+          <!-- EA (Origin) -->
           <div
-            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
-            Origin
+            class="group relative w-40 h-40 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl flex flex-col items-center justify-center border border-gray-700/50 hover:border-red-400/70 transition-all duration-500 transform hover:scale-110 hover:shadow-[0_10px_40px_rgba(239,68,68,0.3)] cursor-pointer overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-red-500/0 to-red-500/0 group-hover:from-red-500/10 group-hover:to-red-600/10 transition-all duration-500"></div>
+            <Icon
+              name="simple-icons:ea"
+              class="relative text-6xl text-gray-400 group-hover:text-red-400 transition-all duration-300 transform group-hover:scale-110" />
+            <span
+              class="relative mt-3 text-sm font-semibold text-gray-400 group-hover:text-white transition-colors duration-300"
+              >EA / Origin</span
+            >
           </div>
+          <!-- Ubisoft -->
           <div
-            class="w-32 h-32 bg-gray-800/70 rounded-xl flex items-center justify-center text-2xl font-semibold border border-gray-700/80 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_rgba(200,200,255,0.1)] hover:border-gray-500/80">
-            Uplay
+            class="group relative w-40 h-40 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl flex flex-col items-center justify-center border border-gray-700/50 hover:border-blue-500/70 transition-all duration-500 transform hover:scale-110 hover:shadow-[0_10px_40px_rgba(59,130,246,0.3)] cursor-pointer overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-blue-600/0 to-blue-600/0 group-hover:from-blue-600/10 group-hover:to-blue-700/10 transition-all duration-500"></div>
+            <Icon
+              name="simple-icons:ubisoft"
+              class="relative text-6xl text-gray-400 group-hover:text-blue-500 transition-all duration-300 transform group-hover:scale-110" />
+            <span
+              class="relative mt-3 text-sm font-semibold text-gray-400 group-hover:text-white transition-colors duration-300"
+              >Ubisoft</span
+            >
           </div>
+          <!-- Battle.net -->
           <div
-            class="w-32 h-32 bg-gradient-to-br from-purple-600/50 to-blue-600/50 rounded-xl flex items-center justify-center text-4xl font-bold border border-purple-500/70 transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_20px_rgba(124,58,237,0.4)]">
-            +
+            class="group relative w-40 h-40 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl flex flex-col items-center justify-center border border-gray-700/50 hover:border-cyan-400/70 transition-all duration-500 transform hover:scale-110 hover:shadow-[0_10px_40px_rgba(34,211,238,0.3)] cursor-pointer overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/10 group-hover:to-cyan-600/10 transition-all duration-500"></div>
+            <Icon
+              name="simple-icons:battledotnet"
+              class="relative text-6xl text-gray-400 group-hover:text-cyan-400 transition-all duration-300 transform group-hover:scale-110" />
+            <span
+              class="relative mt-3 text-sm font-semibold text-gray-400 group-hover:text-white transition-colors duration-300"
+              >Battle.net</span
+            >
           </div>
         </div>
         <p class="text-center text-gray-400 mt-12 text-lg">
-          ... und viele mehr in Kürze!
+          Wir erweitern ständig unsere Unterstützung für weitere
+          Gaming-Plattformen!
         </p>
       </div>
     </section>
@@ -298,10 +363,8 @@
     color: #e0e0e0;
   }
   .bg-grid-white\/5 {
-    background-image: linear-gradient(
-        rgba(255, 255, 255, 0.05) 1px,
-        transparent 1px
-      ),
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   }
   .animate-text-pop-in {
