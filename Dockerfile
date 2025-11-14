@@ -9,6 +9,12 @@ RUN apk add --no-cache openssl
 # Setze Prisma Binary Target für Linux
 ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
 
+# Build-Args für Supabase (werden beim Build übergeben)
+ARG SUPABASE_URL
+ARG SUPABASE_KEY
+ENV SUPABASE_URL=$SUPABASE_URL
+ENV SUPABASE_KEY=$SUPABASE_KEY
+
 COPY package*.json ./
 RUN npm install
 

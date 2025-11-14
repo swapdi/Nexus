@@ -8,6 +8,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - SUPABASE_URL=${SUPABASE_URL}
+        - SUPABASE_KEY=${SUPABASE_KEY}
     container_name: nexus-portfolio-demo
     restart: unless-stopped
     ports:
@@ -16,22 +19,7 @@ services:
       - PORT=3333
       - HOST=0.0.0.0
       - NODE_ENV=production
-      # Supabase (explizit gesetzt für Nuxt)
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      # Database
-      - DATABASE_URL=${DATABASE_URL}
-      # APIs
-      - STEAM_API_KEY=${STEAM_API_KEY}
-      - IGDB_CLIENT_ID=${IGDB_CLIENT_ID}
-      - IGDB_CLIENT_SECRET=${IGDB_CLIENT_SECRET}
-      - ITAD_API_KEY=${ITAD_API_KEY}
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - FROM_EMAIL=${FROM_EMAIL}
-      - SITE_URL=${SITE_URL}
-      - NUXT_SESSION_SECRET=${NUXT_SESSION_SECRET}
-      - EPIC_GAMES_API_KEY=${EPIC_GAMES_API_KEY}
+
     env_file:
       - .env.production
     networks:
