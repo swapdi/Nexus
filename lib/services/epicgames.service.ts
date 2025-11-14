@@ -1,4 +1,4 @@
-import { PrismaClient } from '~/prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { GamesService } from './games.service';
 import { PlatformService } from './platform.service';
 

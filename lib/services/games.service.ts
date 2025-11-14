@@ -1,4 +1,4 @@
-import { PrismaClient } from '~/prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { IGDBService } from './igdb.service';
 const prisma = new PrismaClient();
 

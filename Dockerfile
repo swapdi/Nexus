@@ -26,13 +26,15 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Installiere OpenSSL für Prisma Runtime
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl libgcc
 
-# Kopiere nur die notwendigen Dateien aus der Build-Stage
+# Kopiere Build Output
 COPY --from=builder /app/.output ./.output
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+# Kopiere Prisma (wird als external behandelt und muss separat verfügbar sein)
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma ./prisma
 
 # Setze Umgebungsvariablen für den Produktivbetrieb
 ENV HOST=0.0.0.0

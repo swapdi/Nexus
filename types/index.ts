@@ -5,7 +5,7 @@ import type {
   User,
   UserGame,
   Wishlist
-} from '~/prisma/client';
+} from '@prisma/client';
 export type PrismaDeal = Deal;
 export type PrismaGame = Game;
 export type PrismaMessage = Message;

@@ -68,62 +68,21 @@
     layout: 'authenticated'
   });
   async function handleChangeDisplayName() {
-    if (!editableDisplayName.value.trim()) {
-      notifyStore.notify(
-        'Display name cannot be empty.',
-        NotificationType.Error
-      );
-      return;
-    }
-    if (!user.value) {
-      notifyStore.notify('User data not available.', NotificationType.Error);
-      return;
-    }
-    if (editableDisplayName.value.trim() === user.value.display_name) {
-      notifyStore.notify(
-        'Display name is already set to this value.',
-        NotificationType.Info
-      );
-      return;
-    }
-    isLoadingNameChange.value = true;
-    try {
-      await userStore.updateProfile({
-        display_name: editableDisplayName.value.trim()
-      });
-      notifyStore.notify(
-        'Display name updated successfully!',
-        NotificationType.Success
-      );
-    } catch (error: any) {
-      console.error('Failed to change display name:', error);
-      notifyStore.notify(
-        error.message || 'Failed to update display name.',
-        NotificationType.Error
-      );
-    } finally {
-      isLoadingNameChange.value = false;
-    }
+    // DEMO MODE: Disabled
+    notifyStore.notify(
+      'Diese Funktion ist in der Demo-Version deaktiviert.',
+      NotificationType.Info
+    );
+    return;
   }
 
   async function handleToggleEmailNotifications(enabled: boolean) {
-    if (!user.value) {
-      notifyStore.notify('User data not available.', NotificationType.Error);
-      return;
-    }
-
-    isLoadingEmailNotifications.value = true;
-    try {
-      await userStore.updateEmailNotifications(enabled);
-    } catch (error: any) {
-      console.error('Failed to update email notifications:', error);
-      notifyStore.notify(
-        error.message || 'Failed to update email notifications.',
-        NotificationType.Error
-      );
-    } finally {
-      isLoadingEmailNotifications.value = false;
-    }
+    // DEMO MODE: Disabled
+    notifyStore.notify(
+      'Diese Funktion ist in der Demo-Version deaktiviert.',
+      NotificationType.Info
+    );
+    return;
   }
 </script>
 <template>
@@ -217,7 +176,7 @@
                   provider.
                 </p>
               </div>
-              <!-- Display Name -->
+              <!-- Display Name - DEMO MODE: READ ONLY -->
               <div>
                 <label
                   for="displayNameInput"
@@ -229,47 +188,14 @@
                     id="displayNameInput"
                     v-model="editableDisplayName"
                     type="text"
-                    class="flex-1 block w-full rounded-none rounded-l-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2"
-                    placeholder="Your Display Name"
-                    :disabled="isLoadingNameChange" />
-                  <button
-                    @click="handleChangeDisplayName"
-                    :disabled="isLoadingNameChange"
-                    class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-md bg-gray-50 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150">
-                    <svg
-                      v-if="!isLoadingNameChange"
-                      class="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7" />
-                    </svg>
-                    <svg
-                      v-else
-                      class="animate-spin h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24">
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </button>
+                    readonly
+                    disabled
+                    class="flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 cursor-not-allowed px-3 py-2"
+                    placeholder="Your Display Name" />
                 </div>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  This name will be displayed in your gaming profile and
-                  throughout Nexus.
+                <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                  ⚠️ Demo-Modus: Änderungen sind in der Demo-Version
+                  deaktiviert.
                 </p>
               </div>
             </div>
@@ -338,30 +264,27 @@
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                 </label>
               </div>
-              <!-- Email Notifications -->
-              <div class="flex items-center justify-between">
+              <!-- Email Notifications - DEMO MODE: DISABLED -->
+              <div class="flex items-center justify-between opacity-50">
                 <div>
                   <h3
                     class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     E-Mail-Benachrichtigungen
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Erhalte E-Mails über Deals, Achievements und Updates
+                    In der Demo-Version deaktiviert
                   </p>
                 </div>
-                <label class="relative inline-flex items-center cursor-pointer">
+                <label
+                  class="relative inline-flex items-center cursor-not-allowed">
                   <input
-                    v-model="emailNotifications"
                     type="checkbox"
                     class="sr-only peer"
-                    :disabled="isLoadingEmailNotifications"
-                    aria-label="E-Mail-Benachrichtigungen ein/ausschalten" />
+                    disabled
+                    checked
+                    aria-label="E-Mail-Benachrichtigungen (deaktiviert in Demo)" />
                   <div
-                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"
-                    :class="{
-                      'opacity-50 cursor-not-allowed':
-                        isLoadingEmailNotifications
-                    }"></div>
+                    class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-gray-400 cursor-not-allowed"></div>
                 </label>
               </div>
             </div>
@@ -376,38 +299,39 @@
               Security
             </h2>
             <div class="space-y-4">
-              <!-- Password Change -->
+              <!-- Password Change - DEMO MODE: DISABLED -->
               <div
-                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg opacity-50">
                 <div>
                   <h3
                     class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Password
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    <!-- TODO: last changed-->
+                    In der Demo-Version deaktiviert
                   </p>
                 </div>
-                <NuxtLink
-                  to="/resetpassword"
-                  class="inline-flex items-center px-4 py-2 border border-indigo-500 text-sm font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:text-indigo-300 dark:border-indigo-600 dark:bg-gray-700 dark:hover:bg-gray-600 transition ease-in-out duration-150">
+                <button
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:bg-gray-700">
                   Change Password
-                </NuxtLink>
+                </button>
               </div>
-              <!-- Two-Factor Authentication -->
+              <!-- Two-Factor Authentication - DEMO MODE: DISABLED -->
               <div
-                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg opacity-50">
                 <div>
                   <h3
                     class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Two-Factor Authentication
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Add an extra layer of security to your account
+                    In der Demo-Version deaktiviert
                   </p>
                 </div>
                 <button
-                  class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150">
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:bg-gray-700">
                   Enable 2FA
                 </button>
               </div>
@@ -423,25 +347,27 @@
               Data & Privacy
             </h2>
             <div class="space-y-4">
-              <!-- Export Data -->
+              <!-- Export Data - DEMO MODE: DISABLED -->
               <div
-                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg opacity-50">
                 <div>
                   <h3
                     class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Export Your Data
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Download a copy of your account data
+                    In der Demo-Version deaktiviert
                   </p>
                 </div>
                 <button
-                  class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150">
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:bg-gray-700">
                   Export Data
                 </button>
               </div>
-              <!-- Privacy Settings -->
-              <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <!-- Privacy Settings - DEMO MODE: DISABLED -->
+              <div
+                class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg opacity-50">
                 <h3
                   class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
                   Privacy Settings
@@ -452,10 +378,9 @@
                       >Profile Visibility</span
                     >
                     <select
-                      class="block px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
+                      disabled
+                      class="block px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-gray-100 dark:bg-gray-700/50 text-gray-400 cursor-not-allowed">
                       <option>Public</option>
-                      <option>Friends Only</option>
-                      <option>Private</option>
                     </select>
                   </div>
                   <div class="flex items-center justify-between">
@@ -463,13 +388,15 @@
                       >Gaming Stats</span
                     >
                     <select
-                      class="block px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
+                      disabled
+                      class="block px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-gray-100 dark:bg-gray-700/50 text-gray-400 cursor-not-allowed">
                       <option>Public</option>
-                      <option>Friends Only</option>
-                      <option>Private</option>
                     </select>
                   </div>
                 </div>
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  In der Demo-Version deaktiviert
+                </p>
               </div>
             </div>
           </div>
@@ -483,40 +410,41 @@
               Danger Zone
             </h2>
             <div class="space-y-4">
-              <!-- Sign Out All Devices -->
+              <!-- Sign Out All Devices - DEMO MODE: DISABLED -->
               <div
-                class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700/50">
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 opacity-50">
                 <div>
                   <h3
-                    class="text-lg font-medium text-red-900 dark:text-red-100">
+                    class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Sign Out All Devices
                   </h3>
-                  <p class="text-sm text-red-700 dark:text-red-300">
-                    This will sign you out of all devices and sessions
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    In der Demo-Version deaktiviert
                   </p>
                 </div>
                 <button
-                  class="inline-flex items-center px-4 py-2 border border-red-500 text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:text-red-300 dark:border-red-600 dark:bg-red-700 dark:hover:bg-red-600 transition ease-in-out duration-150">
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:bg-gray-700">
                   Sign Out All
                 </button>
               </div>
-              <!-- Delete Account -->
+              <!-- Delete Account - DEMO MODE: DISABLED -->
               <div
-                class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700/50">
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 opacity-50">
                 <div>
                   <h3
-                    class="text-lg font-medium text-red-900 dark:text-red-100">
+                    class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Delete Account
                   </h3>
-                  <p class="text-sm text-red-700 dark:text-red-300">
-                    Permanently delete your account and all associated data
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    In der Demo-Version deaktiviert
                   </p>
                 </div>
-                <NuxtLink
-                  to="/deletemyaccount"
-                  class="inline-flex items-center px-4 py-2 border border-red-500 text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:text-red-300 dark:border-red-600 dark:bg-red-700 dark:hover:bg-red-600 transition ease-in-out duration-150">
+                <button
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:bg-gray-700">
                   Delete Account
-                </NuxtLink>
+                </button>
               </div>
             </div>
           </div>

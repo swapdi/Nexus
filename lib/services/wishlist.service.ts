@@ -1,4 +1,4 @@
-import { PrismaClient } from '~/prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { useStoreUtils } from '../../composables/useStoreUtils';
 import { CheapSharkService } from './cheapshark.service';
 import { DealsService } from './deals.service';
