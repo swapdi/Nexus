@@ -6,10 +6,13 @@ WORKDIR /app
 # Installiere OpenSSL für Prisma
 RUN apk add --no-cache openssl
 
+# Setze Prisma Binary Target für Linux
+ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
+
 COPY package*.json ./
 RUN npm install
 
-# Kopiere Prisma Schema und generiere Client
+# Kopiere Prisma Schema und generiere Client explizit für Linux
 COPY prisma ./prisma
 RUN npx prisma generate
 
