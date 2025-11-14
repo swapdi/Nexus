@@ -60,7 +60,9 @@
       </div>
     </section>
     <!-- Features-Bereich -->
-    <section id="features" class="py-24 bg-gray-800/60 relative backdrop-blur-sm">
+    <section
+      id="features"
+      class="py-24 bg-gray-800/60 relative backdrop-blur-sm">
       <div
         class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 animate-border-flow" />
       <div class="container mx-auto px-4">

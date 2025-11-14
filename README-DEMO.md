@@ -18,6 +18,7 @@ Nexus ist eine **plattformübergreifende Spieleverwaltung**, die deine Gaming-Bi
 ## 🎭 Demo-Modus
 
 Diese Portfolio-Demo nutzt einen vorkonfigurierten Demo-Account:
+
 - **Steam ID**: 76561198275522280
 - **Funktionen**: Vollständige Demonstration aller Features
 - **Authentifizierung**: Automatischer Login ohne Registrierung
@@ -42,12 +43,16 @@ Diese Portfolio-Demo nutzt einen vorkonfigurierten Demo-Account:
 2. **Environment-Variablen konfigurieren**
    \`\`\`bash
    cp .env.production.example .env.production
+
    # Bearbeite .env.production mit deinen API-Keys
+
    \`\`\`
 
 3. **Demo-User in Datenbank anlegen**
    \`\`\`bash
+
    # Mit psql oder Supabase Dashboard:
+
    psql -h db.rzihqajfdtxqhgipkgpr.supabase.co -U postgres -d postgres -f prisma/demo-user-setup.sql
    \`\`\`
 
@@ -57,10 +62,11 @@ Diese Portfolio-Demo nutzt einen vorkonfigurierten Demo-Account:
    \`\`\`
 
 5. **Anwendung aufrufen**
+
    ```
    http://localhost:3001
    ```
-   
+
    > **Hinweis**: Der Container läuft auf Port 3001 (Host) → 3000 (Container), da Port 3000 möglicherweise bereits von anderen Services belegt ist.
 
 ### Production Deployment (mit Reverse Proxy)
@@ -68,10 +74,11 @@ Diese Portfolio-Demo nutzt einen vorkonfigurierten Demo-Account:
 Wenn du Nexus hinter einem Reverse Proxy wie Nginx oder Traefik betreibst:
 
 #### Nginx Beispiel
+
 \`\`\`nginx
 server {
-    listen 443 ssl http2;
-    server_name nexus.deine-domain.de;
+listen 443 ssl http2;
+server_name nexus.deine-domain.de;
 
     ssl_certificate /pfad/zu/cert.pem;
     ssl_certificate_key /pfad/zu/key.pem;
@@ -87,45 +94,46 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
+
 }
 \`\`\`
 
 #### Traefik Beispiel (docker-compose.yml)
+
 \`\`\`yaml
 services:
-  nexus-app:
-    # ... existing config
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nexus.rule=Host(\`nexus.deine-domain.de\`)"
-      - "traefik.http.routers.nexus.entrypoints=websecure"
-      - "traefik.http.routers.nexus.tls.certresolver=myresolver"
-      - "traefik.http.services.nexus.loadbalancer.server.port=3000"
+nexus-app: # ... existing config
+labels: - "traefik.enable=true" - "traefik.http.routers.nexus.rule=Host(\`nexus.deine-domain.de\`)" - "traefik.http.routers.nexus.entrypoints=websecure" - "traefik.http.routers.nexus.tls.certresolver=myresolver" - "traefik.http.services.nexus.loadbalancer.server.port=3000"
 \`\`\`
 
 ## 🔑 Benötigte API-Keys
 
 ### Steam Web API
+
 - **Beschaffung**: https://steamcommunity.com/dev/apikey
 - **Verwendung**: Import von Steam-Bibliotheken
 - **Kosten**: Kostenlos
 
 ### IGDB API (Twitch Developer)
+
 - **Beschaffung**: https://dev.twitch.tv/console/apps
 - **Verwendung**: Spiele-Metadaten (Cover, Screenshots, Ratings)
 - **Kosten**: Kostenlos
 
 ### ITAD API (IsThereAnyDeal)
+
 - **Beschaffung**: https://itad.docs.apiary.io/
 - **Verwendung**: Deal-Tracking und Preis-Historie
 - **Kosten**: Kostenlos mit Rate-Limiting
 
 ### Resend (Email)
+
 - **Beschaffung**: https://resend.com/
 - **Verwendung**: Transaktionale E-Mails (Benachrichtigungen)
 - **Kosten**: 100 E-Mails/Tag kostenlos
 
 ### Supabase
+
 - **Beschaffung**: https://supabase.com/
 - **Verwendung**: Datenbank, Authentifizierung, Storage
 - **Kosten**: Free Tier verfügbar
@@ -143,15 +151,15 @@ services:
 
 \`\`\`
 Nexus/
-├── components/        # Vue-Komponenten
-├── composables/       # Nuxt Composables
-├── layouts/          # Layout-Templates
-├── lib/              # Services & Business Logic
-├── pages/            # Seiten-Routen
-├── prisma/           # Datenbankschema & Migrations
-├── server/           # Server-API (tRPC)
-├── stores/           # Pinia State Management
-├── Dockerfile        # Docker Build-Datei
+├── components/ # Vue-Komponenten
+├── composables/ # Nuxt Composables
+├── layouts/ # Layout-Templates
+├── lib/ # Services & Business Logic
+├── pages/ # Seiten-Routen
+├── prisma/ # Datenbankschema & Migrations
+├── server/ # Server-API (tRPC)
+├── stores/ # Pinia State Management
+├── Dockerfile # Docker Build-Datei
 ├── docker-compose.yml # Docker Compose Config
 └── .env.production.example
 \`\`\`
@@ -161,16 +169,21 @@ Nexus/
 Falls du lokal entwickeln möchtest:
 
 \`\`\`bash
+
 # Dependencies installieren
+
 npm install
 
 # Development Server starten
+
 npm run dev
 
 # Prisma Client generieren
+
 npx prisma generate
 
 # Database Migrations anwenden
+
 npx prisma migrate dev
 \`\`\`
 
