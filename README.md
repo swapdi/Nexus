@@ -10,6 +10,11 @@
   [![Version](https://img.shields.io/badge/version-1.4.3-blue.svg)]()
   [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
   [![Tech Stack](https://img.shields.io/badge/stack-Nuxt3%20%7C%20Vue.js%20%7C%20TypeScript%20%7C%20Supabase-purple.svg)]()
+  
+  ---
+  
+  ### 🎮 [**Live Demo ausprobieren**](https://nexus.swapdi.de)
+  
 </div>
 
 ---
